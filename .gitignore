@@ -37,9 +37,11 @@ pcc-api-mcp/dist/
 # === 機密檔案 ===
 .mcp.json
 
-# === Claude Code 本地設定（機器專屬） ===
-.claude/
+# === Claude Code（共用上 git，本地設定各機器自己管） ===
+.claude/*
 !.claude/commands/
+!.claude/hooks/
+!.claude/settings.json
 .machine-id
 
 # === 暫存/工具腳本（不進 repo） ===
