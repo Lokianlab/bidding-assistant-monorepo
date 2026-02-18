@@ -194,6 +194,14 @@ SNAPSHOT|{YYYYMMDD-HHMM}|{機器碼}
 [?] {主題ID}|{描述}|{未決原因}
 ```
 
+範例：
+```
+SNAPSHOT|20260219-2330|ITEJ
+[ ] plan-build-pcc-mcp|建 PCC MCP server|待 Layer 0 階段
+[x] infra-memory-rules|MEMORY.md 維護規則|@op:20260219-ITEJ#2130
+[?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決
+```
+
 ### 主題索引（`_index.md`）
 
 每個主題一行：`{topic}|{狀態}|{一句話結論}|{最新出處}|{最後更新}`
