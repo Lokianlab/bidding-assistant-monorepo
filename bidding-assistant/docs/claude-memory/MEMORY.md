@@ -12,7 +12,7 @@
 - Data: Notion API, Settings: localStorage
 - Test: Vitest 4 + Testing Library (26 files, 560 tests)
 - Docs: docx 9.5.2
-- Dev port: 3003 (per CLAUDE.md)
+- Dev port: 3000（Next.js 預設）
 - Global CLI: @anthropic-ai/claude-code (latest)
 
 ## Key Architecture

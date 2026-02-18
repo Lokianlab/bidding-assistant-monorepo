@@ -6,7 +6,7 @@ Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS 4 + Turbopack
 UI 元件庫：shadcn/radix-ui，圖表：recharts
 資料來源：Notion API，設定儲存：localStorage
 使用者為中文母語（所有 UI 文字必須使用中文）
-Dev server port: 3003
+Dev server port: 3000
 
 ---
 

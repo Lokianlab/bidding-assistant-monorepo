@@ -25,7 +25,7 @@ cc程式/                      ← 專案根目錄（每台機器各自 clone，
 - UI: shadcn/radix-ui (new-york style)，圖表: recharts
 - 資料: Notion API，設定: localStorage
 - 測試: Vitest 4 + Testing Library（26 files, 560 tests）
-- Dev port: 3003
+- Dev port: 3000（Next.js 預設）
 
 ### 系統定位
 - **提案寫作駕駛艙**（不是儀表板/看板/RAG 聊天機器人）

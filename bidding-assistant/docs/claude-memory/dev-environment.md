@@ -62,7 +62,7 @@ C:\dev\cc程式\          ← 根目錄（非 git repo）
 }
 ```
 
-**Dev server port: 3003**（在 CLAUDE.md 中指定，啟動時用 `npm run dev -- -p 3003`）
+**Dev server port: 3000**（Next.js 預設）
 
 ### 核心依賴
 
@@ -328,7 +328,7 @@ cd smugmug-mcp && npm install && npm run build
 # 7. 驗證
 npm run build    # 應該 0 errors
 npm test         # 應該 26 files, 560 tests passing
-npm run dev -- -p 3003   # 開發伺服器啟動
+npm run dev   # 開發伺服器啟動
 ```
 
 ### 需要手動帶的機密檔案
@@ -357,6 +357,6 @@ npm run dev -- -p 3003   # 開發伺服器啟動
 - [ ] `claude --version` → 最新版
 - [ ] `cd bidding-assistant && npm run build` → 0 errors
 - [ ] `npm test` → 26 files, 560 tests all passing
-- [ ] `npm run dev -- -p 3003` → localhost:3003 可開啟
+- [ ] `npm run dev` → localhost:3000 可開啟
 - [ ] Claude Code 裡 SmugMug MCP 可連（`/mcp` 查看）
 - [ ] Claude Code Agent Team 可用（settings.json 有 env var）

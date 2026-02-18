@@ -67,7 +67,7 @@ C:\dev\cc程式\                              ← 根目錄（git monorepo）
 }
 ```
 
-**Dev server port: 3003**（在 CLAUDE.md 中指定，啟動時用 `npm run dev -- -p 3003`）
+**Dev server port: 3000**（Next.js 預設）
 
 ### 核心依賴
 
