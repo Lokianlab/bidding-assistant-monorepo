@@ -71,7 +71,7 @@ cc程式/                      ← 專案根目錄（每台機器各自 clone，
 
 ### 何時拉（git pull）
 
-- **對話開始時**：第一件事就是 `git pull origin main`
+- **對話開始時 / context compact 後**：第一件事就是 `git pull origin main`，然後執行記錄層啟動流程
 - **準備修改檔案前**：先 pull 確保拿到最新版
 
 ### 何時推（git commit + push）
@@ -101,7 +101,7 @@ cc程式/                      ← 專案根目錄（每台機器各自 clone，
 
 長時間對話中，**每 30 分鐘必須執行一次 git pull + push**，即使沒有新的改動也要 pull 確認。
 
-- 對話開始時啟動計時（第一次 pull 即為起點）
+- 對話開始或 context compact 後啟動計時（第一次 pull 即為起點）
 - 每次完成 pull 或 push 時重置計時
 - 如果距離上次拉推已超過 30 分鐘，立即執行：
   1. `git pull origin main`
@@ -212,7 +212,9 @@ SNAPSHOT|{日期時間}|{機器碼}
 3. 檔名格式正確？月份子目錄存在？
 4. 內容夠具體？（背景和操作各至少 20 字）
 
-### 啟動流程
+### 啟動流程（對話開始 & context compact 後都要執行）
+
+**Context compact 視同重啟**：compact 後摘要可能遺漏細節，必須重新執行以下完整流程。
 
 ```
 1. 恢復檢查
