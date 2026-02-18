@@ -23,3 +23,4 @@ plan-backlog|進行中|待辦清單（8 項未完成）|@op:20260219-JDNE#1801|2
 infra-memory-rules|完成|MEMORY.md 定位為踩坑筆記，不跟 git 同步，觸發條件明確|@op:20260219-ITEJ#2130|2026-02-19
 method-self-qa|完成|自問自答法：收斂導向、從簡開始、模糊判斷=壞規則|@op:20260219-ITEJ#2130|2026-02-19
 cleanup-gas-monitor|完成|刪除 GitHub Actions 監控，GAS 每小時上線|@op:20260219-ITEJ#2100|2026-02-19
+infra-collision-handling|完成|碰撞是常態，系統靠容錯：per-file 處理策略 + /更新偵測|@op:20260219-ITEJ#2200|2026-02-19
