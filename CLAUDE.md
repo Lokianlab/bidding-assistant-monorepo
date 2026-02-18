@@ -224,8 +224,9 @@ SNAPSHOT|{日期時間}|{機器碼}
    └─ 無 → 繼續
 
 2. 分層讀取
-   Layer 0: _index.md（主題索引）→ 全局現況
-   Layer 1: _snapshot-{自己}.md → 上次中斷進度
+   Layer 0:   _index.md（主題索引）→ 全局現況
+   Layer 0.5: _staging/_index.md（暫存索引）→ 待推結論 + 待決討論
+   Layer 1:   _snapshot-{自己}.md → 上次中斷進度（含 [?] 未結討論）
    Layer 2: 所有 _snapshot-*.md → 其他機器進度
    Layer 3: 最近小結之後的 OP 記錄（只讀前兩行 header，最多 30 筆）
             若無小結，fallback 讀最近 3 天
