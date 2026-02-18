@@ -3,6 +3,18 @@
 > 每個主題一行。格式：`{topic}|{狀態}|{一句話結論}|{最新出處}|{最後更新}`
 > AI 寫 OP 或小結時自動更新此檔。
 
-plan-migration|完成|從 operation-log.md 遷移到記錄層|@op:20260219-JDNE#1800|2026-02-19
-infra-record-layer|完成|v1.1 三層檢索架構，兩輪紅藍方壓力測試通過|@op:20260219-JDNE#1800|2026-02-19
-plan-backlog|進行中|待辦清單（從 operation-log.md 遷移）|@op:20260219-JDNE#1801|2026-02-19
+feat-pcc-api|完成|g0v API 能力遠超預期，評委/投標金額/未得標原因都有|@op:20260218-JDNE#1200|2026-02-18
+plan-pcc-impact|完成|PCC MCP 併入 Layer 0，步驟 1234 可 100% 自動化|@op:20260218-JDNE#1030|2026-02-18
+feat-notion-test-db|完成|測試資料庫已建（22 欄位，prefix TEST）|@op:20260218-JDNE#1100|2026-02-18
+feat-pcc-monitor|完成|GAS 版上線（GitHub Actions IP 被封鎖）|@op:20260218-JDNE#1800|2026-02-18
+infra-memory|完成|記憶檔案搬進 repo，9 份暫存檔|@op:20260218-JDNE#2000|2026-02-18
+infra-operation-log|已被取代|改為記錄層 docs/records/|@op:20260219-JDNE#1800|2026-02-19
+infra-git-monorepo|完成|Monorepo + GitHub private repo|@op:20260218-JDNE#1630|2026-02-18
+infra-project-migration|完成|遷移到 C:\dev\cc程式|@op:20260218-JDNE#1900|2026-02-18
+feat-slash-commands|完成|4 個指令（/暫存 /修改計畫 /安裝 /更新）|@op:20260218-JDNE#1930|2026-02-18
+infra-sync-rules|完成|結論同步 + 30 分鐘定時 + 衝突處理規則|@op:20260218-JDNE#2030|2026-02-18
+cleanup-0219|完成|NOTION_TOKEN 統一 + Gamma 移除 + acceptEdits|@op:20260219-JDNE#0900|2026-02-19
+infra-closed-loop|完成|閉環原則兩層：做對了 + 有效|@op:20260219-JDNE#1000|2026-02-19
+infra-record-layer|完成|v1.1 三層檢索架構，兩輪壓力測試通過|@op:20260219-JDNE#1800|2026-02-19
+plan-migration|完成|operation-log.md → records/ 遷移完成（含 17 筆歷史轉錄）|@op:20260219-JDNE#1830|2026-02-19
+plan-backlog|進行中|待辦清單（8 項未完成）|@op:20260219-JDNE#1801|2026-02-19
