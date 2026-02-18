@@ -159,8 +159,24 @@ git push origin main
   - 例：`laptop/pcc-mcp-setup`、`desktop/notion-integration`
 - 完成後 merge 回 main
 
-### 衝突預防
+### 多機器協作規則（最高 3 台同時在線）
 
-- **不同子專案盡量分開作業**：A 機器改 bidding-assistant，B 機器改 pcc-api-mcp
-- **共用檔案**（如 `CLAUDE.md`、`docs/operation-log.md`）：改之前先 `git pull`
-- **操作日誌衝突**：如果 merge 衝突，保留兩邊的記錄（不要刪除對方的 log）
+#### 分工原則
+- **不同機器改不同檔案**：A 改 bidding-assistant/src/，B 改 pcc-api-mcp/，C 改 docs/
+- **同一個檔案不要兩台機器同時改** — 如果需要，先在一台完成並推上去，另一台再 pull 後接手
+- **安裝套件（npm install）只在一台機器上做**，其他機器 pull 後跑 `npm install` 同步
+
+#### 衝突預防
+- **改任何共用檔案前先 `git pull`**
+- **推之前先跑測試**（`npm test`），不要推壞掉的程式碼
+- **開工時先檢查有沒有未推的改動**（`git status`），有的話先處理
+
+#### 衝突處理
+- **程式碼衝突**：讀懂兩邊改動，合併成正確版本
+- **操作日誌衝突**：永遠保留兩邊記錄，不刪除對方的 log
+- **package-lock.json 衝突**：刪掉 `package-lock.json`，重新 `npm install`
+- **暫存檔矛盾**（兩台機器做出相反結論）：兩份都保留，跑 `/修改計畫` 時會列出讓用戶裁決
+
+#### 重大決策只在一台機器上做
+- 技術選型、架構變更、新規範 → 在一台機器上討論定案後推上去
+- 其他機器 pull 後執行，不要平行討論同一個決策
