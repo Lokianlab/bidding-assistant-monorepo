@@ -20,7 +20,7 @@ mkdir -p "$BACKUP_DIR/claude-memory"
   cp "$SCRIPT_DIR/.mcp.json" "$BACKUP_DIR/mcp.json"
 
 # 2. Claude Code 記憶
-MEMORY_DIR="$HOME/.claude/projects/C--Users-gary2-OneDrive----cc--/memory"
+MEMORY_DIR="$HOME/.claude/projects/C--dev-cc--/memory"
 if [ -d "$MEMORY_DIR" ]; then
   cp "$MEMORY_DIR/"*.md "$BACKUP_DIR/claude-memory/" 2>/dev/null || true
 fi
