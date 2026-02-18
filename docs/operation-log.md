@@ -363,8 +363,8 @@ pcc-monitor/
 
 ## 待處理 / 下一步
 
-- [ ] 用戶設定 Google Apps Script 監控（PCC API 封鎖 GitHub Actions IP）
-- [ ] 春節後分析 API 實際延遲
+- [x] ~~用戶設定 Google Apps Script 監控~~ → 完成（每小時檢查，GitHub Actions 已刪除）
+- [ ] 春節後分析 API 實際延遲（GAS 監控已上線，等累積資料）
 - [x] ~~註冊 GitHub~~ → 完成（帳號 Lokianlab）
 - [x] ~~專案遷移到 C:\dev\cc程式~~ → 完成
 - [x] ~~建立 slash commands~~ → 完成（4 個）
