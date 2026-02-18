@@ -393,7 +393,7 @@ pcc-monitor/
 - [x] ~~建立 slash commands~~ → 完成（4 個）
 - [x] ~~本機記憶搬進 repo~~ → 完成
 - [x] ~~多機器同步規則~~ → 完成
-- [ ] 其他機器 clone repo + 環境設定
+- [ ] 其他機器 clone repo + 環境設定（含 `settings.json` 設定 `acceptEdits`）
 - [ ] 建 PCC MCP server（待 Layer 0 階段）
 - [ ] 建 Notion MCP server（待 Layer 0 階段）
 - [ ] 更新 v4.0 開發計畫文件（用 `/修改計畫` 整合 `_staging/` 暫存檔）
