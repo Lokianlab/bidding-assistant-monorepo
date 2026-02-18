@@ -1,4 +1,4 @@
-SNAPSHOT|2026-02-19 23:00|JDNE
+SNAPSHOT|20260219-2300|JDNE
 [x] infra-record-layer|記錄層設計|v1.1 定案 + 建置完成 + 歷史轉錄完成
 [x] plan-migration|operation-log.md 遷移|17 筆歷史轉錄完成
 [x] infra-staging-index|暫存索引機制|_staging/_index.md 建立 + 啟動流程更新
