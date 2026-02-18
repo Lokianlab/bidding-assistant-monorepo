@@ -324,6 +324,29 @@ pcc-monitor/
 
 ---
 
+## 2026-02-19 Session 1
+
+### 十五、最後清理：文件一致性修正 + 權限模式變更
+
+**背景**：經兩輪全面檢視後的最終清理。
+
+#### 操作
+
+| # | 操作 | 結果 |
+|---|------|------|
+| 1 | `docs/機器設定指南.md` line 57：`NOTION_API_KEY` → `NOTION_TOKEN` | 與 `.env.example` 和程式碼一致 |
+| 2 | `docs/dev-environment.md`：移除已退訂 Gamma MCP 行 | 表格僅保留 4 個 active server |
+| 3 | `bidding-assistant/docs/claude-memory/dev-environment.md`：同步移除 Gamma 行 | 閉環補漏（自我審查發現遺漏） |
+| 4 | `~/.claude/settings.json`：`defaultMode` 從 `dontAsk` → `acceptEdits` | 本機設定，不入 git |
+| 5 | `git grep NOTION_API_KEY` 驗證 | 零殘留 ✅ |
+
+#### 閉環自查紀錄
+
+- 第一輪修改只改了 `docs/dev-environment.md` 的 Gamma，漏了 `bidding-assistant/docs/claude-memory/dev-environment.md` 的同一行
+- 用戶提問「是否閉環」後自查發現，第二輪補修
+
+---
+
 ## 待處理 / 下一步
 
 - [ ] 用戶設定 Google Apps Script 監控（PCC API 封鎖 GitHub Actions IP）

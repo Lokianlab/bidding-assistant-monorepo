@@ -281,7 +281,6 @@ cd smugmug-mcp && npm install && npm run build
 | smugmug | .mcp.json（專案級） | 自建，OAuth 1.0a |
 | notebooklm | .mcp.json（專案級） | 社群套件，npx 自動安裝 |
 | Canva | Claude.ai 雲端 | 透過 Claude.ai 帳號連結 |
-| Gamma | Claude.ai 雲端 | 透過 Claude.ai 帳號連結 |
 | Notion | Claude.ai 雲端 | 透過 Claude.ai 帳號連結 |
 
 ### Claude Code 記憶體
