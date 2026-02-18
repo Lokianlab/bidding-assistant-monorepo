@@ -1,4 +1,7 @@
-# 本地 Notion MCP Server 規格（2026-02-18）
+# 本地 Notion MCP Server 規格（舊版，已合併至 staging）
+
+> ⚠️ 本檔內容已完整合併至 `docs/dev-plan/_staging/M01-Notion-MCP規格.md`。
+> 保留為歷史參考。
 
 ## 為什麼要建
 

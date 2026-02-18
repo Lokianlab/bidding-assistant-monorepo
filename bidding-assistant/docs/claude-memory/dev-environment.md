@@ -1,6 +1,7 @@
-# 開發環境與配置（2026-02-18 快照）
+# 開發環境與配置（舊版快照，保留供參考）
 
-在不同機器上接續開發時，照此文件還原環境。
+> ⚠️ 本檔為舊版完整記錄，正式版請看 `docs/dev-environment.md`。
+> 保留原因：含 vitest coverage 門檻、shadcn components.json、完整配置檔等正式版精簡掉的細節。
 
 ---
 
@@ -27,7 +28,7 @@ npm install -g @anthropic-ai/claude-code@latest
 ## 2. 專案結構
 
 ```
-C:\Users\gary2\OneDrive\桌面\cc程式\          ← 根目錄（非 git repo）
+C:\dev\cc程式\          ← 根目錄（非 git repo）
 ├── bidding-assistant\                         ← 主應用（git repo）
 │   ├── .env.local                             ← 機密（不入 git）
 │   ├── .env.example                           ← 環境變數範本
@@ -233,7 +234,7 @@ cd smugmug-mcp && npm install && npm run build
 
 ## 5. MCP Server 配置
 
-檔案位置：`C:\Users\gary2\OneDrive\桌面\cc程式\.mcp.json`（根目錄級）
+檔案位置：`C:\dev\cc程式\.mcp.json`（根目錄級）
 
 ```json
 {
@@ -286,7 +287,7 @@ cd smugmug-mcp && npm install && npm run build
 ### Claude Code 記憶體
 
 ```
-~/.claude/projects/C--Users-gary2-OneDrive----cc--/memory/
+~/.claude/projects/C--dev-cc--/memory/
 ├── MEMORY.md                  ← 主記憶體（載入 system prompt）
 ├── pain-points-analysis.md    ← 痛點分析 + 全部設計決策
 ├── debugging.md               ← 開發除錯經驗

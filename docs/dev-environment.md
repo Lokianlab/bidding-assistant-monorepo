@@ -139,3 +139,59 @@ cd smugmug-mcp && npm install && npm run build
 - Windows 上 Claude Code 使用 bash 語法（Unix 風格），不是 cmd/PowerShell
 - 避免 `> nul` 重定向（Windows 會建立實體 `nul` 檔案），用 `> /dev/null`
 - npm registry 應為官方：`https://registry.npmjs.org/`（不要用 npmmirror）
+
+---
+
+## 8. 換機器還原步驟
+
+### 快速還原清單
+
+```bash
+# 1. 安裝基礎工具
+#    - Node.js v22.x（LTS）
+#    - Git
+#    - GitHub CLI
+#    - Claude Code: npm install -g @anthropic-ai/claude-code
+
+# 2. Clone 專案
+cd C:\dev
+git clone https://github.com/Lokianlab/bidding-assistant-monorepo.git cc程式
+
+# 3. 安裝依賴
+cd cc程式/bidding-assistant && npm install
+cd ../smugmug-mcp && npm install && npm run build
+
+# 4. 建立環境變數
+#    複製 .env.example → .env.local，填入 NOTION_TOKEN 和 NOTION_DATABASE_ID
+
+# 5. 建立 MCP 配置
+#    在專案根目錄建 .mcp.json（帶 SmugMug credentials）
+#    ⚠️ 修改 smugmug/pcc-api args 中的絕對路徑
+
+# 6. Claude Code 設定
+#    ~/.claude/settings.json 加入 Agent Team 環境變數
+#    記憶目錄會透過 Claude Code 自動建立
+
+# 7. 驗證
+cd bidding-assistant
+npm run build    # 應該 0 errors
+npm test         # 應該全部通過
+npm run dev      # 開發伺服器啟動
+```
+
+---
+
+## 9. 驗證檢查清單
+
+換機器後跑一遍確認：
+
+- [ ] `node --version` → v22.x
+- [ ] `npm --version` → 10.x
+- [ ] `git --version` → 2.x
+- [ ] `gh --version` → 最新版
+- [ ] `claude --version` → 最新版
+- [ ] `cd bidding-assistant && npm run build` → 0 errors
+- [ ] `npm test` → 全部通過
+- [ ] `npm run dev` → localhost 可開啟
+- [ ] Claude Code 裡 SmugMug MCP 可連（`/mcp` 查看）
+- [ ] Claude Code Agent Team 可用（settings.json 有 env var）

@@ -1,9 +1,9 @@
 # Project Memory — 全能標案助理
 
 ## Project Location
-- Root: `C:\Users\gary2\OneDrive\桌面\cc程式`
-- App: `C:\Users\gary2\OneDrive\桌面\cc程式\bidding-assistant`
-- Git repo is inside `bidding-assistant/`, NOT at root level
+- Root: `C:\dev\cc程式`
+- App: `C:\dev\cc程式\bidding-assistant`
+- Git monorepo（根目錄就是 repo）
 
 ## Tech Stack (see [dev-environment.md](dev-environment.md) for full config)
 - Node.js v22.14.0 + npm 10.9.2 + Git 2.53.0
@@ -22,8 +22,7 @@
 - CLAUDE.md in bidding-assistant/ has comprehensive dev guidelines
 
 ## Known Issues
-- Path contains Chinese chars (桌面/程式) — can cause issues with some tools
-- OneDrive sync can create lock conflicts
+- 專案已搬到 C:\dev\cc程式（不在 OneDrive 裡），中文路徑問題已大幅改善
 - Large session files (>10MB) cause "Failed to load session" in desktop app
 - Windows `nul` files get created as actual files when bash redirects to `/dev/null` — avoid `> nul` patterns
 

@@ -27,17 +27,18 @@ Claude Code 在 `~/.claude/projects/C--Users-gary2-OneDrive----cc--/memory/` 遺
 1. **Desktop App 大檔問題**：Large session files (>10MB) cause "Failed to load session" in Claude desktop app
 2. **Gamma 退訂**：Gamma 已退訂（難用），AI 工具清單中應移除
 3. **記憶檔流程規則**：討論結論經 /暫存 指令生成的檔案 = 建議書，不是定案；正式寫入前需先評估
+4. **docx 套件版本**：docx 9.5.2（用於 .docx 文件生成）
+5. **Agent Team 設定細節**：Windows 使用 in-process 模式（Shift+Up/Down 切換 agent）
+6. **開發計畫書 v4.0**：`docs/開發計畫書_v4.0_提案寫作駕駛艙版.docx`（已生成）
 
-## 待處理：settings.json 清理
+## ~~待處理：settings.json 清理~~ ✅ 已完成（2026-02-19）
 
-`~/.claude/settings.json` 的 permissions.allow 陣列中有大量過期的 OneDrive 路徑規則，例如：
-- `Bash(dir "C:\\Users\\gary2\\OneDrive\\桌面\\...")`
-- `Bash(del /F "C:\\Users\\gary2\\OneDrive\\桌面\\...")`
-- `Bash(bash "/c/Users/gary2/OneDrive/桌面/cc程式/backup-env.sh")`
+已清理 18 條過期 OneDrive 路徑規則（從 123 條減為 105 條）。
 
-這些路徑已不存在，建議下次維護時清理。
+## ~~待處理：舊記憶目錄刪除~~ ✅ 已完成（2026-02-19）
+
+`~/.claude/projects/C--Users-gary2-OneDrive----cc--/` 已整個刪除。
 
 ## 結論
 
-舊記憶檔已全數遷移完畢，`~/.claude/projects/C--Users-gary2-OneDrive----cc--/memory/` 可安全刪除。
-新專案的記憶目錄為 `~/.claude/projects/C--dev-cc--/memory/`（目前為空）。
+舊記憶檔已全數遷移完畢。新專案的記憶目錄為 `~/.claude/projects/C--dev-cc--/memory/`。

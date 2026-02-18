@@ -163,7 +163,7 @@ else
 fi
 
 # Memory files
-MEMORY_TARGET="$CLAUDE_DIR/projects/C--Users-gary2-OneDrive----cc--/memory"
+MEMORY_TARGET="$CLAUDE_DIR/projects/C--dev-cc--/memory"
 if [ -d "$BACKUP_DIR/claude-memory" ] && [ "$(ls -A "$BACKUP_DIR/claude-memory" 2>/dev/null)" ]; then
   mkdir -p "$MEMORY_TARGET"
   cp "$BACKUP_DIR/claude-memory/"*.md "$MEMORY_TARGET/" 2>/dev/null || true
