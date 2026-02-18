@@ -359,10 +359,33 @@ pcc-monitor/
 | 4 | `changelog.ts`：保留舊名稱（歷史記錄不改） | 正確 |
 | 5 | grep「閉環開發流程」驗證 | 僅剩 changelog 歷史記錄 ✅ |
 
+### 十七、閉環原則區分「做對了」vs「有效」兩層
+
+**背景**：用戶指出「確定做對了」和「自證有效」是不同層次——做對了是正確性，有效是目的性。
+
+#### 操作
+
+| # | 操作 | 結果 |
+|---|------|------|
+| 1 | `bidding-assistant/CLAUDE.md` §6：拆為第一層（做對了）+ 第二層（有效），步驟加入第 9 步「自證有效」 | 兩層定義清晰 |
+| 2 | `docs/debugging.md` §3：同步兩層結構 + 新增兩個常犯錯誤 | 與 CLAUDE.md 一致 |
+| 3 | `bidding-assistant/docs/dev-plan/02-核心架構.md`：摘要同步兩層說法 | 與 CLAUDE.md 一致 |
+| 4 | grep「兩層」+「閉環」驗證三份文件一致性 | ✅ |
+
+#### 第二輪閉環自查（用新規則檢驗本 session 所有修改）
+
+| 修改 | 做對了 | 有效 |
+|------|--------|------|
+| NOTION_API_KEY → NOTION_TOKEN | ✅ grep 零殘留 | ✅ 與 .env.example / client.ts 一致 |
+| 移除 Gamma（兩份 dev-environment.md） | ✅ grep 零殘留 | ✅ 反映退訂現狀 |
+| settings.json → acceptEdits | ✅ 格式正確 | ⚠️ 待驗證（需重啟 session） |
+| 閉環原則兩層改寫 | ✅ 三份文件一致 | ✅ 概念表達清楚 |
+
 ---
 
 ## 待處理 / 下一步
 
+- [ ] 驗證 `settings.json` 的 `acceptEdits` 生效（下次啟動 Claude Code 時確認）
 - [x] ~~用戶設定 Google Apps Script 監控~~ → 完成（每小時檢查，GitHub Actions 已刪除）
 - [ ] 春節後分析 API 實際延遲（GAS 監控已上線，等累積資料）
 - [x] ~~註冊 GitHub~~ → 完成（帳號 Lokianlab）
