@@ -267,11 +267,33 @@ pcc-monitor/
 
 ---
 
+### 十、PCC 監控改用 GitHub Actions 嘗試
+
+**用戶提議**：既然有 GitHub 了，PCC 監控也用 GitHub Actions。
+
+#### 操作
+
+1. 移動 workflow 到 `.github/workflows/pcc-monitor.yml`（根目錄）
+2. 更新路徑為 monorepo 結構（`node pcc-monitor/monitor.mjs --once`）
+3. 取消 .gitignore 排除 state.json/update-log.jsonl
+4. Commit + push → 手動觸發 → 成功但 API 回 **403**
+5. 加 User-Agent header → push → 再觸發 → **仍然 403**
+6. 結論：PCC API 封鎖 GitHub Actions 雲端 IP
+
+#### 決策
+
+- [x] **PCC 監控仍用 Google Apps Script**（GitHub Actions IP 被 API 封鎖）
+- [x] GitHub Actions workflow 保留備用（未來可跑 CI 測試/build）
+- [x] OneDrive + Git 共存有衝突風險（git index lock），需注意
+
+---
+
 ## 待處理 / 下一步
 
-- [ ] 用戶設定 Google Apps Script 監控
+- [ ] 用戶設定 Google Apps Script 監控（PCC API 封鎖 GitHub Actions IP）
 - [ ] 春節後分析 API 實際延遲
-- [ ] 註冊 GitHub（用戶尚未註冊）
+- [x] ~~註冊 GitHub~~ → 完成（帳號 Lokianlab）
+- [ ] 其他機器 clone repo + 環境設定
 - [ ] 建 PCC MCP server（待 Layer 0 階段）
 - [ ] 建 Notion MCP server（待 Layer 0 階段）
 - [ ] 更新 v4.0 開發計畫文件（反映本 session 的架構決策）

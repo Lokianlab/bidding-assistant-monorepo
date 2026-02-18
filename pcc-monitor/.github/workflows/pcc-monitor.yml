@@ -20,23 +20,23 @@ jobs:
           node-version: '22'
 
       - name: Run monitor
-        run: node pcc-monitor/monitor.mjs --once
+        run: node monitor.mjs --once
 
       - name: Show current state
         run: |
           echo "=== state.json ==="
-          cat pcc-monitor/state.json
+          cat state.json
           echo ""
           echo "=== Last 10 log entries ==="
-          tail -10 pcc-monitor/update-log.jsonl
+          tail -10 update-log.jsonl
 
       - name: Run analysis (if enough data)
-        run: node pcc-monitor/analyze.mjs || true
+        run: node analyze.mjs || true
 
       - name: Commit log updates
         run: |
           git config user.name "PCC Monitor Bot"
           git config user.email "bot@github.actions"
-          git add pcc-monitor/state.json pcc-monitor/update-log.jsonl
-          git diff --staged --quiet || git commit -m "pcc-monitor: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add state.json update-log.jsonl
+          git diff --staged --quiet || git commit -m "PCC API check: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push

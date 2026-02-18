@@ -65,12 +65,7 @@ async function appendLog(entry) {
 }
 
 async function fetchInfo() {
-  const res = await fetch(API_URL, {
-    headers: {
-      "User-Agent": "PCC-Monitor/1.0 (https://github.com/Lokianlab/bidding-assistant-monorepo)",
-      "Accept": "application/json",
-    },
-  });
+  const res = await fetch(API_URL);
   if (!res.ok) throw new Error(`API returned ${res.status}`);
   return res.json();
 }
