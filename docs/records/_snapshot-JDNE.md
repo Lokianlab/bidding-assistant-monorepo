@@ -1,8 +1,8 @@
 SNAPSHOT|20260219-2300|JDNE
-[x] infra-record-layer|記錄層設計|v1.1 定案 + 建置完成 + 歷史轉錄完成
-[x] plan-migration|operation-log.md 遷移|17 筆歷史轉錄完成
-[x] infra-staging-index|暫存索引機制|_staging/_index.md 建立 + 啟動流程更新
-[x] infra-hooks|PreCompact + Stop hooks|自動保存記錄層 + 阻止忘記 commit
+[x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
+[x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
+[x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
+[x] infra-hooks|PreCompact + Stop hooks|@op:20260219-JDNE#2300
 [ ] plan-update-devplan|更新 v4.0 開發計畫|用 /修改計畫 整合 19 份 _staging/ 暫存檔
 [ ] plan-build-pcc-mcp|建 PCC MCP server|待 Layer 0 階段
 [ ] plan-build-notion-mcp|建 Notion MCP server|待 Layer 0 階段
