@@ -220,6 +220,53 @@ pcc-monitor/
 
 ---
 
+### 九、Git Monorepo 建立 & 多機器協作
+
+**用戶問題**：3 台以上機器同時開發，如何避免打架？
+
+#### 操作
+
+1. 檢查所有子專案 git 狀態：
+   - `bidding-assistant/` → 有 .git，1 commit，無 remote
+   - `pcc-monitor/` → 有 .git，0 commits
+   - `smugmug-mcp/` → 無 .git
+   - `pcc-api-mcp/` → 無 .git
+   - 根目錄 → 無 .git
+2. 建立根目錄 `.gitignore`（排除 node_modules、.env、.mcp.json、.claude/ 等）
+3. 移除子專案 `.git`（`bidding-assistant/.git`、`pcc-monitor/.git`）
+4. 在根目錄 `git init` + `git checkout -b main`
+5. 設定 git user：Jin / gasklath20312@gmail.com
+6. Stage 263 個檔案，確認無敏感檔案洩漏
+7. Initial commit：`46152e7`
+8. 安裝 GitHub CLI（`winget install GitHub.cli`）
+9. 在 `CLAUDE.md` 加入 Git 協作規範（分支策略、操作守則、衝突預防）
+
+#### 產出
+
+| 項目 | 內容 |
+|------|------|
+| `.gitignore` | 根目錄全域 gitignore |
+| `CLAUDE.md` | 加入 Git 協作規範 + 分支策略 |
+| Git repo | 根目錄 monorepo，main 分支，1 commit |
+| GitHub CLI | v2.86.0 已安裝 |
+
+#### 分支策略
+
+- `main`：穩定主幹
+- `{machine}/{topic}`：每台機器用自己的分支
+- 完成後 merge 回 main
+
+#### 決策
+
+- [x] 選擇 Monorepo（而非多個獨立 repo）
+- [x] 選擇 GitHub 作為遠端（用戶有帳號）
+- [x] 分支命名：`{machine}/{topic}`
+- [x] 用戶完成 `gh auth login`（帳號：Lokianlab）
+- [x] 建立 GitHub private repo：`Lokianlab/bidding-assistant-monorepo`
+- [x] Push main branch 成功
+
+---
+
 ## 待處理 / 下一步
 
 - [ ] 用戶設定 Google Apps Script 監控

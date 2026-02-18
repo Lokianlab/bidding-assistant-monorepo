@@ -29,9 +29,10 @@ bidding-assistant/uploads/*
 smugmug-mcp/dist/
 pcc-api-mcp/dist/
 
-# === pcc-monitor 狀態檔（每台機器不同） ===
-pcc-monitor/state.json
-pcc-monitor/update-log.jsonl
+# === pcc-monitor 狀態檔 ===
+# 不排除 — GitHub Actions 會自動 commit 監控記錄
+# pcc-monitor/state.json
+# pcc-monitor/update-log.jsonl
 
 # === 機密檔案 ===
 .mcp.json
