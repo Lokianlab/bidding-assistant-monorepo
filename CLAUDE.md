@@ -17,6 +17,53 @@ cc程式/                      ← 專案根目錄（每台機器各自 clone，
 
 ---
 
+## 專案背景（所有機器必須知道）
+
+### 技術棧
+- Node.js v22 + npm 10 + Git 2.53 + GitHub CLI
+- Next.js 16.1.6 + React 19 + TypeScript 5 + Tailwind CSS 4 + Turbopack
+- UI: shadcn/radix-ui (new-york style)，圖表: recharts
+- 資料: Notion API，設定: localStorage
+- 測試: Vitest 4 + Testing Library（26 files, 560 tests）
+- Dev port: 3003
+
+### 系統定位
+- **提案寫作駕駛艙**（不是儀表板/看板/RAG 聊天機器人）
+- Discord Bot = 主要操作介面（駕駛座），Web app = 管理後台
+
+### 架構重點
+- Feature Registry Pattern：所有功能在 `FEATURE_REGISTRY` 註冊
+- SSOT：常數在 `src/lib/constants/`，設定在 `src/lib/settings/`
+- 資料/UI 分離：`src/lib/`（邏輯）vs `src/components/`（渲染）
+- bidding-assistant/CLAUDE.md 有完整開發規範
+
+### Agent 架構（雙層策略）
+- **施工層**：Claude Code Agent Team（開發時用）
+- **產品層**：Claude Code SDK + Discord Bot（5 個 AI Agent：戰略官/企劃官/品管官/知識官/簡報官）
+- 全部走現有訂閱，額外成本 = $0
+
+### MCP Server
+- SmugMug MCP：已建好（`smugmug-mcp/`）
+- Notion MCP：待建（本地版，讓三家 AI 都能用）
+- PCC 標案 API MCP：待建（g0v 免費 API，有評委名單、投標金額等）
+- PCC MCP 建議併入 Layer 0 同步建設
+
+### 開發路線
+- Layer 0：知識庫（00A-00E）+ PCC MCP
+- Layer 1：P0 Bot 基礎 → P1 戰略+知識庫 → P2 寫作+品管
+- Layer 2：統一 AI 調度 + 排版輸出
+- Layer 3：視覺生成整合
+
+### 已知注意事項
+- Windows 上 Claude Code 用 bash 語法（Unix 風格）
+- 避免 `> nul`（Windows 會建立實體 `nul` 檔案），用 `> /dev/null`
+- npm registry 用官方 `https://registry.npmjs.org/`（不要用 npmmirror）
+- 詳細開發環境見 `docs/dev-environment.md`
+- 除錯經驗見 `docs/debugging.md`
+- 討論結論暫存在 `bidding-assistant/docs/dev-plan/_staging/`
+
+---
+
 ## 自動同步規範（必須遵守）
 
 本專案透過 **GitHub** 同步，不使用 OneDrive。多台機器同時在線，必須頻繁同步。
