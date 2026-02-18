@@ -18,4 +18,5 @@ infra-closed-loop|完成|閉環原則兩層：做對了 + 有效|@op:20260219-JD
 infra-record-layer|完成|v1.1 三層檢索架構，兩輪壓力測試通過|@op:20260219-JDNE#1800|2026-02-19
 plan-migration|完成|operation-log.md → records/ 遷移完成（含 17 筆歷史轉錄）|@op:20260219-JDNE#1830|2026-02-19
 infra-staging-index|完成|暫存索引 + snapshot [?] 標記 + 啟動流程 Layer 0.5|@op:20260219-JDNE#2000|2026-02-19
+doc-methodology-self-qa|完成|自問自答法：適用設計類問題，迭代收斂後提交審閱|@op:20260219-JDNE#2030|2026-02-19
 plan-backlog|進行中|待辦清單（8 項未完成）|@op:20260219-JDNE#1801|2026-02-19
