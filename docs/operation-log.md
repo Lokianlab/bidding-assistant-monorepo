@@ -288,12 +288,52 @@ pcc-monitor/
 
 ---
 
+## 2026-02-18 Session 3（從 OneDrive 機器接續，新工作目錄 C:\dev\cc程式）
+
+### 十一、專案遷移到 C:\dev + 環境驗證
+
+1. 確認 `C:\dev\cc程式` git 狀態正常（main 分支、無損壞）
+2. npm registry 從 npmmirror 改回官方 `registry.npmjs.org`
+3. `npm install` → 成功（924 packages）
+4. 測試 26 files / 560 tests 全過，build 0 errors
+
+### 十二、建立 4 個 Slash Command
+
+| 指令 | 功能 |
+|------|------|
+| `/暫存` | 討論結論整理成暫存檔到 `_staging/` |
+| `/修改計畫` | 暫存區寫入正式開發計畫（逐筆確認） |
+| `/安裝` | 全新機器設定開發環境 |
+| `/更新` | 舊機器同步到最新 |
+
+- `.gitignore` 加入 `!.claude/commands/` 例外，讓指令跨機器同步
+
+### 十三、本機記憶檔案搬進 repo
+
+- 9 份討論結論整理成暫存檔放入 `_staging/`（系統定位、AI連接、Agent架構、行政流程、開發進程、PCC API、Discord Bot、Notion MCP、企劃端診斷）
+- `debugging.md` 和 `dev-environment.md` 搬到 `docs/`
+- `MEMORY.md` 關鍵內容整合進 `CLAUDE.md`（專案背景段落）
+
+### 十四、多機器同步規則制定
+
+- 結論同步規則：預設用 `/暫存`（獨立檔案不衝突），`CLAUDE.md` 大事才動
+- 長討論中途有結論要主動推上 GitHub
+- 完整多機器協作規則：分工、衝突預防、衝突處理、決策原則
+- Claude Code 自動處理：git 衝突、測試、狀態檢查
+- 用戶負責：分配哪台機器做什麼、重大決策只在一台討論
+
+---
+
 ## 待處理 / 下一步
 
 - [ ] 用戶設定 Google Apps Script 監控（PCC API 封鎖 GitHub Actions IP）
 - [ ] 春節後分析 API 實際延遲
 - [x] ~~註冊 GitHub~~ → 完成（帳號 Lokianlab）
+- [x] ~~專案遷移到 C:\dev\cc程式~~ → 完成
+- [x] ~~建立 slash commands~~ → 完成（4 個）
+- [x] ~~本機記憶搬進 repo~~ → 完成
+- [x] ~~多機器同步規則~~ → 完成
 - [ ] 其他機器 clone repo + 環境設定
 - [ ] 建 PCC MCP server（待 Layer 0 階段）
 - [ ] 建 Notion MCP server（待 Layer 0 階段）
-- [ ] 更新 v4.0 開發計畫文件（反映本 session 的架構決策）
+- [ ] 更新 v4.0 開發計畫文件（用 `/修改計畫` 整合 `_staging/` 暫存檔）

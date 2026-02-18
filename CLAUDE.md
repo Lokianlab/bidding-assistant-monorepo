@@ -17,6 +17,53 @@ cc程式/                      ← 專案根目錄（每台機器各自 clone，
 
 ---
 
+## 專案背景（所有機器必須知道）
+
+### 技術棧
+- Node.js v22 + npm 10 + Git 2.53 + GitHub CLI
+- Next.js 16.1.6 + React 19 + TypeScript 5 + Tailwind CSS 4 + Turbopack
+- UI: shadcn/radix-ui (new-york style)，圖表: recharts
+- 資料: Notion API，設定: localStorage
+- 測試: Vitest 4 + Testing Library（26 files, 560 tests）
+- Dev port: 3003
+
+### 系統定位
+- **提案寫作駕駛艙**（不是儀表板/看板/RAG 聊天機器人）
+- Discord Bot = 主要操作介面（駕駛座），Web app = 管理後台
+
+### 架構重點
+- Feature Registry Pattern：所有功能在 `FEATURE_REGISTRY` 註冊
+- SSOT：常數在 `src/lib/constants/`，設定在 `src/lib/settings/`
+- 資料/UI 分離：`src/lib/`（邏輯）vs `src/components/`（渲染）
+- bidding-assistant/CLAUDE.md 有完整開發規範
+
+### Agent 架構（雙層策略）
+- **施工層**：Claude Code Agent Team（開發時用）
+- **產品層**：Claude Code SDK + Discord Bot（5 個 AI Agent：戰略官/企劃官/品管官/知識官/簡報官）
+- 全部走現有訂閱，額外成本 = $0
+
+### MCP Server
+- SmugMug MCP：已建好（`smugmug-mcp/`）
+- Notion MCP：待建（本地版，讓三家 AI 都能用）
+- PCC 標案 API MCP：待建（g0v 免費 API，有評委名單、投標金額等）
+- PCC MCP 建議併入 Layer 0 同步建設
+
+### 開發路線
+- Layer 0：知識庫（00A-00E）+ PCC MCP
+- Layer 1：P0 Bot 基礎 → P1 戰略+知識庫 → P2 寫作+品管
+- Layer 2：統一 AI 調度 + 排版輸出
+- Layer 3：視覺生成整合
+
+### 已知注意事項
+- Windows 上 Claude Code 用 bash 語法（Unix 風格）
+- 避免 `> nul`（Windows 會建立實體 `nul` 檔案），用 `> /dev/null`
+- npm registry 用官方 `https://registry.npmjs.org/`（不要用 npmmirror）
+- 詳細開發環境見 `docs/dev-environment.md`
+- 除錯經驗見 `docs/debugging.md`
+- 討論結論暫存在 `bidding-assistant/docs/dev-plan/_staging/`
+
+---
+
 ## 自動同步規範（必須遵守）
 
 本專案透過 **GitHub** 同步，不使用 OneDrive。多台機器同時在線，必須頻繁同步。
@@ -35,17 +82,31 @@ cc程式/                      ← 專案根目錄（每台機器各自 clone，
   - 建完 Notion 資料庫並更新記錄 → 推
 - **commit message 用中文**，簡述做了什麼
 
+### 結論同步規則（必須遵守）
+
+**每次 git push 時**，順便檢查有沒有漏推的結論。
+
+**長時間討論中**，如果已經產生重要決策但還沒改檔案，主動暫停討論，先把結論推上去：
+1. **預設用 `/暫存`**（每份暫存檔是獨立檔案，多台機器同時推也不衝突）
+2. 操作記錄追加到 `docs/operation-log.md`（衝突時保留兩邊）
+3. `git add` → `git commit` → `git push`
+4. 然後再繼續討論
+
+**不要隨意更新 `CLAUDE.md`** — 只有改規範或架構等級的大事（例如：技術棧變更、新的開發規則）才動。日常討論結論一律用 `/暫存`。
+
+**不能只寫進本機 MEMORY.md。** 其他機器看不到 MEMORY.md。
+
 ### 同步指令
 
 ```bash
-# 拉
+# 每次推之前都先拉（避免三台機器越走越遠）
 git pull origin main
-
-# 推（每次改完檔案都執行）
 git add <修改的檔案>
 git commit -m "簡述做了什麼"
 git push origin main
 ```
+
+**重點：不是只有開工拉一次。每次推之前都要先拉，確保拿到其他機器的最新改動。**
 
 ### 如果 pull 有衝突
 
@@ -98,8 +159,24 @@ git push origin main
   - 例：`laptop/pcc-mcp-setup`、`desktop/notion-integration`
 - 完成後 merge 回 main
 
-### 衝突預防
+### 多機器協作規則（最高 3 台同時在線）
 
-- **不同子專案盡量分開作業**：A 機器改 bidding-assistant，B 機器改 pcc-api-mcp
-- **共用檔案**（如 `CLAUDE.md`、`docs/operation-log.md`）：改之前先 `git pull`
-- **操作日誌衝突**：如果 merge 衝突，保留兩邊的記錄（不要刪除對方的 log）
+#### 分工原則
+- **不同機器改不同檔案**：A 改 bidding-assistant/src/，B 改 pcc-api-mcp/，C 改 docs/
+- **同一個檔案不要兩台機器同時改** — 如果需要，先在一台完成並推上去，另一台再 pull 後接手
+- **安裝套件（npm install）只在一台機器上做**，其他機器 pull 後跑 `npm install` 同步
+
+#### 衝突預防
+- **改任何共用檔案前先 `git pull`**
+- **推之前先跑測試**（`npm test`），不要推壞掉的程式碼
+- **開工時先檢查有沒有未推的改動**（`git status`），有的話先處理
+
+#### 衝突處理
+- **程式碼衝突**：讀懂兩邊改動，合併成正確版本
+- **操作日誌衝突**：永遠保留兩邊記錄，不刪除對方的 log
+- **package-lock.json 衝突**：刪掉 `package-lock.json`，重新 `npm install`
+- **暫存檔矛盾**（兩台機器做出相反結論）：兩份都保留，跑 `/修改計畫` 時會列出讓用戶裁決
+
+#### 重大決策只在一台機器上做
+- 技術選型、架構變更、新規範 → 在一台機器上討論定案後推上去
+- 其他機器 pull 後執行，不要平行討論同一個決策
