@@ -345,6 +345,20 @@ pcc-monitor/
 - 第一輪修改只改了 `docs/dev-environment.md` 的 Gamma，漏了 `bidding-assistant/docs/claude-memory/dev-environment.md` 的同一行
 - 用戶提問「是否閉環」後自查發現，第二輪補修
 
+### 十六、閉環原則精神補強
+
+**背景**：用戶指出閉環不只是步驟清單，核心是「自證有效」——不是做完了，是確定做對了。
+
+#### 操作
+
+| # | 操作 | 結果 |
+|---|------|------|
+| 1 | `bidding-assistant/CLAUDE.md` §6：標題從「閉環開發流程」改為「閉環原則」，補入精神說明 + 驗證手段匹配表 | 涵蓋程式碼與非程式碼修改 |
+| 2 | `docs/debugging.md` §3：同步更新標題和內容，加入非程式碼閉環說明 | 與 CLAUDE.md 一致 |
+| 3 | `bidding-assistant/docs/dev-plan/02-核心架構.md`：同步更新摘要 | 與 CLAUDE.md 一致 |
+| 4 | `changelog.ts`：保留舊名稱（歷史記錄不改） | 正確 |
+| 5 | grep「閉環開發流程」驗證 | 僅剩 changelog 歷史記錄 ✅ |
+
 ---
 
 ## 待處理 / 下一步
