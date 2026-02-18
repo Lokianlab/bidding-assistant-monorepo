@@ -27,3 +27,4 @@ infra-collision-handling|完成|碰撞是常態，系統靠容錯：per-file 處
 doc-methodology-review|完成|砍掉回應前分流（重複），確立機器對等關係 + 規模不限|@op:20260219-A44T#0643|2026-02-19
 infra-trigger-rules|完成|觸發規則綁 push 事件（砍時間驅動），Stop hook 擴大到所有 tracked 改動|@op:20260219-A44T#0718|2026-02-19
 infra-hooks|完成|PreCompact（自動 commit+push）+ Stop（擋住未提交改動），解決 AI 自律不可靠|@op:20260219-JDNE#2300|2026-02-19
+infra-startup-flows|完成|重啟/壓縮/更新三套流程：重啟=完整驗證，壓縮=輕量恢復，更新=手動同步無npm|@op:20260219-ITEJ#2330|2026-02-19
