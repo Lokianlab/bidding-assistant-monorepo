@@ -328,6 +328,9 @@ OP 記錄               ← 完整操作過程（grep + Read）
 - 改共用檔案前先 `git pull`
 - 推之前先跑測試（`npm test`）
 - 建新 topic 前先 pull + 掃 `_index.md` 沿用已有 ID
+- 開工時先 `git status`，有未推的改動先處理
+- 不同機器盡量改不同檔案（A 改 src/，B 改 docs/ 等）
+- 安裝套件（`npm install`）盡量在一台做完推上去，其他台 pull 後再裝
 
 ---
 
