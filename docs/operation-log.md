@@ -1,0 +1,230 @@
+# 操作日誌
+
+> 所有對話決策和操作的完整記錄，按時間順序。
+> **所有機器上的 Claude Code session 都必須維護本檔。**
+
+---
+
+## 2026-02-18 Session 1（延續前一 session）
+
+### 一、g0v PCC API 實測
+
+**背景**：前一 session 研究了 PCC API 端點，用戶要求實際測試 API 能做到什麼。
+
+#### 操作紀錄
+
+| 時間 | 操作 | 結果 |
+|------|------|------|
+| 1 | 呼叫 `/api` 列出所有端點 | 10 個端點，確認可用 |
+| 2 | 呼叫 `/api/getinfo` | 1,422 萬筆，1999~2026/02/13 |
+| 3 | `searchbycompanyname?query=大員洛川` | 139 筆，含所有投標廠商 + 得標/未得標 |
+| 4 | `searchbytitle?query=食農教育` | 847 筆 |
+| 5 | `listbyunit?unit_id=3.82.58`（三峽區公所） | 3,879 筆 |
+| 6 | `tender` 詳情（五股幼兒園案） | 有預算/底價/決標金額/每家投標金額/未得標原因 |
+| 7 | `tender` 詳情（食農教育傑出貢獻獎） | 有預算 630 萬，**無評委** |
+| 8 | `tender` 詳情（新北閱讀節 NTCLS114-002） | **有完整評委名單！** 5 位，含姓名/身份/經歷/出席 |
+| 9 | `tender` 詳情（新北閱讀節 NTCLS115-004） | 招標中（未決標），無評委 |
+| 10 | 大員洛川 page 2（139 筆全部） | 得標極少，大多未得標 |
+| 11 | `searchbycompanyname?query=樂晨創意` | 4 筆，確認競爭對手分析可行 |
+
+#### 關鍵發現
+
+1. **評委資料在 API 裡** — 但僅限「公開評選/最有利標」的決標公告
+2. **每家投標廠商的金額都有** — 可做價格競爭力分析
+3. **未得標原因有記錄** — 可分析失敗模式
+4. **評委交叉比對技術上可行** — 需逐筆爬 tender detail，受 rate limit 限制
+
+#### 決策
+
+- [x] 確認 PCC API 能力遠超預期
+- [x] 評委交叉比對可做（之前以為不行）
+
+---
+
+### 二、影響分析 & 開發計畫調整建議
+
+**操作**：分析 PCC API 對收入公式和開發計畫的衝擊
+
+#### 決策
+
+- [x] **建議 PCC MCP 併入 Layer 0**（原在 Phase 3 Batch H）
+  - 理由：成本低（1-2 天）、價值高（推動投標決策通過率 + 得標率）、戰略官基礎
+- [x] **Batch H 可提前且簡化** — API 直接可用，不需爬蟲
+- [x] 戰略官能力從「看後照鏡」升級為「GPS 導航」
+
+---
+
+### 三、API 能否取代人工貼表
+
+**用戶問題**：g0v API 能否完整取代行政的貼表工作？
+
+#### 決策
+
+- [x] **步驟 1234（刷標案→初篩→貼基本資料→貼招標方式）可 100% 取代**
+- [x] 步驟 2 初篩保留人工一鍵確認（看 Discord 通知按確認/跳過）
+- [x] 用戶澄清：「貼表工作只有 1234」→ 確認完全可以取代
+
+---
+
+### 四、建立 Notion 測試資料庫
+
+**用戶要求**：在 Notion 建一個「測試用備標評估資料庫」，欄位比照原庫。
+
+#### 操作
+
+1. 讀取 `field-mapping.ts` 確認 22 個欄位名稱
+2. 讀取 `bid-status.ts` 確認 13 個進程選項 + 7 個決策選項
+3. 用 Explore agent 分析每個欄位的 Notion 類型（title/select/number/date/checkbox/...）
+4. 呼叫 `mcp__claude_ai_Notion__notion-create-database` 建庫
+5. 第一次失敗：unique_id prefix "BID" 已被原庫佔用 → 改用 "TEST"
+6. 第二次成功
+
+#### 建好的欄位
+
+| 欄位 | 類型 | 選項數 |
+|------|------|--------|
+| 標案名稱 | title | — |
+| 標案進程 | select | 13（等標期間～得標） |
+| 備標決策 | select | 7（第一順位～尚未安排） |
+| 截標時間 | date | — |
+| 預算金額 | number | 千分位 |
+| 備標進度 | select | 8（L1～L8） |
+| 企劃人員 | people | — |
+| 投遞序位 | rich_text | — |
+| 評審方式 | select | 5 |
+| 招標機關 | rich_text | — |
+| 案號 | rich_text | — |
+| 標案類型 | multi_select | 5 |
+| 決標公告 | url | — |
+| 評選日期 | date | — |
+| 歸檔號 | rich_text | — |
+| 押標金 | number | 千分位 |
+| 領標費 | number | 千分位 |
+| 檔案型態 | select | 3 |
+| 電子投標 | checkbox | — |
+| 確定協作 | checkbox | — |
+| 案件唯一碼 | unique_id | 前綴 TEST |
+| 備標期限 | date | — |
+
+#### 注意
+
+- 原庫「標案進程」是 Notion `status` 類型（有分組），測試庫用 `select` 代替（API 無法建 status 自訂分組）
+- data_source_id: `2181121c-79ef-4581-8b4e-9bb7fbb3984e`
+
+---
+
+### 五、API 更新頻率調查
+
+**用戶問題**：API 是即時更新還是固定時間？
+
+#### 操作
+
+逐日查 `listbydate` 記錄數：
+
+| 日期 | 筆數 | 備註 |
+|------|------|------|
+| 1/30（五） | 101 | |
+| 2/01（日） | 0 | 週末 |
+| 2/02（一） | 101 | |
+| 2/03（二） | 100 | |
+| 2/04（三） | 1 | |
+| 2/05（四） | 220 | |
+| 2/06（五） | 100 | |
+| 2/07（六） | 0 | 週末 |
+| 2/13（五） | 100 | API 最新 |
+| 2/14-2/18 | 0 | 春節連假 |
+
+#### 決策
+
+- [x] 確認**不是即時同步**，是批次抓取
+- [x] 用戶指出我無法從資料推斷延遲時間 → **承認錯誤**
+- [x] 決定建立自動監控來實測
+
+---
+
+### 六、建立 PCC API 監控系統
+
+#### 操作
+
+1. 建立 `pcc-monitor/` 目錄
+2. 建立 `monitor.mjs` — Node.js 監控腳本（支持持續/單次/自訂間隔）
+3. 建立 `analyze.mjs` — 延遲分析報告腳本
+4. 建立 `start-monitor.bat` — Windows 雙擊啟動
+5. 執行一次建立基準：最新 2/13，14,223,872 筆
+6. 建立 GitHub Actions workflow `pcc-monitor.yml`
+7. 用戶沒有 GitHub 帳號 → 改用 Google Apps Script
+8. 建立 `google-apps-script.js` — 完整 GAS 版本
+   - 每 4 小時自動檢查
+   - 結果寫入 Google Sheet「PCC API Monitor」
+   - 偵測到更新時自動寄 email 通知
+   - 含 `analyzeDelays()` 分析函式
+
+#### 產出檔案
+
+```
+pcc-monitor/
+  monitor.mjs              ← Node.js 版（本地用）
+  analyze.mjs              ← 分析報告
+  start-monitor.bat        ← Windows 啟動捷徑
+  google-apps-script.js    ← Google Apps Script 版（雲端用）
+  state.json               ← 基準狀態
+  update-log.jsonl         ← 檢查記錄
+  README.md                ← 使用說明
+  .github/workflows/pcc-monitor.yml  ← GitHub Actions（備用）
+```
+
+#### 用戶待辦
+
+- [ ] 到 https://script.google.com 建專案，貼上 GAS 程式碼
+- [ ] 設定觸發條件：每 4 小時
+- [ ] 春節後觀察 Google Sheet 記錄
+
+---
+
+### 七、記憶檔案更新
+
+本 session 建立/更新的記憶檔案：
+
+| 檔案 | 操作 | 內容 |
+|------|------|------|
+| `pcc-api-test-results.md` | 新建 | API 實測完整結果（端點、欄位、評委資料、能力矩陣） |
+| `pcc-api-impact-analysis.md` | 新建 | 對開發計畫的影響分析 |
+| `notion-mcp-spec.md` | 前 session 建 | Notion MCP 15 個工具規格 |
+| `MEMORY.md` | 更新 | PCC MCP 段落加入實測結論 + 併入 Layer 0 建議 |
+| `operation-log.md` | 新建 | 本檔（完整操作日誌） |
+
+---
+
+## 2026-02-18 Session 2（上下文壓縮後延續）
+
+**背景**：前一段對話因上下文限制被壓縮，本段為延續。
+
+### 八、操作日誌制度確認 & 跨機器共享
+
+**用戶指示**：
+1. 重申「所有對話決策和操作（包括你的操作）都要留下記錄」
+2. **其他機器在這個專案裡的操作也一樣要記錄**
+
+#### 操作
+
+1. 確認原 `operation-log.md` 在 `.claude/projects/` 記憶目錄（機器專屬，不跨機器同步）
+2. 在專案根目錄建立 `CLAUDE.md`，寫入操作日誌規範 → 所有機器的 Claude Code 都會讀到
+3. 建立 `docs/operation-log.md`（本檔）— 放在 OneDrive 同步區，跨機器共享
+4. 把原日誌內容遷移到此處
+
+#### 決策
+
+- [x] 操作日誌從機器專屬記憶目錄 → 搬到 `docs/operation-log.md`（OneDrive 同步）
+- [x] 在根 `CLAUDE.md` 寫入強制規範，確保所有機器都遵守
+- [x] 記憶目錄的舊檔改為指向此處的參考
+
+---
+
+## 待處理 / 下一步
+
+- [ ] 用戶設定 Google Apps Script 監控
+- [ ] 春節後分析 API 實際延遲
+- [ ] 註冊 GitHub（用戶尚未註冊）
+- [ ] 建 PCC MCP server（待 Layer 0 階段）
+- [ ] 建 Notion MCP server（待 Layer 0 階段）
+- [ ] 更新 v4.0 開發計畫文件（反映本 session 的架構決策）
