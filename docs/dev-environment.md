@@ -32,7 +32,8 @@ C:\dev\cc程式\                              ← 根目錄（git monorepo）
 ├── .claude/commands/                       ← slash commands（上 GitHub）
 ├── .mcp.json                               ← MCP Server 配置（不入 git）
 ├── docs/                                   ← 跨子專案共用文件
-│   ├── operation-log.md                    ← 操作日誌
+│   ├── records/                            ← 記錄層（AI 自動維護）
+│   ├── operation-log.md                    ← 操作日誌（已停用，歷史保留）
 │   ├── 機器設定指南.md                     ← 新機器設定步驟
 │   ├── debugging.md                        ← 開發除錯經驗
 │   └── dev-environment.md                  ← 本文件

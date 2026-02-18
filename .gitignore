@@ -40,6 +40,7 @@ pcc-api-mcp/dist/
 # === Claude Code 本地設定（機器專屬） ===
 .claude/
 !.claude/commands/
+.machine-id
 
 # === 暫存/工具腳本（不進 repo） ===
 _ul
