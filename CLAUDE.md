@@ -135,7 +135,7 @@ git push origin main
 
 ### 規則
 
-1. **每段新對話開始時**，`git pull` 後讀取 `docs/operation-log.md`，確認最新狀態
+1. **每段新對話開始時**，`git pull` 後讀取 `docs/operation-log.md`，確認最新狀態，並處理「待處理 / 下一步」中的待驗證項目
 2. **每個重要操作完成後**，立即更新日誌
 3. **記錄範圍**：
    - 用戶的決策和指示
