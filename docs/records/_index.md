@@ -6,7 +6,6 @@
 feat-pcc-api|完成|g0v API 能力遠超預期，評委/投標金額/未得標原因都有|@op:20260218-JDNE#1200|2026-02-18
 plan-pcc-impact|完成|PCC MCP 併入 Layer 0，步驟 1234 可 100% 自動化|@op:20260218-JDNE#1030|2026-02-18
 feat-notion-test-db|完成|測試資料庫已建（22 欄位，prefix TEST）|@op:20260218-JDNE#1100|2026-02-18
-feat-pcc-monitor|完成|GAS 版上線（GitHub Actions IP 被封鎖）|@op:20260218-JDNE#1800|2026-02-18
 infra-memory|完成|記憶檔案搬進 repo，9 份暫存檔|@op:20260218-JDNE#2000|2026-02-18
 infra-operation-log|已被取代|改為記錄層 docs/records/|@op:20260219-JDNE#1800|2026-02-19
 infra-git-monorepo|完成|Monorepo + GitHub private repo|@op:20260218-JDNE#1630|2026-02-18
