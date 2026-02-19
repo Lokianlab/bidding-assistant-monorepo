@@ -19,7 +19,7 @@ plan-migration|完成|operation-log.md → records/ 遷移完成（含 17 筆歷
 infra-staging-index|完成|暫存索引 + snapshot [?] 標記 + 啟動流程 Layer 0.5|@op:20260219-JDNE#2000|2026-02-19
 method-self-qa|已被取代|自問自答法→模型委員會（結構性缺陷：同一實體共享盲區，遵守率0%）|@op:20260220-JDNE#0011|2026-02-20
 method-model-committee|進行中|模型委員會：委員=用戶代理人，12輪模擬驗證，正式文件+索引+self-qa標記完成，暫存檔待推|@op:20260221-JDNE#0135|2026-02-21
-plan-backlog|完成|待辦盤點完成（A44T），/待辦指令已建（ITEJ）|@op:20260219-A44T#0810|2026-02-19
+plan-backlog|待驗收|待辦盤點（A44T）+ /待辦指令（ITEJ）已建，待用戶驗收|@op:20260219-A44T#0810|2026-02-19
 infra-memory-rules|完成|MEMORY.md 分流表：只收首次觀察/本機偏好/本機環境，其餘直接寫共享位置|@op:20260219-ITEJ#0829|2026-02-19
 feat-pcc-monitor|完成|PCC API 更新延遲監控（GAS 每小時上線，GitHub Actions IP 被封鎖）|@op:20260218-JDNE#1300|2026-02-18
 cleanup-gas-monitor|完成|刪除 GitHub Actions 監控，GAS 每小時上線|@op:20260219-ITEJ#2100|2026-02-19
