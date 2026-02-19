@@ -18,10 +18,10 @@ infra-closed-loop|完成|閉環原則兩層：做對了 + 有效|@op:20260219-JD
 infra-record-layer|完成|v1.1 三層檢索架構，兩輪壓力測試通過|@op:20260219-JDNE#1800|2026-02-19
 plan-migration|完成|operation-log.md → records/ 遷移完成（含 17 筆歷史轉錄）|@op:20260219-JDNE#1830|2026-02-19
 infra-staging-index|完成|暫存索引 + snapshot [?] 標記 + 啟動流程 Layer 0.5|@op:20260219-JDNE#2000|2026-02-19
-doc-methodology-self-qa|完成|自問自答法：適用設計類問題，迭代收斂後提交審閱|@op:20260219-JDNE#2030|2026-02-19
+method-self-qa|完成|自問自答法：適用設計類問題，迭代收斂後提交審閱（文件化+實踐經驗）|@op:20260219-JDNE#2030,@op:20260219-ITEJ#2130|2026-02-19
 plan-backlog|進行中|待辦清單（8 項未完成）|@op:20260219-JDNE#1801|2026-02-19
-infra-memory-rules|完成|MEMORY.md 定位為踩坑筆記，不跟 git 同步，觸發條件明確|@op:20260219-ITEJ#2130|2026-02-19
-method-self-qa|完成|自問自答法：收斂導向、從簡開始、模糊判斷=壞規則|@op:20260219-ITEJ#2130|2026-02-19
+infra-memory-rules|完成|MEMORY.md 分流表：只收首次觀察/本機偏好/本機環境，其餘直接寫共享位置|@op:20260219-ITEJ#0829|2026-02-19
+feat-pcc-monitor|完成|PCC API 更新延遲監控（GAS 每小時上線，GitHub Actions IP 被封鎖）|@op:20260218-JDNE#1300|2026-02-18
 cleanup-gas-monitor|完成|刪除 GitHub Actions 監控，GAS 每小時上線|@op:20260219-ITEJ#2100|2026-02-19
 infra-collision-handling|完成|碰撞是常態，系統靠容錯：per-file 處理策略 + /更新偵測|@op:20260219-ITEJ#2200|2026-02-19
 doc-methodology-review|完成|砍掉回應前分流（重複），確立機器對等關係 + 規模不限|@op:20260219-A44T#0643|2026-02-19
