@@ -43,6 +43,7 @@ pcc-api-mcp/dist/
 !.claude/hooks/
 !.claude/settings.json
 .machine-id
+.last-sync-time
 
 # === 暫存/工具腳本（不進 repo） ===
 _ul

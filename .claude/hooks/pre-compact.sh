@@ -25,5 +25,6 @@ git add docs/records/ bidding-assistant/docs/dev-plan/_staging/ 2>/dev/null
 git commit -m "pre-compact: 自動保存記錄層（壓縮前）" 2>/dev/null || true
 git pull origin main 2>/dev/null || true
 git push origin main 2>/dev/null || true
+date +%s > "$CLAUDE_PROJECT_DIR/.last-sync-time"
 
 exit 0

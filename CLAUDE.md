@@ -99,17 +99,7 @@ cc程式/                      ← 專案根目錄（每台機器各自 clone，
 
 **不能只寫進本機 MEMORY.md。** 其他機器看不到 MEMORY.md。
 
-### 定時同步（每 30 分鐘）
-
-長時間對話中，**每 30 分鐘必須執行一次 git pull + push**，即使沒有新的改動也要 pull 確認。
-
-- 對話開始或 context compact 後啟動計時（第一次 pull 即為起點）
-- 每次完成 pull 或 push 時重置計時
-- 如果距離上次拉推已超過 30 分鐘，立即執行：
-  1. `git pull origin main`
-  2. 有未推的改動 → `git add` + `git commit` + `git push`
-  3. 沒有改動 → pull 完即可，重置計時
-- 這條規則與「每完成一個操作就推一次」並行，取較早觸發的那個
+長時間未同步時，stop hook 會自動提醒。
 
 ### 同步指令
 

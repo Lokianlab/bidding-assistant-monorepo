@@ -19,6 +19,16 @@ UNTRACKED=$(git ls-files --others --exclude-standard 2>/dev/null)
 ALL="$STAGED$UNSTAGED$UNTRACKED"
 
 if [ -z "$ALL" ]; then
+  # 30 分鐘同步提醒（軟性，不阻斷）
+  SYNC_FILE="$CLAUDE_PROJECT_DIR/.last-sync-time"
+  if [ -f "$SYNC_FILE" ]; then
+      LAST_SYNC=$(cat "$SYNC_FILE")
+      NOW=$(date +%s)
+      ELAPSED=$(( NOW - LAST_SYNC ))
+      if [ "$ELAPSED" -gt 1800 ]; then
+          echo "距離上次同步已超過 30 分鐘，考慮是否有需要 /暫存 的結論" >&2
+      fi
+  fi
   exit 0
 fi
 
