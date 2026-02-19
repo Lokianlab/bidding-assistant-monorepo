@@ -15,3 +15,4 @@ SNAPSHOT|20260220-0011|JDNE
 [?] plan-conclusion-layer|結論層設計|/暫存 的改版，尚未開始設計
 [?] infra-claude-md-modular|CLAUDE.md 模組化|討論過但因自以為是風險暫緩
 [ ] method-model-committee|模型委員會方法論|暫存+正式文件已建，待完成 self-qa.md 標記+_index.md 更新
+[?] method-observation-capture|AI觀察捕捉框架|「捕捉能改善未來工作的觀察」有價值+有能力，缺輕量框架。最後問題未答
