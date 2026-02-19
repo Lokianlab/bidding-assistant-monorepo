@@ -14,5 +14,5 @@ SNAPSHOT|20260221-0130|JDNE
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決，Layer 3 討論中斷
 [v] plan-conclusion-layer|結論層設計|ITEJ 已實作（infra-staging-upgrade），待用戶驗收
 [?] infra-claude-md-modular|CLAUDE.md 模組化|討論過但因自以為是風險暫緩
-[ ] method-model-committee|模型委員會方法論|self-qa.md 標記已加，暫存檔待推進開發計畫
+[v] method-model-committee|模型委員會方法論|正式文件+索引+舊檔標記全部完成，待用戶驗收
 [?] method-observation-capture|AI觀察捕捉框架|「捕捉能改善未來工作的觀察」有價值+有能力，缺輕量框架。最後問題未答
