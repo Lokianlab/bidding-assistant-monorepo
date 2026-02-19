@@ -59,3 +59,7 @@
 - 改了一處文件，沒 grep 全 codebase 找其他副本（第一層斷裂）
 - 測試全過就交付，沒確認功能實際行為符合預期（第二層缺失）
 - 改了一處文件，沒 grep 全 codebase 找其他副本（閉環斷裂）
+
+## 4. Claude Desktop App 大檔問題
+
+Session 檔案超過 10MB 時，Claude Desktop App 會出現 "Failed to load session" 錯誤，無法載入對話。這是 Desktop App 的已知限制，與 Claude Code CLI 無關。

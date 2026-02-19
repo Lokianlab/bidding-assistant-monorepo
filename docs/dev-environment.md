@@ -122,6 +122,10 @@ cd smugmug-mcp && npm install && npm run build
 
 ⚠️ `.mcp.json` 中的 SmugMug 路徑是絕對路徑，換機器必須修改。
 
+### Agent Team（Windows）
+
+Windows 上 Claude Code Agent Team 使用 in-process 模式。在終端中用 Shift+Up / Shift+Down 切換 agent。
+
 ---
 
 ## 6. 需要手動帶的機密檔案
