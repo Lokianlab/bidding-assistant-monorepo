@@ -28,3 +28,5 @@ infra-trigger-rules|完成|觸發規則綁 push 事件（砍時間驅動），St
 infra-hooks|完成|PreCompact（自動 commit+push）+ Stop（擋住未提交改動），解決 AI 自律不可靠|@op:20260219-JDNE#2300|2026-02-19
 infra-startup-flows|完成|重啟/壓縮/更新三套流程：重啟=完整驗證，壓縮=輕量恢復，更新=手動同步無npm|@op:20260219-ITEJ#2330|2026-02-19
 feat-summary-cmd|完成|/小結指令：人讀報告，機器碼+base36編碼，修訂模式，前後/更新|@op:20260219-JDNE#1512|2026-02-19
+infra-snapshot-rules|完成|快照時間完備原則：4標記+讀舊逐項加新流程+退出條件綁/小結|@op:20260219-JDNE#1237|2026-02-19
+plan-discord-bot|已放棄|Discord Bot 架構放棄，改為 SaaS 網頁|@op:20260219-JDNE#1237|2026-02-19
