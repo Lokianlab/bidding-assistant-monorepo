@@ -28,3 +28,5 @@ T01-舊OneDrive記憶檔清查.md|plan|無（清查報告）|待推|舊記憶檔
 知識庫精靈現況與下一步.md|plan|06-開發進程.md|待決|T1 prompt v2.0 已就緒，缺執行環境。近期可做 Skill 版，中期待儲存方案定案
 修改計畫指令定位落差.md|issue|.claude/commands/修改計畫.md|已關閉|指令已重寫為任務線推進器（按目標分組+評估+合成）
 模型委員會方法論.md|rule|docs/methodology/model-committee.md|待推|取代自問自答法：委員會=用戶代理人，12 輪模擬驗證+蘇格拉底式設計推導
+方法論完備性盤點.md|issue|docs/methodology/（多份檔案）|待決|26 個 AI 工作情境只有 7 個有方法覆蓋，空白 19 個
+工具檢查歸屬重啟流程.md|rule|CLAUDE.md（重啟流程）|待推|工具檢查只在重啟時做，不放 /更新（已寫入 CLAUDE.md + /安裝）
