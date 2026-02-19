@@ -44,7 +44,6 @@ pcc-api-mcp/dist/
 !.claude/settings.json
 .machine-id
 .last-sync-time
-.pre-compact-snapshot-flag
 
 # === 暫存/工具腳本（不進 repo） ===
 _ul
