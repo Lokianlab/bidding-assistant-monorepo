@@ -1,4 +1,4 @@
-SNAPSHOT|20260219-1237|JDNE
+SNAPSHOT|20260220-0011|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -14,3 +14,4 @@ SNAPSHOT|20260219-1237|JDNE
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決，Layer 3 討論中斷
 [?] plan-conclusion-layer|結論層設計|/暫存 的改版，尚未開始設計
 [?] infra-claude-md-modular|CLAUDE.md 模組化|討論過但因自以為是風險暫緩
+[ ] method-model-committee|模型委員會方法論|暫存+正式文件已建，待完成 self-qa.md 標記+_index.md 更新
