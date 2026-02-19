@@ -25,3 +25,4 @@ pcc-api-integration.md|plan|A01-PCC-API-參考.md|待推|PCC API 整合策略（
 saas-architecture-discussion.md|plan|03-技術選型.md|待決|知識庫儲存方案未定（Notion vs Supabase），Layer 3 討論中斷
 T01-舊OneDrive記憶檔清查.md|plan|無（清查報告）|待推|舊記憶檔清查結果，供參考
 待辦清單缺乏SSOT.md|issue|（已解決）|已關閉|待辦查詢不確定性：已由 /待辦 指令解決（固定 5 個掃描來源）
+知識庫精靈現況與下一步.md|plan|06-開發進程.md|待決|T1 prompt v2.0 已就緒，缺執行環境。近期可做 Skill 版，中期待儲存方案定案
