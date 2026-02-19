@@ -8,7 +8,7 @@ SNAPSHOT|20260221-0130|JDNE
 [x] infra-snapshot-rules|快照時間完備原則|本次 session
 [~] plan-discord-bot|Discord Bot 架構|放棄：改為 SaaS 網頁，見 plan-saas-pivot
 [ ] plan-update-devplan|更新 v4.0 開發計畫|用 /修改計畫 整合 19 份 _staging/ 暫存檔
-[x] plan-build-pcc-mcp|建 PCC MCP server|程式碼+安裝+建置完成，已配進 .mcp.json
+[ ] plan-build-pcc-mcp|建 PCC MCP server|程式碼+安裝+建置完成，待用戶驗收
 [ ] plan-build-notion-mcp|建 Notion MCP server|待 Layer 0 階段
 [?] plan-saas-pivot|SaaS 產品方向|改為自適應網頁 SaaS。知識庫精靈已有 prompt（v2.0），需聊天介面+認證+多租戶
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決，Layer 3 討論中斷
