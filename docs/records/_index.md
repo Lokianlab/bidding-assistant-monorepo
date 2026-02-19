@@ -34,3 +34,4 @@ plan-discord-bot|已放棄|Discord Bot 架構放棄，改為 SaaS 網頁|@op:202
 infra-staging-upgrade|完成|/暫存改版（記錄層驅動+plan/rule/issue三類）+stop hook同步提醒+issue首例驗證|@op:20260219-ITEJ#1324|2026-02-19
 feat-backlog-cmd|完成|/待辦指令：5個固定來源+去重+分類，解決查詢不確定性|@op:20260219-ITEJ#2231|2026-02-19
 feat-kb-skill|完成|/kb 指令：薄調度層+引用T1 prompt+寫入規範（插入錨點、佔位符處理、ID遞增）|@op:20260220-A44T#0030|2026-02-20
+plan-modify-cmd-redesign|完成|/修改計畫 重寫：搬運工具→任務線推進器（按目標分組+評估+合成）|@op:20260220-ITEJ#0945|2026-02-20
