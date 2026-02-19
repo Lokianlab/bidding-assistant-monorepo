@@ -6,3 +6,4 @@
 JDNE-0001|2026-02-19|/小結指令設計、方法論評估、主題合併、待辦盤點|docs/summaries/2026-02/JDNE/0001.md
 ITEJ-0001|2026-02-19|MEMORY.md分流、碰撞容錯、三套流程、/暫存改版、stop hook提醒|docs/summaries/2026-02/ITEJ/0001.md
 ITEJ-0002|2026-02-19|/暫存issue type、待辦查詢不確定性、/待辦指令|docs/summaries/2026-02/ITEJ/0002.md
+JDNE-0002|2026-02-20|撰寫指南、快照完備、自動保存hooks、模型委員會方法論|docs/summaries/2026-02/JDNE/0002.md
