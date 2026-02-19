@@ -12,7 +12,7 @@ SNAPSHOT|20260220-0011|JDNE
 [ ] plan-build-notion-mcp|建 Notion MCP server|待 Layer 0 階段
 [?] plan-saas-pivot|SaaS 產品方向|改為自適應網頁 SaaS。知識庫精靈已有 prompt（v2.0），需聊天介面+認證+多租戶
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決，Layer 3 討論中斷
-[?] plan-conclusion-layer|結論層設計|/暫存 的改版，尚未開始設計
+[x] plan-conclusion-layer|結論層設計|已由 ITEJ 完成（infra-staging-upgrade），見 A44T 盤點
 [?] infra-claude-md-modular|CLAUDE.md 模組化|討論過但因自以為是風險暫緩
 [ ] method-model-committee|模型委員會方法論|暫存+正式文件已建，待完成 self-qa.md 標記+_index.md 更新
 [?] method-observation-capture|AI觀察捕捉框架|「捕捉能改善未來工作的觀察」有價值+有能力，缺輕量框架。最後問題未答
