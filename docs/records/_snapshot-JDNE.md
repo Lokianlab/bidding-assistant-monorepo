@@ -14,7 +14,7 @@ SNAPSHOT|20260221-0241|JDNE
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決，Layer 3 討論中斷
 [v] plan-conclusion-layer|結論層設計|ITEJ 已實作（infra-staging-upgrade），待用戶驗收
 [?] infra-claude-md-modular|CLAUDE.md 模組化|討論過但因自以為是風險暫緩
-[v] infra-methodology-v2|方法論 v2 系統整合|Batch A+B+C 全部完成（自我迭代層5份+精確修正6項+三檔對應4份+交叉引用+精簡評估），待用戶驗收
+[v] infra-methodology-v2|方法論 v2 系統整合|完整元方法論評估通過，6份文件三層結構齊全（方法+原則+迭代），待用戶驗收
 [v] method-observation-capture|AI觀察捕捉框架|v2 系統已定義 obs- 前綴約定（OP 記錄命名規範），待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建，待推入技術選型文件
 [ ] plan-methodology-skills|方法論 Skill 建置|暫存檔已建（4 個 skill 規格），待實作
