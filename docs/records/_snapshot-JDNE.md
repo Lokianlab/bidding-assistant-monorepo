@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-0241|JDNE
+SNAPSHOT|20260221-0500|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -18,4 +18,4 @@ SNAPSHOT|20260221-0241|JDNE
 [v] method-observation-capture|AI觀察捕捉框架|v2 系統已定義 obs- 前綴約定（OP 記錄命名規範），待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建，待推入技術選型文件
 [ ] plan-methodology-skills|方法論 Skill 建置|暫存檔已建（4 個 skill 規格），待實作
-[ ] infra-meta-methodology|元方法論框架建構|暫存檔已建，正在用元方法論評價+修正方法論體系（5項修正中第1項完成）
+[v] infra-meta-methodology|元方法論框架建構|機器可做的評估全部完成（P1-P5逐檔+系統交叉比對+修正），待用戶判斷項驗收
