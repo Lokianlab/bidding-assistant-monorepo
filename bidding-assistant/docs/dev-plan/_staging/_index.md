@@ -5,7 +5,6 @@
 > status: 待推（結論明確，等 /修改計畫 寫入）/ 待決（有討論但結論未定）
 > /暫存 建檔時自動更新此索引。/修改計畫 推完後刪除對應行和檔案。
 
-00-系統定位更新.md|plan|00-總論.md|待推|提案寫作駕駛艙 + 飛輪 + Discord Bot 為主介面
 03-Agent架構決策.md|plan|03-技術選型.md|待推|雙層策略（施工層/產品層）+ 5 角色編制
 03-AI連接與工具生態系.md|plan|03-技術選型.md|待推|AI 連接方式（$0 額外成本）+ CLI/MCP 評估
 05-行政端流程與自動化.md|plan|05-工作流程.md|待推|完整漏斗（1200→200→4）+ 6 步驟可自動化
@@ -18,8 +17,6 @@ A02-投標廠商分析流程.md|plan|新增 A02|待推|分析流程（4 步）+ 
 A03-Notion-DB-Schema工具與資料.md|plan|M01-情報模組.md|待推|parse_views.py + Notion views 結構（9 views）
 M01-Notion-MCP規格.md|plan|M01-情報模組.md|待推|本地 Notion MCP 規格 + 15 個工具清單
 M07-SmugMug-MCP規格.md|plan|新增 M07|待推|SmugMug MCP 規格 + 7 個工具
-development-plan-v3-summary.md|plan|00-總論.md|待推|v3.0 開發計畫摘要（舊 OneDrive 遷移）
-pain-points-analysis.md|plan|00-總論.md|待推|23 條痛點 + 6 個系統能力
 pcc-api-integration.md|plan|A01-PCC-API-參考.md|待推|PCC API 整合策略（已定版）
 saas-architecture-discussion.md|plan|03-技術選型.md|待決|知識庫儲存方案未定（Notion vs Supabase），Layer 3 討論中斷
 知識庫精靈現況與下一步.md|plan|06-開發進程.md|待決|T1 prompt v2.0 已就緒，缺執行環境。近期可做 Skill 版，中期待儲存方案定案
