@@ -16,3 +16,4 @@ M07-SmugMug-MCP規格.md|plan|新增 M07|待推|SmugMug MCP 規格 + 7 個工具
 saas-architecture-discussion.md|plan|03-技術選型.md|待決|知識庫儲存方案未定（Notion vs Supabase），Layer 3 討論中斷
 知識庫精靈現況與下一步.md|plan|06-開發進程.md|待決|T1 prompt v2.0 已就緒，缺執行環境。近期可做 Skill 版，中期待儲存方案定案
 方法論完備性盤點.md|issue|docs/methodology/（多份檔案）|已關閉|已被方法論 v2 系統取代（4 套方法論覆蓋 25/26 情境）
+方法論Skill規劃.md|plan|.claude/commands/|待推|4 個方法論 skill（對焦/拆解/驗證/回顧），核心步驟內嵌，結尾帶下一步建議
