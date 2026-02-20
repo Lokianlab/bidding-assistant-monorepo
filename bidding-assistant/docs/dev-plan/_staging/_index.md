@@ -5,8 +5,6 @@
 > status: 待推（結論明確，等 /修改計畫 寫入）/ 待決（有討論但結論未定）
 > /暫存 建檔時自動更新此索引。/修改計畫 推完後刪除對應行和檔案。
 
-03-Agent架構決策.md|plan|03-技術選型.md|待推|雙層策略（施工層/產品層）+ 5 角色編制
-03-AI連接與工具生態系.md|plan|03-技術選型.md|待推|AI 連接方式（$0 額外成本）+ CLI/MCP 評估
 05-行政端流程與自動化.md|plan|05-工作流程.md|待推|完整漏斗（1200→200→4）+ 6 步驟可自動化
 06-開發進程與優先序.md|plan|06-開發進程.md|待推|四層路線 + PCC MCP 併入 Layer 0
 08-企劃端診斷與案件分級.md|plan|08-風險與待決.md|待推|企劃端根因分析 + 案件分級策略（A/B/C/D）
@@ -21,4 +19,3 @@ pcc-api-integration.md|plan|A01-PCC-API-參考.md|待推|PCC API 整合策略（
 saas-architecture-discussion.md|plan|03-技術選型.md|待決|知識庫儲存方案未定（Notion vs Supabase），Layer 3 討論中斷
 知識庫精靈現況與下一步.md|plan|06-開發進程.md|待決|T1 prompt v2.0 已就緒，缺執行環境。近期可做 Skill 版，中期待儲存方案定案
 方法論完備性盤點.md|issue|docs/methodology/（多份檔案）|待決|26 個 AI 工作情境只有 7 個有方法覆蓋，空白 19 個
-插件盤點與使用策略.md|plan|03-技術選型.md|待推|54 個插件盤點：7 個有用 + 7 個以後看情況 + 自建 Notion MCP 可暫緩
