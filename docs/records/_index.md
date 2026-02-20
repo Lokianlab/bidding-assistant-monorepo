@@ -39,5 +39,5 @@ infra-dev-map|完成|全專案開發地圖（6章162行）+ /地圖指令 + CLAU
 method-observation-capture|待驗收|v2 定義 obs- 前綴約定：觀察寫入 OP 教訓欄，≥3 條觸發小結合併|@op:20260220-JDNE#0836|2026-02-20
 plan-plugin-inventory|進行中|54 個插件盤點完成（7有用+7以後+40不需要），自建 Notion MCP 暫緩|@op:20260220-JDNE#2230|2026-02-20
 infra-methodology-v2|待驗收|方法論 v2 整合完成：4 套方法論+閉環四層+觸發規則，覆蓋 25/26 情境|@op:20260220-JDNE#0836|2026-02-20
-plan-methodology-skills|進行中|方法論 Skill 規劃：4 個 skill（對焦/拆解/驗證/回顧），暫存檔已建|@op:20260220-JDNE#0900|2026-02-20
-infra-meta-methodology|進行中|元方法論框架：四層架構+效率為終極標準+Thomann七步+V2操作化（12獨立指標），暫存檔待用戶審定|@op:20260221-JDNE#0200|2026-02-21
+plan-methodology-skills|待驗收|方法論 Skill 4 個（對焦/拆解/驗證/回顧）已建完，待用戶驗收|@op:20260221-JDNE#0930|2026-02-21
+infra-meta-methodology|待驗收|元方法論框架：四層架構+效率為終極標準+Thomann七步+V2操作化（12獨立指標），暫存檔待用戶審定|@op:20260221-JDNE#0200|2026-02-21
