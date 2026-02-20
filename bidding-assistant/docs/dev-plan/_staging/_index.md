@@ -10,8 +10,7 @@
 08-企劃端診斷與案件分級.md|plan|08-風險與待決.md|待推|企劃端根因分析 + 案件分級策略（A/B/C/D）
 A01-PCC-API影響分析.md|plan|06-開發路線.md|待推|收入公式衝擊 + 戰略官自動產出情報
 A02-投標廠商分析流程.md|plan|新增 A02|待推|分析流程（4 步）+ 史多禮案例教訓
-A03-Notion-DB-Schema工具與資料.md|plan|M01-情報模組.md|待推|parse_views.py + Notion views 結構（9 views）
-M01-Notion-MCP規格.md|plan|M01-情報模組.md|待推|本地 Notion MCP 規格 + 15 個工具清單
+M01-核心設計審查.md|plan|M01-情報模組.md|待決|模型委員會審查：核心設計需重新思考（MVP 重定義 + 4 項開工前驗證）
 M07-SmugMug-MCP規格.md|plan|新增 M07|待推|SmugMug MCP 規格 + 7 個工具
 saas-architecture-discussion.md|plan|03-技術選型.md|待決|知識庫儲存方案未定（Notion vs Supabase），Layer 3 討論中斷
 知識庫精靈現況與下一步.md|plan|06-開發進程.md|待決|T1 prompt v2.0 已就緒，缺執行環境。近期可做 Skill 版，中期待儲存方案定案
