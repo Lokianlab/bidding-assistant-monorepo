@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-1100|JDNE
+SNAPSHOT|20260221-1130|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
