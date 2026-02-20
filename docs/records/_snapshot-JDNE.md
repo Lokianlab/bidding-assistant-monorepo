@@ -1,11 +1,11 @@
-SNAPSHOT|20260220-0900|JDNE
+SNAPSHOT|20260221-0200|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
 [x] infra-hooks|PreCompact + Stop hooks|@op:20260219-JDNE#2300
 [x] feat-summary-cmd|/小結 指令 + 撰寫指南|@op:20260219-JDNE#1512
 [x] cleanup-index|主題索引清理|@op:20260219-JDNE#0930
-[x] infra-snapshot-rules|快照時間完備原則|本次 session
+[x] infra-snapshot-rules|快照時間完備原則|@op:20260219-JDNE#1237
 [~] plan-discord-bot|Discord Bot 架構|放棄：改為 SaaS 網頁，見 plan-saas-pivot
 [ ] plan-update-devplan|更新 v4.0 開發計畫|用 /修改計畫 整合暫存檔
 [v] plan-build-pcc-mcp|建 PCC MCP server|程式碼+安裝+建置完成，待用戶驗收
@@ -18,3 +18,4 @@ SNAPSHOT|20260220-0900|JDNE
 [v] method-observation-capture|AI觀察捕捉框架|v2 系統已定義 obs- 前綴約定（OP 記錄命名規範），待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建，待推入技術選型文件
 [ ] plan-methodology-skills|方法論 Skill 建置|暫存檔已建（4 個 skill 規格），待實作
+[ ] infra-meta-methodology|元方法論框架建構|暫存檔已建（定義+目的體系+設計原則+Thomann對照+V2操作化），待用戶審定後結晶化
