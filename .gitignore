@@ -41,6 +41,7 @@ pcc-api-mcp/dist/
 .claude/*
 !.claude/commands/
 !.claude/hooks/
+!.claude/rules/
 !.claude/settings.json
 .machine-id
 .last-sync-time

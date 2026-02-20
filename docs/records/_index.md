@@ -41,3 +41,4 @@ plan-plugin-inventory|進行中|54 個插件盤點完成（7有用+7以後+40不
 infra-methodology-v2|待驗收|方法論 v2 整合完成：4 套方法論+閉環四層+觸發規則，覆蓋 25/26 情境|@op:20260220-JDNE#0836|2026-02-20
 plan-methodology-skills|待驗收|方法論 Skill 4 個（對焦/拆解/驗證/回顧）已建完，待用戶驗收|@op:20260221-JDNE#0930|2026-02-21
 infra-meta-methodology|待驗收|元方法論框架：四層架構+效率為終極標準+Thomann七步+V2操作化（12獨立指標），暫存檔待用戶審定|@op:20260221-JDNE#0200|2026-02-21
+infra-claude-md-modular|待驗收|CLAUDE.md 拆分：記錄格式搬到 .claude/rules/record-formats.md（paths 條件載入），主檔 479→376 行|@op:20260221-JDNE#1100|2026-02-21
