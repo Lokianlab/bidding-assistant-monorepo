@@ -18,9 +18,4 @@ M07-SmugMug-MCP規格.md|plan|新增 M07|待推|SmugMug MCP 規格 + 7 個工具
 pcc-api-integration.md|plan|A01-PCC-API-參考.md|待推|PCC API 整合策略（已定版）
 saas-architecture-discussion.md|plan|03-技術選型.md|待決|知識庫儲存方案未定（Notion vs Supabase），Layer 3 討論中斷
 知識庫精靈現況與下一步.md|plan|06-開發進程.md|待決|T1 prompt v2.0 已就緒，缺執行環境。近期可做 Skill 版，中期待儲存方案定案
-<<<<<<< HEAD
-方法論完備性盤點.md|issue|docs/methodology/（多份檔案）|待決|26 個 AI 工作情境只有 7 個有方法覆蓋，空白 19 個
-=======
 方法論完備性盤點.md|issue|docs/methodology/（多份檔案）|已關閉|已被方法論 v2 系統取代（4 套方法論覆蓋 25/26 情境）
-插件盤點與使用策略.md|plan|03-技術選型.md|待推|54 個插件盤點：7 個有用 + 7 個以後看情況 + 自建 Notion MCP 可暫緩
->>>>>>> 2c557dbf6101fe3e7ff4153e9a1fefc52714461a
