@@ -1,0 +1,41 @@
+#!/bin/bash
+# Git pre-push hook: 改了檔案但沒附帶 OP 記錄或快照 → 擋住 push
+# 安裝：git config core.hooksPath .githooks
+
+remote="$1"
+url="$2"
+
+while read local_ref local_oid remote_ref remote_oid; do
+  # 刪 branch 不管
+  if [ "$local_oid" = "0000000000000000000000000000000000000000" ]; then
+    continue
+  fi
+
+  # 新 branch 跟 main 比，已有 branch 跟遠端 HEAD 比
+  if [ "$remote_oid" = "0000000000000000000000000000000000000000" ]; then
+    RANGE="origin/main..$local_oid"
+  else
+    RANGE="$remote_oid..$local_oid"
+  fi
+
+  ALL_FILES=$(git diff --name-only "$RANGE" 2>/dev/null)
+  if [ -z "$ALL_FILES" ]; then
+    continue
+  fi
+
+  NON_RECORD=$(echo "$ALL_FILES" | grep -cvE '^docs/records/' || true)
+  RECORD=$(echo "$ALL_FILES" | grep -cE '^docs/records/' || true)
+
+  if [ "$NON_RECORD" -gt 0 ] && [ "$RECORD" -eq 0 ]; then
+    echo "" >&2
+    echo "⚠ Push 被擋：改了檔案但沒有附帶 OP 記錄或快照更新。" >&2
+    echo "請先補寫 OP + 更新快照，commit 後再 push。" >&2
+    echo "" >&2
+    echo "缺記錄的檔案：" >&2
+    echo "$ALL_FILES" | grep -vE '^docs/records/' | sed 's/^/  /' >&2
+    echo "" >&2
+    exit 1
+  fi
+done
+
+exit 0
