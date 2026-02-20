@@ -1,4 +1,4 @@
-SNAPSHOT|20260220-2230|JDNE
+SNAPSHOT|20260220-0836|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -14,6 +14,6 @@ SNAPSHOT|20260220-2230|JDNE
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決，Layer 3 討論中斷
 [v] plan-conclusion-layer|結論層設計|ITEJ 已實作（infra-staging-upgrade），待用戶驗收
 [?] infra-claude-md-modular|CLAUDE.md 模組化|討論過但因自以為是風險暫緩
-[v] method-model-committee|模型委員會方法論|正式文件+索引+舊檔標記全部完成，待用戶驗收
-[?] method-observation-capture|AI觀察捕捉框架|「捕捉能改善未來工作的觀察」有價值+有能力，缺輕量框架。最後問題未答
+[v] infra-methodology-v2|方法論 v2 系統整合|4 套方法論+閉環四層+觸發規則已寫入 docs/methodology/ 和 CLAUDE.md，待用戶驗收
+[v] method-observation-capture|AI觀察捕捉框架|v2 系統已定義 obs- 前綴約定（OP 記錄命名規範），待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建，待推入技術選型文件
