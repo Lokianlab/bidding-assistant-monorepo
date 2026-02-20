@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-0200|JDNE
+SNAPSHOT|20260221-0241|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -14,8 +14,8 @@ SNAPSHOT|20260221-0200|JDNE
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決，Layer 3 討論中斷
 [v] plan-conclusion-layer|結論層設計|ITEJ 已實作（infra-staging-upgrade），待用戶驗收
 [?] infra-claude-md-modular|CLAUDE.md 模組化|討論過但因自以為是風險暫緩
-[v] infra-methodology-v2|方法論 v2 系統整合|4 套方法論+閉環四層+觸發規則已寫入 docs/methodology/ 和 CLAUDE.md，待用戶驗收
+[v] infra-methodology-v2|方法論 v2 系統整合|4套方法論+閉環已補自我迭代層（5份），待用戶驗收
 [v] method-observation-capture|AI觀察捕捉框架|v2 系統已定義 obs- 前綴約定（OP 記錄命名規範），待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建，待推入技術選型文件
 [ ] plan-methodology-skills|方法論 Skill 建置|暫存檔已建（4 個 skill 規格），待實作
-[ ] infra-meta-methodology|元方法論框架建構|暫存檔已建（定義+目的體系+設計原則+Thomann對照+V2操作化），待用戶審定後結晶化
+[ ] infra-meta-methodology|元方法論框架建構|暫存檔已建，正在用元方法論評價+修正方法論體系（5項修正中第1項完成）
