@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-1715|JDNE
+SNAPSHOT|20260222-1800|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -7,7 +7,7 @@ SNAPSHOT|20260222-1715|JDNE
 [x] cleanup-index|主題索引清理|@op:20260219-JDNE#0930
 [x] infra-snapshot-rules|快照時間完備原則|@op:20260219-JDNE#1237
 [~] plan-discord-bot|Discord Bot 架構|放棄：改為 SaaS 網頁，見 plan-saas-pivot
-[ ] plan-update-devplan|更新 v4.0 開發計畫|ITEJ 已推 6 條任務線，暫存區剩 5 份待決
+[ ] plan-update-devplan|更新 v4.0 開發計畫|ITEJ 已推 6 條任務線，暫存區剩 6 份待決（含側寫）
 [v] plan-build-pcc-mcp|建 PCC MCP server|程式碼+安裝+建置完成，待用戶驗收
 [ ] plan-build-notion-mcp|建 Notion MCP server|內建 Notion MCP 夠用，暫緩到多 AI 協作階段
 [?] plan-saas-pivot|SaaS 產品方向|改為自適應網頁 SaaS。知識庫精靈已有 prompt（v2.0），需聊天介面+認證+多租戶
@@ -21,4 +21,5 @@ SNAPSHOT|20260222-1715|JDNE
 [v] feat-pcc-web|評委交叉分析 hook + UI + 頁面整合|純函式+hook+UI+跨tab導航，M01 Phase 4 完成，待用戶驗收
 [?] infra-backup-mechanism|備份/回復安全節點|用戶提出，範圍待釐清（git tag？資料庫 snapshot？設定匯出？）
 [?] infra-cross-machine-consult|機器間互相諮詢機制|ITEJ 已建論壇機制（forum/），可能已解決。待用戶驗收論壇後確認
-[ ] infra-new-machine-setup|新機器加入流程自動化|用戶指定最高優先。已建安裝腳本+打包器+更新指南，用戶要求更省事，論壇已發出協調請求
+[v] infra-new-machine-setup|新機器加入流程自動化|安裝腳本+互動 prompt+.mcp.json.example+論壇協調完成，A44T/ITEJ 已回覆，待用戶驗收
+[?] infra-machine-profile|三台機器側寫與協作策略|暫存檔已建（issue 待決），待跨機器討論
