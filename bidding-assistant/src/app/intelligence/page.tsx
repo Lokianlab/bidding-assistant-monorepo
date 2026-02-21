@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { PCCSearchPanel } from "@/components/pcc/PCCSearchPanel";
 import { CompetitorAnalysis } from "@/components/pcc/CompetitorAnalysis";
+import { MarketTrend } from "@/components/pcc/MarketTrend";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function IntelligencePage() {
@@ -33,6 +34,7 @@ export default function IntelligencePage() {
         <TabsList>
           <TabsTrigger value="search">案件搜尋</TabsTrigger>
           <TabsTrigger value="analysis">競爭分析</TabsTrigger>
+          <TabsTrigger value="market">市場趨勢</TabsTrigger>
         </TabsList>
 
         <TabsContent value="search" className="mt-4">
@@ -44,6 +46,10 @@ export default function IntelligencePage() {
             targetCompany={targetCompany}
             onTargetConsumed={() => setTargetCompany(null)}
           />
+        </TabsContent>
+
+        <TabsContent value="market" className="mt-4">
+          <MarketTrend />
         </TabsContent>
       </Tabs>
     </div>

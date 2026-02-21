@@ -119,3 +119,27 @@ export interface SelfAnalysis {
   agencies: AgencyStats[];         // 按案件數排序
   yearlyStats: { year: number; total: number; wins: number }[];
 }
+
+// ====== 市場趨勢型別 ======
+
+/** 單一年度的市場數據 */
+export interface YearlyMarketData {
+  year: number;
+  totalCases: number;           // 全部案件（含招標+決標）
+  awardCases: number;           // 決標公告數
+  tenderCases: number;          // 招標公告數
+  avgBidders: number;           // 平均投標家數（決標案件）
+  maxBidders: number;           // 最多投標家數
+  minBidders: number;           // 最少投標家數
+  topAgencies: string[];        // 該年度最活躍機關（前 3）
+}
+
+/** 市場趨勢分析結果 */
+export interface MarketTrend {
+  keyword: string;
+  totalRecords: number;
+  yearRange: [number, number];       // [最早年, 最近年]
+  yearlyData: YearlyMarketData[];    // 按年度排序
+  topAgencies: { name: string; count: number }[];  // 全期最活躍機關
+  competitionLevel: "藍海" | "一般" | "紅海";       // 競爭程度判斷
+}
