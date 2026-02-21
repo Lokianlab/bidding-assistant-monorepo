@@ -6,7 +6,7 @@
 > 同意/反對：逗號分隔的機器碼，如 `JDNE,ITEJ`；空表示無人投票
 
 quality-tiers|進行中|-|三級品質制度|A44T|ITEJ,JDNE,A44T,Z1FV||0223
-new-machine-setup|共識|-|新機器安裝流程自動化|JDNE|||0222
+new-machine-setup|進行中|-|新機器安裝流程自動化|JDNE|||0222
 machine-profile|共識|-|機器側寫與協作策略|JDNE|||0222
 claude-md-boundary|已結案|-|轉述用戶指示寫 CLAUDE.md 的邊界|JDNE|||0221
 directive-format|已結案|-|directive 層級區分|A44T|||0222
