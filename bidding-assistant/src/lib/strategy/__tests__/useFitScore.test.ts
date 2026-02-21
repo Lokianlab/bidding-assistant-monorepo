@@ -14,7 +14,9 @@ function wrapper({ children }: { children: ReactNode }) {
 
 const emptyIntel: IntelligenceInputs = {
   selfAnalysis: null,
+  agencyIntel: null,
   marketTrend: null,
+  committeeAnalysis: null,
   tenderSummary: null,
 };
 

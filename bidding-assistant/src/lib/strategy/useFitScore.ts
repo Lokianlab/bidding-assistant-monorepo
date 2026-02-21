@@ -4,12 +4,11 @@
 
 import { useMemo } from "react";
 import { useSettings } from "@/lib/context/settings-context";
-import { calculateFitScore } from "./fit-scoring";
+import { computeFitScore } from "./fit-scoring";
 import { matchKB } from "./kb-matcher";
 import { DEFAULT_FIT_WEIGHTS } from "./constants";
 import type {
   FitScore,
-  FitScoreInput,
   KBMatchResult,
   IntelligenceInputs,
 } from "./types";
@@ -43,19 +42,20 @@ export function useFitScore(
       return { fitScore: null, kbMatch: null };
     }
 
-    const input: FitScoreInput = {
-      caseName,
-      agency,
-      budget,
-      intelligence,
-      kb,
-    };
-
     const weights = settings.strategy?.fitWeights ?? DEFAULT_FIT_WEIGHTS;
 
     return {
-      fitScore: calculateFitScore(input, weights),
-      kbMatch: matchKB(caseName, agency, kb),
+      fitScore: computeFitScore({
+        tenderTitle: caseName,
+        budget,
+        agencyName: agency,
+        agencyIntel: intelligence.agencyIntel,
+        marketTrend: intelligence.marketTrend,
+        portfolio: kb["00B"] ?? [],
+        team: kb["00A"] ?? [],
+        weights,
+      }),
+      kbMatch: matchKB(caseName, [], agency, kb),
     };
   }, [caseName, agency, budget, intelligence, kb, settings.strategy?.fitWeights]);
 }
