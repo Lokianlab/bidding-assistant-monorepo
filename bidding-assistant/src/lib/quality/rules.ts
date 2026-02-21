@@ -16,6 +16,7 @@ export function runChecks(text: string, config: QualityConfig): CheckResult[] {
     ...checkTerminology(text, config.terminology),
     ...checkCustomRules(text, config.customRules),
     ...checkIronLaws(text, config.ironLawEnabled),
+    ...checkCompanyName(text, config.companyName, config.companyBrand),
     ...checkParagraphLength(text),
     ...checkSentenceLength(text),
     ...checkDuplicateSentences(text),
@@ -152,6 +153,57 @@ export function checkIronLaws(
         type: "info",
         rule: "範圍一致性",
         message: `文件中出現 ${scopes.length} 處工作範圍描述，請確認各章節的範圍界定一致`,
+      });
+    }
+  }
+
+  return results;
+}
+
+// ====== 公司名稱一致性 ======
+
+/**
+ * 公司名稱一致性檢查：
+ * 1. 如果設定了公司全名，確認文件中至少出現一次
+ * 2. 如果設定了品牌簡稱，偵測簡稱單獨出現（未使用全名）的次數
+ */
+export function checkCompanyName(
+  text: string,
+  companyName?: string,
+  companyBrand?: string,
+): CheckResult[] {
+  if (!companyName) return [];
+
+  const results: CheckResult[] = [];
+
+  // 檢查全名至少出現一次
+  if (!text.includes(companyName)) {
+    results.push({
+      type: "info",
+      rule: "公司名稱",
+      message: `文件中未出現公司全名「${companyName}」，正式提案建議至少使用一次完整法定名稱`,
+    });
+  }
+
+  // 檢查品牌簡稱單獨使用（未作為全名的一部分）
+  if (companyBrand && companyBrand !== companyName) {
+    const brandRegex = new RegExp(escapeRegex(companyBrand), "g");
+    let standalone = 0;
+    let match;
+    while ((match = brandRegex.exec(text)) !== null) {
+      // 取出這個 match 前後足夠長的上下文，看是否屬於全名的一部分
+      const start = Math.max(0, match.index - companyName.length);
+      const end = Math.min(text.length, match.index + companyName.length);
+      const context = text.slice(start, end);
+      if (!context.includes(companyName)) {
+        standalone++;
+      }
+    }
+    if (standalone > 0) {
+      results.push({
+        type: "info",
+        rule: "公司名稱",
+        message: `品牌簡稱「${companyBrand}」單獨出現 ${standalone} 次，正式文件建議統一使用全名「${companyName}」`,
       });
     }
   }

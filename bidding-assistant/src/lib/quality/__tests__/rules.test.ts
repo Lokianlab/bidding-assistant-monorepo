@@ -5,6 +5,7 @@ import {
   checkTerminology,
   checkCustomRules,
   checkIronLaws,
+  checkCompanyName,
   checkParagraphLength,
   checkSentenceLength,
   checkDuplicateSentences,
@@ -187,6 +188,73 @@ describe("checkIronLaws", () => {
     const text = "工作範圍涵蓋系統開發與維護";
     const results = checkIronLaws(text, { ...allDisabled, scopeConsistency: true });
     expect(results.find((r) => r.rule === "範圍一致性")).toBeUndefined();
+  });
+});
+
+// ====== 公司名稱一致性 ======
+
+describe("checkCompanyName", () => {
+  it("未設定公司名稱時不檢查", () => {
+    const results = checkCompanyName("任何文字", undefined, undefined);
+    expect(results).toHaveLength(0);
+  });
+
+  it("公司全名出現時不觸發", () => {
+    const results = checkCompanyName(
+      "本案由全能科技股份有限公司執行",
+      "全能科技股份有限公司",
+    );
+    expect(results).toHaveLength(0);
+  });
+
+  it("公司全名未出現時觸發提醒", () => {
+    const results = checkCompanyName(
+      "本案由某團隊執行",
+      "全能科技股份有限公司",
+    );
+    expect(results).toHaveLength(1);
+    expect(results[0].rule).toBe("公司名稱");
+    expect(results[0].type).toBe("info");
+    expect(results[0].message).toContain("全能科技股份有限公司");
+  });
+
+  it("品牌簡稱單獨使用時觸發提醒", () => {
+    const results = checkCompanyName(
+      "全能科技股份有限公司承攬本案。全能團隊具備豐富經驗。",
+      "全能科技股份有限公司",
+      "全能",
+    );
+    expect(results).toHaveLength(1);
+    expect(results[0].message).toContain("單獨出現");
+    expect(results[0].message).toContain("1 次");
+  });
+
+  it("品牌簡稱作為全名一部分出現時不觸發", () => {
+    const results = checkCompanyName(
+      "全能科技股份有限公司承攬本案",
+      "全能科技股份有限公司",
+      "全能",
+    );
+    expect(results).toHaveLength(0);
+  });
+
+  it("品牌簡稱等於全名時不檢查簡稱", () => {
+    const results = checkCompanyName(
+      "全能公司承攬本案",
+      "全能公司",
+      "全能公司",
+    );
+    expect(results).toHaveLength(0);
+  });
+
+  it("多次單獨使用品牌簡稱正確計數", () => {
+    const results = checkCompanyName(
+      "全能科技股份有限公司執行。全能負責開發。全能負責測試。全能負責部署。",
+      "全能科技股份有限公司",
+      "全能",
+    );
+    expect(results).toHaveLength(1);
+    expect(results[0].message).toContain("3 次");
   });
 });
 

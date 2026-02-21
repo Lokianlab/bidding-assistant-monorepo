@@ -1,6 +1,6 @@
 # 全專案開發地圖
 
-> 最後更新：2026-02-22 19:15（UTC+8）｜更新者：ITEJ
+> 最後更新：2026-02-21 18:50（UTC+8）｜更新者：ITEJ
 
 ## 1. 系統概覽
 
@@ -8,7 +8,7 @@
 
 | 組件 | 路徑 | 狀態 | 說明 |
 |------|------|------|------|
-| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，11 個功能模組（36 檔 749 tests） |
+| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，11 個功能模組（36 檔 756 tests） |
 | SmugMug MCP | `smugmug-mcp/` | 已完成 | 實績照片存取（7 工具） |
 | PCC API MCP | `pcc-api-mcp/` | 已完成 | 政府標案情報（6 工具） |
 | PCC Monitor | `pcc-monitor/` | 已完成 | API 更新延遲監控（GAS 每小時） |
@@ -156,7 +156,7 @@ Skill 系統 v2：思維型方法論降級為內部清單，行為回饋類 Skil
 ### 已完成里程碑
 
 - [x] Monorepo + GitHub 私有倉庫 + 多機器同步
-- [x] 主程式 11 模組上線（36 測試檔 / 749 tests）
+- [x] 主程式 11 模組上線（36 測試檔 / 756 tests）
 - [x] SmugMug MCP + PCC API MCP + PCC Monitor
 - [x] 開發工具包（23 指令 + 3 Hook + 三層記錄 + 19 份回報 + 機器論壇）
 - [x] 知識庫精靈 T1 prompt v2.0 + /kb 指令
@@ -191,14 +191,14 @@ Skill 系統 v2：思維型方法論降級為內部清單，行為回饋類 Skil
 | /kb 指令 | 薄調度層 + T1 引用 + 寫入規範 |
 | CLAUDE.md 拆分 | 記錄格式搬到 .claude/rules/（479→376→208 行） |
 | 元方法論框架 | 四層架構 + 效率為終極標準 + V2 操作化（12 獨立指標） |
-| 品質檢查模組重構 | lib/quality/ 抽出（types+rules+score），鐵律 5 flag 全實作，59 tests |
+| 品質檢查模組重構 | lib/quality/ 抽出（types+rules+score），鐵律 5 flag 全實作+公司名稱一致性，55 tests |
 | 報價計算模組重構 | lib/pricing/ 抽出（types+helpers），28 tests |
 | 提案組裝引擎重構 | lib/assembly/ 抽出（6 純函式），31 tests |
 | 新機器安裝腳本 | 8 階段互動腳本 + .mcp.json.example 範本 |
 
 ### 當前階段
 
-主程式 11 模組上線（36 檔 749 tests），三大模組完成邏輯抽離重構（quality/pricing/assembly）。情報搜尋功能完整（搜尋+競爭分析+機關情報+P偵察+快取）。開發工具鏈成熟（23 指令 + 3 Hook + 方法論 v2 + 獎懲回饋 + 機器論壇）。16 項已完成工作等待用戶驗收。6 份暫存碎片全待決（需用戶裁決）。三級品質制度三方共識達成，等最終確認寫入。
+主程式 11 模組上線（36 檔 756 tests），三大模組完成邏輯抽離重構（quality/pricing/assembly）。情報搜尋功能完整（搜尋+競爭分析+機關情報+P偵察+快取）。開發工具鏈成熟（23 指令 + 3 Hook + 方法論 v2 + 獎懲回饋 + 機器論壇）。16 項已完成工作等待用戶驗收。6 份暫存碎片全待決（需用戶裁決）。三級品質制度三方共識達成，等最終確認寫入。
 
 ### 下一步優先序
 
