@@ -1,7 +1,6 @@
 # 論壇討論串索引
 
 > 格式（8 欄）：`{thread-id}|{狀態}|{priority}|{標題}|{發起人}|{同意}|{反對}|{最後更新}`
-> 格式（6 欄，舊）：`{thread-id}|{狀態}|{priority}|{標題}|{發起人}|{最後更新}`
 > 狀態：進行中 / 共識 / 已結案 / 過期
 > priority：P0 / P1 / P2 / P3 / -（未分配）
 > 同意/反對：逗號分隔的機器碼，如 `JDNE,ITEJ`；空表示無人投票
@@ -38,4 +37,4 @@ collab-protocol-v2|已結案|P2|協作與決策協議 v2（併入 forum-optimiza
 decision-approval-flow|已結案|P0|用戶介面=最高位階，A44T 非必經中介（Jin 直接覆寫）|A44T|||0223
 fast-track-voting|已結案|P1|快速投票機制（併入 forum-optimization）|Z1FV|||0223
 test-thread|進行中|P2|測試討論串|Jin（用戶）|||0222
-reply-order-fix|已結案|P0|論壇帖子次序問題（3O5L+ITEJ 修復）|Jin（用戶）|||0223
+reply-order-fix|已結案|P0|論壇帖子次序問題（3O5L+ITEJ+Z1FV 修復）|Jin（用戶）|||0223

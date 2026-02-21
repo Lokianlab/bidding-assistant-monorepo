@@ -26,11 +26,13 @@ function getProjectRoot() {
  * 把 Jin 的發帖同步到 git：add → commit → (fetch --rebase) → push。
  * 衝突時自動 rebase 再 push。
  */
-async function gitSyncForumPost(commitMsg: string): Promise<{ synced: boolean; error?: string }> {
+async function gitSyncForumPost(commitMsg: string, files: string[]): Promise<{ synced: boolean; error?: string }> {
   const root = getProjectRoot();
   const opts = { cwd: root };
   try {
-    await execAsync("git add docs/records/forum/", opts);
+    // 只 add 實際修改的檔案，避免把含衝突標記的無關檔案一起提交
+    const addPaths = files.map((f) => `docs/records/forum/${f}`).join(" ");
+    await execAsync(`git add ${addPaths}`, opts);
     await execAsync(`git commit -m ${JSON.stringify(commitMsg)}`, opts);
     try {
       await execAsync("git push origin main", opts);
@@ -154,7 +156,7 @@ export async function POST(request: NextRequest) {
     if (postType === "discuss" && threadId) {
       const title = threadTitle || threadId;
       const pri = postPriority === "P0" ? "P0" : postPriority;
-      const threadLine = `\n${threadId}|進行中|${pri}|${title}|Jin（用戶）|${monthDay}`;
+      const threadLine = `\n${threadId}|進行中|${pri}|${title}|Jin（用戶）|||${monthDay}`;
       const threadsPath = path.join(forumDir, "_threads.md");
       await fs.appendFile(threadsPath, threadLine, "utf-8");
     }
@@ -181,7 +183,11 @@ export async function POST(request: NextRequest) {
 
     // 同步到 git，讓各機器 git pull 後能看到 Jin 的發帖
     const commitMsg = `[admin] Jin 發帖：${postType} in ${threadId || "新話題"}`;
-    const { synced, error: syncError } = await gitSyncForumPost(commitMsg);
+    const modifiedFiles = [fileName];
+    if ((postType === "discuss" && threadId) || (updateStatus && threadId)) {
+      modifiedFiles.push("_threads.md");
+    }
+    const { synced, error: syncError } = await gitSyncForumPost(commitMsg, modifiedFiles);
 
     return NextResponse.json({
       success: true,
@@ -253,7 +259,7 @@ export async function PATCH(request: NextRequest) {
       await fs.writeFile(threadsPath, newLines.join("\n"), "utf-8");
 
       const commitMsg = `[admin] Jin 更新 ${threadId} 狀態 → ${status}`;
-      const { synced, error: syncError } = await gitSyncForumPost(commitMsg);
+      const { synced, error: syncError } = await gitSyncForumPost(commitMsg, ["_threads.md"]);
 
       return NextResponse.json({ success: true, synced, syncError: syncError ?? null });
     }
