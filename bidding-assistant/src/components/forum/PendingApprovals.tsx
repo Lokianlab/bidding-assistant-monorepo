@@ -11,6 +11,7 @@ interface PendingApprovalsProps {
   threads: ForumThread[];
   onApprove: (threadId: string, message: string) => Promise<void>;
   onReject: (threadId: string, message: string) => Promise<void>;
+  onBatchApprove?: (threadIds: string[]) => Promise<void>;
   onViewThread: (thread: ForumThread) => void;
 }
 
@@ -25,6 +26,7 @@ export function PendingApprovals({
   threads,
   onApprove,
   onReject,
+  onBatchApprove,
   onViewThread,
 }: PendingApprovalsProps) {
   const [action, setAction] = useState<ActionState>({
@@ -33,6 +35,7 @@ export function PendingApprovals({
     message: "",
     submitting: false,
   });
+  const [batchSubmitting, setBatchSubmitting] = useState(false);
 
   // 篩選出需要核准的討論串：狀態是「共識」的
   const pendingThreads = threads.filter((t) => t.status === "共識");
@@ -44,6 +47,16 @@ export function PendingApprovals({
       </div>
     );
   }
+
+  const handleBatchApprove = async () => {
+    if (!onBatchApprove) return;
+    setBatchSubmitting(true);
+    try {
+      await onBatchApprove(pendingThreads.map((t) => t.id));
+    } finally {
+      setBatchSubmitting(false);
+    }
+  };
 
   const handleSubmit = async (threadId: string) => {
     if (!action.mode) return;
@@ -67,6 +80,16 @@ export function PendingApprovals({
       <div className="flex items-center gap-2">
         <h2 className="text-lg font-semibold">待核准決策</h2>
         <Badge className="bg-yellow-400 text-yellow-900">{pendingThreads.length}</Badge>
+        {onBatchApprove && pendingThreads.length > 1 && (
+          <Button
+            size="sm"
+            className="ml-auto bg-green-600 hover:bg-green-700 text-white"
+            disabled={batchSubmitting}
+            onClick={handleBatchApprove}
+          >
+            {batchSubmitting ? "批准中..." : `全部批准（${pendingThreads.length} 項）`}
+          </Button>
+        )}
       </div>
 
       {pendingThreads.map((thread) => {

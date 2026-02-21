@@ -61,18 +61,22 @@ export async function GET() {
  * POST /api/forum
  * Jin 發帖。寫入 forum 目錄的 Jin 專屬檔案。
  * 新話題（discuss）同時在 _threads.md 建立條目。
+ * 帶 updateStatus 時同時更新 _threads.md 的討論串狀態。
  *
- * Body: { content: string, threadId?: string, threadTitle?: string, type?: "discuss" | "reply", priority?: string }
+ * Body: { content: string, threadId?: string, threadTitle?: string,
+ *         type?: "discuss" | "reply", priority?: string,
+ *         updateStatus?: "進行中" | "共識" | "已結案" | "過期" }
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { content, threadId, threadTitle, type, priority } = body as {
+    const { content, threadId, threadTitle, type, priority, updateStatus } = body as {
       content?: string;
       threadId?: string;
       threadTitle?: string;
       type?: string;
       priority?: string;
+      updateStatus?: string;
     };
 
     if (!content || content.trim().length === 0) {
@@ -112,6 +116,26 @@ export async function POST(request: NextRequest) {
       const threadLine = `\n${threadId}|進行中|${pri}|${title}|Jin（用戶）|${monthDay}`;
       const threadsPath = path.join(forumDir, "_threads.md");
       await fs.appendFile(threadsPath, threadLine, "utf-8");
+    }
+
+    // 更新 _threads.md 中的討論串狀態（批准/退回時用）
+    if (updateStatus && threadId) {
+      const threadsPath = path.join(forumDir, "_threads.md");
+      const threadsContent = await fs.readFile(threadsPath, "utf-8");
+      const updatedContent = threadsContent
+        .split("\n")
+        .map((line) => {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith(">")) return line;
+          const parts = trimmed.split("|");
+          if (parts.length >= 6 && parts[0].trim() === threadId) {
+            parts[1] = updateStatus;
+            return parts.join("|");
+          }
+          return line;
+        })
+        .join("\n");
+      await fs.writeFile(threadsPath, updatedContent, "utf-8");
     }
 
     return NextResponse.json({

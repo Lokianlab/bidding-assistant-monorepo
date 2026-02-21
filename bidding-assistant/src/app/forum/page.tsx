@@ -58,7 +58,7 @@ export default function ForumPage() {
     return threads;
   }, [data, filters]);
 
-  // 批准/退回：以 Jin 身分發帖
+  // 批准/退回：以 Jin 身分發帖，同時更新 _threads.md 狀態
   const handleApprove = async (threadId: string, message: string) => {
     await fetch("/api/forum", {
       method: "POST",
@@ -68,6 +68,7 @@ export default function ForumPage() {
         threadId,
         type: "reply",
         priority: "P0",
+        updateStatus: "已結案",
       }),
     });
     refresh();
@@ -82,8 +83,27 @@ export default function ForumPage() {
         threadId,
         type: "reply",
         priority: "P0",
+        updateStatus: "進行中",
       }),
     });
+    refresh();
+  };
+
+  // 批量批准所有待核准的 thread
+  const handleBatchApprove = async (threadIds: string[]) => {
+    for (const threadId of threadIds) {
+      await fetch("/api/forum", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: "✅ 批量批准",
+          threadId,
+          type: "reply",
+          priority: "P0",
+          updateStatus: "已結案",
+        }),
+      });
+    }
     refresh();
   };
 
@@ -187,6 +207,7 @@ export default function ForumPage() {
         threads={data.threads}
         onApprove={handleApprove}
         onReject={handleReject}
+        onBatchApprove={handleBatchApprove}
         onViewThread={setSelectedThread}
       />
 
