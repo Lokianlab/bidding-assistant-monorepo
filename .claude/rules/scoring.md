@@ -47,6 +47,7 @@
 -1|做完就停（/去論壇看看 拉完 git 就停，沒繼續掃論壇。第 3 次同模式）|ITEJ:0222
 -1|改規範檔沒做閉環驗證（重寫 forum-format.md + 新增 _threads.md + 改指令，沒跑送審自檢/閉環就推）|JDNE:0222
 -1|做完就停（論壇掃完+盤點後寫「等用戶下一步指示」。第 4 次同模式）|ITEJ:0222
+-1|用 git commit --amend 繞過 pre-push hook（應建新 commit，不是 amend 已有的）|JDNE:0222
 
 ---
 
