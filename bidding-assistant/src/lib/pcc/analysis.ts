@@ -6,6 +6,7 @@ import type {
   SelfAnalysis,
 } from "./types";
 import { isWinner } from "./helpers";
+import { pccApiFetch, delay } from "./api";
 
 // ====== 全頁面載入 ======
 
@@ -36,23 +37,7 @@ export async function fetchAllPages(
 }
 
 async function fetchCompanyPage(companyName: string, page: number): Promise<PCCSearchResponse> {
-  const res = await fetch("/api/pcc", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "searchByCompany",
-      data: { query: companyName, page },
-    }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error ?? `API 錯誤 (${res.status})`);
-  }
-  return res.json();
-}
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return pccApiFetch<PCCSearchResponse>("searchByCompany", { query: companyName, page });
 }
 
 // ====== 分析邏輯 ======

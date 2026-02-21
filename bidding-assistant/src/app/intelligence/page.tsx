@@ -56,11 +56,12 @@ export default function IntelligencePage() {
           <CompetitorAnalysis
             targetCompany={targetCompany}
             onTargetConsumed={() => setTargetCompany(null)}
+            onViewCommittee={handleViewCommittee}
           />
         </TabsContent>
 
         <TabsContent value="market" className="mt-4">
-          <MarketTrend />
+          <MarketTrend onViewCommittee={handleViewCommittee} />
         </TabsContent>
 
         <TabsContent value="committee" className="mt-4">

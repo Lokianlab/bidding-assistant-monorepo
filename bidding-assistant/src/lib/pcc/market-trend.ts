@@ -31,8 +31,8 @@ export function analyzeMarketTrend(
     agencyCount: Map<string, number>;
   }>();
 
-  // 全期機關統計
-  const globalAgencyMap = new Map<string, number>();
+  // 全期機關統計（name → { unitId, count }）
+  const globalAgencyMap = new Map<string, { unitId: string; count: number }>();
 
   for (const record of records) {
     const year = Math.floor(record.date / 10000);
@@ -63,8 +63,12 @@ export function analyzeMarketTrend(
     yearMap.set(year, yearData);
 
     // 全期機關統計
-    const gCount = globalAgencyMap.get(record.unit_name) ?? 0;
-    globalAgencyMap.set(record.unit_name, gCount + 1);
+    const gEntry = globalAgencyMap.get(record.unit_name);
+    if (gEntry) {
+      gEntry.count++;
+    } else {
+      globalAgencyMap.set(record.unit_name, { unitId: record.unit_id, count: 1 });
+    }
   }
 
   // 合成年度資料
@@ -95,9 +99,9 @@ export function analyzeMarketTrend(
 
   // 全期前 10 活躍機關
   const topAgencies = Array.from(globalAgencyMap.entries())
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => b[1].count - a[1].count)
     .slice(0, 10)
-    .map(([name, count]) => ({ name, count }));
+    .map(([name, { unitId, count }]) => ({ name, unitId, count }));
 
   // 競爭程度判斷：基於近 3 年平均投標家數
   const recentYears = yearlyData.slice(-3);

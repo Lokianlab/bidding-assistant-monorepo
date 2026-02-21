@@ -12,11 +12,11 @@ echo   過程中可能會跳出「允許變更」的視窗，
 echo   請都按「是」。
 echo.
 
-REM ── 檢查 Git ──
+REM ── 第 1 步：檢查 Git ──
 where git >nul 2>nul
 if errorlevel 1 goto :install_git
 echo   [OK] Git
-goto :check_repo
+goto :check_gh
 
 :install_git
 echo   需要先安裝 Git...
@@ -54,8 +54,77 @@ echo.
 pause
 exit /b 0
 
+:check_gh
+REM ── 第 2 步：檢查 GitHub CLI（私有 repo 需要登入） ──
+where gh >nul 2>nul
+if errorlevel 1 goto :install_gh
+echo   [OK] GitHub CLI
+goto :check_auth
+
+:install_gh
+echo   安裝 GitHub CLI（用來登入 GitHub）...
+where winget >nul 2>nul
+if errorlevel 1 (
+    echo.
+    echo   自動安裝工具不可用。
+    echo   請到下面這個網址安裝 GitHub CLI：
+    echo.
+    echo     https://cli.github.com/
+    echo.
+    echo   裝完後重新雙擊此檔案。
+    echo.
+    pause
+    exit /b 1
+)
+winget install GitHub.cli -e --accept-package-agreements --accept-source-agreements
+if errorlevel 1 (
+    echo.
+    echo   GitHub CLI 安裝失敗。
+    echo   請到 https://cli.github.com/ 手動安裝，
+    echo   裝完後重新雙擊此檔案。
+    echo.
+    pause
+    exit /b 1
+)
+
+REM  winget 裝完後 PATH 還沒更新，需要重開
+echo.
+echo   ========================================
+echo    GitHub CLI 安裝好了！
+echo    請關掉這個視窗，重新雙擊此檔案繼續。
+echo   ========================================
+echo.
+pause
+exit /b 0
+
+:check_auth
+REM ── 第 3 步：GitHub 登入 ──
+gh auth status >nul 2>nul
+if not errorlevel 1 (
+    echo   [OK] 已登入 GitHub
+    goto :check_repo
+)
+
+echo.
+echo   需要登入 GitHub 才能下載專案。
+echo   等一下會自動開網頁，用 Jin 的 GitHub 帳號登入。
+echo.
+gh auth login --web --git-protocol https
+if errorlevel 1 (
+    echo.
+    echo   登入失敗。可能的原因：
+    echo   1. 網路有問題
+    echo   2. 瀏覽器沒完成登入
+    echo.
+    echo   請重新雙擊此檔案再試一次。
+    echo.
+    pause
+    exit /b 1
+)
+echo   [OK] GitHub 登入成功
+
 :check_repo
-REM ── 下載或更新專案 ──
+REM ── 第 4 步：下載或更新專案 ──
 if exist "C:\dev\cc程式\.git" (
     echo   [OK] 專案已下載
     cd /d "C:\dev\cc程式"
@@ -68,9 +137,9 @@ if exist "C:\dev\cc程式\.git" (
         echo.
         echo   下載失敗！可能的原因：
         echo   1. 電腦沒連上網路
-        echo   2. 需要 GitHub 帳號登入
+        echo   2. GitHub 登入有問題
         echo.
-        echo   請確認網路連線後，重新雙擊此檔案。
+        echo   請重新雙擊此檔案再試一次。
         echo.
         pause
         exit /b 1
@@ -78,7 +147,7 @@ if exist "C:\dev\cc程式\.git" (
     echo   [OK] 下載完成
 )
 
-REM ── 找 Git Bash 並啟動安裝腳本 ──
+REM ── 第 5 步：找 Git Bash 並啟動安裝腳本 ──
 if exist "C:\Program Files\Git\bin\bash.exe" (
     echo.
     echo   ========================================

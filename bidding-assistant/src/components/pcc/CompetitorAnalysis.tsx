@@ -17,6 +17,8 @@ import {
   ComposedChart,
 } from "recharts";
 import { useCompetitorAnalysis } from "@/lib/pcc/useCompetitorAnalysis";
+import { useAgencyIntel } from "@/lib/pcc/useAgencyIntel";
+import { formatPCCDate } from "@/lib/pcc/helpers";
 import { useSettings } from "@/lib/context/settings-context";
 import type { SelfAnalysis, CompetitorStats, AgencyStats } from "@/lib/pcc/types";
 
@@ -25,9 +27,10 @@ const FALLBACK_COMPANY = "大員洛川";
 interface CompetitorAnalysisProps {
   targetCompany?: string | null;
   onTargetConsumed?: () => void;
+  onViewCommittee?: (unitId: string, unitName: string) => void;
 }
 
-export function CompetitorAnalysis({ targetCompany, onTargetConsumed }: CompetitorAnalysisProps = {}) {
+export function CompetitorAnalysis({ targetCompany, onTargetConsumed, onViewCommittee }: CompetitorAnalysisProps = {}) {
   const { settings } = useSettings();
   const defaultCompany = settings.company?.brand || FALLBACK_COMPANY;
   const [companyName, setCompanyName] = useState<string>(defaultCompany);
@@ -74,14 +77,14 @@ export function CompetitorAnalysis({ targetCompany, onTargetConsumed }: Competit
         </div>
       )}
 
-      {data && <AnalysisResults data={data} />}
+      {data && <AnalysisResults data={data} myCompany={companyName} onViewCommittee={onViewCommittee} />}
     </div>
   );
 }
 
 // ====== 分析結果 ======
 
-function AnalysisResults({ data }: { data: SelfAnalysis }) {
+function AnalysisResults({ data, myCompany, onViewCommittee }: { data: SelfAnalysis; myCompany: string; onViewCommittee?: (unitId: string, unitName: string) => void }) {
   return (
     <div className="space-y-6">
       {/* 總覽 */}
@@ -95,7 +98,7 @@ function AnalysisResults({ data }: { data: SelfAnalysis }) {
       {data.competitors.length > 0 && <CompetitorTable competitors={data.competitors} />}
 
       {/* 機關分析 */}
-      {data.agencies.length > 0 && <AgencyTable agencies={data.agencies} />}
+      {data.agencies.length > 0 && <AgencyTable agencies={data.agencies} myCompany={myCompany} onViewCommittee={onViewCommittee} />}
     </div>
   );
 }
@@ -303,8 +306,9 @@ function CompetitorTable({ competitors }: { competitors: CompetitorStats[] }) {
 
 // ====== 機關分析 ======
 
-function AgencyTable({ agencies }: { agencies: AgencyStats[] }) {
+function AgencyTable({ agencies, myCompany, onViewCommittee }: { agencies: AgencyStats[]; myCompany: string; onViewCommittee?: (unitId: string, unitName: string) => void }) {
   const [showAll, setShowAll] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const display = showAll ? agencies : agencies.slice(0, 10);
 
   return (
@@ -325,28 +329,16 @@ function AgencyTable({ agencies }: { agencies: AgencyStats[] }) {
               </tr>
             </thead>
             <tbody>
-              {display.map((a) => {
-                const rate = a.totalCases > 0 ? a.myWins / a.totalCases : 0;
-                return (
-                  <tr key={a.unitId} className="border-b last:border-0">
-                    <td className="py-2 pr-4">
-                      <div className="max-w-[200px] truncate" title={a.unitName}>
-                        {a.unitName}
-                      </div>
-                    </td>
-                    <td className="py-2 pr-4 font-medium">{a.totalCases}</td>
-                    <td className="py-2 pr-4">
-                      <Badge variant="default" className="text-xs">{a.myWins}</Badge>
-                    </td>
-                    <td className="py-2 pr-4">
-                      <Badge variant="destructive" className="text-xs">{a.myLosses}</Badge>
-                    </td>
-                    <td className="py-2 text-muted-foreground">
-                      {a.avgBidders.toFixed(1)} 家
-                    </td>
-                  </tr>
-                );
-              })}
+              {display.map((a) => (
+                <AgencyRow
+                  key={a.unitId}
+                  agency={a}
+                  expanded={expandedId === a.unitId}
+                  onToggle={() => setExpandedId(expandedId === a.unitId ? null : a.unitId)}
+                  myCompany={myCompany}
+                  onViewCommittee={onViewCommittee}
+                />
+              ))}
             </tbody>
           </table>
         </div>
@@ -362,5 +354,164 @@ function AgencyTable({ agencies }: { agencies: AgencyStats[] }) {
         )}
       </CardContent>
     </Card>
+  );
+}
+
+/** 可展開的機關行 */
+function AgencyRow({
+  agency,
+  expanded,
+  onToggle,
+  myCompany,
+  onViewCommittee,
+}: {
+  agency: AgencyStats;
+  expanded: boolean;
+  onToggle: () => void;
+  myCompany: string;
+  onViewCommittee?: (unitId: string, unitName: string) => void;
+}) {
+  const intel = useAgencyIntel(expanded ? agency.unitId : null, expanded, myCompany);
+
+  return (
+    <>
+      <tr
+        className="border-b last:border-0 cursor-pointer hover:bg-accent/50 transition-colors"
+        onClick={onToggle}
+      >
+        <td className="py-2 pr-4">
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-muted-foreground">{expanded ? "▼" : "▶"}</span>
+            <div className="max-w-[180px] truncate" title={agency.unitName}>
+              {agency.unitName}
+            </div>
+          </div>
+        </td>
+        <td className="py-2 pr-4 font-medium">{agency.totalCases}</td>
+        <td className="py-2 pr-4">
+          <Badge variant="default" className="text-xs">{agency.myWins}</Badge>
+        </td>
+        <td className="py-2 pr-4">
+          <Badge variant="destructive" className="text-xs">{agency.myLosses}</Badge>
+        </td>
+        <td className="py-2 text-muted-foreground">
+          {agency.avgBidders.toFixed(1)} 家
+        </td>
+      </tr>
+      {expanded && (
+        <tr>
+          <td colSpan={5} className="bg-muted/30 px-4 py-3">
+            <AgencyIntelInline
+              intel={intel}
+              unitId={agency.unitId}
+              unitName={agency.unitName}
+              onViewCommittee={onViewCommittee}
+            />
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
+/** 機關情報內嵌顯示 */
+function AgencyIntelInline({
+  intel,
+  unitId,
+  unitName,
+  onViewCommittee,
+}: {
+  intel: { data: ReturnType<typeof useAgencyIntel>["data"]; loading: boolean; error: string | null };
+  unitId: string;
+  unitName: string;
+  onViewCommittee?: (unitId: string, unitName: string) => void;
+}) {
+  if (intel.loading) {
+    return <div className="text-xs text-muted-foreground py-2">載入 {unitName} 情報中...</div>;
+  }
+
+  if (intel.error) {
+    return <div className="text-xs text-muted-foreground py-2">無法載入：{intel.error}</div>;
+  }
+
+  if (!intel.data) return null;
+
+  const { data } = intel;
+
+  return (
+    <div className="space-y-3 text-xs">
+      {/* 在位者 */}
+      {data.incumbents.length > 0 && (
+        <div>
+          <p className="text-muted-foreground mb-1 font-medium">在位者（得標 ≥ 2 次）</p>
+          <div className="flex flex-wrap gap-2">
+            {data.incumbents.map((inc) => (
+              <span key={inc.name} className="inline-flex items-center gap-1">
+                <span className="truncate max-w-[150px]">{inc.name}</span>
+                <Badge variant="secondary" className="text-xs">{inc.wins}次</Badge>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 我方紀錄 */}
+      <div>
+        <p className="text-muted-foreground mb-1 font-medium">
+          我方紀錄（{data.myHistory.filter((h) => h.won).length}/{data.myHistory.length} 得標）
+        </p>
+        {data.myHistory.length > 0 ? (
+          <div className="space-y-1">
+            {data.myHistory.slice(0, 5).map((h) => (
+              <div key={`${h.date}-${h.title}`} className="flex items-center gap-2">
+                <Badge variant={h.won ? "default" : "destructive"} className="text-xs shrink-0">
+                  {h.won ? "勝" : "敗"}
+                </Badge>
+                <span className="truncate flex-1">{h.title}</span>
+                <span className="text-muted-foreground shrink-0">{formatPCCDate(h.date)}</span>
+              </div>
+            ))}
+            {data.myHistory.length > 5 && (
+              <span className="text-muted-foreground">...還有 {data.myHistory.length - 5} 筆</span>
+            )}
+          </div>
+        ) : (
+          <span className="text-muted-foreground">無投標紀錄</span>
+        )}
+      </div>
+
+      {/* 近期案件 */}
+      {data.recentCases.length > 0 && (
+        <details>
+          <summary className="cursor-pointer text-muted-foreground hover:text-foreground font-medium">
+            近期案件（{data.recentCases.length} 筆）
+          </summary>
+          <div className="mt-1 space-y-1">
+            {data.recentCases.map((c) => (
+              <div key={`${c.date}-${c.title}`} className="flex items-center gap-2">
+                <span className="text-muted-foreground shrink-0">{formatPCCDate(c.date)}</span>
+                <span className="truncate flex-1">{c.title}</span>
+                <span className="text-muted-foreground shrink-0">{c.bidders}家</span>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+
+      {/* 跳到評委分析 */}
+      {onViewCommittee && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-xs h-7"
+          onClick={(e) => {
+            e.stopPropagation();
+            onViewCommittee(unitId, unitName);
+          }}
+        >
+          分析此機關的評委
+        </Button>
+      )}
+    </div>
   );
 }

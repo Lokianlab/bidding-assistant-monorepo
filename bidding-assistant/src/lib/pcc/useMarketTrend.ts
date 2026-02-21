@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import type { MarketTrend, PCCRecord, PCCSearchResponse } from "./types";
 import { analyzeMarketTrend } from "./market-trend";
 import { cacheGet, cacheSet } from "./cache";
+import { pccApiFetch, delay } from "./api";
 
 interface UseMarketTrendReturn {
   data: MarketTrend | null;
@@ -71,21 +72,5 @@ export function useMarketTrend(): UseMarketTrendReturn {
 }
 
 async function fetchTitlePage(keyword: string, page: number): Promise<PCCSearchResponse> {
-  const res = await fetch("/api/pcc", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "searchByTitle",
-      data: { query: keyword, page },
-    }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error ?? `API 錯誤 (${res.status})`);
-  }
-  return res.json();
-}
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return pccApiFetch<PCCSearchResponse>("searchByTitle", { query: keyword, page });
 }

@@ -19,7 +19,11 @@ import {
 import { useMarketTrend } from "@/lib/pcc/useMarketTrend";
 import type { MarketTrend as MarketTrendData, YearlyMarketData } from "@/lib/pcc/types";
 
-export function MarketTrend() {
+interface MarketTrendProps {
+  onViewCommittee?: (unitId: string, unitName: string) => void;
+}
+
+export function MarketTrend({ onViewCommittee }: MarketTrendProps = {}) {
   const [keyword, setKeyword] = useState("");
   const { data, loading, progress, error, run } = useMarketTrend();
 
@@ -56,14 +60,14 @@ export function MarketTrend() {
         </div>
       )}
 
-      {data && <TrendResults data={data} />}
+      {data && <TrendResults data={data} onViewCommittee={onViewCommittee} />}
     </div>
   );
 }
 
 // ====== 趨勢分析結果 ======
 
-function TrendResults({ data }: { data: MarketTrendData }) {
+function TrendResults({ data, onViewCommittee }: { data: MarketTrendData; onViewCommittee?: (unitId: string, unitName: string) => void }) {
   return (
     <div className="space-y-4">
       {/* 總覽卡片 */}
@@ -76,7 +80,7 @@ function TrendResults({ data }: { data: MarketTrendData }) {
       {data.yearlyData.length > 0 && <TrendTable yearlyData={data.yearlyData} />}
 
       {/* 活躍機關 */}
-      {data.topAgencies.length > 0 && <TopAgencies agencies={data.topAgencies} />}
+      {data.topAgencies.length > 0 && <TopAgencies agencies={data.topAgencies} onViewCommittee={onViewCommittee} />}
     </div>
   );
 }
@@ -264,11 +268,16 @@ function TrendTable({ yearlyData }: { yearlyData: YearlyMarketData[] }) {
 
 // ====== 活躍機關 ======
 
-function TopAgencies({ agencies }: { agencies: { name: string; count: number }[] }) {
+function TopAgencies({ agencies, onViewCommittee }: { agencies: { name: string; unitId: string; count: number }[]; onViewCommittee?: (unitId: string, unitName: string) => void }) {
   return (
     <Card>
       <CardHeader className="py-3">
-        <CardTitle className="text-base">最活躍機關（全期）</CardTitle>
+        <CardTitle className="text-base">
+          最活躍機關（全期）
+          {onViewCommittee && (
+            <span className="text-xs font-normal text-muted-foreground ml-2">點擊可查評委</span>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-2">
@@ -276,7 +285,8 @@ function TopAgencies({ agencies }: { agencies: { name: string; count: number }[]
             <Badge
               key={a.name}
               variant={i < 3 ? "default" : "secondary"}
-              className="text-xs"
+              className={`text-xs ${onViewCommittee ? "cursor-pointer hover:opacity-80" : ""}`}
+              onClick={onViewCommittee ? () => onViewCommittee(a.unitId, a.name) : undefined}
             >
               {a.name.length > 12 ? a.name.slice(0, 12) + "…" : a.name}
               <span className="ml-1 opacity-70">{a.count}</span>
