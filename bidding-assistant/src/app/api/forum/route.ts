@@ -48,11 +48,19 @@ async function gitSyncForumPost(commitMsg: string): Promise<{ synced: boolean; e
 
 /**
  * GET /api/forum
- * 讀取 docs/records/forum/ 目錄，解析 _threads.md 和所有帖子檔案，
- * 回傳完整的論壇資料 JSON。
+ * 先從遠端 pull 最新帖子，再讀取 docs/records/forum/ 目錄，
+ * 解析 _threads.md 和所有帖子檔案，回傳完整的論壇資料 JSON。
  */
 export async function GET() {
   try {
+    // 先拉最新帖子，讓 Jin 看到其他機器的回覆
+    const root = getProjectRoot();
+    try {
+      await execAsync("git fetch origin && git rebase origin/main", { cwd: root });
+    } catch {
+      // pull 失敗不阻塞讀取（可能是衝突或網路問題），繼續用本地資料
+    }
+
     const forumDir = getForumDir();
 
     // 讀 _threads.md
