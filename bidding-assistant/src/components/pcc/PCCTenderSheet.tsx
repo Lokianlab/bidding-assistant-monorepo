@@ -16,6 +16,7 @@ import {
   formatPCCDate,
   parseCompanyRoles,
 } from "@/lib/pcc/helpers";
+import { useAgencyIntel } from "@/lib/pcc/useAgencyIntel";
 import type {
   PCCRecord,
   PCCTenderDetail,
@@ -63,6 +64,8 @@ export function PCCTenderSheet({ record, open, onOpenChange }: PCCTenderSheetPro
 
     return () => { cancelled = true; };
   }, [record, open]);
+
+  const agencyIntel = useAgencyIntel(record?.unit_id ?? null, open);
 
   if (!record) return null;
 
@@ -201,6 +204,10 @@ export function PCCTenderSheet({ record, open, onOpenChange }: PCCTenderSheetPro
             </>
           )}
 
+          {/* 機關情報 */}
+          <Separator />
+          <AgencyIntelSection intel={agencyIntel} unitName={record.unit_name} />
+
           {/* PCC 原始連結 */}
           <Separator />
           <div className="flex gap-2">
@@ -220,6 +227,105 @@ export function PCCTenderSheet({ record, open, onOpenChange }: PCCTenderSheetPro
 }
 
 // ====== 評委名單區塊 ======
+
+// ====== 機關情報區塊 ======
+
+function AgencyIntelSection({
+  intel,
+  unitName,
+}: {
+  intel: { data: ReturnType<typeof useAgencyIntel>["data"]; loading: boolean; error: string | null };
+  unitName: string;
+}) {
+  if (intel.loading) {
+    return (
+      <section>
+        <h4 className="font-medium mb-2">機關情報</h4>
+        <div className="py-4 text-center text-muted-foreground text-sm">
+          載入 {unitName} 歷史標案...
+        </div>
+      </section>
+    );
+  }
+
+  if (intel.error) {
+    return (
+      <section>
+        <h4 className="font-medium mb-2">機關情報</h4>
+        <div className="text-xs text-muted-foreground">無法載入：{intel.error}</div>
+      </section>
+    );
+  }
+
+  if (!intel.data) return null;
+
+  const { data } = intel;
+
+  return (
+    <section className="space-y-3">
+      <h4 className="font-medium">機關情報（{unitName}）</h4>
+
+      <div className="text-sm text-muted-foreground">
+        共 {data.totalCases} 筆決標紀錄
+      </div>
+
+      {/* 在位者 */}
+      {data.incumbents.length > 0 && (
+        <div>
+          <p className="text-xs text-muted-foreground mb-1">在位者（得標 ≥ 2 次）</p>
+          <div className="space-y-1">
+            {data.incumbents.map((inc) => (
+              <div key={inc.name} className="flex items-center justify-between text-sm">
+                <span className="truncate max-w-[200px]" title={inc.name}>{inc.name}</span>
+                <Badge variant="default" className="text-xs">{inc.wins} 次得標</Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 我方紀錄 */}
+      {data.myHistory.length > 0 ? (
+        <div>
+          <p className="text-xs text-muted-foreground mb-1">
+            我方在此機關的紀錄（{data.myHistory.filter((h) => h.won).length}/{data.myHistory.length} 得標）
+          </p>
+          <div className="space-y-1">
+            {data.myHistory.map((h) => (
+              <div key={`${h.date}-${h.title}`} className="flex items-center gap-2 text-xs">
+                <Badge variant={h.won ? "default" : "destructive"} className="text-xs shrink-0">
+                  {h.won ? "得標" : "未得標"}
+                </Badge>
+                <span className="truncate" title={h.title}>{h.title}</span>
+                <span className="text-muted-foreground shrink-0">{formatPCCDate(h.date)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="text-xs text-muted-foreground">我方無此機關投標紀錄</div>
+      )}
+
+      {/* 近期標案 */}
+      {data.recentCases.length > 0 && (
+        <details className="text-xs">
+          <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+            近期標案（{data.recentCases.length} 筆）
+          </summary>
+          <div className="mt-2 space-y-1">
+            {data.recentCases.map((c) => (
+              <div key={`${c.date}-${c.title}`} className="flex items-center gap-2">
+                <span className="text-muted-foreground shrink-0">{formatPCCDate(c.date)}</span>
+                <span className="truncate flex-1">{c.title}</span>
+                <span className="text-muted-foreground shrink-0">{c.bidders}家</span>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+    </section>
+  );
+}
 
 function EvaluationCommitteeSection({ members }: { members: EvaluationCommitteeMember[] }) {
   return (
