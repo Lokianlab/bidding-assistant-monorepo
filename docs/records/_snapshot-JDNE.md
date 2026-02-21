@@ -19,7 +19,7 @@ SNAPSHOT|20260222-2440|JDNE|sonnet-4.6
 [v] infra-meta-methodology|元方法論框架建構|待用戶驗收
 [v] feat-pcc-web|情報模組|build 零錯誤、1195 測試全過，待用戶驗收
 [?] infra-backup-mechanism|備份/回復安全節點|範圍待釐清
-[?] infra-cross-machine-consult|機器間互相諮詢機制|論壇已建，可能已解決
+[~] infra-cross-machine-consult|機器間互相諮詢機制|放棄：論壇已取代此需求
 [v] infra-new-machine-setup|新機器加入流程自動化|bat + bash 腳本，待用戶驗收
 [v] infra-machine-profile|三台機器側寫與協作策略|三方共識，待用戶驗收
 [v] infra-forum-upgrade|論壇制度升級|討論串+共識協議，待用戶驗收
