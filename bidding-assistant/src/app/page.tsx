@@ -297,7 +297,7 @@ export default function DashboardPage() {
       })
       .catch((err) => {
         if (err?.name !== "AbortError") {
-          console.warn("歷史已投標案件載入失敗（KPI 統計可能不完整）：", err);
+          logger.warn("api", "歷史已投標案件載入失敗（KPI 統計可能不完整）", String(err));
         }
       });
     return () => ctrl.abort();

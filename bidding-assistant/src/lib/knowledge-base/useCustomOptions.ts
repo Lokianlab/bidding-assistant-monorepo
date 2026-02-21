@@ -4,6 +4,8 @@
 // 管理 localStorage 中各欄位的常用選項
 // 每個欄位有一組 key，預設值可由程式提供，使用者可以自行增刪
 
+import { logger } from "@/lib/logger";
+
 import { useState, useEffect, useCallback } from "react";
 
 const STORAGE_KEY = "bidding-assistant-custom-options";
@@ -46,7 +48,7 @@ function saveOptions(data: AllOptions): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (err) {
-    console.warn("自訂選項儲存失敗：", err);
+    logger.warn("system", "自訂選項儲存失敗", String(err));
   }
 }
 

@@ -3,6 +3,8 @@
 // ====== 知識庫資料 Hook ======
 // 管理 localStorage 中的知識庫資料
 
+import { logger } from "@/lib/logger";
+
 import { useState, useEffect, useCallback } from "react";
 import type {
   KBId,
@@ -48,7 +50,7 @@ function saveKBData(data: KnowledgeBaseData): void {
     const toSave = { ...data, lastUpdated: new Date().toISOString() };
     localStorage.setItem(KB_STORAGE_KEY, JSON.stringify(toSave));
   } catch (err) {
-    console.warn("知識庫儲存失敗：", err);
+    logger.warn("system", "知識庫儲存失敗", String(err));
   }
 }
 

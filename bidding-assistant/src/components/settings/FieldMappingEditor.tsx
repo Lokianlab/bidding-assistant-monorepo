@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { logger } from "@/lib/logger";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -71,7 +72,7 @@ export function FieldMappingEditor({
       setSchemaFields(names);
       toast.success(`已從 Notion 偵測到 ${names.length} 個欄位`);
     } catch (err) {
-      console.error(err);
+      logger.error("api", "無法取得 Notion schema", String(err));
       toast.error("無法取得 Notion schema，請確認連線設定");
     } finally {
       setLoading(false);
