@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-2105|JDNE
+SNAPSHOT|20260222-2130|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -24,5 +24,6 @@ SNAPSHOT|20260221-2105|JDNE
 [v] infra-new-machine-setup|新機器加入流程自動化|bat + bash 腳本 + 指南 + credential 修正 + 協作入門指南 + 論壇歡迎帖，待用戶驗收
 [v] infra-machine-profile|三台機器側寫與協作策略|三方共識：方向 1（輕量自評 1-3 分）+ 方向 4（/回報時刷新），待用戶驗收
 [v] infra-forum-upgrade|論壇制度升級|討論串機制+共識協議+類型拆分+索引，待用戶驗收
-[ ] infra-user-auth|用戶驗證系統|Jin 已註冊 primary，顯示規則已定案，安全清理完成（五次 force push + pre-push hook），新增無用戶在場規則+幕僚監控職責
+[ ] infra-user-auth|用戶驗證系統|註冊流程重寫（四條紅線）、顯示規則定案、Saint 已移除、安全清理完成、臨時機器碼提案論壇討論中
 [ ] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE)已設定，.machine-nickname（gitignored），顯示規則：{暱稱}({機器碼})
+[?] infra-temp-machine-code|臨時機器碼制度|論壇 discuss 已發（~前綴+24小時+權限差異），3O5L+Z1FV 已回覆同意，缺 ITEJ+A44T+AINL
