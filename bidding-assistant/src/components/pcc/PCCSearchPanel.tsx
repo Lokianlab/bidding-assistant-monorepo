@@ -8,10 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePCCSearch } from "@/lib/pcc/usePCCSearch";
 import { parseCompanyRoles, formatPCCDate, formatAmount, parseAmount, calcWinRate } from "@/lib/pcc/helpers";
+import { useSettings } from "@/lib/context/settings-context";
 import type { PCCRecord, PCCSearchMode } from "@/lib/pcc/types";
 import { PCCTenderSheet } from "./PCCTenderSheet";
 
 export function PCCSearchPanel({ onViewCompany }: { onViewCompany?: (name: string) => void } = {}) {
+  const { settings } = useSettings();
+  const brandName = settings.company?.brand || "大員洛川";
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState<PCCSearchMode>("title");
   const { results, loading, error, search } = usePCCSearch();
@@ -52,7 +55,7 @@ export function PCCSearchPanel({ onViewCompany }: { onViewCompany?: (name: strin
         </TabsContent>
         <TabsContent value="company" className="mt-3">
           <p className="text-muted-foreground text-sm mb-2">
-            輸入廠商名稱查看投標紀錄（如：大員洛川）
+            輸入廠商名稱查看投標紀錄（如：{brandName}）
           </p>
         </TabsContent>
       </Tabs>
