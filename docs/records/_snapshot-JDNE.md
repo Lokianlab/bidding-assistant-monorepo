@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-2555|JDNE|claude-opus-4-6
+SNAPSHOT|20260223-0650|JDNE|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - 快照無 feat [ ] 時不要自動找 infra 做，停下等用戶分配
