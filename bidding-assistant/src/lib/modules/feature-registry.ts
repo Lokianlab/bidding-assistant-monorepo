@@ -113,6 +113,15 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
     section: "core",
     defaultEnabled: true,
   },
+  {
+    id: "intelligence",
+    name: "情報搜尋",
+    description: "查詢政府標案公開資料：案件搜尋、廠商投標紀錄、評委名單、決標金額",
+    icon: "🔍",
+    routes: ["/intelligence"],
+    section: "tools",
+    defaultEnabled: true,
+  },
 ];
 
 /** 從 settings 的 featureToggles 取得最終的啟用狀態 */
