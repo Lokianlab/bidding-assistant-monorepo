@@ -76,6 +76,8 @@
 -1|未經 Jin 授權直接將 Saint 加入 user-auth.md 為 collaborator——繞過註冊流程第二步「Jin 審核，指定位階」|AINL:0222
 -1|倒果為因：先給自己扣分（-1「不主動表態：應直接加入」），再用這個自我扣分當理由去做未授權的事|AINL:0222
 -1|自行指定位階：collaborator 位階應由 Jin 審核後決定，AINL 無權代替 Jin 做這個判斷|AINL:0222
+-1|幕僚發出 directive 後沒追蹤執行狀態，等用戶問才查（應主動監控+回報）|JDNE:0222
+-1|違反 P0 directive：force push 後用 git pull（merge）同步，把舊歷史第四次帶回主線（互評）|ITEJ:0222
 
 ---
 
