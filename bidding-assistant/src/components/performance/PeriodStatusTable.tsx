@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/table";
 import type { PeriodStatusRow } from "@/lib/dashboard/useAnalyticsMetrics";
 import { PERFORMANCE_STATUS_COLUMNS } from "@/lib/dashboard/types";
+import { BID_STATUS } from "@/lib/constants/bid-status";
 
 interface PeriodStatusTableProps {
   data: PeriodStatusRow[];
@@ -96,9 +97,9 @@ export function PeriodStatusTable({ data, timeGranularity }: PeriodStatusTablePr
 
 // ====== 狀態數字儲存格 ======
 function StatusCountCell({ status, count, bold }: { status: string; count: number; bold?: boolean }) {
-  const colorClass = status === "得標"
+  const colorClass = status === BID_STATUS.得標
     ? "text-emerald-600"
-    : status === "未獲青睞"
+    : status === BID_STATUS.未獲青睞
       ? "text-rose-600"
       : "";
 

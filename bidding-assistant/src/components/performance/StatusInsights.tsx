@@ -1,6 +1,7 @@
 "use client";
 
 import type { AnalyticsTotals } from "@/lib/dashboard/useAnalyticsMetrics";
+import { BID_STATUS } from "@/lib/constants/bid-status";
 
 interface StatusInsightsProps {
   breakdown: { name: string; value: number }[];
@@ -12,14 +13,14 @@ export function StatusInsights({ breakdown, totals, monthCount }: StatusInsights
   if (breakdown.length === 0) return null;
 
   const total = breakdown.reduce((a, b) => a + b.value, 0);
-  const wonCount = breakdown.find((s) => s.name === "得標")?.value ?? 0;
-  const lostCount = breakdown.find((s) => s.name === "未獲青睞")?.value ?? 0;
-  const cancelCount = breakdown.find((s) => s.name === "流標/廢標")?.value ?? 0;
-  const disqualCount = breakdown.find((s) => s.name === "資格不符")?.value ?? 0;
-  const notJoinCount = breakdown.find((s) => s.name === "領標後未參與")?.value ?? 0;
-  const activeCount = (breakdown.find((s) => s.name === "已投標")?.value ?? 0)
-    + (breakdown.find((s) => s.name === "競標階段")?.value ?? 0)
-    + (breakdown.find((s) => s.name === "已出席簡報")?.value ?? 0);
+  const wonCount = breakdown.find((s) => s.name === BID_STATUS.得標)?.value ?? 0;
+  const lostCount = breakdown.find((s) => s.name === BID_STATUS.未獲青睞)?.value ?? 0;
+  const cancelCount = breakdown.find((s) => s.name === BID_STATUS.流標廢標)?.value ?? 0;
+  const disqualCount = breakdown.find((s) => s.name === BID_STATUS.資格不符)?.value ?? 0;
+  const notJoinCount = breakdown.find((s) => s.name === BID_STATUS.領標後未參與)?.value ?? 0;
+  const activeCount = (breakdown.find((s) => s.name === BID_STATUS.已投標)?.value ?? 0)
+    + (breakdown.find((s) => s.name === BID_STATUS.競標階段)?.value ?? 0)
+    + (breakdown.find((s) => s.name === BID_STATUS.已出席簡報)?.value ?? 0);
 
   const pct = (n: number) => total > 0 ? Math.round((n / total) * 100) : 0;
 
