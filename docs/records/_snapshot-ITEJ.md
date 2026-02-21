@@ -24,4 +24,4 @@ SNAPSHOT|20260222-2330|ITEJ
 [ ] plan-m03-strategy|M03 戰略分析引擎|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m02-kb|M02 知識庫模組規格|待寫（依賴儲存方案決策）
-[ ] plan-m06-output|M06 排版輸出模組規格|待寫
+[ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
