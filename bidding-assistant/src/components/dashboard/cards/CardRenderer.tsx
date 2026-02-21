@@ -265,6 +265,63 @@ export function CardRenderer({ type, config, metrics, size, trendAnalysis }: Car
         </div>
       );
 
+    case "chart-rolling-winrate":
+      return (
+        <div className="w-full" style={{ minHeight: chartHeight }}>
+          {metrics.rollingWinRate.length === 0 ? (
+            <div className="h-full flex items-center justify-center text-sm text-muted-foreground" style={{ minHeight: chartHeight }}>
+              尚無足夠月度資料
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={chartHeight}>
+              <LineChart data={metrics.rollingWinRate} margin={{ left: 0, right: 16, top: 4, bottom: 4 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} domain={[0, 100]} unit="%" />
+                <RTooltip content={<ChartTooltip />} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Line type="monotone" dataKey="winRate" name="月勝率" stroke="#6366f1" strokeWidth={2} dot={{ r: 3 }} />
+                <Line
+                  type="monotone" dataKey="rollingWinRate" name="3月滾動勝率"
+                  stroke="#10b981" strokeWidth={2.5} dot={{ r: 3 }}
+                  connectNulls={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      );
+
+    case "chart-quarter-compare":
+      return (
+        <div className="w-full" style={{ minHeight: chartHeight }}>
+          {!metrics.quarterComparison ? (
+            <div className="h-full flex items-center justify-center text-sm text-muted-foreground" style={{ minHeight: chartHeight }}>
+              尚無季度資料可比較
+            </div>
+          ) : (() => {
+            const qc = metrics.quarterComparison;
+            const data = [
+              { name: qc.previousLabel, 投標件數: qc.previous.total, 得標件數: qc.previous.won },
+              { name: qc.currentLabel, 投標件數: qc.current.total, 得標件數: qc.current.won },
+            ];
+            return (
+              <ResponsiveContainer width="100%" height={chartHeight}>
+                <BarChart data={data} margin={{ left: 0, right: 16, top: 4, bottom: 4 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                  <RTooltip content={<ChartTooltip />} />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  <Bar dataKey="投標件數" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="得標件數" fill="#10b981" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            );
+          })()}
+        </div>
+      );
+
     case "chart-type-analysis":
       return (
         <div className="w-full" style={{ minHeight: chartHeight }}>

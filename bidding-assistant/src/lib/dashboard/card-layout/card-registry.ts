@@ -182,6 +182,33 @@ export const CARD_REGISTRY: CardDefinition[] = [
     },
   },
 
+  {
+    type: "chart-rolling-winrate",
+    name: "滾動勝率趨勢",
+    description: "近 3 個月滾動得標率的變化趨勢",
+    icon: "📈",
+    category: "chart",
+    allowedSizes: ["medium", "large", "wide"],
+    defaultSize: "large",
+    defaultConfig: {
+      title: "滾動勝率趨勢",
+      period: "year",
+    },
+  },
+  {
+    type: "chart-quarter-compare",
+    name: "季度比較",
+    description: "當季與上季的投標件數與得標件數比較",
+    icon: "📊",
+    category: "chart",
+    allowedSizes: ["medium", "large", "wide"],
+    defaultSize: "medium",
+    defaultConfig: {
+      title: "季度比較",
+      period: "year",
+    },
+  },
+
   // ── Gauge cards ─────────────────────────────────────────────
   {
     type: "gauge-weekly-bid",
@@ -252,34 +279,6 @@ export const CARD_REGISTRY: CardDefinition[] = [
     defaultConfig: {
       title: "決策分布",
       period: "all",
-    },
-  },
-
-  // ── Trend cards ────────────────────────────────────────────
-  {
-    type: "chart-rolling-winrate",
-    name: "滾動勝率趨勢",
-    description: "近 6 個月的 3 個月滾動得標率折線圖",
-    icon: "📈",
-    category: "chart",
-    allowedSizes: ["medium", "large", "wide"],
-    defaultSize: "medium",
-    defaultConfig: {
-      title: "滾動勝率趨勢",
-      period: "year",
-    },
-  },
-  {
-    type: "chart-quarter-compare",
-    name: "季度對比",
-    description: "當季與上季的案件數、得標數、得標率比較",
-    icon: "📊",
-    category: "chart",
-    allowedSizes: ["medium", "large", "wide"],
-    defaultSize: "medium",
-    defaultConfig: {
-      title: "季度對比",
-      period: "year",
     },
   },
 

@@ -5,6 +5,8 @@ import type { NotionPage } from "./types";
 import { F, ACTIVE_STATUSES, SUBMITTED_STATUSES, PROCURED_STATUSES } from "./types";
 import { BID_STATUS } from "@/lib/constants/bid-status";
 import { parseDateField } from "./helpers";
+import type { RollingMetrics, PeriodComparison } from "./analysis/trend";
+import { computeMonthlyMetrics, computeRollingMetrics, compareQuarters } from "./analysis/trend";
 
 // ====== 匯出的指標型別 ======
 
@@ -87,6 +89,10 @@ export interface DashboardMetrics {
   decisionDistribution: DecisionCount[];
   monthlyTrend: MonthlyPoint[];
   typeAnalysis: TypeStat[];
+
+  // 趨勢分析（滾動勝率 + 季度比較）
+  rollingWinRate: RollingMetrics[];
+  quarterComparison: PeriodComparison | null;
 }
 
 // ====== 時段計算工具 ======
@@ -404,6 +410,28 @@ export function useDashboardMetrics(
       .sort((a, b) => b.件數 - a.件數);
   }, [pages]);
 
+  // 7. 趨勢分析（合併歷史案件，取得完整月度數據）
+  const allPages = useMemo(() => {
+    if (!historicalPages?.length) return pages;
+    const ids = new Set(pages.map((p) => p.id));
+    return [...pages, ...historicalPages.filter((p) => !ids.has(p.id))];
+  }, [pages, historicalPages]);
+
+  const trendMonthly = useMemo(
+    () => computeMonthlyMetrics(allPages),
+    [allPages],
+  );
+
+  const rollingWinRate = useMemo(
+    () => computeRollingMetrics(trendMonthly, 3),
+    [trendMonthly],
+  );
+
+  const quarterComparison = useMemo(
+    () => compareQuarters(trendMonthly, new Date()),
+    [trendMonthly],
+  );
+
   return {
     activeProjects,
     biddingProjects,
@@ -429,5 +457,7 @@ export function useDashboardMetrics(
     decisionDistribution,
     monthlyTrend,
     typeAnalysis,
+    rollingWinRate,
+    quarterComparison,
   };
 }

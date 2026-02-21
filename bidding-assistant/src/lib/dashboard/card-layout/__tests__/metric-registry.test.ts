@@ -29,6 +29,8 @@ const ALL_METRIC_KEYS: MetricKey[] = [
   "typeAnalysis",
   "statusDistribution",
   "costBreakdown",
+  "rollingWinRate",
+  "quarterComparison",
 ];
 
 const VALID_VISUALIZATIONS: VisualizationType[] = [
