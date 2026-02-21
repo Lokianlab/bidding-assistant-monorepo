@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-0500|ITEJ|opus-4.6
+SNAPSHOT|20260223-1010|ITEJ|opus-4.6
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -14,7 +14,7 @@ SNAPSHOT|20260223-0500|ITEJ|opus-4.6
 [~] feat-m03-strategy|M03 戰略分析引擎 Phase 1 實作|放棄：ITEJ 實作與 A44T Phase 1+2 碰撞，保留 A44T 版本（@op:20260223-ITEJ#0000）
 [v] infra-claude-md-modular|CLAUDE.md 拆分|JDNE 已完成（記錄格式搬到 rules/，主檔精簡到 208 行），待用戶驗收
 [v] feat-pcc-web|PCC 情報搜尋接進 Web App|API route + 搜尋面板 + 標案詳情 + 評委 + 得標率 + 競爭分析 + 機關情報 + P偵察 + 市場趨勢+邊界測試+hook/context/FeatureGuard測試（55檔1132tests），待用戶驗收
-[v] infra-forum|機器論壇 + /質問 指令|forum/ 目錄 + 格式規範 + 5 種貼文類型 + /質問全面校準 + /更新整合，待用戶驗收
+[v] infra-forum|機器論壇 + 格式規範 + 閱讀工具|_threads.md 新格式（無摘要+priority欄）+ forum-format.md 升級（共識協議v2）+ read-thread.py，待用戶驗收
 [v] feat-quality-refactor|品質檢查模組重構|邏輯抽到 lib/quality/，鐵律 5 flag 全實作+公司名稱一致性+負數防禦+SSOT 修正（13 規則名稱統一到 constants.ts），55+13 SSOT 修正，待用戶驗收
 [v] feat-pricing-refactor|報價計算模組重構|邏輯抽到 lib/pricing/，types + helpers + 28 個測試（含負數防禦），頁面瘦身，待用戶驗收
 [v] feat-assembly-refactor|提案組裝引擎重構|邏輯抽到 lib/assembly/（estimateTokens+formatKB+buildFilename+computeFileList+computeActiveFiles+assembleContent），31 個測試，頁面瘦身，待用戶驗收
