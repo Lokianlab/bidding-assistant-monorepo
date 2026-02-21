@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState, useMemo } from "react";
-import { calculateSummary, formatAmount, createEmptyItem, getDefaultItems } from "@/lib/pricing/helpers";
+import { itemAmount, calculateSummary, formatAmount, createEmptyItem, getDefaultItems } from "@/lib/pricing/helpers";
 import type { CostItem } from "@/lib/pricing/types";
 
 export default function PricingPage() {
@@ -124,7 +124,7 @@ export default function PricingPage() {
                         />
                       </TableCell>
                       <TableCell className="text-right font-mono text-sm">
-                        {formatAmount(item.quantity * item.unitPrice)}
+                        {formatAmount(itemAmount(item))}
                       </TableCell>
                       <TableCell>
                         <Button
