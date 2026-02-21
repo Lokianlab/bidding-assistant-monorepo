@@ -1,172 +1,229 @@
-// ====== M03 戰略分析引擎：知識庫匹配 ======
-// 根據案名和機關，從五大知識庫中找出相關條目
+// ====== M03 戰略分析引擎：知識庫匹配器 ======
 
 import type {
+  KBMatchResult,
+  KBMatchEntry,
   KnowledgeBaseData,
   KBEntry00A,
   KBEntry00B,
   KBEntry00C,
   KBEntry00D,
   KBEntry00E,
-} from "@/lib/knowledge-base/types";
-import type { KBMatchResult } from "./types";
-import { extractKeywords, keywordOverlap } from "./helpers";
+} from "./types";
+import { textMatch, extractKeywords } from "./helpers";
+
+/** 匹配門檻（0-1，越高越嚴格） */
+const MATCH_THRESHOLD = 0.4;
 
 /**
- * 主匹配函式：從案名和機關找出五大知識庫中的相關條目
+ * 從五個知識庫中找出與特定標案最相關的素材。
+ * 匹配策略：
+ * - 關鍵字匹配：案名關鍵字 vs 各庫 entry 的文字欄位
+ * - 機關匹配：機關名稱 vs 00B 的 client 欄位
+ * - 類型匹配：案件類型 vs 00C 的 applicableType
+ * - 結果匹配：00E 中同機關/同類型案件的檢討
  */
 export function matchKB(
-  caseName: string,
-  agency: string,
+  tenderTitle: string,
+  tenderKeywords: string[],
+  agencyName: string,
   kb: KnowledgeBaseData,
 ): KBMatchResult {
-  const { categories, terms } = extractKeywords(caseName);
+  const keywords = tenderKeywords.length > 0 ? tenderKeywords : extractKeywords(tenderTitle);
 
   return {
-    team: matchTeam(terms, categories, kb["00A"]),
-    portfolio: matchPortfolio(caseName, agency, kb["00B"]),
-    templates: matchTemplates(categories, kb["00C"]),
-    risks: matchRisks(categories, kb["00D"]),
-    reviews: matchReviews(caseName, agency, kb["00E"]),
+    team: matchTeam(keywords, kb["00A"]),
+    portfolio: matchPortfolio(keywords, agencyName, kb["00B"]),
+    templates: matchTemplates(keywords, tenderTitle, kb["00C"]),
+    risks: matchRisks(keywords, kb["00D"]),
+    reviews: matchReviews(keywords, agencyName, kb["00E"]),
   };
 }
 
-// ====== 各庫匹配邏輯 ======
+/** 匹配 00A 團隊成員 */
+function matchTeam(keywords: string[], entries: KBEntry00A[]): KBMatchEntry<KBEntry00A>[] {
+  const results: KBMatchEntry<KBEntry00A>[] = [];
 
-/** 00A 團隊：比對成員經驗、證照、專案 */
-function matchTeam(
-  terms: string[],
-  categories: string[],
-  team: KBEntry00A[],
-): { entry: KBEntry00A; relevance: string }[] {
-  return team
-    .filter((m) => m.entryStatus === "active" && m.status === "在職")
-    .map((member) => {
-      const text = [
-        member.title,
-        member.additionalCapabilities,
-        ...member.experiences.map((e) => `${e.description} ${e.title}`),
-        ...member.certifications.map((c) => c.name),
-        ...member.projects.map((p) => `${p.projectName} ${p.role}`),
-      ].join(" ");
+  for (const member of entries) {
+    if (member.entryStatus !== "active" || member.status === "已離職") continue;
 
-      const matchedTerms = terms.filter((t) => text.includes(t));
-      const matchedCats = categories.filter((c) => text.includes(c));
+    const matchReasons: string[] = [];
 
-      if (matchedTerms.length === 0 && matchedCats.length === 0) return null;
+    for (const kw of keywords) {
+      // 認證匹配
+      if (member.certifications.some((c) => textMatch(c.name, kw) > MATCH_THRESHOLD)) {
+        matchReasons.push(`認證含「${kw}」`);
+      }
+      // 經歷匹配
+      if (member.experiences.some((e) => textMatch(e.description, kw) > MATCH_THRESHOLD / 2)) {
+        matchReasons.push(`經歷含「${kw}」`);
+      }
+      // 專案匹配
+      if (member.projects.some((p) => textMatch(p.projectName, kw) > MATCH_THRESHOLD)) {
+        matchReasons.push(`專案含「${kw}」`);
+      }
+      // 授權角色匹配
+      if (member.authorizedRoles.some((r) => textMatch(r, kw) > MATCH_THRESHOLD)) {
+        matchReasons.push(`授權角色含「${kw}」`);
+      }
+    }
 
-      const relevance =
-        matchedTerms.length > 0
-          ? `經驗涵蓋：${matchedTerms.join("、")}`
-          : `相關領域：${matchedCats.join("、")}`;
+    if (matchReasons.length > 0) {
+      results.push({
+        entry: member,
+        relevance: [...new Set(matchReasons)].join("、"),
+      });
+    }
+  }
 
-      return { entry: member, relevance };
-    })
-    .filter(
-      (m): m is { entry: KBEntry00A; relevance: string } => m !== null,
-    );
+  // 按匹配原因數量排序
+  return results.sort((a, b) =>
+    b.relevance.split("、").length - a.relevance.split("、").length,
+  );
 }
 
-/** 00B 實績：比對案名關鍵字重疊 + 同機關 */
+/** 匹配 00B 實績 */
 function matchPortfolio(
-  caseName: string,
-  agency: string,
-  portfolio: KBEntry00B[],
-): { entry: KBEntry00B; relevance: string }[] {
-  return portfolio
-    .filter((p) => p.entryStatus === "active")
-    .map((project) => {
-      const overlap = keywordOverlap(caseName, project.projectName);
-      const sameAgency =
-        project.client.includes(agency) || agency.includes(project.client);
+  keywords: string[],
+  agencyName: string,
+  entries: KBEntry00B[],
+): KBMatchEntry<KBEntry00B>[] {
+  const results: KBMatchEntry<KBEntry00B>[] = [];
 
-      if (overlap === 0 && !sameAgency) return null;
+  for (const proj of entries) {
+    if (proj.entryStatus !== "active") continue;
 
-      const parts: string[] = [];
-      if (overlap > 0)
-        parts.push(`案名相似度 ${(overlap * 100).toFixed(0)}%`);
-      if (sameAgency) parts.push(`同機關「${project.client}」`);
+    const matchReasons: string[] = [];
 
-      return { entry: project, relevance: parts.join("、") };
-    })
-    .filter(
-      (p): p is { entry: KBEntry00B; relevance: string } => p !== null,
-    );
+    // 機關匹配
+    if (agencyName && textMatch(proj.client, agencyName) > MATCH_THRESHOLD) {
+      matchReasons.push(`同機關「${proj.client}」`);
+    }
+
+    // 關鍵字匹配案名
+    for (const kw of keywords) {
+      if (textMatch(proj.projectName, kw) > MATCH_THRESHOLD) {
+        matchReasons.push(`案名含「${kw}」`);
+      }
+      // 工作項目匹配
+      if (proj.workItems.some((w) => textMatch(w.item, kw) > MATCH_THRESHOLD || textMatch(w.description, kw) > MATCH_THRESHOLD / 2)) {
+        matchReasons.push(`工作項目含「${kw}」`);
+      }
+    }
+
+    if (matchReasons.length > 0) {
+      results.push({
+        entry: proj,
+        relevance: [...new Set(matchReasons)].join("、"),
+      });
+    }
+  }
+
+  return results.sort((a, b) =>
+    b.relevance.split("、").length - a.relevance.split("、").length,
+  );
 }
 
-/** 00C 範本：比對適用類型 */
+/** 匹配 00C 時程範本 */
 function matchTemplates(
-  categories: string[],
-  templates: KBEntry00C[],
-): { entry: KBEntry00C; relevance: string }[] {
-  return templates
-    .filter((t) => t.entryStatus === "active")
-    .map((template) => {
-      const matched = categories.filter(
-        (c) =>
-          template.applicableType.includes(c) ||
-          template.templateName.includes(c),
-      );
-      if (matched.length === 0) return null;
-      return {
+  keywords: string[],
+  tenderTitle: string,
+  entries: KBEntry00C[],
+): KBMatchEntry<KBEntry00C>[] {
+  const results: KBMatchEntry<KBEntry00C>[] = [];
+
+  for (const template of entries) {
+    if (template.entryStatus !== "active") continue;
+
+    const matchReasons: string[] = [];
+
+    // applicableType 匹配
+    if (textMatch(template.applicableType, tenderTitle) > MATCH_THRESHOLD / 2) {
+      matchReasons.push(`適用類型「${template.applicableType}」`);
+    }
+    for (const kw of keywords) {
+      if (textMatch(template.applicableType, kw) > MATCH_THRESHOLD) {
+        matchReasons.push(`類型含「${kw}」`);
+      }
+      if (textMatch(template.templateName, kw) > MATCH_THRESHOLD) {
+        matchReasons.push(`範本名含「${kw}」`);
+      }
+    }
+
+    if (matchReasons.length > 0) {
+      results.push({
         entry: template,
-        relevance: `適用類型：${matched.join("、")}`,
-      };
-    })
-    .filter(
-      (t): t is { entry: KBEntry00C; relevance: string } => t !== null,
-    );
+        relevance: [...new Set(matchReasons)].join("、"),
+      });
+    }
+  }
+
+  return results;
 }
 
-/** 00D 風險 SOP：比對風險名稱與案件類別 */
-function matchRisks(
-  categories: string[],
-  risks: KBEntry00D[],
-): { entry: KBEntry00D; relevance: string }[] {
-  return risks
-    .filter((r) => r.entryStatus === "active")
-    .map((risk) => {
-      // 用類別比對風險名稱（風險名稱通常包含領域關鍵字）
-      const nameMatch = categories.some((c) => risk.riskName.includes(c));
-      // 用風險名稱的詞語比對類別
-      const riskWords = risk.riskName.split(/[\s/,、，]/);
-      const wordMatch = riskWords.some(
-        (w) =>
-          w.length >= 2 && categories.some((c) => c.includes(w) || w.includes(c)),
-      );
+/** 匹配 00D 應變 SOP */
+function matchRisks(keywords: string[], entries: KBEntry00D[]): KBMatchEntry<KBEntry00D>[] {
+  const results: KBMatchEntry<KBEntry00D>[] = [];
 
-      if (!nameMatch && !wordMatch) return null;
-      return {
+  for (const risk of entries) {
+    if (risk.entryStatus !== "active") continue;
+
+    const matchReasons: string[] = [];
+
+    for (const kw of keywords) {
+      if (textMatch(risk.riskName, kw) > MATCH_THRESHOLD) {
+        matchReasons.push(`風險名含「${kw}」`);
+      }
+      if (textMatch(risk.prevention, kw) > MATCH_THRESHOLD / 2) {
+        matchReasons.push(`預防措施含「${kw}」`);
+      }
+    }
+
+    if (matchReasons.length > 0) {
+      results.push({
         entry: risk,
-        relevance: `相關風險：${risk.riskName}（${risk.riskLevel}）`,
-      };
-    })
-    .filter(
-      (r): r is { entry: KBEntry00D; relevance: string } => r !== null,
-    );
+        relevance: [...new Set(matchReasons)].join("、"),
+      });
+    }
+  }
+
+  return results;
 }
 
-/** 00E 案後檢討：比對案名關鍵字 + 同機關 */
+/** 匹配 00E 案後檢討 */
 function matchReviews(
-  caseName: string,
-  agency: string,
-  reviews: KBEntry00E[],
-): { entry: KBEntry00E; relevance: string }[] {
-  return reviews
-    .filter((r) => r.entryStatus === "active")
-    .map((review) => {
-      const overlap = keywordOverlap(caseName, review.projectName);
-      // 00E 沒有 client 欄位，用 projectName 碰撞機關名
-      const agencyMatch = review.projectName.includes(agency);
+  keywords: string[],
+  agencyName: string,
+  entries: KBEntry00E[],
+): KBMatchEntry<KBEntry00E>[] {
+  const results: KBMatchEntry<KBEntry00E>[] = [];
 
-      if (overlap === 0 && !agencyMatch) return null;
+  for (const review of entries) {
+    if (review.entryStatus !== "active") continue;
 
-      return {
+    const matchReasons: string[] = [];
+
+    // 案名匹配（包含機關名稱）
+    if (agencyName && textMatch(review.projectName, agencyName) > MATCH_THRESHOLD) {
+      matchReasons.push(`同機關案件`);
+    }
+
+    for (const kw of keywords) {
+      if (textMatch(review.projectName, kw) > MATCH_THRESHOLD) {
+        matchReasons.push(`案名含「${kw}」`);
+      }
+      if (textMatch(review.bidPhaseReview, kw) > MATCH_THRESHOLD / 2) {
+        matchReasons.push(`投標檢討含「${kw}」`);
+      }
+    }
+
+    if (matchReasons.length > 0) {
+      results.push({
         entry: review,
-        relevance: `過往案例「${review.projectName}」（${review.result}）`,
-      };
-    })
-    .filter(
-      (r): r is { entry: KBEntry00E; relevance: string } => r !== null,
-    );
+        relevance: [...new Set(matchReasons)].join("、"),
+      });
+    }
+  }
+
+  return results;
 }

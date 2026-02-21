@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-2330|ITEJ
+SNAPSHOT|20260223-0000|ITEJ
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -20,8 +20,8 @@ SNAPSHOT|20260222-2330|ITEJ
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決
 [?] plan-notion-mcp-status|Notion MCP 定位|JDNE 說暫緩，CLAUDE.md 寫待建，不一致
 [ ] plan-devplan-push|消化暫存區推進開發計畫|6 條任務線完成，剩 6 個待決碎片
-[ ] feat-test-coverage|持續補測試|55檔1132tests（+15 seed-data +7 sanitizeFilename），全 lib/ 模組已覆蓋
-[ ] plan-m03-strategy|M03 戰略分析引擎|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
+[ ] feat-test-coverage|持續補測試|60檔1287tests（+92 strategy），全 lib/ 模組已覆蓋
+[v] feat-m03-strategy|M03 戰略分析引擎 Phase 1|types+constants+helpers+fit-scoring+kb-matcher+92 tests，1287 tests 全過，待用戶驗收
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m02-kb|M02 知識庫模組規格|待寫（依賴儲存方案決策）
 [ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1

@@ -1,138 +1,254 @@
 import { describe, it, expect } from "vitest";
 import {
   extractKeywords,
-  keywordOverlap,
-  parseContractAmount,
-  calculateIQR,
+  textMatch,
+  normalizeWeights,
+  computeVerdict,
+  median,
+  iqr,
   clampScore,
-  formatBudget,
+  parseAmount,
 } from "../helpers";
+import type { FitScore, FitWeights } from "../types";
+import { DEFAULT_FIT_WEIGHTS, DEFAULT_VERDICT_THRESHOLDS } from "../constants";
+
+// ====== extractKeywords ======
 
 describe("extractKeywords", () => {
-  it("辨識活動相關關鍵字", () => {
-    const result = extractKeywords("113 年文化節活動策展計畫");
-    expect(result.categories).toContain("活動");
-    expect(result.categories).toContain("展覽");
-    expect(result.terms).toContain("活動");
-    expect(result.terms).toContain("策展");
+  it("空字串回傳空陣列", () => {
+    expect(extractKeywords("")).toEqual([]);
+    expect(extractKeywords("  ")).toEqual([]);
   });
 
-  it("辨識多領域案名", () => {
-    const result = extractKeywords("博物館展覽設計暨行銷推廣");
-    expect(result.categories).toContain("展覽");
-    expect(result.categories).toContain("設計");
-    expect(result.categories).toContain("行銷");
+  it("提取業務類型詞彙", () => {
+    const result = extractKeywords("113年度展覽策展委託案");
+    expect(result).toContain("展覽策展");
   });
 
-  it("無法辨識的案名 → 空結果", () => {
-    const result = extractKeywords("XYZ-2025-001");
-    expect(result.categories).toHaveLength(0);
-    expect(result.terms).toHaveLength(0);
+  it("按分隔符拆分", () => {
+    // 用明確無歧義的輸入：「環境教育」和「教育推廣」不重疊
+    const result = extractKeywords("文化局、環境教育委託案");
+    expect(result).toContain("文化局");
+    expect(result).toContain("環境教育");
   });
 
-  it("不重複類別", () => {
-    const result = extractKeywords("策展展覽展示展場");
-    // 全部屬於「展覽」類，只出現一次
-    expect(result.categories.filter((c) => c === "展覽")).toHaveLength(1);
+  it("去重", () => {
+    const result = extractKeywords("展覽策展及展覽策展服務");
+    const count = result.filter((k) => k === "展覽策展").length;
+    expect(count).toBe(1);
+  });
+
+  it("過濾太短的片段", () => {
+    const result = extractKeywords("A 計畫管理案");
+    expect(result).not.toContain("A");
+    expect(result).toContain("計畫管理");
+  });
+
+  it("長詞優先匹配", () => {
+    // "展覽策展" 應該被完整匹配，而不是拆成 "展覽" 和 "策展"
+    const result = extractKeywords("展覽策展");
+    expect(result).toContain("展覽策展");
+  });
+
+  it("混合中英文案名", () => {
+    const result = extractKeywords("APP開發暨資訊系統建置案");
+    expect(result).toContain("APP開發");
+    expect(result).toContain("資訊系統");
   });
 });
 
-describe("keywordOverlap", () => {
-  it("完全相同 → 1", () => {
-    expect(keywordOverlap("文化活動", "文化活動")).toBe(1);
+// ====== textMatch ======
+
+describe("textMatch", () => {
+  it("空字串回傳 0", () => {
+    expect(textMatch("", "test")).toBe(0);
+    expect(textMatch("test", "")).toBe(0);
   });
 
-  it("部分重疊 → 0-1 之間", () => {
-    const score = keywordOverlap("文化活動策展", "活動行銷推廣");
-    expect(score).toBeGreaterThan(0);
-    expect(score).toBeLessThan(1);
+  it("完全相同回傳 1", () => {
+    expect(textMatch("展覽", "展覽")).toBe(1);
   });
 
-  it("完全無關 → 0", () => {
-    expect(keywordOverlap("工程施工", "行銷推廣")).toBe(0);
+  it("包含關係回傳 1", () => {
+    expect(textMatch("展覽策展計畫", "展覽")).toBe(1);
+    expect(textMatch("展覽", "展覽策展計畫")).toBe(1);
   });
 
-  it("兩邊都無關鍵字 → 0", () => {
-    expect(keywordOverlap("ABC", "XYZ")).toBe(0);
+  it("不區分大小寫", () => {
+    expect(textMatch("APP", "app")).toBe(1);
+  });
+
+  it("無關文字回傳低分", () => {
+    expect(textMatch("展覽", "資訊系統")).toBeLessThan(0.5);
   });
 });
 
-describe("parseContractAmount", () => {
-  it("標準格式", () => {
-    expect(parseContractAmount("3,000,000")).toBe(3000000);
+// ====== normalizeWeights ======
+
+describe("normalizeWeights", () => {
+  it("預設權重不變（已是 100）", () => {
+    const result = normalizeWeights(DEFAULT_FIT_WEIGHTS);
+    const sum = Object.values(result).reduce((s, v) => s + v, 0);
+    expect(sum).toBeCloseTo(100);
   });
 
-  it("含中文", () => {
-    expect(parseContractAmount("新臺幣3,000,000元")).toBe(3000000);
+  it("不等權重正確歸一化", () => {
+    const custom: FitWeights = { domain: 40, agency: 20, competition: 20, scale: 10, team: 10 };
+    const result = normalizeWeights(custom);
+    expect(result.domain).toBe(40);
+    expect(result.agency).toBe(20);
   });
 
-  it("含 $ 符號", () => {
-    expect(parseContractAmount("$5,000,000")).toBe(5000000);
+  it("全零回傳均等權重", () => {
+    const zeros: FitWeights = { domain: 0, agency: 0, competition: 0, scale: 0, team: 0 };
+    const result = normalizeWeights(zeros);
+    expect(result.domain).toBe(20);
+    expect(result.agency).toBe(20);
   });
 
-  it("空字串 → null", () => {
-    expect(parseContractAmount("")).toBeNull();
-  });
-
-  it("純文字 → null", () => {
-    expect(parseContractAmount("面議")).toBeNull();
+  it("負數視為 0", () => {
+    const neg: FitWeights = { domain: -10, agency: 50, competition: 50, scale: 0, team: 0 };
+    const result = normalizeWeights(neg);
+    expect(result.domain).toBe(0);
+    expect(result.agency).toBe(50);
   });
 });
 
-describe("calculateIQR", () => {
-  it("正常計算", () => {
-    const result = calculateIQR([1, 2, 3, 4, 5, 6, 7, 8]);
-    expect(result).not.toBeNull();
-    // sorted: [1,2,3,4,5,6,7,8], n=8
-    // q1 = sorted[floor(8*0.25)] = sorted[2] = 3
-    // median = sorted[floor(8*0.5)] = sorted[4] = 5
-    // q3 = sorted[floor(8*0.75)] = sorted[6] = 7
-    expect(result!.q1).toBe(3);
-    expect(result!.median).toBe(5);
-    expect(result!.q3).toBe(7);
-    expect(result!.iqr).toBe(4);
+// ====== computeVerdict ======
+
+describe("computeVerdict", () => {
+  const makeDimensions = (conf: "高" | "中" | "低" = "高"): FitScore["dimensions"] => ({
+    domain: { score: 15, confidence: conf, evidence: "" },
+    agency: { score: 15, confidence: conf, evidence: "" },
+    competition: { score: 15, confidence: conf, evidence: "" },
+    scale: { score: 15, confidence: conf, evidence: "" },
+    team: { score: 15, confidence: conf, evidence: "" },
   });
 
-  it("不足 4 筆 → null", () => {
-    expect(calculateIQR([1, 2, 3])).toBeNull();
+  it("高分 → 建議投標", () => {
+    expect(computeVerdict(75, makeDimensions(), DEFAULT_VERDICT_THRESHOLDS, DEFAULT_FIT_WEIGHTS)).toBe("建議投標");
   });
 
-  it("不修改原陣列", () => {
-    const original = [5, 3, 1, 4, 2];
-    calculateIQR(original);
-    expect(original).toEqual([5, 3, 1, 4, 2]);
+  it("中分 → 值得評估", () => {
+    expect(computeVerdict(55, makeDimensions(), DEFAULT_VERDICT_THRESHOLDS, DEFAULT_FIT_WEIGHTS)).toBe("值得評估");
+  });
+
+  it("低分 → 不建議", () => {
+    expect(computeVerdict(40, makeDimensions(), DEFAULT_VERDICT_THRESHOLDS, DEFAULT_FIT_WEIGHTS)).toBe("不建議");
+  });
+
+  it("低信心佔比過高 → 資料不足", () => {
+    const dims = makeDimensions("低");
+    // 全部低信心 = 100% > 40%
+    expect(computeVerdict(75, dims, DEFAULT_VERDICT_THRESHOLDS, DEFAULT_FIT_WEIGHTS)).toBe("資料不足");
+  });
+
+  it("邊界值：剛好等於門檻", () => {
+    expect(computeVerdict(70, makeDimensions(), DEFAULT_VERDICT_THRESHOLDS, DEFAULT_FIT_WEIGHTS)).toBe("建議投標");
+    expect(computeVerdict(50, makeDimensions(), DEFAULT_VERDICT_THRESHOLDS, DEFAULT_FIT_WEIGHTS)).toBe("值得評估");
   });
 });
+
+// ====== median ======
+
+describe("median", () => {
+  it("空陣列回傳 0", () => {
+    expect(median([])).toBe(0);
+  });
+
+  it("奇數長度", () => {
+    expect(median([1, 3, 5])).toBe(3);
+  });
+
+  it("偶數長度", () => {
+    expect(median([1, 2, 3, 4])).toBe(2.5);
+  });
+
+  it("不改變原陣列", () => {
+    const arr = [5, 1, 3];
+    median(arr);
+    expect(arr).toEqual([5, 1, 3]);
+  });
+
+  it("單一元素", () => {
+    expect(median([42])).toBe(42);
+  });
+});
+
+// ====== iqr ======
+
+describe("iqr", () => {
+  it("正常資料", () => {
+    const result = iqr([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(result.q1).toBe(2.5);
+    expect(result.q3).toBe(6.5);
+    expect(result.iqr).toBe(4);
+  });
+
+  it("資料太少時用 min/max", () => {
+    const result = iqr([10, 20]);
+    expect(result.q1).toBe(10);
+    expect(result.q3).toBe(20);
+    expect(result.iqr).toBe(10);
+  });
+
+  it("空陣列", () => {
+    const result = iqr([]);
+    expect(result.q1).toBe(0);
+    expect(result.q3).toBe(0);
+    expect(result.iqr).toBe(0);
+  });
+});
+
+// ====== clampScore ======
 
 describe("clampScore", () => {
-  it("正常範圍", () => {
+  it("正常範圍不變", () => {
     expect(clampScore(10)).toBe(10);
   });
 
-  it("超過 20 → 20", () => {
+  it("超過上限限制", () => {
     expect(clampScore(25)).toBe(20);
   });
 
-  it("低於 0 → 0", () => {
+  it("低於 0 限制", () => {
     expect(clampScore(-5)).toBe(0);
   });
 
-  it("四捨五入", () => {
-    expect(clampScore(10.6)).toBe(11);
-    expect(clampScore(10.4)).toBe(10);
+  it("四捨五入到一位小數", () => {
+    expect(clampScore(10.567)).toBe(10.6);
+  });
+
+  it("自訂上限", () => {
+    expect(clampScore(150, 100)).toBe(100);
   });
 });
 
-describe("formatBudget", () => {
-  it("億級", () => {
-    expect(formatBudget(150_000_000)).toBe("1.5 億");
+// ====== parseAmount ======
+
+describe("parseAmount", () => {
+  it("null/undefined 回傳 null", () => {
+    expect(parseAmount(null)).toBeNull();
+    expect(parseAmount(undefined)).toBeNull();
   });
 
-  it("萬級", () => {
-    expect(formatBudget(3_000_000)).toBe("300 萬");
+  it("空字串回傳 null", () => {
+    expect(parseAmount("")).toBeNull();
   });
 
-  it("小額", () => {
-    expect(formatBudget(5000)).toContain("5,000");
+  it("純數字", () => {
+    expect(parseAmount("1234567")).toBe(1234567);
+  });
+
+  it("含逗號", () => {
+    expect(parseAmount("1,234,567")).toBe(1234567);
+  });
+
+  it("含中文", () => {
+    expect(parseAmount("新台幣 1,234,567 元")).toBe(1234567);
+  });
+
+  it("非數字回傳 null", () => {
+    expect(parseAmount("無資料")).toBeNull();
   });
 });
