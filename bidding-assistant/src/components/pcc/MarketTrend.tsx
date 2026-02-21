@@ -90,6 +90,12 @@ function TrendOverview({ data }: { data: MarketTrendData }) {
     "紅海": "destructive" as const,
   };
 
+  const trendIcon = {
+    "增加": "↑",
+    "持平": "→",
+    "減少": "↓",
+  };
+
   const recentYears = data.yearlyData.slice(-3);
   const recentAvgBidders = recentYears.length > 0
     ? recentYears
@@ -112,9 +118,13 @@ function TrendOverview({ data }: { data: MarketTrendData }) {
 
       <Card className="py-3">
         <CardContent className="text-center">
-          <p className="text-xs text-muted-foreground">涵蓋年度</p>
-          <p className="text-2xl font-bold mt-1">{data.yearlyData.length}</p>
-          <p className="text-xs text-muted-foreground mt-1">年</p>
+          <p className="text-xs text-muted-foreground">趨勢方向</p>
+          <p className="text-2xl font-bold mt-1">
+            {trendIcon[data.trendDirection]} {data.trendDirection}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {data.yearlyData.length} 年資料
+          </p>
         </CardContent>
       </Card>
 

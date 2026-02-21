@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { analyzeMarketTrend } from "../market-trend";
-import type { PCCRecord } from "../types";
+import { analyzeMarketTrend, judgeTrend } from "../market-trend";
+import type { PCCRecord, YearlyMarketData } from "../types";
 
 function mockRecord(overrides: Partial<PCCRecord> & { date: number }): PCCRecord {
   return {
@@ -27,11 +27,12 @@ function mockRecord(overrides: Partial<PCCRecord> & { date: number }): PCCRecord
 }
 
 describe("analyzeMarketTrend", () => {
-  it("空記錄回傳藍海", () => {
+  it("空記錄回傳藍海且趨勢持平", () => {
     const result = analyzeMarketTrend([], "食農教育");
     expect(result.keyword).toBe("食農教育");
     expect(result.totalRecords).toBe(0);
     expect(result.competitionLevel).toBe("藍海");
+    expect(result.trendDirection).toBe("持平");
     expect(result.yearlyData).toHaveLength(0);
   });
 
@@ -181,5 +182,85 @@ describe("analyzeMarketTrend", () => {
     expect(y2024.topAgencies).toHaveLength(3);
     expect(y2024.topAgencies[0]).toBe("機關G");
     expect(y2024.topAgencies[1]).toBe("機關D");
+  });
+});
+
+// ====== judgeTrend 單元測試 ======
+
+function makeYearData(year: number, totalCases: number): YearlyMarketData {
+  return {
+    year,
+    totalCases,
+    awardCases: 0,
+    tenderCases: 0,
+    avgBidders: 0,
+    maxBidders: 0,
+    minBidders: 0,
+    topAgencies: [],
+  };
+}
+
+describe("judgeTrend", () => {
+  it("不到 2 年資料回傳持平", () => {
+    expect(judgeTrend([])).toBe("持平");
+    expect(judgeTrend([makeYearData(2024, 10)])).toBe("持平");
+  });
+
+  it("後半段案件量增加超過 20% 判為增加", () => {
+    const data = [
+      makeYearData(2022, 10),
+      makeYearData(2023, 10),
+      makeYearData(2024, 15),
+      makeYearData(2025, 18),
+    ];
+    // 前半平均 10，後半平均 16.5，+65% > 20%
+    expect(judgeTrend(data)).toBe("增加");
+  });
+
+  it("後半段案件量減少超過 20% 判為減少", () => {
+    const data = [
+      makeYearData(2022, 20),
+      makeYearData(2023, 18),
+      makeYearData(2024, 8),
+      makeYearData(2025, 6),
+    ];
+    // 前半平均 19，後半平均 7，-63% < -20%
+    expect(judgeTrend(data)).toBe("減少");
+  });
+
+  it("變化在 20% 以內判為持平", () => {
+    const data = [
+      makeYearData(2022, 10),
+      makeYearData(2023, 11),
+      makeYearData(2024, 10),
+      makeYearData(2025, 12),
+    ];
+    // 前半平均 10.5，後半平均 11，+4.8% < 20%
+    expect(judgeTrend(data)).toBe("持平");
+  });
+
+  it("前半為 0 後半有量判為增加", () => {
+    const data = [
+      makeYearData(2023, 0),
+      makeYearData(2024, 5),
+    ];
+    expect(judgeTrend(data)).toBe("增加");
+  });
+
+  it("前後都是 0 判為持平", () => {
+    const data = [
+      makeYearData(2023, 0),
+      makeYearData(2024, 0),
+    ];
+    expect(judgeTrend(data)).toBe("持平");
+  });
+
+  it("剛好 2 年也能判斷", () => {
+    const data = [
+      makeYearData(2023, 5),
+      makeYearData(2024, 10),
+    ];
+    // 前半平均 5，後半平均 10，+100% > 20%
+    expect(judgeTrend(data)).toBe("增加");
   });
 });
