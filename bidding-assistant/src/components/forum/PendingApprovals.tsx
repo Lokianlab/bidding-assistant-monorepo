@@ -203,13 +203,14 @@ export function PendingApprovals({
               </Button>
             </div>
 
-            {/* 核准摘要（白話說明） */}
+            {/* 核准摘要（完整白話報告） */}
             {summary && (
-              <div className="rounded-md border bg-amber-50 dark:bg-amber-950/20 p-3 space-y-1.5 text-sm">
-                <div>{summary.what}</div>
-                <div className="flex gap-4 text-xs">
-                  <span className="text-green-700">批准 → {summary.approve}</span>
-                  <span className="text-red-700">退回 → {summary.reject}</span>
+              <div className="rounded-md border bg-amber-50 dark:bg-amber-950/20 p-3 space-y-2 text-sm">
+                <div className="font-medium">{summary.what}</div>
+                <div className="text-muted-foreground text-xs leading-relaxed whitespace-pre-line">{summary.detail}</div>
+                <div className="flex gap-4 text-xs pt-1 border-t border-amber-200 dark:border-amber-800">
+                  <span className="text-green-700">✅ 批准 → {summary.approve}</span>
+                  <span className="text-red-700">❌ 退回 → {summary.reject}</span>
                 </div>
               </div>
             )}
