@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// Select removed: brand is now a free-text field
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -49,19 +49,16 @@ export default function CompanyPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label>品牌</Label>
-            <Select
+            <Label htmlFor="brand">品牌（用於情報搜尋）</Label>
+            <Input
+              id="brand"
               value={company.brand}
-              onValueChange={(v) => setCompany({ ...company, brand: v as "大員洛川" | "鹿山文社" })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="大員洛川">大員洛川</SelectItem>
-                <SelectItem value="鹿山文社">鹿山文社</SelectItem>
-              </SelectContent>
-            </Select>
+              onChange={(e) => setCompany({ ...company, brand: e.target.value })}
+              placeholder="例：大員洛川"
+            />
+            <p className="text-xs text-muted-foreground">
+              情報模組會用這個名稱搜尋你的投標紀錄和競爭分析
+            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="logo-path">Logo 路徑</Label>

@@ -53,7 +53,7 @@ export interface ConnectionSettings {
 export interface CompanySettings {
   name: string;
   taxId: string;
-  brand: "大員洛川" | "鹿山文社";
+  brand: string;
   logoPath?: string;
 }
 
