@@ -110,7 +110,7 @@ function useNavSections() {
 
     for (const sec of sectionOrder) {
       const features = FEATURE_REGISTRY.filter(
-        (f) => f.section === sec && isFeatureEnabled(f.id, toggles),
+        (f) => f.section === sec && f.routes.length > 0 && isFeatureEnabled(f.id, toggles),
       );
       if (features.length === 0) continue;
       sections.push({
