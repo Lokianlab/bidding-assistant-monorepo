@@ -8,14 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Accordion,
   AccordionContent,
@@ -24,6 +16,7 @@ import {
 } from "@/components/ui/accordion";
 import { useState } from "react";
 import { toast } from "sonner";
+import { generateDocx, downloadBlob } from "@/lib/docgen/generate-docx";
 
 interface Chapter {
   id: string;
@@ -34,9 +27,7 @@ interface Chapter {
 export default function DocxPage() {
   const { settings } = useSettings();
   const [projectName, setProjectName] = useState("");
-  const [outputFormat, setOutputFormat] = useState<"docx" | "pdf">("docx");
   const [generating, setGenerating] = useState(false);
-  const [progress, setProgress] = useState(0);
 
   const [chapters, setChapters] = useState<Chapter[]>([
     { id: "1", title: "第壹章 計畫緣起與目的", content: "" },
@@ -67,17 +58,29 @@ export default function DocxPage() {
       toast.error("請輸入案名");
       return;
     }
-    setGenerating(true);
-    setProgress(0);
 
-    // 模擬生成進度
-    for (let i = 0; i <= 100; i += 10) {
-      await new Promise((r) => setTimeout(r, 200));
-      setProgress(i);
+    const hasContent = chapters.some((c) => c.content.trim());
+    if (!hasContent) {
+      toast.error("請至少在一個章節中輸入內容");
+      return;
     }
 
-    setGenerating(false);
-    toast.success(`${outputFormat.toUpperCase()} 文件已生成`);
+    setGenerating(true);
+    try {
+      const blob = await generateDocx({
+        projectName,
+        chapters: chapters.filter((c) => c.content.trim()),
+        documentSettings: settings.document,
+        companySettings: settings.company,
+      });
+      const filename = `${projectName}.docx`;
+      downloadBlob(blob, filename);
+      toast.success("DOCX 文件已生成並下載");
+    } catch (err) {
+      toast.error(`生成失敗：${err instanceof Error ? err.message : "未知錯誤"}`);
+    } finally {
+      setGenerating(false);
+    }
   }
 
   const totalChars = chapters.reduce((s, c) => s + c.content.length, 0);
@@ -113,18 +116,9 @@ export default function DocxPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>輸出格式</Label>
-                  <Select
-                    value={outputFormat}
-                    onValueChange={(v) => setOutputFormat(v as "docx" | "pdf")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="docx">DOCX</SelectItem>
-                      <SelectItem value="pdf">PDF</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center h-9 px-3 border rounded-md text-sm text-muted-foreground">
+                    DOCX
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -228,20 +222,12 @@ export default function DocxPage() {
               <CardTitle className="text-lg">生成</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {generating && (
-                <div className="space-y-2">
-                  <Progress value={progress} className="h-2" />
-                  <p className="text-xs text-muted-foreground text-center">
-                    生成中... {progress}%
-                  </p>
-                </div>
-              )}
               <Button
                 className="w-full"
                 onClick={handleGenerate}
                 disabled={generating}
               >
-                {generating ? "生成中..." : `生成 ${outputFormat.toUpperCase()}`}
+                {generating ? "生成中..." : "生成 DOCX"}
               </Button>
             </CardContent>
           </Card>
