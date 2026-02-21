@@ -44,6 +44,8 @@ pcc-api-mcp/dist/
 !.claude/rules/
 !.claude/settings.json
 .machine-id
+.machine-nickname
+.user-pins
 .last-sync-time
 
 # === 暫存/工具腳本（不進 repo） ===
