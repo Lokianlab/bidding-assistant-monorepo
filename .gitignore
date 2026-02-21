@@ -46,6 +46,7 @@ pcc-api-mcp/dist/
 .machine-id
 .machine-nickname
 .user-pins
+.pin-check
 .last-sync-time
 
 # === 暫存/工具腳本（不進 repo） ===
