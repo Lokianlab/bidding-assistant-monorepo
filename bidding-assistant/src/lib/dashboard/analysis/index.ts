@@ -36,3 +36,18 @@ export { generateGlobalInsights } from "./global-insights";
 // ====== cost-analysis ======
 export { computeCostAnalysis } from "./cost-analysis";
 export type { CostAnalysisResult } from "./cost-analysis";
+
+// ====== trend ======
+export {
+  toYearMonth,
+  computeMonthlyMetrics,
+  computeRollingMetrics,
+  comparePeriods,
+  compareQuarters,
+  getRecentMonths,
+} from "./trend";
+export type {
+  MonthlyMetrics,
+  RollingMetrics,
+  PeriodComparison,
+} from "./trend";
