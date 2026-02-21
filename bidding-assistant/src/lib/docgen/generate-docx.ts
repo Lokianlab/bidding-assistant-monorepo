@@ -33,7 +33,7 @@ const PAGE_SIZES: Record<string, { width: number; height: number }> = {
   Letter: { width: 12240, height: 15840 },
 };
 
-function resolveTemplate(
+export function resolveTemplate(
   template: string,
   vars: Record<string, string>
 ): string {
@@ -78,12 +78,12 @@ function buildFooterParagraph(
 }
 
 /** 判斷一行是否為表格分隔行（如 |---|---|） */
-function isTableSeparator(line: string): boolean {
+export function isTableSeparator(line: string): boolean {
   return /^\|[\s\-:|]+\|$/.test(line.trim());
 }
 
 /** 判斷一行是否為表格行（以 | 開頭和結尾） */
-function isTableRow(line: string): boolean {
+export function isTableRow(line: string): boolean {
   const t = line.trim();
   return t.startsWith("|") && t.endsWith("|");
 }
