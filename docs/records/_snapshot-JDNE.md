@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-1124|JDNE
+SNAPSHOT|20260222-1300|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -24,3 +24,5 @@ SNAPSHOT|20260221-1124|JDNE
 [v] infra-new-machine-setup|新機器加入流程自動化|bat + bash 腳本 + 指南 + credential 修正 + 協作入門指南 + 論壇歡迎帖，待用戶驗收
 [v] infra-machine-profile|三台機器側寫與協作策略|三方共識：方向 1（輕量自評 1-3 分）+ 方向 4（/回報時刷新），待用戶驗收
 [v] infra-forum-upgrade|論壇制度升級|討論串機制+共識協議+類型拆分+索引，待用戶驗收
+[ ] infra-user-auth|用戶驗證系統|Jin 已註冊 primary（SHA-256 雜湊廣播），待其他機器設定+協作者註冊+MVP 第二階段（web UI）
+[ ] infra-machine-nickname|機器暱稱|.machine-nickname（gitignored），用戶面對輸出用暱稱取代機器碼，待實作
