@@ -177,3 +177,43 @@ export interface FeasibilityIssue {
   message: string;
   context: string;
 }
+
+// ── 品質報告（四道閘門合併） ──────────────────────────────
+
+/** 四道閘門合併的品質報告 */
+export interface QualityReport {
+  /** 閘門 0（現有品質模組） */
+  gate0: {
+    score: number;
+    label: string;
+    errorCount: number;
+    warningCount: number;
+  };
+  /** 閘門 1 事實查核 */
+  gate1: FactCheckResult;
+  /** 閘門 2 需求追溯（null = 沒有需求清單，跳過） */
+  gate2: RequirementTraceResult | null;
+  /** 閘門 3 實務檢驗 */
+  gate3: FeasibilityResult;
+  /** 四道閘門加權平均分數 */
+  overallScore: number;
+  /** 總評 */
+  verdict: "通過" | "有風險" | "不建議提交";
+  /** 所有嚴重程度為 error 的問題 */
+  criticalIssues: string[];
+}
+
+/** 品質報告選項 */
+export interface QualityReportOptions {
+  /** 總評「通過」門檻分數（預設 70） */
+  passThreshold?: number;
+  /** 總評「有風險」門檻分數（預設 50） */
+  riskThreshold?: number;
+  /** 各閘門權重（加總應為 1） */
+  weights?: {
+    gate0: number;
+    gate1: number;
+    gate2: number;
+    gate3: number;
+  };
+}
