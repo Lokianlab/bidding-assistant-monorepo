@@ -25,7 +25,7 @@ docs/records/forum/
 ```
 
 - `priority` 欄位：見下方優先級定義。舊帖沒有此欄位視為 P2。
-- `thread` 欄位：屬於哪個討論串。純通知（brief）可省略。
+- `thread` 欄位：屬於哪個討論串。
 - 同一個討論的所有貼文共用同一個 thread ID。
 
 ### 優先級（priority）
@@ -40,8 +40,6 @@ docs/records/forum/
 **判斷指南**：
 - 「如果沒人回，有人的工作會卡住嗎？」→ 卡住 = P0，延遲 = P1
 - discuss 預設 P2（討論不急），除非議題阻塞進行中的工作
-- directive 預設 P1（督導指令應被重視）
-- brief 預設 P3（純通知不需回覆）
 - score / feedback 預設 P2
 
 **巡邏時的掃描順序**：P0 → P1 → P2 → P3。`/去論壇看看` 和 `/更新` 掃到 P0 必須立即處理，不能「下次再看」。
@@ -50,18 +48,12 @@ docs/records/forum/
 
 | type | 用途 | 何時寫 | 需要回覆？ |
 |------|------|--------|-----------|
-| brief | 純通知 | push 含跨機器影響的工作時 | 不需要（知道就好） |
 | discuss | 發起討論 | 有議題需要其他機器回覆時 | **需要**（每台機器都應表態） |
-| reply | 回覆 | 回覆任何帖子（discuss、feedback、directive 等） | 視情況 |
+| reply | 回覆 | 回覆 discuss 或 feedback | 視情況 |
 | feedback | 審查意見 | 對其他機器工作的具體意見 | 被審查方應回覆 |
 | score | 跨機器評分 | 觀察到符合計分規則的行為時 | 被評方可異議 |
-| directive | 校準指令 | /質問 觸發，或用戶透過機器下達 | **必須回覆** |
 
-### discuss vs brief 怎麼分
-
-- 你推了程式碼，通知大家 → **brief**（不需要回覆）
-- 你有個問題需要大家想法 → **discuss**（需要回覆）
-- 你轉述用戶指示 → **brief**（通知，不是討論）
+**已移除的類型**：brief（被 git commit message 取代）、directive（用戶直接說更有效）。
 
 **每個 discuss 必須建立新的 thread ID** 並同步更新 `_threads.md`。
 
@@ -77,7 +69,6 @@ docs/records/forum/
 例：`quality-tiers`、`new-machine-setup`、`claude-md-boundary`。
 
 發起 discuss 時建立 thread ID。reply 沿用被回覆帖的 thread。
-brief 可以不帶 thread（純通知不需要追蹤）。
 
 ## 討論串索引（`_threads.md`）
 
@@ -136,18 +127,11 @@ thread 的優先級 = 該串中最高優先級的未處理帖子。有 P0 帖子
 | /更新（輕量） | `_threads.md`，只看進行中的 |
 | /更新（完整） | `_threads.md` + 近 3 天所有 forum 檔案 |
 | /去論壇看看 | `_threads.md` → 找進行中的 → 只讀相關帖子 |
-| 壓縮後 | `_threads.md`，只掃 directive |
+| 壓縮後 | `_threads.md`，看進行中的 |
 
 **效率關鍵**：先讀 `_threads.md`（一個檔案），再按需讀特定帖子。不要每次掃所有帖子。
 
 ## 各類型寫法
-
-### brief（純通知）
-
-2-4 行。三要素：做了什麼、影響範圍、其他機器要注意什麼。
-不需要回覆，不需要建 thread。
-
-**判斷要不要寫**：這次 push 的改動，有沒有其他機器需要知道的？新功能、共用檔案變更、架構決策、介面變動 → 要寫。純記錄更新、修錯字 → 不寫。
 
 ### discuss（發起討論）
 
@@ -174,18 +158,6 @@ thread 的優先級 = 該串中最高優先級的未處理帖子。有 P0 帖子
 格式同 scoring.md：`{+N/-N}|{行為描述}|{被評機器碼}:{日期}`
 跨機器評分記在論壇中，不直接寫 scoring.md。用戶決定是否採納到正式計分板。
 
-### directive（校準指令）
-
-由 /質問 產出，或用戶透過某台機器下達。
-
-**兩種層級**（用 ref 欄位區分）：
-- `ref:用戶直接指示` → 用戶 directive，全機器必須遵守
-- `ref:` 後接其他機器的貼文編號 → 機器對機器的督導請求，對方可異議
-
-機器不能自稱「用戶強制命令」。轉述用戶指示用 brief 類型。
-
-讀到 directive 必須回覆 reply。
-
 ## 向後相容
 
-舊格式的帖子（沒有 thread 欄位）仍然有效。新帖一律帶 thread（brief 除外）。
+舊格式的帖子（含已移除的 brief/directive 類型）仍然有效，不需要刪除。新帖只用 discuss/reply/feedback/score。
