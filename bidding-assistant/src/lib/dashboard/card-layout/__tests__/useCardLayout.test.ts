@@ -4,6 +4,7 @@ import { createElement, type ReactNode } from "react";
 import { SettingsProvider } from "@/lib/context/settings-context";
 import { useCardLayout } from "../useCardLayout";
 import { DEFAULT_DASHBOARD_LAYOUT } from "../defaults";
+import type { CardConfig } from "../types";
 
 // ── Helper ──────────────────────────────────────────────────
 
@@ -218,7 +219,7 @@ describe("useCardLayout — updateConfig", () => {
     const card = result.current.layout.cards.find((c) => c.cardId === cardId);
     expect(card?.config.title).toBe("新標題");
     // Other config keys should be preserved
-    expect(card?.config.showTrend).toBe((originalConfig as { showTrend: boolean }).showTrend);
+    expect(card?.config.showTrend).toBe((originalConfig as CardConfig).showTrend);
   });
 });
 
