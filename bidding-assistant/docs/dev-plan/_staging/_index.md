@@ -9,7 +9,7 @@
 M01-核心設計審查.md|plan|M01-情報模組.md|待決|模型委員會審查：核心設計需重新思考（MVP 重定義 + 4 項開工前驗證）
 saas-architecture-discussion.md|plan|03-技術選型.md|待決|知識庫儲存方案未定（Notion vs Supabase），Layer 3 討論中斷
 知識庫精靈現況與下一步.md|plan|06-開發進程.md|待決|T1 prompt v2.0 已就緒，缺執行環境。近期可做 Skill 版，中期待儲存方案定案
-元方法論框架.md|rule|docs/methodology/meta-methodology.md（新建）|待決|元方法論四層架構+目的體系（效率為終極標準）+設計原則+Thomann對照+V2操作化（12獨立指標），待用戶審定
+元方法論框架.md|rule|docs/methodology/meta-methodology.md（新建）|待決|元方法論四層架構+目的體系（效率為終極標準）+設計原則+Thomann對照+V2操作化（12獨立指標），待用戶審定。高元方法論部分已分離→docs/高元方法論.md
 db-sandbox-方案.md|plan|08-風險與待決.md|待決|資料庫沙盒方案：推薦混合（JSON mock + UI 複製沙盒 DB），純 API 複製 ROI 太低
 機器側寫與協作策略.md|issue|（觀察性文件）|待決|三機側寫+三方共識（方向1輕量自評+方向4回報時刷新），側寫是觀察不是規定
-團隊運作優化方案.md|rule|CLAUDE.md + .claude/rules/ + docs/records/ 多檔|待決|角色架構+協作流程+機制審計+CLAUDE.md 瘦身+角色分級載入+inbox 定向通訊+記錄層簡化。經四輪 /有用嗎 驗證
+團隊運作優化方案.md|rule|CLAUDE.md + docs/records/inbox/ 多檔|待推|提案效益審查後縮小範圍：執行 inbox 目錄 + CLAUDE.md 加兩行（inbox 路徑 + commit format）。SOP-01 已建立。
