@@ -60,6 +60,7 @@ cc程式/                      ← 專案根目錄（每台機器各自 clone，
 - 詳細開發環境見 `docs/dev-environment.md`
 - 除錯經驗見 `docs/debugging.md`
 - 討論結論暫存在 `bidding-assistant/docs/dev-plan/_staging/`
+- **資料庫安全（硬性規定）**：可以讀取用戶的原始資料庫資料，但**禁止直接修改原始資料庫**。實驗、測試、開發一律使用沙盒或複製的資料庫。
 
 ---
 
