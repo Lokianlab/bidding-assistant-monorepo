@@ -12,9 +12,12 @@ import {
   TableCell,
   WidthType,
   BorderStyle,
+  LevelFormat,
   convertMillimetersToTwip,
 } from "docx";
 import type { DocumentSettings, CompanySettings } from "@/lib/settings/types";
+
+// ── Types ─────────────────────────────────────────────────────
 
 export interface ChapterInput {
   title: string;
@@ -28,10 +31,33 @@ export interface GenerateDocxOptions {
   companySettings: CompanySettings;
 }
 
+export interface InlineSegment {
+  text: string;
+  bold?: boolean;
+  italic?: boolean;
+}
+
+interface ContentFormatting {
+  bodyFont: string;
+  headingFont: string;
+  bodySize: number;
+  h2Size: number;
+  h3Size: number;
+  h4Size: number;
+  lineSpacing: number;
+  paragraphSpacing: { before: number; after: number };
+}
+
+// ── Constants ─────────────────────────────────────────────────
+
 const PAGE_SIZES: Record<string, { width: number; height: number }> = {
   A4: { width: 11906, height: 16838 },
   Letter: { width: 12240, height: 15840 },
 };
+
+const NUMBERED_LIST_REF = "decimal-numbering";
+
+// ── Template helpers ──────────────────────────────────────────
 
 export function resolveTemplate(
   template: string,
@@ -77,6 +103,66 @@ function buildFooterParagraph(
   return new Paragraph({ children, alignment: AlignmentType.CENTER });
 }
 
+// ── Inline formatting ─────────────────────────────────────────
+
+/**
+ * 解析 markdown 行內格式，回傳帶 bold/italic 標記的文字片段。
+ * 支援：`***粗斜體***`、`**粗體**`、`*斜體*`
+ */
+export function parseInlineFormatting(text: string): InlineSegment[] {
+  if (!text) return [{ text: "" }];
+
+  const segments: InlineSegment[] = [];
+  // 依標記長度排序：三星 > 雙星 > 單星（單星排除 ** 開頭避免誤判）
+  const regex = /\*\*\*(.+?)\*\*\*|\*\*(.+?)\*\*|\*([^*]+?)\*/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ text: text.slice(lastIndex, match.index) });
+    }
+    if (match[1] !== undefined) {
+      segments.push({ text: match[1], bold: true, italic: true });
+    } else if (match[2] !== undefined) {
+      segments.push({ text: match[2], bold: true });
+    } else if (match[3] !== undefined) {
+      segments.push({ text: match[3], italic: true });
+    }
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    segments.push({ text: text.slice(lastIndex) });
+  }
+
+  return segments.length > 0 ? segments : [{ text }];
+}
+
+/**
+ * 將文字轉換為帶行內格式的 TextRun 陣列。
+ * @param baseBold 為 true 時所有片段都套用粗體（用於標題）
+ */
+function toTextRuns(
+  text: string,
+  font: string,
+  size: number,
+  baseBold?: boolean,
+): TextRun[] {
+  return parseInlineFormatting(text).map(
+    (seg) =>
+      new TextRun({
+        text: seg.text,
+        font,
+        size: size * 2,
+        bold: baseBold || seg.bold || undefined,
+        italics: seg.italic || undefined,
+      })
+  );
+}
+
+// ── Table helpers ─────────────────────────────────────────────
+
 /** 判斷一行是否為表格分隔行（如 |---|---|） */
 export function isTableSeparator(line: string): boolean {
   return /^\|[\s\-:|]+\|$/.test(line.trim());
@@ -114,19 +200,12 @@ function buildTable(
 
   const tableRows = parsedRows.map((cells, rowIndex) => {
     const tableCells = Array.from({ length: colCount }, (_, i) => {
-      const text = cells[i] ?? "";
+      const cellText = cells[i] ?? "";
       const isHeader = rowIndex === 0;
       return new TableCell({
         children: [
           new Paragraph({
-            children: [
-              new TextRun({
-                text,
-                font,
-                size: bodySize * 2,
-                bold: isHeader,
-              }),
-            ],
+            children: toTextRuns(cellText, font, bodySize, isHeader),
           }),
         ],
         width: { size: Math.floor(100 / colCount), type: WidthType.PERCENTAGE },
@@ -149,32 +228,32 @@ function buildTable(
   });
 }
 
+// ── Content to DOCX blocks ────────────────────────────────────
+
 type DocBlock = Paragraph | Table;
 
 /**
- * 將內容文字轉換為 DOCX 區塊（段落 + 表格）。
- * 支援 markdown pipe 表格語法。
+ * 將 markdown 內容轉換為 DOCX 區塊。
+ * 支援：段落、表格、標題（##/###/####）、項目符號列表、編號列表、行內粗體/斜體。
  */
 function contentToBlocks(
   content: string,
-  font: string,
-  bodySize: number,
-  lineSpacing: number,
-  paragraphSpacing: { before: number; after: number }
+  fmt: ContentFormatting,
 ): DocBlock[] {
   if (!content.trim()) return [];
 
   const spacing = {
-    line: Math.round(lineSpacing * 240),
-    before: paragraphSpacing.before * 20,
-    after: paragraphSpacing.after * 20,
+    line: Math.round(fmt.lineSpacing * 240),
+    before: fmt.paragraphSpacing.before * 20,
+    after: fmt.paragraphSpacing.after * 20,
   };
 
   const lines = content.split("\n");
   const blocks: DocBlock[] = [];
   let textBuffer: string[] = [];
   let tableBuffer: string[] = [];
-  let inTable = false;
+  let listBuffer: { type: "bullet" | "numbered"; items: string[] } | null =
+    null;
 
   function flushText() {
     const joined = textBuffer.join("\n");
@@ -182,10 +261,10 @@ function contentToBlocks(
       .split(/\n\n+/)
       .map((b) => b.trim())
       .filter(Boolean);
-    for (const text of paragraphs) {
+    for (const para of paragraphs) {
       blocks.push(
         new Paragraph({
-          children: [new TextRun({ text, font, size: bodySize * 2 })],
+          children: toTextRuns(para, fmt.bodyFont, fmt.bodySize),
           spacing,
         })
       );
@@ -195,36 +274,99 @@ function contentToBlocks(
 
   function flushTable() {
     if (tableBuffer.length > 0) {
-      blocks.push(buildTable(tableBuffer, font, bodySize));
+      blocks.push(buildTable(tableBuffer, fmt.bodyFont, fmt.bodySize));
       tableBuffer = [];
     }
   }
 
-  for (const line of lines) {
-    const isRow = isTableRow(line);
-    const isSep = isTableSeparator(line);
-
-    if (isRow || isSep) {
-      if (!inTable) {
-        flushText();
-        inTable = true;
+  function flushList() {
+    if (!listBuffer) return;
+    for (const itemText of listBuffer.items) {
+      const children = toTextRuns(itemText, fmt.bodyFont, fmt.bodySize);
+      if (listBuffer.type === "bullet") {
+        blocks.push(new Paragraph({ children, spacing, bullet: { level: 0 } }));
+      } else {
+        blocks.push(
+          new Paragraph({
+            children,
+            spacing,
+            numbering: { reference: NUMBERED_LIST_REF, level: 0 },
+          })
+        );
       }
-      tableBuffer.push(line);
-    } else {
-      if (inTable) {
-        flushTable();
-        inTable = false;
-      }
-      textBuffer.push(line);
     }
+    listBuffer = null;
   }
 
-  // Flush remaining
-  if (inTable) flushTable();
-  else flushText();
+  function flushAll() {
+    if (textBuffer.length) flushText();
+    if (tableBuffer.length) flushTable();
+    if (listBuffer) flushList();
+  }
 
+  const headingSizeMap: Record<number, number> = {
+    2: fmt.h2Size,
+    3: fmt.h3Size,
+    4: fmt.h4Size,
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    // ── Heading (## H2, ### H3, #### H4) ──
+    const headingMatch = trimmed.match(/^(#{2,4})\s+(.+)$/);
+    if (headingMatch) {
+      flushAll();
+      const level = headingMatch[1].length;
+      const hSize = headingSizeMap[level] ?? fmt.bodySize;
+      blocks.push(
+        new Paragraph({
+          children: toTextRuns(headingMatch[2], fmt.headingFont, hSize, true),
+          spacing: { before: 240, after: 120 },
+        })
+      );
+      continue;
+    }
+
+    // ── Table ──
+    if (isTableRow(line) || isTableSeparator(line)) {
+      if (textBuffer.length) flushText();
+      if (listBuffer) flushList();
+      tableBuffer.push(line);
+      continue;
+    }
+    if (tableBuffer.length) flushTable();
+
+    // ── Bullet list (- item) ──
+    const bulletMatch = trimmed.match(/^-\s+(.+)$/);
+    if (bulletMatch) {
+      if (textBuffer.length) flushText();
+      if (listBuffer && listBuffer.type !== "bullet") flushList();
+      if (!listBuffer) listBuffer = { type: "bullet", items: [] };
+      listBuffer.items.push(bulletMatch[1]);
+      continue;
+    }
+
+    // ── Numbered list (1. item) ──
+    const numberedMatch = trimmed.match(/^\d+\.\s+(.+)$/);
+    if (numberedMatch) {
+      if (textBuffer.length) flushText();
+      if (listBuffer && listBuffer.type !== "numbered") flushList();
+      if (!listBuffer) listBuffer = { type: "numbered", items: [] };
+      listBuffer.items.push(numberedMatch[1]);
+      continue;
+    }
+
+    // ── Plain text ──
+    if (listBuffer) flushList();
+    textBuffer.push(line);
+  }
+
+  flushAll();
   return blocks;
 }
+
+// ── Main ──────────────────────────────────────────────────────
 
 export async function generateDocx(
   options: GenerateDocxOptions
@@ -249,6 +391,17 @@ export async function generateDocx(
     公司名: companySettings.name,
   };
 
+  const fmt: ContentFormatting = {
+    bodyFont: fonts.body,
+    headingFont: fonts.heading,
+    bodySize: fontSize.body,
+    h2Size: fontSize.h2,
+    h3Size: fontSize.h3,
+    h4Size: fontSize.h4,
+    lineSpacing: page.lineSpacing,
+    paragraphSpacing: page.paragraphSpacing,
+  };
+
   const sections = chapters.map((chapter) => {
     const chapterVars = { ...templateVars, 章節名: chapter.title };
 
@@ -264,13 +417,7 @@ export async function generateDocx(
       spacing: { after: 240 },
     });
 
-    const body = contentToBlocks(
-      chapter.content,
-      fonts.body,
-      fontSize.body,
-      page.lineSpacing,
-      page.paragraphSpacing
-    );
+    const body = contentToBlocks(chapter.content, fmt);
 
     return {
       properties: {
@@ -298,6 +445,29 @@ export async function generateDocx(
   });
 
   const doc = new Document({
+    numbering: {
+      config: [
+        {
+          reference: NUMBERED_LIST_REF,
+          levels: [
+            {
+              level: 0,
+              format: LevelFormat.DECIMAL,
+              text: "%1.",
+              alignment: AlignmentType.START,
+              style: {
+                paragraph: {
+                  indent: {
+                    left: convertMillimetersToTwip(10),
+                    hanging: convertMillimetersToTwip(5),
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
     sections,
     creator: companySettings.name,
     title: projectName,

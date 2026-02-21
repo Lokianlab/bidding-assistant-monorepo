@@ -60,3 +60,4 @@ cleanup-console-log|完成|客戶端 console.warn/error 統一換成 logger（4 
 infra-user-auth|進行中|用戶驗證系統：Jin 註冊 primary + 顯示規則定案 + 安全清理完成 + 幕僚模式|@op:20260221-JDNE#2105|2026-02-21
 infra-machine-nickname|進行中|機器暱稱機制：.machine-nickname（gitignored），顯示為 {暱稱}({機器碼})|@op:20260221-JDNE#2105|2026-02-21
 feat-docx-gen|待驗收|文件生成功能實作：docx 庫生成真正 DOCX，套用全部文件設定|@op:20260222-A44T#0030|2026-02-22
+feat-docgen-markdown|待驗收|docgen 支援完整 markdown 格式：##標題（用 h2/h3/h4 字級）、項目符號列表、編號列表、**粗體**/*斜體*，+19 tests|@op:20260221-Z1FV#2300|2026-02-21

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   generateDocx,
   parseTableRow,
+  parseInlineFormatting,
   resolveTemplate,
   isTableSeparator,
   isTableRow,
@@ -573,5 +574,247 @@ describe("generateDocx — 表格", () => {
       })
     );
     expect(blob.size).toBeGreaterThan(0);
+  });
+});
+
+// ── 行內格式 ──────────────────────────────────────────────────
+
+describe("parseInlineFormatting", () => {
+  it("純文字不拆分", () => {
+    expect(parseInlineFormatting("普通文字")).toEqual([{ text: "普通文字" }]);
+  });
+
+  it("空字串回傳空文字片段", () => {
+    expect(parseInlineFormatting("")).toEqual([{ text: "" }]);
+  });
+
+  it("解析粗體 **text**", () => {
+    expect(parseInlineFormatting("前文**粗體**後文")).toEqual([
+      { text: "前文" },
+      { text: "粗體", bold: true },
+      { text: "後文" },
+    ]);
+  });
+
+  it("解析斜體 *text*", () => {
+    expect(parseInlineFormatting("前文*斜體*後文")).toEqual([
+      { text: "前文" },
+      { text: "斜體", italic: true },
+      { text: "後文" },
+    ]);
+  });
+
+  it("解析粗斜體 ***text***", () => {
+    expect(parseInlineFormatting("***粗斜體***")).toEqual([
+      { text: "粗斜體", bold: true, italic: true },
+    ]);
+  });
+
+  it("同一行多個格式", () => {
+    const result = parseInlineFormatting("正常**粗體**中間*斜體*結尾");
+    expect(result).toEqual([
+      { text: "正常" },
+      { text: "粗體", bold: true },
+      { text: "中間" },
+      { text: "斜體", italic: true },
+      { text: "結尾" },
+    ]);
+  });
+
+  it("不含星號的文字不受影響", () => {
+    const text = "這段文字沒有任何標記，1+2=3";
+    expect(parseInlineFormatting(text)).toEqual([{ text }]);
+  });
+
+  it("單獨的星號不觸發格式", () => {
+    // 沒有閉合的 * 不應被當作格式標記
+    expect(parseInlineFormatting("評分 5 * 3")).toEqual([
+      { text: "評分 5 * 3" },
+    ]);
+  });
+});
+
+// ── 標題支援 ──────────────────────────────────────────────────
+
+describe("generateDocx — 標題", () => {
+  it("含 ## H2 標題的章節正常生成", async () => {
+    const content = `前言\n\n## 第一節 背景\n\n第一節內容`;
+    const blob = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "含標題章節", content }],
+      })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("含 ### H3 和 #### H4 標題", async () => {
+    const content = `## 大節\n\n段落一\n\n### 小節\n\n段落二\n\n#### 最小節\n\n段落三`;
+    const blob = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "多層標題", content }],
+      })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("標題比純文字生成更大的 blob（含格式資訊）", async () => {
+    const plain = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "A", content: "段落一\n\n段落二" }],
+      })
+    );
+    const withHeading = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "A", content: "## 節標題\n\n段落一\n\n段落二" }],
+      })
+    );
+    expect(withHeading.size).toBeGreaterThan(plain.size);
+  });
+});
+
+// ── 項目符號列表 ──────────────────────────────────────────────
+
+describe("generateDocx — 項目符號列表", () => {
+  it("含 bullet list 的章節正常生成", async () => {
+    const content = `工作項目：\n\n- 需求分析\n- 系統設計\n- 程式開發\n\n以上為主要工作。`;
+    const blob = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "有列表", content }],
+      })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("bullet list 比純文字大（含列表格式）", async () => {
+    const textOnly = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "A", content: "項目一\n項目二\n項目三" }],
+      })
+    );
+    const withBullets = await generateDocx(
+      makeOptions({
+        chapters: [
+          { title: "A", content: "- 項目一\n- 項目二\n- 項目三" },
+        ],
+      })
+    );
+    expect(withBullets.size).toBeGreaterThan(textOnly.size);
+  });
+});
+
+// ── 編號列表 ──────────────────────────────────────────────────
+
+describe("generateDocx — 編號列表", () => {
+  it("含 numbered list 的章節正常生成", async () => {
+    const content = `步驟：\n\n1. 第一步\n2. 第二步\n3. 第三步\n\n完成。`;
+    const blob = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "有編號列表", content }],
+      })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("numbered list 比純文字大", async () => {
+    const textOnly = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "A", content: "步驟一\n步驟二\n步驟三" }],
+      })
+    );
+    const withNumbers = await generateDocx(
+      makeOptions({
+        chapters: [
+          { title: "A", content: "1. 步驟一\n2. 步驟二\n3. 步驟三" },
+        ],
+      })
+    );
+    expect(withNumbers.size).toBeGreaterThan(textOnly.size);
+  });
+});
+
+// ── 行內格式生成 ──────────────────────────────────────────────
+
+describe("generateDocx — 行內格式", () => {
+  it("含粗體/斜體的章節正常生成", async () => {
+    const content = `這段有**粗體**和*斜體*以及***粗斜體***。`;
+    const blob = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "行內格式", content }],
+      })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("行內格式比純文字大（含 bold/italic 標記）", async () => {
+    const plain = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "A", content: "重要的文字" }],
+      })
+    );
+    const formatted = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "A", content: "**重要的**文字" }],
+      })
+    );
+    expect(formatted.size).toBeGreaterThan(plain.size);
+  });
+});
+
+// ── 混合格式 ──────────────────────────────────────────────────
+
+describe("generateDocx — 混合格式", () => {
+  it("同時含標題+列表+表格+行內格式正常生成", async () => {
+    const content = `## 計畫概述
+
+本案採用**敏捷開發**方法，分三期實施。
+
+### 工作項目
+
+- 需求分析與*使用者訪談*
+- 系統設計
+- 程式開發與測試
+
+### 時程表
+
+| 階段 | 期程 | 產出 |
+|------|------|------|
+| 第一期 | 3個月 | 需求規格書 |
+| 第二期 | 6個月 | 系統原型 |
+
+### 工作步驟
+
+1. 蒐集使用者需求
+2. 撰寫**需求規格書**
+3. 設計系統架構
+
+以上為完整工作計畫。`;
+
+    const blob = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "第壹章 計畫概述", content }],
+      })
+    );
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("混合格式章節 blob 大於純文字章節", async () => {
+    const plain = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "A", content: "簡單的純文字內容" }],
+      })
+    );
+    const mixed = await generateDocx(
+      makeOptions({
+        chapters: [
+          {
+            title: "A",
+            content:
+              "## 標題\n\n**粗體**段落\n\n- 列表一\n- 列表二\n\n1. 編號一\n2. 編號二\n\n| A | B |\n|---|---|\n| 1 | 2 |",
+          },
+        ],
+      })
+    );
+    expect(mixed.size).toBeGreaterThan(plain.size);
   });
 });
