@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-2400|A44T
+SNAPSHOT|20260223-0020|A44T|claude-opus-4-6
 [x] doc-methodology-review|砍回應前分流 + 機器對等原則|@op:20260219-A44T#0643
 [x] infra-trigger-rules|觸發規則簡化 + Stop hook 擴大範圍|@op:20260219-A44T#0718
 [x] plan-backlog|待辦盤點 + /待辦指令|用戶驗收通過
@@ -10,8 +10,9 @@ SNAPSHOT|20260222-2400|A44T
 [v] infra-quality-tiers|三級品質制度+跨機器互評機制|品管通過，待用戶驗收
 [v] infra-new-machine-setup|安裝流程防呆改造：.bat 啟動器+腳本移除 set -e+npm 重試+指南簡易版|品管通過，待用戶驗收
 [v] feat-docx-gen|文件生成：章節→DOCX 下載 + markdown 表格支援（pipe table → DOCX Table）|品管通過（20 test），待用戶驗收
-[ ] plan-product-pivot|產品開發轉向|文件生成+工具卡已實作，下一個模組待決
+[ ] plan-product-pivot|產品開發轉向|Jin 確認 A44T 角色：系統掃描+產品開發
 [?] infra-db-safety|資料庫安全規則|沙盒方案暫存檔已建（推薦混合 JSON mock + UI 複製），待用戶決定
 [x] infra-governance|治理機制寫入 CLAUDE.md|用戶核准通過，commit 12d5d69
-[ ] infra-quality-audit|品管員角色（用戶指派）|SSOT 全域掃描完畢（10 源碼檔、4 批 commit）。AINL 趨勢/圖表卡片審查通過。建議終止角色（循環論證+已無待掃項目）
+[ ] infra-quality-audit|品管員角色（用戶指派）|SSOT 全域掃描完畢（10 源碼檔、4 批 commit）。AINL 趨勢/圖表卡片審查通過。建議終止角色
 [ ] infra-efficiency-cal|效率校準 P0 第一輪答辯|已回覆 Jin 三題（ref:1451）：token 分佈 feat 20%/infra 67%、方法論用了閉環驗證 1 次、下一步做 feat+停品管
+[ ] feat-m03-strategy|M03 戰略分析引擎|Phase 1 完成（7 檔 82 tests：五維評分+KB 匹配+輔助函式）。下一步 Phase 2 = Hook + UI
