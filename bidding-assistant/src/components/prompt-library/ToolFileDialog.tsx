@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import type { PromptFile } from "@/data/config/prompt-assembly";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface ToolFileDialogProps {
   file: PromptFile;
@@ -19,14 +21,28 @@ interface ToolFileDialogProps {
   onClose: () => void;
 }
 
+/** Extract h1/h2 headings from markdown content for outline navigation */
+function extractHeadings(content: string): { level: number; text: string }[] {
+  const headings: { level: number; text: string }[] = [];
+  for (const line of content.split("\n")) {
+    const match = line.match(/^(#{1,2})\s+(.+)/);
+    if (match) {
+      headings.push({ level: match[1].length, text: match[2].trim() });
+    }
+  }
+  return headings;
+}
+
 export function ToolFileDialog({ file, open, onClose }: ToolFileDialogProps) {
   const [content, setContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copying, setCopying] = useState(false);
+  const [viewMode, setViewMode] = useState<"rendered" | "raw">("rendered");
 
   useEffect(() => {
     if (!open) {
       setContent(null);
+      setViewMode("rendered");
       return;
     }
 
@@ -44,6 +60,11 @@ export function ToolFileDialog({ file, open, onClose }: ToolFileDialogProps) {
       .finally(() => setLoading(false));
   }, [open, file.filename, file.label]);
 
+  const headings = useMemo(
+    () => (content ? extractHeadings(content) : []),
+    [content]
+  );
+
   async function handleCopy() {
     if (!content) return;
     setCopying(true);
@@ -57,9 +78,21 @@ export function ToolFileDialog({ file, open, onClose }: ToolFileDialogProps) {
     }
   }
 
+  function scrollToHeading(text: string) {
+    const container = document.getElementById("tool-file-content");
+    if (!container) return;
+    const headingEls = container.querySelectorAll("h1, h2");
+    for (const el of headingEls) {
+      if (el.textContent?.trim() === text) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        break;
+      }
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Badge className="bg-amber-100 text-amber-800 border-amber-300">
@@ -67,28 +100,84 @@ export function ToolFileDialog({ file, open, onClose }: ToolFileDialogProps) {
             </Badge>
             {file.label}
           </DialogTitle>
-          <DialogDescription>{file.filename}</DialogDescription>
+          <DialogDescription className="flex items-center justify-between">
+            <span>{file.filename}</span>
+            {content && (
+              <span className="flex gap-1">
+                <Button
+                  variant={viewMode === "rendered" ? "default" : "ghost"}
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={() => setViewMode("rendered")}
+                >
+                  預覽
+                </Button>
+                <Button
+                  variant={viewMode === "raw" ? "default" : "ghost"}
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={() => setViewMode("raw")}
+                >
+                  原始碼
+                </Button>
+              </span>
+            )}
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-2 space-y-3">
-          {loading && (
-            <p className="text-sm text-muted-foreground">載入中...</p>
+        <div className="flex-1 min-h-0 flex flex-col gap-3">
+          {/* Outline navigation */}
+          {content && headings.length > 2 && viewMode === "rendered" && (
+            <div className="flex flex-wrap gap-1 px-1">
+              {headings.map((h, i) => (
+                <button
+                  key={i}
+                  onClick={() => scrollToHeading(h.text)}
+                  className={`text-xs px-2 py-0.5 rounded-full border hover:bg-accent transition-colors truncate max-w-[200px] ${
+                    h.level === 1
+                      ? "font-medium bg-muted"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {h.text}
+                </button>
+              ))}
+            </div>
           )}
-          {!loading && content !== null && (
-            <pre className="text-xs bg-muted p-4 rounded-md overflow-x-auto whitespace-pre-wrap break-words max-h-[55vh] overflow-y-auto">
+
+          {/* Content area */}
+          {loading && (
+            <p className="text-sm text-muted-foreground py-8 text-center">
+              載入中...
+            </p>
+          )}
+          {!loading && content !== null && viewMode === "raw" && (
+            <pre className="text-xs bg-muted p-4 rounded-md overflow-auto whitespace-pre-wrap break-words flex-1 min-h-0">
               {content}
             </pre>
           )}
+          {!loading && content !== null && viewMode === "rendered" && (
+            <div
+              id="tool-file-content"
+              className="prose prose-sm dark:prose-invert max-w-none overflow-y-auto flex-1 min-h-0 px-1"
+            >
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {content}
+              </ReactMarkdown>
+            </div>
+          )}
           {!loading && content === null && (
-            <p className="text-sm text-muted-foreground">無法載入檔案內容</p>
+            <p className="text-sm text-muted-foreground py-8 text-center">
+              無法載入檔案內容
+            </p>
           )}
 
           <Button
-            className="w-full"
+            className="w-full shrink-0"
             onClick={handleCopy}
             disabled={copying || !content}
           >
-            {copying ? "複製中..." : "複製到剪貼簿"}
+            {copying ? "複製中..." : "複製到剪貼簿（原始文字）"}
           </Button>
         </div>
       </DialogContent>
