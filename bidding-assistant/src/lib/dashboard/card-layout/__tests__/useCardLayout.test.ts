@@ -115,6 +115,18 @@ describe("useCardLayout — resize", () => {
     const unchanged = result.current.layout.cards.find((c) => c.cardId === otherCard.cardId);
     expect(unchanged?.size).toBe(otherCard.size);
   });
+
+  it("does not crash when resizing a nonexistent cardId", () => {
+    const { result } = renderHook(() => useCardLayout(), { wrapper });
+    const before = result.current.layout.cards.map((c) => ({ id: c.cardId, size: c.size }));
+
+    act(() => {
+      result.current.resize("nonexistent-card-id", "large");
+    });
+
+    const after = result.current.layout.cards.map((c) => ({ id: c.cardId, size: c.size }));
+    expect(after).toEqual(before);
+  });
 });
 
 // ── Add ─────────────────────────────────────────────────────
