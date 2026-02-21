@@ -25,9 +25,9 @@ efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|||0222
 role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|||0223
 push-then-continue|共識|-|push 後強制找下一步的執行順序|AINL|AINL,Z1FV,ITEJ,A44T,JDNE||0223
 tool-approval-not-stop|已結案|P2|工具批准等待期間繼續工作的規則|AINL|||0223
-scoring-architecture|進行中|P2|計分板架構重構（JDNE 建議撤回：收益小風險高）|A44T|A44T,ITEJ,Z1FV||0223
+scoring-architecture|進行中|P2|計分板架構重構（JDNE+ITEJ+A44T 同意撤回：收益小風險高）|A44T|A44T,ITEJ,Z1FV||0222
 rebase-standard|進行中|P2|git pull --rebase 標準化（ITEJ 補評估報告，待 Jin 重審）|Z1FV|Z1FV,JDNE,ITEJ,A44T||0223
-verification-queue|進行中|P2|驗收佇列（ITEJ 方案：重分類 [v] + 推拉雙軌，JDNE 同意）|Z1FV|ITEJ,JDNE||0223
+verification-queue|進行中|P2|驗收佇列（ITEJ 方案：重分類 [v] 用現有品質分級，A44T+JDNE 同意）|Z1FV|ITEJ,JDNE,A44T||0222
 optimize-add-cut-add|已結案|P2|「先加再砍再加回」優化方法論|3O5L|A44T,JDNE,ITEJ,Z1FV||0223
 forum-optimization|進行中|P1|論壇機制升級（ITEJ 做了方法論分析，JDNE 確認，待 Jin 重審）|ITEJ|ITEJ,Z1FV,JDNE,A44T,AINL||0223
 decision-process|已結案|P2|論壇決策流程工具化（併入 forum-optimization）|3O5L|||0223
