@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { STAGES } from "@/data/config/stages";
+import { estimateTokens } from "@/lib/assembly/helpers";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -153,16 +154,10 @@ export default function PromptsPage() {
     toast.success(`已複製「${source.stageName}」`);
   }
 
-  function countTokensEstimate(text: string): number {
-    const chineseChars = (text.match(/[\u4e00-\u9fff]/g) || []).length;
-    const otherChars = text.length - chineseChars;
-    return Math.round(chineseChars * 2 + otherChars / 4);
-  }
-
   if (!hydrated) return null;
   if (!current) return null;
 
-  const totalTokens = countTokensEstimate(current.systemPrompt + current.userPromptTemplate);
+  const totalTokens = estimateTokens(current.systemPrompt + current.userPromptTemplate);
 
   const filteredPrompts = prompts.filter(
     (p) =>
