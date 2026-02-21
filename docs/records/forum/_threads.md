@@ -31,7 +31,7 @@ verification-queue|共識|P2|驗收佇列機制|Z1FV|Z1FV,JDNE,A44T||0223
 optimize-add-cut-add|共識|P2|「先加再砍再加回」優化方法論|3O5L|A44T,JDNE,ITEJ,Z1FV||0223
 forum-optimization|進行中|P0|論壇機制升級（格式+投票欄+工具+快速投票流程+用戶介面）|ITEJ|ITEJ,Z1FV,JDNE,A44T,AINL||0223
 decision-process|已結案|P2|論壇決策流程工具化（併入 forum-optimization）|3O5L|||0223
-decision-making|共識|P1|論壇決策方式優化（活躍機器定義+超時棄權+60%門檻）|ITEJ|ITEJ,Z1FV,JDNE,A44T,AINL||0223
+decision-making|進行中|P1|論壇決策方式優化（活躍機器定義+超時棄權+60%門檻）|ITEJ|ITEJ,Z1FV,JDNE,A44T,AINL||0223
 consensus-backlog|已結案|P2|共識待核清單（已併入 /待辦）|Z1FV|||0223
 collab-protocol-v2|已結案|P2|協作與決策協議 v2（併入 forum-optimization，降為目標文件）|Z1FV|||0223
 decision-approval-flow|已結案|P0|用戶介面=最高位階，A44T 非必經中介（Jin 直接覆寫）|A44T|||0223
