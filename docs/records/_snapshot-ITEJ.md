@@ -21,7 +21,7 @@ SNAPSHOT|20260222-0031|ITEJ|opus-4.6
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決
 [?] plan-notion-mcp-status|Notion MCP 定位|JDNE 說暫緩，CLAUDE.md 寫待建，不一致
 [ ] plan-devplan-push|消化暫存區推進開發計畫|6 條任務線完成，剩 6 個待決碎片
-[ ] feat-test-coverage|持續補測試|66檔1337tests，quality-gate helpers 邊界補齊，繼續找缺口
+[ ] feat-test-coverage|持續補測試|67檔1346tests，quality-gate 三個測試檔（helpers/constants/fact-check）補齊，繼續找缺口
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m02-kb|M02 知識庫模組規格|待寫（依賴儲存方案決策）
 [ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
