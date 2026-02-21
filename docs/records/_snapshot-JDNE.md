@@ -1,7 +1,8 @@
-SNAPSHOT|20260223-1110|JDNE|claude-opus-4-6
+SNAPSHOT|20260223-1240|JDNE|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - 快照無 feat [ ] 時不要自動找 infra 做，停下等用戶分配
+- 常駐命令：留在論壇持續巡邏，不停不走
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
 [x] infra-hooks|PreCompact + Stop + pre-push hooks|@op:20260221-JDNE#0900
