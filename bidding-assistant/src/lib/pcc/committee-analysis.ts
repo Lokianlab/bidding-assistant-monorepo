@@ -51,6 +51,7 @@ export function analyzeCommittees(
     experience: string;
     status: string;
     attended: number;
+    latestDate: number;
   }>();
 
   for (const tender of tenders) {
@@ -72,8 +73,9 @@ export function analyzeCommittees(
       if (existing) {
         existing.appearances.push(appearance);
         if (attended) existing.attended++;
-        // 用最新一筆的 experience 和 status
-        if (tender.date > (existing.appearances[existing.appearances.length - 2]?.date ?? 0)) {
+        // 用最新日期的 experience 和 status（不依賴資料到達順序）
+        if (tender.date > existing.latestDate) {
+          existing.latestDate = tender.date;
           if (member.experience) existing.experience = member.experience;
           if (member.status) existing.status = member.status;
         }
@@ -83,6 +85,7 @@ export function analyzeCommittees(
           experience: member.experience ?? "",
           status: member.status ?? "",
           attended: attended ? 1 : 0,
+          latestDate: tender.date,
         });
       }
     }

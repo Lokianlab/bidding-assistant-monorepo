@@ -135,6 +135,25 @@ describe("analyzeCommittees", () => {
     expect(result.frequentMembers[0].experience).toBe("新經歷");
   });
 
+  it("亂序資料仍取最新 experience（A44T 修正）", () => {
+    const tenders = [
+      makeTender({
+        date: 20260301,
+        committee: [makeMember({ experience: "最新經歷" })],
+      }),
+      makeTender({
+        date: 20260101,
+        committee: [makeMember({ experience: "最舊經歷" })],
+      }),
+      makeTender({
+        date: 20260201,
+        committee: [makeMember({ experience: "中間經歷" })],
+      }),
+    ];
+    const result = analyzeCommittees(tenders);
+    expect(result.frequentMembers[0].experience).toBe("最新經歷");
+  });
+
   it("忽略空白名字的評委", () => {
     const tenders = [
       makeTender({
