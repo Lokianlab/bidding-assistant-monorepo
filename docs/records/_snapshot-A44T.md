@@ -12,5 +12,5 @@ SNAPSHOT|20260221-2230|A44T
 [v] feat-docx-gen|文件生成：章節→DOCX 下載 + markdown 表格支援（pipe table → DOCX Table）|品管通過（20 test），待用戶驗收
 [ ] plan-product-pivot|產品開發轉向|文件生成+工具卡已實作，下一個模組待決
 [?] infra-db-safety|資料庫安全規則|沙盒方案暫存檔已建（推薦混合 JSON mock + UI 複製），待用戶決定
-[ ] infra-governance|治理機制寫入 CLAUDE.md|governance 三方共識（含修正），multi-user-governance 四方回覆完畢，均待用戶核准
+[x] infra-governance|治理機制寫入 CLAUDE.md|用戶核准通過，commit 12d5d69
 [ ] infra-quality-audit|品管員角色（用戶指派）|11 個待驗收項全部審查完成。問題：quality-refactor SSOT 違規待 ITEJ 修、claude-md-modular 狀態矛盾已修正
