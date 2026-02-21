@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateDocx, type GenerateDocxOptions } from "../generate-docx";
+import { generateDocx, parseTableRow, type GenerateDocxOptions } from "../generate-docx";
 import type { DocumentSettings, CompanySettings } from "@/lib/settings/types";
 
 const defaultDocSettings: DocumentSettings = {
@@ -186,6 +186,114 @@ describe("generateDocx", () => {
     const blob = await generateDocx(
       makeOptions({
         chapters: [{ title: "長文章節", content: longContent }],
+      })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+});
+
+// ── 表格支援 ────────────────────────────────────────────────
+
+describe("parseTableRow", () => {
+  it("解析基本表格行", () => {
+    expect(parseTableRow("| 欄位一 | 欄位二 | 欄位三 |")).toEqual([
+      "欄位一",
+      "欄位二",
+      "欄位三",
+    ]);
+  });
+
+  it("處理空白 cell", () => {
+    expect(parseTableRow("| 有值 |  | 有值 |")).toEqual(["有值", "", "有值"]);
+  });
+
+  it("修剪 cell 前後空白", () => {
+    expect(parseTableRow("|  空白多  |正常|")).toEqual(["空白多", "正常"]);
+  });
+});
+
+describe("generateDocx — 表格", () => {
+  it("含 markdown 表格的章節正常生成", async () => {
+    const content = `前言段落
+
+| 項目 | 說明 | 預算 |
+|------|------|------|
+| 第一期 | 需求分析 | 50萬 |
+| 第二期 | 系統開發 | 150萬 |
+
+後記段落`;
+
+    const blob = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "含表格章節", content }],
+      })
+    );
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("純表格內容正常生成", async () => {
+    const content = `| 姓名 | 職稱 |
+|------|------|
+| 王小明 | 計畫主持人 |
+| 李大華 | 協同主持人 |`;
+
+    const blob = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "人員表", content }],
+      })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("多個表格正常生成", async () => {
+    const content = `第一個表格：
+
+| A | B |
+|---|---|
+| 1 | 2 |
+
+中間段落。
+
+| C | D | E |
+|---|---|---|
+| 3 | 4 | 5 |
+
+最後段落。`;
+
+    const blob = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "多表格", content }],
+      })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("含表格的章節比純文字大", async () => {
+    const textOnly = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "純文字", content: "簡單內容" }],
+      })
+    );
+    const withTable = await generateDocx(
+      makeOptions({
+        chapters: [
+          {
+            title: "有表格",
+            content: "前言\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\n後記",
+          },
+        ],
+      })
+    );
+    // 表格會產生額外的 XML，所以 blob 應該更大
+    expect(withTable.size).toBeGreaterThan(textOnly.size);
+  });
+
+  it("不完整的表格行不會崩潰", async () => {
+    const content = `| 只有一行沒有分隔線 |`;
+    const blob = await generateDocx(
+      makeOptions({
+        chapters: [{ title: "不完整表格", content }],
       })
     );
     expect(blob.size).toBeGreaterThan(0);

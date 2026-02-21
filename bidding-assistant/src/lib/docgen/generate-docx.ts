@@ -7,6 +7,11 @@ import {
   Footer,
   PageNumber,
   AlignmentType,
+  Table,
+  TableRow,
+  TableCell,
+  WidthType,
+  BorderStyle,
   convertMillimetersToTwip,
 } from "docx";
 import type { DocumentSettings, CompanySettings } from "@/lib/settings/types";
@@ -72,32 +77,153 @@ function buildFooterParagraph(
   return new Paragraph({ children, alignment: AlignmentType.CENTER });
 }
 
-function contentToParagraphs(
+/** 判斷一行是否為表格分隔行（如 |---|---|） */
+function isTableSeparator(line: string): boolean {
+  return /^\|[\s\-:|]+\|$/.test(line.trim());
+}
+
+/** 判斷一行是否為表格行（以 | 開頭和結尾） */
+function isTableRow(line: string): boolean {
+  const t = line.trim();
+  return t.startsWith("|") && t.endsWith("|");
+}
+
+/** 解析表格行，取出每個 cell 的文字 */
+export function parseTableRow(line: string): string[] {
+  return line
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map((cell) => cell.trim());
+}
+
+/** 從 markdown 表格行建立 DOCX Table */
+function buildTable(
+  rows: string[],
+  font: string,
+  bodySize: number,
+): Table {
+  const dataRows = rows.filter((r) => !isTableSeparator(r));
+  if (dataRows.length === 0) {
+    return new Table({ rows: [] });
+  }
+
+  const parsedRows = dataRows.map(parseTableRow);
+  const colCount = Math.max(...parsedRows.map((r) => r.length));
+
+  const tableRows = parsedRows.map((cells, rowIndex) => {
+    const tableCells = Array.from({ length: colCount }, (_, i) => {
+      const text = cells[i] ?? "";
+      const isHeader = rowIndex === 0;
+      return new TableCell({
+        children: [
+          new Paragraph({
+            children: [
+              new TextRun({
+                text,
+                font,
+                size: bodySize * 2,
+                bold: isHeader,
+              }),
+            ],
+          }),
+        ],
+        width: { size: Math.floor(100 / colCount), type: WidthType.PERCENTAGE },
+      });
+    });
+    return new TableRow({ children: tableCells });
+  });
+
+  return new Table({
+    rows: tableRows,
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 1 },
+      bottom: { style: BorderStyle.SINGLE, size: 1 },
+      left: { style: BorderStyle.SINGLE, size: 1 },
+      right: { style: BorderStyle.SINGLE, size: 1 },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 1 },
+      insideVertical: { style: BorderStyle.SINGLE, size: 1 },
+    },
+  });
+}
+
+type DocBlock = Paragraph | Table;
+
+/**
+ * 將內容文字轉換為 DOCX 區塊（段落 + 表格）。
+ * 支援 markdown pipe 表格語法。
+ */
+function contentToBlocks(
   content: string,
   font: string,
   bodySize: number,
   lineSpacing: number,
   paragraphSpacing: { before: number; after: number }
-): Paragraph[] {
+): DocBlock[] {
   if (!content.trim()) return [];
 
   const spacing = {
     line: Math.round(lineSpacing * 240),
-    before: paragraphSpacing.before * 20, // pt to twips
+    before: paragraphSpacing.before * 20,
     after: paragraphSpacing.after * 20,
   };
 
-  return content
-    .split(/\n\n+/)
-    .map((block) => block.trim())
-    .filter(Boolean)
-    .map(
-      (text) =>
+  const lines = content.split("\n");
+  const blocks: DocBlock[] = [];
+  let textBuffer: string[] = [];
+  let tableBuffer: string[] = [];
+  let inTable = false;
+
+  function flushText() {
+    const joined = textBuffer.join("\n");
+    const paragraphs = joined
+      .split(/\n\n+/)
+      .map((b) => b.trim())
+      .filter(Boolean);
+    for (const text of paragraphs) {
+      blocks.push(
         new Paragraph({
           children: [new TextRun({ text, font, size: bodySize * 2 })],
           spacing,
         })
-    );
+      );
+    }
+    textBuffer = [];
+  }
+
+  function flushTable() {
+    if (tableBuffer.length > 0) {
+      blocks.push(buildTable(tableBuffer, font, bodySize));
+      tableBuffer = [];
+    }
+  }
+
+  for (const line of lines) {
+    const isRow = isTableRow(line);
+    const isSep = isTableSeparator(line);
+
+    if (isRow || isSep) {
+      if (!inTable) {
+        flushText();
+        inTable = true;
+      }
+      tableBuffer.push(line);
+    } else {
+      if (inTable) {
+        flushTable();
+        inTable = false;
+      }
+      textBuffer.push(line);
+    }
+  }
+
+  // Flush remaining
+  if (inTable) flushTable();
+  else flushText();
+
+  return blocks;
 }
 
 export async function generateDocx(
@@ -138,7 +264,7 @@ export async function generateDocx(
       spacing: { after: 240 },
     });
 
-    const body = contentToParagraphs(
+    const body = contentToBlocks(
       chapter.content,
       fonts.body,
       fontSize.body,
