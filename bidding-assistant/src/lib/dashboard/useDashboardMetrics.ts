@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import type { NotionPage } from "./types";
 import { F, ACTIVE_STATUSES, SUBMITTED_STATUSES, PROCURED_STATUSES } from "./types";
+import { BID_STATUS } from "@/lib/constants/bid-status";
 import { parseDateField } from "./helpers";
 
 // ====== 匯出的指標型別 ======
@@ -139,7 +140,7 @@ export function useDashboardMetrics(
   );
 
   const wonProjects = useMemo(
-    () => pages.filter((p) => p.properties[F.進程] === "得標"),
+    () => pages.filter((p) => p.properties[F.進程] === BID_STATUS.得標),
     [pages]
   );
 
@@ -164,7 +165,7 @@ export function useDashboardMetrics(
     if (!historicalPages?.length) return wonProjects;
     const ids = new Set(wonProjects.map((p) => p.id));
     const extra = historicalPages.filter((p) =>
-      !ids.has(p.id) && p.properties[F.進程] === "得標"
+      !ids.has(p.id) && p.properties[F.進程] === BID_STATUS.得標
     );
     return [...wonProjects, ...extra];
   }, [wonProjects, historicalPages]);
@@ -335,7 +336,7 @@ export function useDashboardMetrics(
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       if (!months[key]) months[key] = { total: 0, won: 0 };
       months[key].total++;
-      if (p.properties[F.進程] === "得標") months[key].won++;
+      if (p.properties[F.進程] === BID_STATUS.得標) months[key].won++;
     }
     return Object.entries(months)
       .sort(([a], [b]) => a.localeCompare(b))
@@ -372,7 +373,7 @@ export function useDashboardMetrics(
       if (!ts) continue;
       if (ts >= yearStart) {
         yearCount++;
-        if (p.properties[F.進程] === "得標") yearWon++;
+        if (p.properties[F.進程] === BID_STATUS.得標) yearWon++;
       }
     }
 

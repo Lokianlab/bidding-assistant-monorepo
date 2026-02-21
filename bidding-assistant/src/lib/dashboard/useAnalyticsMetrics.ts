@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import type { NotionPage } from "./types";
 import { F, PROCURED_STATUSES } from "./types";
+import { BID_STATUS } from "@/lib/constants/bid-status";
 import { parseDateField } from "./helpers";
 
 // ====== 型別 ======
@@ -165,7 +166,7 @@ export function useAnalyticsMetrics(pages: NotionPage[]): AnalyticsMetrics {
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       if (!map[key]) map[key] = { submitted: 0, won: 0, wonBudget: 0 };
       map[key].submitted++;
-      if (p.properties[F.進程] === "得標") {
+      if (p.properties[F.進程] === BID_STATUS.得標) {
         map[key].won++;
         map[key].wonBudget += p.properties[F.預算] ?? 0;
       }
@@ -196,7 +197,7 @@ export function useAnalyticsMetrics(pages: NotionPage[]): AnalyticsMetrics {
       const key = `${year}-W${String(week).padStart(2, "0")}`;
       if (!map[key]) map[key] = { submitted: 0, won: 0, wonBudget: 0 };
       map[key].submitted++;
-      if (p.properties[F.進程] === "得標") {
+      if (p.properties[F.進程] === BID_STATUS.得標) {
         map[key].won++;
         map[key].wonBudget += p.properties[F.預算] ?? 0;
       }
@@ -261,7 +262,7 @@ export function useAnalyticsMetrics(pages: NotionPage[]): AnalyticsMetrics {
         if (!w) continue;
         if (!map[w]) map[w] = { submitted: 0, won: 0, wonBudget: 0 };
         map[w].submitted++;
-        if (p.properties[F.進程] === "得標") {
+        if (p.properties[F.進程] === BID_STATUS.得標) {
           map[w].won++;
           map[w].wonBudget += p.properties[F.預算] ?? 0;
         }
@@ -294,7 +295,7 @@ export function useAnalyticsMetrics(pages: NotionPage[]): AnalyticsMetrics {
         if (!map[w]) map[w] = {};
         if (!map[w][month]) map[w][month] = { submitted: 0, won: 0 };
         map[w][month].submitted++;
-        if (p.properties[F.進程] === "得標") map[w][month].won++;
+        if (p.properties[F.進程] === BID_STATUS.得標) map[w][month].won++;
       }
     }
     for (const [writer, months] of Object.entries(map)) {
@@ -312,7 +313,7 @@ export function useAnalyticsMetrics(pages: NotionPage[]): AnalyticsMetrics {
     let costBid = 0;
     let costFee = 0;
     for (const p of pages) {
-      if (p.properties[F.進程] === "得標") {
+      if (p.properties[F.進程] === BID_STATUS.得標) {
         won++;
         wonBudget += p.properties[F.預算] ?? 0;
       }
@@ -511,7 +512,7 @@ export function computeYoY(
       periodNum = iso.week;
     }
 
-    const isWon = p.properties[F.進程] === "得標";
+    const isWon = p.properties[F.進程] === BID_STATUS.得標;
     const budget = p.properties[F.預算] ?? 0;
 
     const target =

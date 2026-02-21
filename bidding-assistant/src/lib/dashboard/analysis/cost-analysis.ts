@@ -5,6 +5,7 @@
 
 import type { NotionPage } from "../types";
 import { F, PROCURED_STATUSES, SUNK_STATUSES } from "../types";
+import { BID_STATUS } from "@/lib/constants/bid-status";
 import { groupByField } from "./breakdown";
 
 // ====== 型別 ======
@@ -42,13 +43,13 @@ export function computeCostAnalysis(pages: NotionPage[]): CostAnalysisResult {
         .filter((p) => PROCURED_STATUSES.has(p.properties[F.進程] ?? ""))
         .reduce((s, p) => s + (p.properties[F.押標金] ?? 0) + (p.properties[F.領標費] ?? 0), 0);
       const wonBudget = gPages
-        .filter((p) => p.properties[F.進程] === "得標")
+        .filter((p) => p.properties[F.進程] === BID_STATUS.得標)
         .reduce((s, p) => s + (p.properties[F.預算] ?? 0), 0);
       return {
         key, costTotal, wonBudget,
         roi: costTotal > 0 ? Math.round((wonBudget / costTotal) * 100) / 100 : 0,
         total: gPages.length,
-        won: gPages.filter((p) => p.properties[F.進程] === "得標").length,
+        won: gPages.filter((p) => p.properties[F.進程] === BID_STATUS.得標).length,
       };
     })
     .filter((r) => r.costTotal > 0)
@@ -65,13 +66,13 @@ export function computeCostAnalysis(pages: NotionPage[]): CostAnalysisResult {
         .filter((p) => PROCURED_STATUSES.has(p.properties[F.進程] ?? ""))
         .reduce((s, p) => s + (p.properties[F.押標金] ?? 0) + (p.properties[F.領標費] ?? 0), 0);
       const wonBudget = gPages
-        .filter((p) => p.properties[F.進程] === "得標")
+        .filter((p) => p.properties[F.進程] === BID_STATUS.得標)
         .reduce((s, p) => s + (p.properties[F.預算] ?? 0), 0);
       return {
         key, costTotal, wonBudget,
         roi: costTotal > 0 ? Math.round((wonBudget / costTotal) * 100) / 100 : 0,
         total: gPages.length,
-        won: gPages.filter((p) => p.properties[F.進程] === "得標").length,
+        won: gPages.filter((p) => p.properties[F.進程] === BID_STATUS.得標).length,
       };
     })
     .filter((r) => r.costTotal > 0)
@@ -82,7 +83,7 @@ export function computeCostAnalysis(pages: NotionPage[]): CostAnalysisResult {
     .filter((p) => PROCURED_STATUSES.has(p.properties[F.進程] ?? ""))
     .reduce((s, p) => s + (p.properties[F.押標金] ?? 0) + (p.properties[F.領標費] ?? 0), 0);
   const totalWonBudget = pages
-    .filter((p) => p.properties[F.進程] === "得標")
+    .filter((p) => p.properties[F.進程] === BID_STATUS.得標)
     .reduce((s, p) => s + (p.properties[F.預算] ?? 0), 0);
 
   return {
