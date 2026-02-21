@@ -7,6 +7,7 @@ import {
   isTableSeparator,
   isTableRow,
   sanitizeFilename,
+  formatROCDate,
   type GenerateDocxOptions,
 } from "../generate-docx";
 import type { DocumentSettings, CompanySettings } from "@/lib/settings/types";
@@ -851,5 +852,174 @@ describe("sanitizeFilename", () => {
 
   it("preserves dots and hyphens", () => {
     expect(sanitizeFilename("my-file.v2.1.docx")).toBe("my-file.v2.1.docx");
+  });
+});
+
+// ── formatROCDate ──────────────────────────────────────────────
+
+describe("formatROCDate", () => {
+  it("轉換西元年為民國年", () => {
+    const date = new Date(2026, 1, 21); // 2026-02-21
+    expect(formatROCDate(date)).toBe("中華民國 115 年 2 月");
+  });
+
+  it("處理一月", () => {
+    const date = new Date(2026, 0, 1); // 2026-01-01
+    expect(formatROCDate(date)).toBe("中華民國 115 年 1 月");
+  });
+
+  it("處理十二月", () => {
+    const date = new Date(2025, 11, 31); // 2025-12-31
+    expect(formatROCDate(date)).toBe("中華民國 114 年 12 月");
+  });
+
+  it("無參數時使用當前日期（不崩潰）", () => {
+    const result = formatROCDate();
+    expect(result).toMatch(/^中華民國 \d+ 年 \d+ 月$/);
+  });
+});
+
+// ── 封面頁 ──────────────────────────────────────────────────────
+
+describe("generateDocx — 封面頁", () => {
+  it("預設生成封面頁（blob 更大）", async () => {
+    const withCover = await generateDocx(makeOptions());
+    const noCover = await generateDocx(
+      makeOptions({ coverPage: false })
+    );
+    expect(withCover.size).toBeGreaterThan(noCover.size);
+  });
+
+  it("coverPage: false 不生成封面頁", async () => {
+    const blob = await generateDocx(
+      makeOptions({ coverPage: false })
+    );
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("coverPage: true 明確啟用", async () => {
+    const blob = await generateDocx(
+      makeOptions({ coverPage: true })
+    );
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("空 projectName 的封面頁不崩潰", async () => {
+    const blob = await generateDocx(
+      makeOptions({ projectName: "", coverPage: true })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("空 companyName 的封面頁不崩潰", async () => {
+    const blob = await generateDocx(
+      makeOptions({
+        companySettings: { name: "", taxId: "", brand: "" },
+        coverPage: true,
+      })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+});
+
+// ── 目錄 ──────────────────────────────────────────────────────
+
+describe("generateDocx — 目錄", () => {
+  it("預設生成目錄（blob 更大）", async () => {
+    const withToc = await generateDocx(makeOptions());
+    const noToc = await generateDocx(
+      makeOptions({ tableOfContents: false })
+    );
+    expect(withToc.size).toBeGreaterThan(noToc.size);
+  });
+
+  it("tableOfContents: false 不生成目錄", async () => {
+    const blob = await generateDocx(
+      makeOptions({ tableOfContents: false })
+    );
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("tableOfContents: true 明確啟用", async () => {
+    const blob = await generateDocx(
+      makeOptions({ tableOfContents: true })
+    );
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("零章節時目錄仍可生成", async () => {
+    const blob = await generateDocx(
+      makeOptions({ chapters: [], tableOfContents: true })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+});
+
+// ── 封面 + 目錄組合 ──────────────────────────────────────────
+
+describe("generateDocx — 封面 + 目錄組合", () => {
+  it("封面+目錄都啟用", async () => {
+    const blob = await generateDocx(
+      makeOptions({ coverPage: true, tableOfContents: true })
+    );
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("封面+目錄都關閉", async () => {
+    const blob = await generateDocx(
+      makeOptions({ coverPage: false, tableOfContents: false })
+    );
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("只有封面沒有目錄", async () => {
+    const blob = await generateDocx(
+      makeOptions({ coverPage: true, tableOfContents: false })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("只有目錄沒有封面", async () => {
+    const blob = await generateDocx(
+      makeOptions({ coverPage: false, tableOfContents: true })
+    );
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("全功能：封面+目錄+多章節+混合格式", async () => {
+    const blob = await generateDocx(
+      makeOptions({
+        coverPage: true,
+        tableOfContents: true,
+        chapters: [
+          {
+            title: "第壹章 計畫緣起",
+            content: "## 背景\n\n本案為**重要標案**。\n\n### 目的\n\n- 提升效率\n- 降低成本",
+          },
+          {
+            title: "第貳章 工作方法",
+            content: "## 方法論\n\n1. 需求分析\n2. 系統設計\n\n| 階段 | 產出 |\n|------|------|\n| 一期 | 規格書 |",
+          },
+        ],
+      })
+    );
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("全功能 blob 大於無封面無目錄版本", async () => {
+    const full = await generateDocx(
+      makeOptions({ coverPage: true, tableOfContents: true })
+    );
+    const minimal = await generateDocx(
+      makeOptions({ coverPage: false, tableOfContents: false })
+    );
+    expect(full.size).toBeGreaterThan(minimal.size);
   });
 });

@@ -13,6 +13,9 @@ import {
   WidthType,
   BorderStyle,
   LevelFormat,
+  HeadingLevel,
+  TableOfContents,
+  SectionType,
   convertMillimetersToTwip,
 } from "docx";
 import type { DocumentSettings, CompanySettings } from "@/lib/settings/types";
@@ -29,6 +32,10 @@ export interface GenerateDocxOptions {
   chapters: ChapterInput[];
   documentSettings: DocumentSettings;
   companySettings: CompanySettings;
+  /** 是否生成封面頁（預設 true） */
+  coverPage?: boolean;
+  /** 是否生成目錄（預設 true） */
+  tableOfContents?: boolean;
 }
 
 export interface InlineSegment {
@@ -56,6 +63,19 @@ const PAGE_SIZES: Record<string, { width: number; height: number }> = {
 };
 
 const NUMBERED_LIST_REF = "decimal-numbering";
+
+const HEADING_LEVEL_MAP: Record<number, (typeof HeadingLevel)[keyof typeof HeadingLevel]> = {
+  2: HeadingLevel.HEADING_2,
+  3: HeadingLevel.HEADING_3,
+  4: HeadingLevel.HEADING_4,
+};
+
+/** 取得中華民國年月（標案封面用） */
+export function formatROCDate(date: Date = new Date()): string {
+  const rocYear = date.getFullYear() - 1911;
+  const month = date.getMonth() + 1;
+  return `中華民國 ${rocYear} 年 ${month} 月`;
+}
 
 // ── Template helpers ──────────────────────────────────────────
 
@@ -322,6 +342,7 @@ function contentToBlocks(
       blocks.push(
         new Paragraph({
           children: toTextRuns(headingMatch[2], fmt.headingFont, hSize, true),
+          heading: HEADING_LEVEL_MAP[level],
           spacing: { before: 240, after: 120 },
         })
       );
@@ -415,6 +436,7 @@ export async function generateDocx(
           bold: true,
         }),
       ],
+      heading: HeadingLevel.HEADING_1,
       spacing: { after: 240 },
     });
 
@@ -445,7 +467,130 @@ export async function generateDocx(
     };
   });
 
+  // ── 封面頁 + 目錄 ──
+  const showCover = options.coverPage !== false;
+  const showToc = options.tableOfContents !== false;
+
+  const coverSection = {
+    properties: {
+      page: {
+        size: { width: pageSize.width, height: pageSize.height },
+        margin,
+      },
+    },
+    children: [
+      new Paragraph({ spacing: { before: 4000 } }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: projectName,
+            font: fonts.heading,
+            size: 52,
+            bold: true,
+          }),
+        ],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 600 },
+      }),
+      new Paragraph({ spacing: { before: 1200 } }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: companySettings.name,
+            font: fonts.heading,
+            size: 36,
+          }),
+        ],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 400 },
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: formatROCDate(),
+            font: fonts.heading,
+            size: 28,
+          }),
+        ],
+        alignment: AlignmentType.CENTER,
+      }),
+    ],
+  };
+
+  const tocSection = {
+    properties: {
+      page: {
+        size: { width: pageSize.width, height: pageSize.height },
+        margin,
+      },
+    },
+    children: [
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "目錄",
+            font: fonts.heading,
+            size: fontSize.h1 * 2,
+            bold: true,
+          }),
+        ],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 400 },
+      }),
+      new TableOfContents("目錄", {
+        hyperlink: true,
+        headingStyleRange: "1-4",
+      }),
+    ],
+  };
+
+  const finalSections = [
+    ...(showCover ? [coverSection] : []),
+    ...(showToc ? [tocSection] : []),
+    ...sections,
+  ];
+
   const doc = new Document({
+    styles: {
+      paragraphStyles: [
+        {
+          id: "Heading1",
+          name: "heading 1",
+          basedOn: "Normal",
+          next: "Normal",
+          quickFormat: true,
+          run: { font: fonts.heading, size: fontSize.h1 * 2, bold: true },
+          paragraph: { spacing: { after: 240 } },
+        },
+        {
+          id: "Heading2",
+          name: "heading 2",
+          basedOn: "Normal",
+          next: "Normal",
+          quickFormat: true,
+          run: { font: fonts.heading, size: fontSize.h2 * 2, bold: true },
+          paragraph: { spacing: { before: 240, after: 120 } },
+        },
+        {
+          id: "Heading3",
+          name: "heading 3",
+          basedOn: "Normal",
+          next: "Normal",
+          quickFormat: true,
+          run: { font: fonts.heading, size: fontSize.h3 * 2, bold: true },
+          paragraph: { spacing: { before: 240, after: 120 } },
+        },
+        {
+          id: "Heading4",
+          name: "heading 4",
+          basedOn: "Normal",
+          next: "Normal",
+          quickFormat: true,
+          run: { font: fonts.heading, size: fontSize.h4 * 2, bold: true },
+          paragraph: { spacing: { before: 240, after: 120 } },
+        },
+      ],
+    },
     numbering: {
       config: [
         {
@@ -469,7 +614,7 @@ export async function generateDocx(
         },
       ],
     },
-    sections,
+    sections: finalSections,
     creator: companySettings.name,
     title: projectName,
   });
