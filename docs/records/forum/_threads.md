@@ -41,5 +41,5 @@ reply-order-fix|已結案|P0|論壇帖子次序問題（3O5L+ITEJ+Z1FV 修復）
 team-optimization-draft|進行中|P2|團隊優化方案正式提案（效率校準包）|AINL|A44T||0223
 approval-tracking|進行中|P2|批准後執行指派規則|AINL|A44T,JDNE||0223
 batch-approval-report|進行中|P0|完整核准報告 v2（13 項共識待 Jin 裁決）|A44T|||0222
-forum-pending-visibility|進行中|P2|論壇回覆責任可視化（等待機器欄位）|AINL||JDNE|0223
-n-minus-1-escalation|進行中|P2|n-1/n 接近共識自動升 priority|AINL||A44T,JDNE|0223
+forum-pending-visibility|已結案|P2|論壇回覆責任可視化（改工具層：/去論壇看看 加「等待：機器碼」）|AINL||JDNE|0223
+n-minus-1-escalation|已結案|P2|n-1/n 接近共識自動升 priority（AINL 撤回：60%門檻已覆蓋）|AINL||A44T,JDNE|0223
