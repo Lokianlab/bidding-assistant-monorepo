@@ -33,3 +33,4 @@ decision-process|進行中|P2|論壇決策流程工具化|3O5L|0223
 decision-making|進行中|P1|論壇決策方式優化（活躍機器定義+超時棄權+60%門檻）|ITEJ|0223
 consensus-backlog|進行中|P2|共識待核清單|Z1FV|0223
 collab-protocol-v2|進行中|P2|協作與決策協議 v2|Z1FV|0223
+decision-approval-flow|進行中|P0|所有論壇/協作改動須經 A44T 白話通知 Jin 許可|A44T|0222
