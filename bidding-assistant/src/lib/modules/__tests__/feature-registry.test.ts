@@ -31,8 +31,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(FEATURE_REGISTRY.length).toBeGreaterThan(0);
   });
 
-  it("has 10 registered features", () => {
-    expect(FEATURE_REGISTRY).toHaveLength(10);
+  it("has 11 registered features", () => {
+    expect(FEATURE_REGISTRY).toHaveLength(11);
   });
 
   it("every feature has all required fields", () => {
@@ -94,6 +94,7 @@ describe("FEATURE_REGISTRY", () => {
     expect(ids).toContain("custom-dashboard");
     expect(ids).toContain("case-board");
     expect(ids).toContain("prompt-library");
+    expect(ids).toContain("intelligence");
   });
 });
 
