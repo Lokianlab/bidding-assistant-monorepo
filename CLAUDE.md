@@ -48,7 +48,7 @@ cc程式/                      ← 專案根目錄（每台機器各自 clone，
 - SmugMug MCP：已完成（`smugmug-mcp/`，7 個工具）
 - PCC 標案 API MCP：已完成（`pcc-api-mcp/`，6 個工具）
 - PCC Monitor：已完成（`pcc-monitor/`，GAS 每小時監控）
-- Notion MCP：待建（本地版，讓三家 AI 都能用）
+- Notion MCP：暫緩（內建 Notion MCP 夠用，等多 AI 協作階段再建本地版）
 
 ### 開發路線
 詳見 `docs/dev-map.md`（由 /地圖 指令維護）。
