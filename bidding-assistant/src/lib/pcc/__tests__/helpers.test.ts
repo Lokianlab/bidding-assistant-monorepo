@@ -108,6 +108,18 @@ describe("parseAmount", () => {
   it("returns null for non-numeric string", () => {
     expect(parseAmount("不適用")).toBeNull();
   });
+
+  it("parses negative number string", () => {
+    expect(parseAmount("-100元")).toBe(-100);
+  });
+
+  it("parses full-width comma separated amount", () => {
+    expect(parseAmount("100，000元")).toBe(100000);
+  });
+
+  it("parses zero", () => {
+    expect(parseAmount("0元")).toBe(0);
+  });
 });
 
 // ---- formatAmount ----
@@ -127,6 +139,23 @@ describe("formatAmount", () => {
 
   it("returns dash for null", () => {
     expect(formatAmount(null)).toBe("—");
+  });
+
+  it("formats exactly 100,000,000 in 億", () => {
+    expect(formatAmount(100_000_000)).toBe("1.00 億");
+  });
+
+  it("formats exactly 10,000 in 萬", () => {
+    expect(formatAmount(10_000)).toBe("1.0 萬");
+  });
+
+  it("formats zero", () => {
+    expect(formatAmount(0)).toBe("0 元");
+  });
+
+  it("formats 9,999 in 元 (just below 萬 threshold)", () => {
+    expect(formatAmount(9_999)).toContain("9,999");
+    expect(formatAmount(9_999)).toContain("元");
   });
 });
 
