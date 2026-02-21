@@ -33,6 +33,10 @@ export default function MaintenancePage() {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target?.result as string);
+        if (!data || typeof data !== "object" || Array.isArray(data)) {
+          toast.error("匯入失敗：檔案內容必須是 JSON 物件");
+          return;
+        }
         localStorage.setItem("bidding-assistant-settings", JSON.stringify(data));
         toast.success("設定已匯入，重新整理頁面以套用");
         setTimeout(() => window.location.reload(), 1000);

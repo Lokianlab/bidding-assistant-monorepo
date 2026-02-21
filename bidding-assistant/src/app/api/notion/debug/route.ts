@@ -57,6 +57,12 @@ export async function POST(req: NextRequest) {
         "Notion-Version": "2022-06-28",
       },
     });
+    if (!schemaRes.ok) {
+      return NextResponse.json(
+        { error: `Notion API 回應 ${schemaRes.status}：無法讀取資料庫 schema` },
+        { status: schemaRes.status }
+      );
+    }
     const db: NotionDatabaseResponse = await schemaRes.json();
 
     // 用 REST API query 第一筆
@@ -69,6 +75,12 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({ page_size: 1 }),
     });
+    if (!queryRes.ok) {
+      return NextResponse.json(
+        { error: `Notion API 回應 ${queryRes.status}：無法查詢資料` },
+        { status: queryRes.status }
+      );
+    }
     const queryData: NotionQueryResponse = await queryRes.json();
 
     const firstPage = queryData.results?.[0];
@@ -120,6 +132,8 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    // 避免在錯誤訊息中洩漏 token 或敏感資訊
+    const safeMessage = message.replace(/Bearer\s+\S+/gi, "Bearer [REDACTED]");
+    return NextResponse.json({ error: safeMessage }, { status: 500 });
   }
 }

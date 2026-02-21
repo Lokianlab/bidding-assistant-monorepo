@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-2230|A44T
+SNAPSHOT|20260222-2300|A44T
 [x] doc-methodology-review|砍回應前分流 + 機器對等原則|@op:20260219-A44T#0643
 [x] infra-trigger-rules|觸發規則簡化 + Stop hook 擴大範圍|@op:20260219-A44T#0718
 [x] plan-backlog|待辦盤點 + /待辦指令|用戶驗收通過
@@ -13,4 +13,5 @@ SNAPSHOT|20260221-2230|A44T
 [ ] plan-product-pivot|產品開發轉向|文件生成+工具卡已實作，下一個模組待決
 [?] infra-db-safety|資料庫安全規則|沙盒方案暫存檔已建（推薦混合 JSON mock + UI 複製），待用戶決定
 [x] infra-governance|治理機制寫入 CLAUDE.md|用戶核准通過，commit 12d5d69
-[ ] infra-quality-audit|品管員角色（用戶指派）|11 個待驗收項全部審查完成。問題：quality-refactor SSOT 違規待 ITEJ 修、claude-md-modular 狀態矛盾已修正
+[ ] infra-quality-audit|品管員角色（用戶指派）|SSOT 修正已確認關閉（ITEJ 已修）；程式碼掃描修了 3 個 bug（pricing SSOT、notion debug、maintenance 驗證）
+[ ] infra-efficiency-cal|效率校準 P0 第一輪答辯|已提交：3 層根因+效率公式+逐項表態，等第二輪質疑

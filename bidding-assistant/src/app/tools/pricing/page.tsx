@@ -18,6 +18,7 @@ import {
 import { useState, useMemo } from "react";
 import { itemAmount, calculateSummary, formatAmount, createEmptyItem, getDefaultItems } from "@/lib/pricing/helpers";
 import type { CostItem } from "@/lib/pricing/types";
+import { COST_CATEGORIES } from "@/lib/pricing/constants";
 
 export default function PricingPage() {
   const { settings } = useSettings();
@@ -86,9 +87,9 @@ export default function PricingPage() {
                             updateItem(item.id, { category: e.target.value as CostItem["category"] })
                           }
                         >
-                          <option>人事費</option>
-                          <option>業務費</option>
-                          <option>雜支</option>
+                          {COST_CATEGORIES.map((cat) => (
+                            <option key={cat}>{cat}</option>
+                          ))}
                         </select>
                       </TableCell>
                       <TableCell>
@@ -169,7 +170,7 @@ export default function PricingPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="space-y-2 text-sm">
-                {(["人事費", "業務費", "雜支"] as const).map((cat) => (
+                {COST_CATEGORIES.map((cat) => (
                   <div key={cat} className="flex justify-between">
                     <span className="text-muted-foreground">{cat}</span>
                     <span className="font-mono">{formatAmount(summary.byCategory[cat])}</span>

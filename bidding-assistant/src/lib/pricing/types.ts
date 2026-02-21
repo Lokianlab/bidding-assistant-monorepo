@@ -1,5 +1,7 @@
-/** 費用項目類別 */
-export type CostCategory = "人事費" | "業務費" | "雜支";
+import { COST_CATEGORIES } from "./constants";
+
+/** 費用項目類別（衍生自 COST_CATEGORIES 常數） */
+export type CostCategory = (typeof COST_CATEGORIES)[number];
 
 /** 單筆費用項目 */
 export interface CostItem {
