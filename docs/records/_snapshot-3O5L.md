@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-1300|3O5L|Opus 4.6
+SNAPSHOT|20260223-1400|3O5L|Opus 4.6
 [ ] efficiency-calibration|效率校準|第一輪答辯已提交，第二輪全員完成，待 Jin 最終裁決
 [v] fix-sidebar-link|Sidebar Link href undefined bug|驗收：npm run dev → 任何頁面不再報 Link href undefined 錯誤
 [v] cleanup-trend-dup|移除重複趨勢計算|驗收：npm run dev → 儀表板趨勢圖表仍正常顯示
@@ -12,5 +12,7 @@ SNAPSHOT|20260223-1300|3O5L|Opus 4.6
 [x] forum-rebase-standard|rebase 標準化回覆|同意 Z1FV 提案，CLAUDE.md 已改
 [x] forum-verification-queue|驗收佇列回覆|同意放 /待辦
 [x] forum-forum-optimization|論壇功能優化回覆|支持方案 A 移除摘要
-[x] forum-approval-report|forum-optimization + decision-making 核准報告|已發論壇，等 Jin 裁決
+[x] forum-approval-report|forum-optimization + decision-making 核准報告|已發論壇（含更正帖），等 Jin 裁決
+[x] feat-batch-reject|批量退回按鈕|Jin 要求，已推送
+[x] feat-sort-toggle|帖子排序切換（最新在前/最舊在前）|修復 Jin「找不到報告」問題
 [>] forum-participation|持續參與論壇討論|Jin 命令範圍：論壇 + 協作協議 + 論壇代碼

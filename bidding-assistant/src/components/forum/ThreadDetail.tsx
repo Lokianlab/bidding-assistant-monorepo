@@ -21,6 +21,7 @@ interface ThreadDetailProps {
 
 export function ThreadDetail({ thread, onBack, onVote }: ThreadDetailProps) {
   const [voting, setVoting] = useState(false);
+  const [newestFirst, setNewestFirst] = useState(true);
   const statusConfig = THREAD_STATUS_CONFIG[thread.status];
   const priorityConfig = thread.priority
     ? PRIORITY_CONFIG[thread.priority]
@@ -158,30 +159,48 @@ export function ThreadDetail({ thread, onBack, onVote }: ThreadDetailProps) {
         </div>
       )}
 
-      {/* 帖子流：按時間由舊到新 */}
+      {/* 帖子流 */}
       {thread.posts.length === 0 ? (
         <div className="text-center text-muted-foreground py-8">
           此討論串沒有關聯的帖子
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="text-xs text-muted-foreground">
-            共 {thread.posts.length} 則帖子，由舊到新
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-muted-foreground">
+              共 {thread.posts.length} 則帖子
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs h-7"
+              onClick={() => setNewestFirst(!newestFirst)}
+            >
+              {newestFirst ? "↑ 最新在前" : "↓ 最舊在前"}
+            </Button>
           </div>
-          {thread.posts.map((post, i) => {
-            const isDiscuss = post.type === "discuss";
-            return (
-              <div
-                key={`${post.timestamp}-${post.machineCode}-${i}`}
-                className={cn(
-                  isDiscuss && "ring-2 ring-blue-200 dark:ring-blue-800 rounded-lg",
-                  !isDiscuss && "ml-4",
-                )}
-              >
-                <PostCard post={post} />
-              </div>
-            );
-          })}
+          {(() => {
+            // discuss 帖子永遠在最前（提供上下文）
+            const discussPosts = thread.posts.filter((p) => p.type === "discuss");
+            const otherPosts = thread.posts.filter((p) => p.type !== "discuss");
+            const sortedOthers = newestFirst ? [...otherPosts].reverse() : otherPosts;
+            const displayPosts = [...discussPosts, ...sortedOthers];
+
+            return displayPosts.map((post, i) => {
+              const isDiscuss = post.type === "discuss";
+              return (
+                <div
+                  key={`${post.timestamp}-${post.machineCode}-${i}`}
+                  className={cn(
+                    isDiscuss && "ring-2 ring-blue-200 dark:ring-blue-800 rounded-lg",
+                    !isDiscuss && "ml-4",
+                  )}
+                >
+                  <PostCard post={post} />
+                </div>
+              );
+            });
+          })()}
         </div>
       )}
     </div>
