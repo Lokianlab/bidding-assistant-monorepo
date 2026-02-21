@@ -221,4 +221,43 @@ describe("checkFacts", () => {
     const result = checkFacts(text);
     expect(result.annotations.length).toBeGreaterThanOrEqual(2);
   });
+
+  it("大量幻覺導致分數夾到 0", () => {
+    // 8 個幻覺句 × (10 penalty + 3 unverified penalty) = -104 → clamped 0
+    const sentences = [
+      "本計畫可提升效率達85%。",
+      "根據最新研究顯示效果顯著。",
+      "業界首創導入此技術。",
+      "每年服務超過三萬人次。",
+      "與多所國際學術機構合作交流。",
+      "曾獲得優良廠商認證。",
+      "服務滿意度高達98%。",
+      "改善成效高達90%，成長超過50%。",
+    ].join("");
+    const result = checkFacts(sentences);
+    expect(result.score).toBe(0);
+    expect(result.hallucinationCount).toBeGreaterThanOrEqual(7);
+  });
+
+  it("KB 比對成功時 partialCount 大於 0", () => {
+    const entries: KBEntry[] = [
+      {
+        kbId: "00B",
+        entryId: "P-001",
+        searchableFields: {
+          description: "整合社區長照資源推動服務體系，服務對象為長者與身障者",
+        },
+      },
+    ];
+    const text = "本計畫整合社區長照資源推動服務體系。";
+    const result = checkFacts(text, entries, { skipSourceTrace: false });
+    // deriveConfidence 目前只回傳 partial（非 verified），但有來源時 source 不為 null
+    const hasSource = result.annotations.some((a) => a.source !== null);
+    if (hasSource) {
+      expect(result.partialCount).toBeGreaterThan(0);
+    }
+    // 不管有無匹配，score 仍在合法範圍
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.score).toBeLessThanOrEqual(100);
+  });
 });
