@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-1720|ITEJ
+SNAPSHOT|20260222-1730|ITEJ
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -15,6 +15,7 @@ SNAPSHOT|20260222-1720|ITEJ
 [v] infra-forum|機器論壇 + /質問 指令|forum/ 目錄 + 格式規範 + 5 種貼文類型 + /質問全面校準 + /更新整合，待用戶驗收
 [v] feat-quality-refactor|品質檢查模組重構|邏輯抽到 lib/quality/，新增句子過長+重複句+承諾風險+自訂規則，42 個測試，待用戶驗收
 [v] feat-pricing-refactor|報價計算模組重構|邏輯抽到 lib/pricing/，types + helpers + 26 個測試，頁面瘦身，待用戶驗收
+[v] feat-assembly-refactor|提案組裝引擎重構|邏輯抽到 lib/assembly/（estimateTokens+formatKB+buildFilename+computeFileList+computeActiveFiles+assembleContent），31 個測試，頁面瘦身，待用戶驗收
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決
 [?] plan-notion-mcp-status|Notion MCP 定位|JDNE 說暫緩，CLAUDE.md 寫待建，不一致
 [ ] plan-devplan-push|消化暫存區推進開發計畫|6 條任務線完成，剩 5 個待決碎片

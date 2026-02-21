@@ -8,8 +8,6 @@ import {
   PROMPT_FILES,
   RULE_MAP,
   FILE_MAP,
-  type PromptFile,
-  type KBRef,
 } from "@/data/config/prompt-assembly";
 import { STAGES } from "@/data/config/stages";
 import { useState, useCallback, useMemo, useEffect } from "react";
@@ -18,20 +16,17 @@ import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { useKnowledgeBase } from "@/lib/knowledge-base/useKnowledgeBase";
 import { renderKBToMarkdown } from "@/lib/knowledge-base/helpers";
 import type { KBId } from "@/lib/knowledge-base/types";
+import {
+  estimateTokens,
+  formatKB,
+  buildFilename,
+  computeFileList,
+  computeActiveFiles,
+  assembleContent,
+} from "@/lib/assembly/helpers";
 
 /** 知識庫 ID 集合，用於判斷某個檔案是否為知識庫 */
 const KB_FILE_IDS = new Set<string>(["00A", "00B", "00C", "00D", "00E"]);
-
-// ====== Token 估算 ======
-function estimateTokens(text: string): number {
-  const cn = (text.match(/[\u4e00-\u9fff]/g) || []).length;
-  const other = text.length - cn;
-  return Math.round(cn * 2 + other / 4);
-}
-
-function formatKB(bytes: number): string {
-  return (bytes / 1024).toFixed(1) + " KB";
-}
 
 // ====== 主頁面 ======
 export default function AssemblyPage() {
@@ -70,65 +65,13 @@ export default function AssemblyPage() {
   }, [kbData, kbHydrated]);
 
   // 根據當前階段，計算需要載入的檔案清單
-  const fileList = useMemo(() => {
-    if (!rule) return [];
-    const result: { file: PromptFile; reason: string; ref?: KBRef; auto: boolean }[] = [];
-
-    // Tier 1：永遠載入
-    for (const id of rule.alwaysLoad) {
-      const f = FILE_MAP[id];
-      if (f) result.push({ file: f, reason: "永遠載入", auto: true });
-    }
-
-    // 階段提示詞
-    const stageFile = FILE_MAP[rule.stageFile];
-    if (stageFile) result.push({ file: stageFile, reason: "當前階段", auto: true });
-
-    // 額外規範
-    for (const id of rule.extraSpecs) {
-      const f = FILE_MAP[id];
-      if (f) result.push({ file: f, reason: "本階段需要", auto: true });
-    }
-
-    // 知識庫
-    for (const [kbId, ref] of Object.entries(rule.kb)) {
-      const f = FILE_MAP[kbId];
-      if (f) {
-        result.push({
-          file: f,
-          reason: ref === "required" ? "● 必要引用" : "○ 選擇性引用",
-          ref,
-          auto: ref === "required",
-        });
-      }
-    }
-
-    return result;
-  }, [rule]);
+  const fileList = useMemo(() => computeFileList(rule), [rule]);
 
   // 計算最終要載入的檔案（required + 使用者勾選的 optional + 手動加入的）
-  const activeFiles = useMemo(() => {
-    // 矩陣內的檔案
-    const fromMatrix = fileList.filter((item) => {
-      if (item.auto) return true;
-      if (item.ref === "optional") {
-        const key = `${selectedStage}-${item.file.id}`;
-        return optionalToggles[key] ?? false;
-      }
-      return false;
-    });
-    // 手動加入的（不在矩陣中但使用者勾選了）
-    const matrixIds = new Set(fileList.map((item) => item.file.id));
-    const manual = PROMPT_FILES
-      .filter((f) => !matrixIds.has(f.id))
-      .filter((f) => {
-        const key = `${selectedStage}-${f.id}`;
-        return optionalToggles[key] ?? false;
-      })
-      .map((f) => ({ file: f, reason: "手動加入", auto: false }));
-
-    return [...fromMatrix, ...manual];
-  }, [fileList, optionalToggles, selectedStage]);
+  const activeFiles = useMemo(
+    () => computeActiveFiles(fileList, optionalToggles, selectedStage),
+    [fileList, optionalToggles, selectedStage]
+  );
 
   // 載入單個檔案（知識庫優先從 DB 載入，fallback 到靜態檔案）
   const loadFile = useCallback(async (fileId: string) => {
@@ -214,26 +157,20 @@ export default function AssemblyPage() {
 
   // 執行組裝
   async function handleAssemble() {
-    const parts: string[] = [];
-    let totalSize = 0;
-
+    // 先載入尚未快取的檔案
+    const updatedContents = { ...fileContents };
     for (const item of activeFiles) {
-      let content = fileContents[item.file.id];
-      if (!content) {
-        content = await loadFile(item.file.id);
-      }
-      if (content) {
-        parts.push(
-          `${"=".repeat(60)}\n📄 ${item.file.label}\n${"=".repeat(60)}\n\n${content}`
-        );
-        totalSize += new Blob([content]).size;
+      if (!updatedContents[item.file.id]) {
+        const content = await loadFile(item.file.id);
+        if (content) updatedContents[item.file.id] = content;
       }
     }
 
-    const result = parts.join("\n\n");
+    const result = assembleContent(activeFiles, updatedContents);
     setAssembled(result);
     setShowResult(true);
 
+    const totalSize = new Blob([result]).size;
     const tokens = estimateTokens(result);
     toast.success(
       `組裝完成：${activeFiles.length} 個檔案，約 ${formatKB(totalSize)}，~${tokens.toLocaleString()} tokens`
@@ -250,25 +187,9 @@ export default function AssemblyPage() {
     }
   }
 
-  // 產生檔名：[BID-00123] L1_戰略分析_2602151556.md
-  function buildFilename(ext: "md" | "txt") {
-    const stage = STAGES.find((s) => s.id === selectedStage);
-    const now = new Date();
-    const yy = String(now.getFullYear()).slice(-2);
-    const MM = String(now.getMonth() + 1).padStart(2, "0");
-    const dd = String(now.getDate()).padStart(2, "0");
-    const hh = String(now.getHours()).padStart(2, "0");
-    const mm = String(now.getMinutes()).padStart(2, "0");
-    const ts = `${yy}${MM}${dd}${hh}${mm}`;
-    const prefix = bidCode.trim()
-      ? `[BID-${bidCode.trim().padStart(5, "0")}] `
-      : "";
-    return `${prefix}${selectedStage}_${stage?.name ?? "prompt"}_${ts}.${ext}`;
-  }
-
   // 下載檔案
   function handleDownload(ext: "md" | "txt") {
-    const filename = buildFilename(ext);
+    const filename = buildFilename(selectedStage, bidCode, ext);
     const blob = new Blob([assembled], { type: "text/plain; charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
