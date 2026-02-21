@@ -32,9 +32,10 @@ interface PCCTenderSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onViewCompany?: (companyName: string) => void;
+  onViewCommittee?: (unitId: string, unitName: string) => void;
 }
 
-export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany }: PCCTenderSheetProps) {
+export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany, onViewCommittee }: PCCTenderSheetProps) {
   const { settings } = useSettings();
   const myCompany = settings.company?.brand || "大員洛川";
   const [detail, setDetail] = useState<PCCTenderDetail | null>(null);
@@ -221,6 +222,16 @@ export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany }: PC
             <>
               <Separator />
               <EvaluationCommitteeSection members={detail.evaluation_committee} />
+              {onViewCommittee && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs"
+                  onClick={() => onViewCommittee(record.unit_id, record.unit_name)}
+                >
+                  分析此機關的評委網路
+                </Button>
+              )}
             </>
           )}
 

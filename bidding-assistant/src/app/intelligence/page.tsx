@@ -5,15 +5,22 @@ import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { PCCSearchPanel } from "@/components/pcc/PCCSearchPanel";
 import { CompetitorAnalysis } from "@/components/pcc/CompetitorAnalysis";
 import { MarketTrend } from "@/components/pcc/MarketTrend";
+import { CommitteeNetwork } from "@/components/pcc/CommitteeNetwork";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function IntelligencePage() {
   const [tab, setTab] = useState("search");
   const [targetCompany, setTargetCompany] = useState<string | null>(null);
+  const [targetAgency, setTargetAgency] = useState<{ unitId: string; unitName: string } | null>(null);
 
   const handleViewCompany = useCallback((companyName: string) => {
     setTargetCompany(companyName);
     setTab("analysis");
+  }, []);
+
+  const handleViewCommittee = useCallback((unitId: string, unitName: string) => {
+    setTargetAgency({ unitId, unitName });
+    setTab("committee");
   }, []);
 
   return (
@@ -35,10 +42,14 @@ export default function IntelligencePage() {
           <TabsTrigger value="search">案件搜尋</TabsTrigger>
           <TabsTrigger value="analysis">競爭分析</TabsTrigger>
           <TabsTrigger value="market">市場趨勢</TabsTrigger>
+          <TabsTrigger value="committee">評委分析</TabsTrigger>
         </TabsList>
 
         <TabsContent value="search" className="mt-4">
-          <PCCSearchPanel onViewCompany={handleViewCompany} />
+          <PCCSearchPanel
+            onViewCompany={handleViewCompany}
+            onViewCommittee={handleViewCommittee}
+          />
         </TabsContent>
 
         <TabsContent value="analysis" className="mt-4">
@@ -50,6 +61,13 @@ export default function IntelligencePage() {
 
         <TabsContent value="market" className="mt-4">
           <MarketTrend />
+        </TabsContent>
+
+        <TabsContent value="committee" className="mt-4">
+          <CommitteeNetwork
+            targetAgency={targetAgency}
+            onTargetConsumed={() => setTargetAgency(null)}
+          />
         </TabsContent>
       </Tabs>
     </div>
