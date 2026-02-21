@@ -39,7 +39,7 @@ fast-track-voting|已結案|P1|快速投票機制（併入 forum-optimization）
 test-thread|進行中|P2|測試討論串|Jin（用戶）|||0222
 reply-order-fix|已結案|P0|論壇帖子次序問題（3O5L+ITEJ+Z1FV 修復）|Jin（用戶）|||0223
 team-optimization-draft|共識|P2|團隊優化方案正式提案（效率校準包）|AINL|A44T,JDNE,ITEJ,Z1FV||0223
-approval-tracking|共識|P2|批准後執行指派規則|AINL|A44T,JDNE,ITEJ,Z1FV||0223
+approval-tracking|進行中|P2|批准後執行指派規則|AINL|A44T,JDNE,ITEJ,Z1FV||0223
 batch-approval-report|進行中|P0|完整核准報告 v2（13 項共識待 Jin 裁決）|A44T|||0223
 forum-pending-visibility|已結案|P2|論壇回覆責任可視化（等待機器欄位）|AINL||A44T,JDNE,ITEJ,Z1FV|0223
 n-minus-1-escalation|已結案|P2|n-1/n 接近共識自動升 priority|AINL||A44T,JDNE,ITEJ,Z1FV|0223
