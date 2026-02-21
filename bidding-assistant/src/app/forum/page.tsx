@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useForum } from "@/lib/forum/useForum";
 import { ForumOverview } from "@/components/forum/ForumOverview";
 import { ForumFilters, type ForumFilterState } from "@/components/forum/ForumFilters";
@@ -19,11 +19,14 @@ const DEFAULT_FILTERS: ForumFilterState = {
 };
 
 export default function ForumPage() {
+  const [mounted, setMounted] = useState(false);
   const { data, loading, error, refresh } = useForum();
   const [filters, setFilters] = useState<ForumFilterState>(DEFAULT_FILTERS);
   const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
   const [showOverview, setShowOverview] = useState(false);
   const [showCompose, setShowCompose] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   // 篩選討論串
   const filteredThreads = useMemo(() => {
@@ -145,6 +148,10 @@ export default function ForumPage() {
     }
     return Array.from(set).sort();
   }, [data]);
+
+  // SSR 和 client hydration 都返回 null（避免 hydration mismatch），
+  // mounted 後再顯示 loading 或內容
+  if (!mounted) return null;
 
   if (loading) {
     return (
