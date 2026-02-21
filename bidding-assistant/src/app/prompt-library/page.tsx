@@ -5,19 +5,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { STAGES } from "@/data/config/stages";
 import { PROMPT_FILES, RULE_MAP } from "@/data/config/prompt-assembly";
+import type { PromptFile } from "@/data/config/prompt-assembly";
 import { StageCard, ToolCard } from "@/components/prompt-library/StageCard";
 import { StageFileList } from "@/components/prompt-library/StageFileList";
+import { ToolFileDialog } from "@/components/prompt-library/ToolFileDialog";
 import { KBMatrixTable } from "@/components/prompt-library/KBMatrixTable";
 import { EmergencyCopyPanel } from "@/components/prompt-library/EmergencyCopyPanel";
 
 export default function PromptLibraryPage() {
   const [selectedStageId, setSelectedStageId] = useState<string | null>(null);
+  const [selectedTool, setSelectedTool] = useState<PromptFile | null>(null);
 
   const selectedStage = selectedStageId
     ? STAGES.find((s) => s.id === selectedStageId) ?? null
     : null;
 
-  // 工具類檔案（T1, T3）
+  // 工具類檔案（T1, T3, P）
   const toolFiles = PROMPT_FILES.filter((f) => f.category === "tool");
 
   return (
@@ -76,8 +79,8 @@ export default function PromptLibraryPage() {
               <ToolCard
                 key={file.id}
                 file={file}
-                selected={false}
-                onClick={() => {}}
+                selected={selectedTool?.id === file.id}
+                onClick={() => setSelectedTool(file)}
               />
             ))}
           </div>
@@ -88,6 +91,15 @@ export default function PromptLibraryPage() {
               stage={selectedStage}
               open={!!selectedStage}
               onClose={() => setSelectedStageId(null)}
+            />
+          )}
+
+          {/* 工具檔案 Dialog */}
+          {selectedTool && (
+            <ToolFileDialog
+              file={selectedTool}
+              open={!!selectedTool}
+              onClose={() => setSelectedTool(null)}
             />
           )}
         </TabsContent>
