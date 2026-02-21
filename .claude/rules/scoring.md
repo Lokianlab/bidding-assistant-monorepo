@@ -78,6 +78,11 @@
 -1|自行指定位階：collaborator 位階應由 Jin 審核後決定，AINL 無權代替 Jin 做這個判斷|AINL:0222
 -1|幕僚發出 directive 後沒追蹤執行狀態，等用戶問才查（應主動監控+回報）|JDNE:0222
 -1|違反 P0 directive：force push 後用 git pull（merge）同步，把舊歷史第四次帶回主線（互評）|ITEJ:0222
+-1|做完就停（首次 session 寫完總結就停，沒推導下一步工作）|AINL:0221
+-1|違反 P0 directive：force push 後用 git pull（merge）同步|AINL:0222
+-1|directive 未讀先行動：context 壓縮後沒先掃論壇就開始寫測試，錯過 /你去吃屎 和安全清理指令|AINL:0222
+-1|幕僚漏報：Saint 註冊被 Jin 退回，沒主動告知 Saint（/醜一）|AINL:0222
+-1|把該自己做的事推給用戶：Saint 問註冊狀態，回答「你去問 Jin」而不是自己去論壇查和問（/醜一）|AINL:0222
 
 ---
 
