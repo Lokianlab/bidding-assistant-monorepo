@@ -17,9 +17,8 @@ import {
   ComposedChart,
 } from "recharts";
 import { useCompetitorAnalysis } from "@/lib/pcc/useCompetitorAnalysis";
+import { useSettings } from "@/lib/context/settings-context";
 import type { SelfAnalysis, CompetitorStats, AgencyStats } from "@/lib/pcc/types";
-
-const DEFAULT_COMPANY = "大員洛川";
 
 interface CompetitorAnalysisProps {
   targetCompany?: string | null;
@@ -27,7 +26,8 @@ interface CompetitorAnalysisProps {
 }
 
 export function CompetitorAnalysis({ targetCompany, onTargetConsumed }: CompetitorAnalysisProps = {}) {
-  const [companyName, setCompanyName] = useState(DEFAULT_COMPANY);
+  const { settings } = useSettings();
+  const [companyName, setCompanyName] = useState<string>(settings.company.brand);
   const { data, loading, progress, error, run } = useCompetitorAnalysis();
   const consumedRef = useRef<string | null>(null);
 

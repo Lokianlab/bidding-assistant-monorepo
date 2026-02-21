@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import type { PCCRecord } from "./types";
 import { isWinner } from "./helpers";
 
-const MY_COMPANY = "大員洛川";
-
 interface AgencyIntel {
   totalCases: number;
   recentCases: { title: string; date: number; winner: string | null; bidders: number }[];
@@ -20,7 +18,7 @@ interface UseAgencyIntelReturn {
 }
 
 /** 查某機關的歷史標案，分析在位者和我方紀錄 */
-export function useAgencyIntel(unitId: string | null, open: boolean): UseAgencyIntelReturn {
+export function useAgencyIntel(unitId: string | null, open: boolean, companyName = "大員洛川"): UseAgencyIntelReturn {
   const [data, setData] = useState<AgencyIntel | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +36,7 @@ export function useAgencyIntel(unitId: string | null, open: boolean): UseAgencyI
     fetchUnitRecords(unitId)
       .then((records) => {
         if (cancelled) return;
-        setData(analyzeAgency(records));
+        setData(analyzeAgency(records, companyName));
       })
       .catch((err) => {
         if (cancelled) return;
@@ -49,7 +47,7 @@ export function useAgencyIntel(unitId: string | null, open: boolean): UseAgencyI
       });
 
     return () => { cancelled = true; };
-  }, [unitId, open]);
+  }, [unitId, open, companyName]);
 
   return { data, loading, error };
 }
@@ -68,7 +66,7 @@ async function fetchUnitRecords(unitId: string): Promise<PCCRecord[]> {
   return json.records ?? [];
 }
 
-function analyzeAgency(records: PCCRecord[]): AgencyIntel {
+function analyzeAgency(records: PCCRecord[], companyName: string): AgencyIntel {
   const awards = records.filter((r) => r.brief.type === "決標公告");
 
   // 找得標者
@@ -98,9 +96,9 @@ function analyzeAgency(records: PCCRecord[]): AgencyIntel {
     });
 
     // 我方是否參與
-    const myInvolved = companies.names.some((n) => n.includes(MY_COMPANY));
+    const myInvolved = companies.names.some((n) => n.includes(companyName));
     if (myInvolved) {
-      const iWon = companies.names.some((n) => n.includes(MY_COMPANY) && isWinner(record, n));
+      const iWon = companies.names.some((n) => n.includes(companyName) && isWinner(record, n));
       myHistory.push({
         title: record.brief.title,
         date: record.date,
