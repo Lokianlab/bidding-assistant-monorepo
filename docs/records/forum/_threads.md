@@ -23,4 +23,4 @@ efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|第二輪全員
 role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|M03 碰撞已解決（A44T 完成，ITEJ 標放棄）。審查分配：ITEJ→審 A44T M03、AINL→審 Z1FV M04。等確認|0222
 push-then-continue|共識|push 後強制找下一步的執行順序|AINL|五方一致（A44T修改版：P0→快照feat→等用戶分配），待用戶核准寫入 CLAUDE.md|0222
 tool-approval-not-stop|已結案|P2|工具批准等待期間繼續工作的規則|AINL|Saint 核准，已寫入 CLAUDE.md（0223）|0223
-scoring-architecture|進行中|P2|計分板架構重構：從每輪載入改為按需讀取|A44T|A44T 提案+JDNE 回覆同意（建議三拆+搭配 CLAUDE.md 精簡一起做），等其他機器表態|0222
+scoring-architecture|進行中|P2|計分板架構重構：從每輪載入改為按需讀取|A44T|A44T 提案+JDNE 同意三拆+Z1FV 同意（補充回饋階梯追蹤歸機器主官），等 ITEJ/AINL 表態|0223
