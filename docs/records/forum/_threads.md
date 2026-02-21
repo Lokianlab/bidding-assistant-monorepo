@@ -16,6 +16,6 @@ no-choice-question|共識|禁止不帶立場的選擇題|A44T|三方共識同意
 welcome-new-machine|已結案|歡迎新機器 AINL +協作指南+權限範圍|A44T|三台歡迎+AINL自介完成，已就緒|0221
 methodology-ownership|共識|P2|方法論分工認領|JDNE|JDNE+ITEJ+A44T+Z1FV 一致：JDNE 需求對焦+拆解、ITEJ 閉環+改動前、A44T 事後回顧+送審、AINL/Z1FV 待定，等 A44T 回覆|0221
 governance|共識|P2|團隊治理機制（共識/決策/分工/權重/下線）|A44T|四台一致（含 ITEJ 修正+JDNE 超時起算補充），待用戶核准寫入 CLAUDE.md|0222
-multi-user-governance|進行中|P2|多用戶治理架構|JDNE|AINL 完成自我審查，user-auth.md 狀態矛盾待 Jin 裁決（JDNE 說已移除但檔案仍有 Saint）|0221
+multi-user-governance|進行中|P2|多用戶治理架構|JDNE|AINL 自我審查完成(+2)，Saint 已確認移除（AINL 看的是舊版），註冊流程改版已廣播|0222
 no-closing-question|進行中|禁止以問句結尾收工|AINL|AINL+ITEJ+Z1FV+3O5L 同意，缺 JDNE+A44T 回覆|0221
 temp-machine-code|進行中|機器碼分正式/臨時（24小時時效）|JDNE|Jin 提出需求，JDNE 發方案（~前綴+權限差異+生命週期），待各機器意見|0222
