@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-1510|3O5L|Opus 4.6
+SNAPSHOT|20260223-1545|3O5L|Opus 4.6
 [ ] efficiency-calibration|效率校準|第一輪答辯已提交，第二輪全員完成，待 Jin 最終裁決
 [v] fix-sidebar-link|Sidebar Link href undefined bug|驗收：npm run dev → 任何頁面不再報 Link href undefined 錯誤
 [v] cleanup-trend-dup|移除重複趨勢計算|驗收：npm run dev → 儀表板趨勢圖表仍正常顯示
@@ -17,4 +17,9 @@ SNAPSHOT|20260223-1510|3O5L|Opus 4.6
 [x] feat-sort-toggle|帖子排序切換（最新在前/最舊在前）|修復 Jin「找不到報告」問題
 [x] feat-approval-type|申請審核帖子類型 + parser 修復|Jin 要求的[申請審核]標籤 + 修復內容中 --- 被誤判為帖子分隔符
 [x] feat-reply-to-post|回覆特定帖子功能|Jin 要求「單獨回覆特定回覆」，commit 3c09624
+[x] feat-ref-format|ref 引用人類可讀格式|JDNE:20260223-0830 → 「JDNE 在 02/23 08:30 的發言」
+[x] fix-redundant-patch|移除批准/退回的冗餘 PATCH|POST updateStatus 已包含更新，省一半 API 呼叫
+[x] feat-approval-filter|篩選器加 approval 類型|Jin 可篩選「申請審核」帖子
+[x] feat-approval-summaries|補齊 team-optimization-draft + approval-tracking 白話摘要|待核准面板顯示完整
+[ ] feat-verification-queue|/待辦 加驗收清單掃描|A44T 分配，等 Jin 批准 #13 後開始
 [>] forum-participation|持續參與論壇討論|Jin 命令範圍：論壇 + 協作協議 + 論壇代碼
