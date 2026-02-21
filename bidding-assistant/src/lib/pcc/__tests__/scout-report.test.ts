@@ -127,4 +127,171 @@ describe("generateScoutPrompt", () => {
     // Should not contain budget/amount related text
     expect(prompt).not.toContain("預算金額");
   });
+
+  it("should cap competitors at 5 in known info", () => {
+    const input = buildScoutInput({
+      title: "測試案",
+      agency: "文化部",
+      jobNumber: "G-007",
+      summary: null,
+      agencyIntel: null,
+      competitorNames: ["公司A", "公司B", "公司C", "公司D", "公司E", "公司F", "公司G"],
+    });
+    const prompt = generateScoutPrompt(input);
+
+    expect(prompt).toContain("公司A");
+    expect(prompt).toContain("公司E");
+    expect(prompt).not.toContain("公司F");
+    expect(prompt).not.toContain("公司G");
+  });
+
+  it("should cap competitors at 3 in query section", () => {
+    const input = buildScoutInput({
+      title: "測試案",
+      agency: "文化部",
+      jobNumber: "H-008",
+      summary: null,
+      agencyIntel: null,
+      competitorNames: ["公司A", "公司B", "公司C", "公司D", "公司E"],
+    });
+    const prompt = generateScoutPrompt(input);
+
+    // Query section uses slice(0, 3)
+    expect(prompt).toContain("公司A、公司B、公司C");
+    // Should not include 4th/5th in the query text
+    expect(prompt).not.toContain("公司D、公司E這幾家");
+  });
+
+  it("should cap incumbents at 3", () => {
+    const input = buildScoutInput({
+      title: "測試案",
+      agency: "文化部",
+      jobNumber: "I-009",
+      summary: null,
+      agencyIntel: {
+        totalCases: 100,
+        incumbents: [
+          { name: "在位者A", wins: 10 },
+          { name: "在位者B", wins: 8 },
+          { name: "在位者C", wins: 5 },
+          { name: "在位者D", wins: 3 },
+        ],
+        myHistory: [],
+      },
+      competitorNames: [],
+    });
+    const prompt = generateScoutPrompt(input);
+
+    expect(prompt).toContain("在位者A");
+    expect(prompt).toContain("在位者C");
+    expect(prompt).not.toContain("在位者D");
+  });
+
+  it("should handle partial summary (some fields null)", () => {
+    const partialSummary: TenderSummary = {
+      title: "部分摘要案",
+      agency: "某機關",
+      budget: 5_000_000,
+      floorPrice: null,
+      awardAmount: null,
+      bidderCount: null,
+      awardDate: null,
+      deadline: null,
+      procurementType: "勞務類",
+      awardMethod: null,
+    };
+    const input = buildScoutInput({
+      title: "部分摘要案",
+      agency: "某機關",
+      jobNumber: "J-010",
+      summary: partialSummary,
+      agencyIntel: null,
+      competitorNames: [],
+    });
+    const prompt = generateScoutPrompt(input);
+
+    expect(prompt).toContain("500.0 萬");
+    expect(prompt).toContain("勞務類");
+    // Should not contain award or bidder info
+    expect(prompt).not.toContain("決標金額");
+    expect(prompt).not.toContain("投標家數");
+    expect(prompt).not.toContain("底價/預算比");
+  });
+
+  it("should skip floor/budget ratio when floorPrice is null", () => {
+    const summary: TenderSummary = {
+      title: "測試",
+      agency: "測試",
+      budget: 1_000_000,
+      floorPrice: null,
+      awardAmount: null,
+      bidderCount: null,
+      awardDate: null,
+      deadline: null,
+      procurementType: null,
+      awardMethod: null,
+    };
+    const input = buildScoutInput({
+      title: "測試",
+      agency: "測試",
+      jobNumber: "K-011",
+      summary,
+      agencyIntel: null,
+      competitorNames: [],
+    });
+    const prompt = generateScoutPrompt(input);
+    expect(prompt).not.toContain("底價/預算比");
+  });
+
+  it("should handle agencyIntel with empty incumbents and myHistory", () => {
+    const input = buildScoutInput({
+      title: "測試案",
+      agency: "教育部",
+      jobNumber: "L-012",
+      summary: null,
+      agencyIntel: {
+        totalCases: 10,
+        incumbents: [],
+        myHistory: [],
+      },
+      competitorNames: [],
+    });
+    const prompt = generateScoutPrompt(input);
+
+    expect(prompt).toContain("10 筆");
+    expect(prompt).not.toContain("在位者");
+    expect(prompt).not.toContain("我方在此機關紀錄");
+  });
+});
+
+describe("buildScoutInput", () => {
+  it("should map all params to ScoutReportInput correctly", () => {
+    const summary: TenderSummary = {
+      title: "案件名稱",
+      agency: "招標機關",
+      budget: 1_000_000,
+      floorPrice: 900_000,
+      awardAmount: null,
+      bidderCount: null,
+      awardDate: null,
+      deadline: null,
+      procurementType: null,
+      awardMethod: null,
+    };
+    const input = buildScoutInput({
+      title: "輸入標題",
+      agency: "輸入機關",
+      jobNumber: "Z-999",
+      summary,
+      agencyIntel: null,
+      competitorNames: ["公司X"],
+    });
+
+    expect(input.title).toBe("輸入標題");
+    expect(input.agency).toBe("輸入機關");
+    expect(input.jobNumber).toBe("Z-999");
+    expect(input.summary).toBe(summary);
+    expect(input.agencyIntel).toBeNull();
+    expect(input.competitors).toEqual(["公司X"]);
+  });
 });

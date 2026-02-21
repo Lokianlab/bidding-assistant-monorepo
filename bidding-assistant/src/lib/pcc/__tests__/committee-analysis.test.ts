@@ -190,4 +190,109 @@ describe("analyzeCommittees", () => {
     const result = analyzeCommittees(tenders);
     expect(result.totalTenders).toBe(3);
   });
+
+  it("minAppearances = 1 時所有評委都列入", () => {
+    const tenders = [
+      makeTender({
+        committee: [
+          makeMember({ name: "只出現一次" }),
+          makeMember({ name: "也只一次" }),
+        ],
+      }),
+    ];
+    const result = analyzeCommittees(tenders, 1);
+    expect(result.frequentMembers).toHaveLength(2);
+  });
+
+  it("experience 和 status 為 undefined 時用空字串預設", () => {
+    const member: EvaluationCommitteeMember = {
+      name: "王小明",
+      status: "",
+      sequence: "1",
+      attendance: "是",
+      experience: "",
+    };
+    const tenders = [
+      makeTender({ date: 20260101, committee: [member] }),
+      makeTender({ date: 20260201, committee: [member] }),
+    ];
+    const result = analyzeCommittees(tenders);
+    expect(result.frequentMembers[0].experience).toBe("");
+    expect(result.frequentMembers[0].status).toBe("");
+  });
+
+  it("名字前後有空白時正確 trim 並合併", () => {
+    const tenders = [
+      makeTender({
+        date: 20260101,
+        committee: [makeMember({ name: "  王大明  " })],
+      }),
+      makeTender({
+        date: 20260201,
+        committee: [makeMember({ name: "王大明" })],
+      }),
+    ];
+    const result = analyzeCommittees(tenders);
+    // "  王大明  ".trim() === "王大明"，應該合併為同一人
+    expect(result.totalMembers).toBe(1);
+    expect(result.frequentMembers).toHaveLength(1);
+    expect(result.frequentMembers[0].appearances).toBe(2);
+  });
+
+  it("所有評委出現次數相同時排序穩定", () => {
+    const tenders = [
+      makeTender({
+        date: 20260101,
+        committee: [
+          makeMember({ name: "甲" }),
+          makeMember({ name: "乙" }),
+          makeMember({ name: "丙" }),
+        ],
+      }),
+      makeTender({
+        date: 20260201,
+        committee: [
+          makeMember({ name: "甲" }),
+          makeMember({ name: "乙" }),
+          makeMember({ name: "丙" }),
+        ],
+      }),
+    ];
+    const result = analyzeCommittees(tenders);
+    expect(result.frequentMembers).toHaveLength(3);
+    // All have 2 appearances
+    for (const m of result.frequentMembers) {
+      expect(m.appearances).toBe(2);
+    }
+  });
+
+  it("全部出席率 0%", () => {
+    const tenders = [
+      makeTender({
+        date: 20260101,
+        committee: [makeMember({ name: "缺席者", attendance: "否" })],
+      }),
+      makeTender({
+        date: 20260201,
+        committee: [makeMember({ name: "缺席者", attendance: "否" })],
+      }),
+    ];
+    const result = analyzeCommittees(tenders);
+    expect(result.frequentMembers[0].attendanceRate).toBe(0);
+  });
+
+  it("status 用最新日期的值（即使較新的 status 為空字串，也更新）", () => {
+    const tenders = [
+      makeTender({
+        date: 20260101,
+        committee: [makeMember({ name: "測試委員", status: "外聘委員" })],
+      }),
+      makeTender({
+        date: 20260301,
+        committee: [makeMember({ name: "測試委員", status: "機關委員" })],
+      }),
+    ];
+    const result = analyzeCommittees(tenders);
+    expect(result.frequentMembers[0].status).toBe("機關委員");
+  });
 });
