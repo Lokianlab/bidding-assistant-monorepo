@@ -8,7 +8,8 @@ export type PostType =
   | "score"
   | "brief"
   | "directive"
-  | "response";
+  | "response"
+  | "approval";
 
 /** 優先級 */
 export type Priority = "P0" | "P1" | "P2" | "P3";

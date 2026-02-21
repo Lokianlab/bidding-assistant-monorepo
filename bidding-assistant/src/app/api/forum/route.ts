@@ -108,18 +108,20 @@ export async function GET() {
  *
  * Body: { content: string, threadId?: string, threadTitle?: string,
  *         type?: "discuss" | "reply", priority?: string,
- *         updateStatus?: "進行中" | "共識" | "已結案" | "過期" }
+ *         updateStatus?: "進行中" | "共識" | "已結案" | "過期",
+ *         ref?: string }
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { content, threadId, threadTitle, type, priority, updateStatus } = body as {
+    const { content, threadId, threadTitle, type, priority, updateStatus, ref } = body as {
       content?: string;
       threadId?: string;
       threadTitle?: string;
       type?: string;
       priority?: string;
       updateStatus?: string;
+      ref?: string;
     };
 
     if (!content || content.trim().length === 0) {
@@ -142,7 +144,8 @@ export async function POST(request: NextRequest) {
     const postPriority = priority || "P0";
 
     // 組裝帖子 header
-    const headerParts = [postType, timestamp, "Jin", postPriority, "ref:none"];
+    const refValue = ref ? `ref:${ref}` : "ref:none";
+    const headerParts = [postType, timestamp, "Jin", postPriority, refValue];
     if (threadId) headerParts.push(`thread:${threadId}`);
     const header = headerParts.join("|");
     const postBlock = `${header}\n${content.trim()}\n---\n`;

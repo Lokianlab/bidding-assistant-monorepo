@@ -13,6 +13,12 @@ interface ComposePostProps {
   threadId?: string;
   /** 回覆模式：顯示的討論串標題 */
   threadTitle?: string;
+  /** 回覆特定帖子：ref 字串（如 "JDNE:20260223-0830"） */
+  replyToRef?: string;
+  /** 回覆特定帖子：被回覆帖子的摘要（給用戶看） */
+  replyToPreview?: string;
+  /** 清除回覆對象 */
+  onClearReplyTo?: () => void;
   /** 發帖後回呼（重新整理資料） */
   onPosted: () => void;
   /** 取消回呼（摺疊輸入框） */
@@ -24,6 +30,9 @@ const PRIORITIES: Priority[] = ["P0", "P1", "P2", "P3"];
 export function ComposePost({
   threadId,
   threadTitle,
+  replyToRef,
+  replyToPreview,
+  onClearReplyTo,
   onPosted,
   onCancel,
 }: ComposePostProps) {
@@ -69,6 +78,11 @@ export function ComposePost({
         body.threadId = threadId;
       }
 
+      // 引用特定帖子
+      if (replyToRef) {
+        body.ref = replyToRef;
+      }
+
       const res = await fetch("/api/forum", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -106,6 +120,21 @@ export function ComposePost({
           {isNewThread ? "開新話題" : `回覆：${threadTitle}`}
         </span>
       </div>
+
+      {/* 回覆特定帖子的引用預覽 */}
+      {replyToRef && replyToPreview && (
+        <div className="flex items-center gap-2 text-sm bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded px-3 py-1.5">
+          <span className="text-blue-700 dark:text-blue-300">↩ {replyToPreview}</span>
+          {onClearReplyTo && (
+            <button
+              onClick={onClearReplyTo}
+              className="text-blue-400 hover:text-blue-600 ml-auto"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      )}
 
       {/* 新話題：標題 + ID */}
       {isNewThread && (

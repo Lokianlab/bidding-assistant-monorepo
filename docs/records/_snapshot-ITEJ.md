@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-1010|ITEJ|opus-4.6
+SNAPSHOT|20260223-1950|ITEJ|sonnet-4.6
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -25,3 +25,4 @@ SNAPSHOT|20260223-1010|ITEJ|opus-4.6
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m02-kb|M02 知識庫模組規格|待寫（依賴儲存方案決策）
 [ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
+[ ] infra-methodology-owned|認領方法論優化：閉環驗證+改動前驗證|草稿中，等其他機器確認分配後發帖 → Jin 批准後修改

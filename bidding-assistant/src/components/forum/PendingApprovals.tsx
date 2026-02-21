@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { PRIORITY_CONFIG } from "@/lib/forum/constants";
+import { PRIORITY_CONFIG, APPROVAL_SUMMARIES } from "@/lib/forum/constants";
 import type { ForumThread } from "@/lib/forum/types";
 
 interface PendingApprovalsProps {
@@ -167,6 +167,7 @@ export function PendingApprovals({
       {pendingThreads.map((thread) => {
         const priorityConfig = thread.priority ? PRIORITY_CONFIG[thread.priority] : null;
         const isExpanded = action.threadId === thread.id;
+        const summary = APPROVAL_SUMMARIES[thread.id];
 
         return (
           <div
@@ -190,9 +191,6 @@ export function PendingApprovals({
                     發起人：{thread.initiator} | {thread.posts.length} 則討論
                   </span>
                 </div>
-                {thread.summary && (
-                  <p className="text-sm text-muted-foreground mt-1">{thread.summary}</p>
-                )}
               </div>
 
               <Button
@@ -204,6 +202,17 @@ export function PendingApprovals({
                 查看詳情
               </Button>
             </div>
+
+            {/* 核准摘要（白話說明） */}
+            {summary && (
+              <div className="rounded-md border bg-amber-50 dark:bg-amber-950/20 p-3 space-y-1.5 text-sm">
+                <div>{summary.what}</div>
+                <div className="flex gap-4 text-xs">
+                  <span className="text-green-700">批准 → {summary.approve}</span>
+                  <span className="text-red-700">退回 → {summary.reject}</span>
+                </div>
+              </div>
+            )}
 
             {/* 操作按鈕 */}
             {!isExpanded ? (

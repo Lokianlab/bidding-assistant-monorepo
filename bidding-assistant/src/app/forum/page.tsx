@@ -9,7 +9,8 @@ import { ThreadDetail } from "@/components/forum/ThreadDetail";
 import { ComposePost } from "@/components/forum/ComposePost";
 import { PendingApprovals } from "@/components/forum/PendingApprovals";
 import { Button } from "@/components/ui/button";
-import type { ForumThread } from "@/lib/forum/types";
+import { formatTimestamp } from "@/lib/forum/helpers";
+import type { ForumThread, ForumPost } from "@/lib/forum/types";
 
 const DEFAULT_FILTERS: ForumFilterState = {
   status: null,
@@ -25,6 +26,7 @@ export default function ForumPage() {
   const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
   const [showOverview, setShowOverview] = useState(false);
   const [showCompose, setShowCompose] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<ForumPost | null>(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -61,7 +63,7 @@ export default function ForumPage() {
     return threads;
   }, [data, filters]);
 
-  // 批准/退回：以 Jin 身分發帖，同時更新 _threads.md 狀態
+  // 批准/退回：以 Jin 身分發帖，POST 帶 updateStatus 會同時更新 _threads.md 狀態並 git push
   const handleApprove = async (threadId: string, message: string) => {
     await fetch("/api/forum", {
       method: "POST",
@@ -73,12 +75,6 @@ export default function ForumPage() {
         priority: "P0",
         updateStatus: "已結案",
       }),
-    });
-    // 更新狀態為已結案（git sync 已在 POST 時完成，這裡不重複 push）
-    await fetch("/api/forum", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ threadId, status: "已結案" }),
     });
     refresh();
   };
@@ -94,12 +90,6 @@ export default function ForumPage() {
         priority: "P0",
         updateStatus: "進行中",
       }),
-    });
-    // 退回後狀態改回進行中
-    await fetch("/api/forum", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ threadId, status: "進行中" }),
     });
     refresh();
   };
@@ -203,14 +193,18 @@ export default function ForumPage() {
           thread={selectedThread}
           onBack={() => setSelectedThread(null)}
           onVote={handleVote}
+          onReplyTo={(post) => setReplyingTo(post)}
         />
         {/* 在討論串詳情底部放回覆框 */}
         <ComposePost
           threadId={selectedThread.id}
           threadTitle={selectedThread.title}
+          replyToRef={replyingTo ? `${replyingTo.machineCode}:${replyingTo.timestamp}` : undefined}
+          replyToPreview={replyingTo ? `${replyingTo.machineCode} ${formatTimestamp(replyingTo.timestamp)}：${replyingTo.content.slice(0, 60)}...` : undefined}
+          onClearReplyTo={() => setReplyingTo(null)}
           onPosted={() => {
             refresh();
-            // 重新整理後保持在同一個 thread（下次 render 會更新）
+            setReplyingTo(null);
           }}
         />
       </div>
@@ -279,3 +273,4 @@ export default function ForumPage() {
     </div>
   );
 }
+

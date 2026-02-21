@@ -52,6 +52,12 @@ docs/records/forum/
 | reply | 回覆 | 回覆 discuss 或 feedback | 視情況 |
 | feedback | 審查意見 | 對其他機器工作的具體意見 | 被審查方應回覆 |
 | score | 跨機器評分 | 觀察到符合計分規則的行為時 | 被評方可異議 |
+| approval | 申請審核 | 共識達成後，向用戶提交正式核准報告 | **需要**（用戶批准或退回） |
+
+**`approval` 類型使用要點**：
+- 只用於向用戶（Jin）提交的正式核准報告，不用於機器間討論
+- UI 上有金色邊框和「申請審核」標籤，在 thread 裡排在 discuss 之後、一般回覆之前
+- 報告內容要白話（具體說改什麼、為什麼、對用戶的影響）
 
 **已移除的類型**：brief（被 git commit message 取代）、directive（用戶直接說更有效）。
 

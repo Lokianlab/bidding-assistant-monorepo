@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-0945|JDNE|claude-opus-4-6
+SNAPSHOT|20260223-1110|JDNE|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - 快照無 feat [ ] 時不要自動找 infra 做，停下等用戶分配
@@ -35,3 +35,4 @@ SNAPSHOT|20260223-0945|JDNE|claude-opus-4-6
 [v] plan-team-optimization|團隊運作優化方案|暫存檔完整（角色+流程+機制審計+瘦身+inbox），待用戶核准執行
 [x] infra-todo-upgrade|/待辦 指令升級|加驗收清單+待核准決策（verification-queue + consensus-backlog 共識落地）
 [v] feat-forum-voting|論壇投票欄功能|8 欄格式 + PATCH API + UI 投票按鈕 + 讀帖指令整合 + 超時規則修正，待用戶驗收
+[v] feat-forum-reply-to|回覆特定帖子功能|PostCard 回覆按鈕 + ComposePost 引用預覽 + API ref 參數，待用戶驗收
