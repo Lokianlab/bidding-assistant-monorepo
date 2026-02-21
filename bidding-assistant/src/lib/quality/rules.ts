@@ -1,4 +1,5 @@
 import type { CheckResult, QualityConfig } from "./types";
+import { RULE_NAMES } from "./constants";
 
 /**
  * 執行所有品質檢查規則
@@ -35,7 +36,7 @@ export function checkBlacklist(text: string, blacklist: string[]): CheckResult[]
     while ((match = regex.exec(text)) !== null) {
       results.push({
         type: "error",
-        rule: "禁用詞",
+        rule: RULE_NAMES.BLACKLIST,
         message: `發現禁用詞「${word}」`,
         position: `位置 ${match.index}`,
       });
@@ -56,7 +57,7 @@ export function checkTerminology(
     while ((match = regex.exec(text)) !== null) {
       results.push({
         type: "warning",
-        rule: "用語修正",
+        rule: RULE_NAMES.TERMINOLOGY,
         message: `「${t.wrong}」建議改為「${t.correct}」`,
         position: `位置 ${match.index}`,
       });
@@ -78,7 +79,7 @@ export function checkCustomRules(
       while ((match = regex.exec(text)) !== null) {
         results.push({
           type: rule.severity,
-          rule: "自訂規則",
+          rule: RULE_NAMES.CUSTOM,
           message: rule.message,
           position: `位置 ${match.index}`,
         });
@@ -104,7 +105,7 @@ export function checkIronLaws(
     if (numbers && numbers.length > 3) {
       results.push({
         type: "info",
-        rule: "數字交叉驗證",
+        rule: RULE_NAMES.CROSS_VALIDATE_NUMBERS,
         message: `文件中出現 ${numbers.length} 個數字，請人工交叉比對`,
       });
     }
@@ -115,7 +116,7 @@ export function checkIronLaws(
     if (dates && dates.length > 1) {
       results.push({
         type: "info",
-        rule: "日期一致性",
+        rule: RULE_NAMES.DATE_CONSISTENCY,
         message: `文件中出現 ${dates.length} 個日期，請確認一致性`,
       });
     }
@@ -127,7 +128,7 @@ export function checkIronLaws(
     if (amounts && amounts.length > 3) {
       results.push({
         type: "info",
-        rule: "預算一致性",
+        rule: RULE_NAMES.BUDGET_CONSISTENCY,
         message: `文件中出現 ${amounts.length} 處金額或預算相關描述，請確認各處金額一致`,
       });
     }
@@ -139,7 +140,7 @@ export function checkIronLaws(
     if (roles && roles.length > 3) {
       results.push({
         type: "info",
-        rule: "人力一致性",
+        rule: RULE_NAMES.TEAM_CONSISTENCY,
         message: `文件中出現 ${roles.length} 處人員角色描述，請確認組織架構章與人力配置表一致`,
       });
     }
@@ -151,7 +152,7 @@ export function checkIronLaws(
     if (scopes && scopes.length > 2) {
       results.push({
         type: "info",
-        rule: "範圍一致性",
+        rule: RULE_NAMES.SCOPE_CONSISTENCY,
         message: `文件中出現 ${scopes.length} 處工作範圍描述，請確認各章節的範圍界定一致`,
       });
     }
@@ -180,7 +181,7 @@ export function checkCompanyName(
   if (!text.includes(companyName)) {
     results.push({
       type: "info",
-      rule: "公司名稱",
+      rule: RULE_NAMES.COMPANY_NAME,
       message: `文件中未出現公司全名「${companyName}」，正式提案建議至少使用一次完整法定名稱`,
     });
   }
@@ -202,7 +203,7 @@ export function checkCompanyName(
     if (standalone > 0) {
       results.push({
         type: "info",
-        rule: "公司名稱",
+        rule: RULE_NAMES.COMPANY_NAME,
         message: `品牌簡稱「${companyBrand}」單獨出現 ${standalone} 次，正式文件建議統一使用全名「${companyName}」`,
       });
     }
@@ -221,7 +222,7 @@ export function checkParagraphLength(text: string): CheckResult[] {
     if (p.length > 500) {
       results.push({
         type: "warning",
-        rule: "段落長度",
+        rule: RULE_NAMES.PARAGRAPH_LENGTH,
         message: `第 ${i + 1} 段超過 500 字（${p.length} 字），建議分段`,
       });
     }
@@ -241,7 +242,7 @@ export function checkSentenceLength(text: string): CheckResult[] {
     if (trimmed.length > 80) {
       results.push({
         type: "warning",
-        rule: "句子過長",
+        rule: RULE_NAMES.SENTENCE_LENGTH,
         message: `有一句超過 80 字（${trimmed.length} 字），建議拆分以提高可讀性`,
         position: `約位置 ${charOffset}`,
       });
@@ -273,7 +274,7 @@ export function checkDuplicateSentences(text: string): CheckResult[] {
       const preview = sentence.length > 30 ? sentence.slice(0, 30) + "…" : sentence;
       results.push({
         type: "warning",
-        rule: "重複內容",
+        rule: RULE_NAMES.DUPLICATE,
         message: `「${preview}」出現了 2 次以上，可能是複製貼上錯誤`,
       });
     }
@@ -304,7 +305,7 @@ export function checkRiskyPromises(text: string): CheckResult[] {
     while ((match = regex.exec(text)) !== null) {
       results.push({
         type: "warning",
-        rule: "承諾風險",
+        rule: RULE_NAMES.RISKY_PROMISE,
         message: `「${word}」${reason}`,
         position: `位置 ${match.index}`,
       });

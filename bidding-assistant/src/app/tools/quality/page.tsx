@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { useState, useMemo } from "react";
 import { runChecks } from "@/lib/quality/rules";
 import { calculateScore } from "@/lib/quality/score";
+import { IRON_LAW_LABELS } from "@/lib/quality/constants";
 import type { CheckResult, QualityConfig } from "@/lib/quality/types";
 
 export default function QualityPage() {
@@ -184,11 +185,7 @@ export default function QualityPage() {
               {Object.entries(ironLawEnabled).map(([key, enabled]) => (
                 <div key={key} className="flex items-center justify-between text-xs">
                   <span className={enabled ? "" : "text-muted-foreground"}>
-                    {key === "crossValidateNumbers" && "數字交叉驗證"}
-                    {key === "budgetConsistency" && "預算一致性"}
-                    {key === "dateConsistency" && "日期一致性"}
-                    {key === "teamConsistency" && "團隊一致性"}
-                    {key === "scopeConsistency" && "範疇一致性"}
+                    {IRON_LAW_LABELS[key] ?? key}
                   </span>
                   <Badge variant={enabled ? "default" : "outline"} className="text-xs">
                     {enabled ? "開" : "關"}
