@@ -5,6 +5,7 @@
 
 import type { NotionPage } from "../types";
 import { F, SUNK_STATUSES } from "../types";
+import { BID_STATUS } from "@/lib/constants/bid-status";
 import { parseDateField } from "../helpers";
 import {
   buildBreakdown, analyzeByAgency, analyzeByType,
@@ -192,7 +193,7 @@ export function buildPersonReport(
     const key = `${d.getFullYear()} Q${q}`;
     if (!quarterMap[key]) quarterMap[key] = { submitted: 0, won: 0 };
     quarterMap[key].submitted++;
-    if (p.properties[F.進程] === "得標") quarterMap[key].won++;
+    if (p.properties[F.進程] === BID_STATUS.得標) quarterMap[key].won++;
   }
 
   const quarterTrend = Object.entries(quarterMap)

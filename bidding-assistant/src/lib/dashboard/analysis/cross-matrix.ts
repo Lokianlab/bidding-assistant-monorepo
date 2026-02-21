@@ -5,6 +5,7 @@
 
 import type { NotionPage } from "../types";
 import { F, CONCLUDED_STATUSES } from "../types";
+import { BID_STATUS } from "@/lib/constants/bid-status";
 import { buildBreakdown, getBudgetRange } from "./breakdown";
 import type { ResultBreakdown } from "./breakdown";
 
@@ -128,13 +129,13 @@ export function computeCrossMatrix(
   for (const rk of rows) {
     for (const ck of cols) {
       const cellPages = cellMap[`${rk}|||${ck}`] ?? [];
-      const won = cellPages.filter((p) => p.properties[F.進程] === "得標").length;
+      const won = cellPages.filter((p) => p.properties[F.進程] === BID_STATUS.得標).length;
       const concluded = cellPages.filter((p) => CONCLUDED_STATUSES.has(p.properties[F.進程] ?? "")).length;
       cells.push({
         rowKey: rk, colKey: ck,
         total: cellPages.length, won,
         winRate: concluded > 0 ? Math.round((won / concluded) * 100) : 0,
-        wonBudget: cellPages.filter((p) => p.properties[F.進程] === "得標")
+        wonBudget: cellPages.filter((p) => p.properties[F.進程] === BID_STATUS.得標)
           .reduce((s, p) => s + (p.properties[F.預算] ?? 0), 0),
       });
     }

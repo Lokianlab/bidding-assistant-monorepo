@@ -4,6 +4,7 @@
 
 import type { NotionPage } from "../types";
 import { F, PROCURED_STATUSES } from "../types";
+import { BID_STATUS } from "@/lib/constants/bid-status";
 import { parseDateField } from "../helpers";
 
 // ====== 型別 ======
@@ -185,13 +186,13 @@ function aggregateMonth(month: string, pages: NotionPage[]): MonthlyMetrics {
   for (const p of pages) {
     const status = p.properties[F.進程] ?? "";
     switch (status) {
-      case "得標":
+      case BID_STATUS.得標:
         won++;
         wonBudget += p.properties[F.預算] ?? 0;
         break;
-      case "未獲青睞": lost++; break;
-      case "流標/廢標": cancelled++; break;
-      case "資格不符": disqualified++; break;
+      case BID_STATUS.未獲青睞: lost++; break;
+      case BID_STATUS.流標廢標: cancelled++; break;
+      case BID_STATUS.資格不符: disqualified++; break;
     }
     if (PROCURED_STATUSES.has(status)) {
       costBid += p.properties[F.押標金] ?? 0;
