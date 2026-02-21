@@ -11,15 +11,16 @@ import {
   PRIORITY_CONFIG,
   USER_CODE,
 } from "@/lib/forum/constants";
-import type { ForumThread } from "@/lib/forum/types";
+import type { ForumThread, ForumPost } from "@/lib/forum/types";
 
 interface ThreadDetailProps {
   thread: ForumThread;
   onBack: () => void;
   onVote?: (threadId: string, vote: "agree" | "disagree" | "withdraw") => Promise<void>;
+  onReplyTo?: (post: ForumPost) => void;
 }
 
-export function ThreadDetail({ thread, onBack, onVote }: ThreadDetailProps) {
+export function ThreadDetail({ thread, onBack, onVote, onReplyTo }: ThreadDetailProps) {
   const [voting, setVoting] = useState(false);
   const [newestFirst, setNewestFirst] = useState(true);
   const statusConfig = THREAD_STATUS_CONFIG[thread.status];
@@ -199,7 +200,7 @@ export function ThreadDetail({ thread, onBack, onVote }: ThreadDetailProps) {
                     !isDiscuss && !isApproval && "ml-4",
                   )}
                 >
-                  <PostCard post={post} />
+                  <PostCard post={post} onReply={onReplyTo} />
                 </div>
               );
             });

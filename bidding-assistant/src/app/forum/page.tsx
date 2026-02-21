@@ -9,7 +9,7 @@ import { ThreadDetail } from "@/components/forum/ThreadDetail";
 import { ComposePost } from "@/components/forum/ComposePost";
 import { PendingApprovals } from "@/components/forum/PendingApprovals";
 import { Button } from "@/components/ui/button";
-import type { ForumThread } from "@/lib/forum/types";
+import type { ForumThread, ForumPost } from "@/lib/forum/types";
 
 const DEFAULT_FILTERS: ForumFilterState = {
   status: null,
@@ -25,6 +25,7 @@ export default function ForumPage() {
   const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
   const [showOverview, setShowOverview] = useState(false);
   const [showCompose, setShowCompose] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<ForumPost | null>(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -203,14 +204,18 @@ export default function ForumPage() {
           thread={selectedThread}
           onBack={() => setSelectedThread(null)}
           onVote={handleVote}
+          onReplyTo={(post) => setReplyingTo(post)}
         />
         {/* 在討論串詳情底部放回覆框 */}
         <ComposePost
           threadId={selectedThread.id}
           threadTitle={selectedThread.title}
+          replyToRef={replyingTo ? `${replyingTo.machineCode}:${replyingTo.timestamp}` : undefined}
+          replyToPreview={replyingTo ? `${replyingTo.machineCode} ${replyingTo.timestamp}：${replyingTo.content.slice(0, 60)}...` : undefined}
+          onClearReplyTo={() => setReplyingTo(null)}
           onPosted={() => {
             refresh();
-            // 重新整理後保持在同一個 thread（下次 render 會更新）
+            setReplyingTo(null);
           }}
         />
       </div>

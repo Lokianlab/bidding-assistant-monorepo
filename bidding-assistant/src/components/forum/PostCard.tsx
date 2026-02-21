@@ -17,6 +17,7 @@ import type { ForumPost } from "@/lib/forum/types";
 
 interface PostCardProps {
   post: ForumPost;
+  onReply?: (post: ForumPost) => void;
 }
 
 // forum/page.tsx 已有 !mounted return null，PostCard 在 SSR 時不會渲染。
@@ -29,7 +30,7 @@ function MarkdownContent({ children }: { children: string }) {
   return <ReactMarkdown>{children}</ReactMarkdown>;
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, onReply }: PostCardProps) {
   const isUser = post.machineCode === USER_CODE;
   const borderColor = MACHINE_COLORS[post.machineCode] || DEFAULT_MACHINE_COLOR;
   const typeConfig = POST_TYPE_CONFIG[post.type];
@@ -76,6 +77,16 @@ export function PostCard({ post }: PostCardProps) {
       <div className="prose prose-sm max-w-none dark:prose-invert">
         <MarkdownContent>{post.content}</MarkdownContent>
       </div>
+
+      {/* 回覆按鈕 */}
+      {onReply && (
+        <button
+          onClick={() => onReply(post)}
+          className="mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          ↩ 回覆這則
+        </button>
+      )}
     </div>
   );
 }
