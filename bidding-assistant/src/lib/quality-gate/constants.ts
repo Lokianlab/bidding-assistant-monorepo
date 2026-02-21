@@ -61,3 +61,72 @@ export const SCORE_WEIGHTS = {
   /** 基礎分 */
   baseScore: 80,
 } as const;
+
+// ── 閘門 2：需求追溯常數 ──────────────────────────────────
+
+/** 需求追溯預設閾值 */
+export const REQUIREMENT_TRACE_DEFAULTS = {
+  coverageThreshold: 0.5,
+  partialThreshold: 0.2,
+} as const;
+
+// ── 閘門 3：實務檢驗常數 ──────────────────────────────────
+
+/** 常識檢查規則（確定性規則，不靠 AI） */
+export const COMMON_SENSE_RULES: Array<{
+  name: string;
+  pattern: RegExp;
+  contextCheck: (ctx: { budget?: number; participants?: number }) => boolean;
+  message: string;
+}> = [
+  {
+    name: "ar_vr_low_budget",
+    pattern: /AR|VR|元宇宙|擴增實境|虛擬實境|混合實境|MR/,
+    contextCheck: (ctx) => (ctx.budget ?? Infinity) < 500_000,
+    message: "預算低於 50 萬的案子不太可能負擔 AR/VR/元宇宙技術",
+  },
+  {
+    name: "big_data_low_scale",
+    pattern: /大數據分析|巨量資料分析|大量資料探勘/,
+    contextCheck: (ctx) => (ctx.participants ?? Infinity) < 100,
+    message: "參與者不到 100 人不需要大數據分析",
+  },
+  {
+    name: "ai_dev_low_budget",
+    pattern: /AI\s*(模型|系統|平台|引擎).*?(開發|建置|建構)|自建\s*AI|訓練\s*AI\s*模型/,
+    contextCheck: (ctx) => (ctx.budget ?? Infinity) < 1_000_000,
+    message: "自建 AI 系統通常需要百萬以上預算",
+  },
+  {
+    name: "international_low_budget",
+    pattern: /國際(連線|合作|交流|論壇|工作坊|參訪)|海外(參訪|交流|考察)/,
+    contextCheck: (ctx) => (ctx.budget ?? Infinity) < 300_000,
+    message: "國際合作涉及旅費/翻譯，低預算案件需謹慎承諾",
+  },
+  {
+    name: "blockchain_no_context",
+    pattern: /區塊鏈|NFT|Web3|智慧合約|分散式帳本/,
+    contextCheck: (ctx) => (ctx.budget ?? Infinity) < 800_000,
+    message: "區塊鏈技術整合需要專門團隊和時間，低預算案件不切實際",
+  },
+];
+
+/** 預算判定閾值 */
+export const BUDGET_THRESHOLDS = {
+  /** 餘裕 ≥ 此比例 = 充裕 */
+  ampleMargin: 30,
+  /** 餘裕 ≥ 此比例 = 合理 */
+  reasonableMargin: 10,
+  /** 餘裕 ≥ 0 但 < reasonableMargin = 緊繃 */
+  // 低於 0 = 超支
+} as const;
+
+/** 閘門 3 分數計算常數 */
+export const FEASIBILITY_SCORE = {
+  baseScore: 85,
+  budgetExceededPenalty: 40,
+  budgetTightPenalty: 15,
+  commonSensePenalty: 12,
+  minScore: 0,
+  maxScore: 100,
+} as const;

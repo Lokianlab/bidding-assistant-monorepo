@@ -31,8 +31,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(FEATURE_REGISTRY.length).toBeGreaterThan(0);
   });
 
-  it("has 12 registered features", () => {
-    expect(FEATURE_REGISTRY).toHaveLength(12);
+  it("has 13 registered features", () => {
+    expect(FEATURE_REGISTRY).toHaveLength(13);
   });
 
   it("every feature has all required fields", () => {
@@ -230,8 +230,13 @@ describe("getDependents()", () => {
     expect(dependents.some((f) => f.id === "pricing")).toBe(true);
   });
 
-  it("returns empty array for a feature with no dependents", () => {
+  it("returns dependents of quality (quality-gate depends on it)", () => {
     const dependents = getDependents("quality");
+    expect(dependents.some((f) => f.id === "quality-gate")).toBe(true);
+  });
+
+  it("returns empty array for a feature with no dependents", () => {
+    const dependents = getDependents("docgen");
     expect(dependents).toHaveLength(0);
   });
 

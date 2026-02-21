@@ -130,6 +130,25 @@ export interface AppSettings {
   dashboardLayout?: DashboardLayout;
   /** 戰略分析設定 */
   strategy?: StrategySettings;
+  /** 品質閘門設定 */
+  qualityGate?: QualityGateSettings;
+}
+
+export interface QualityGateSettings {
+  /** 各閘門個別開關 */
+  gates: {
+    factCheck: boolean;
+    requirementTrace: boolean;
+    feasibility: boolean;
+  };
+  /** 無來源宣稱超過幾個才報 error */
+  factCheckThreshold: number;
+  /** 預算餘裕低於幾 % 才警告 */
+  feasibilityMarginMin: number;
+  /** 總評「通過」門檻分數 */
+  overallPassThreshold: number;
+  /** 總評「有風險」門檻分數 */
+  overallRiskThreshold: number;
 }
 
 export interface LogEntry {

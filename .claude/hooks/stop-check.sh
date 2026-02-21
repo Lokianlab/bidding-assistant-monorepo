@@ -1,45 +1,56 @@
 #!/bin/bash
-# Stop hook: AI 回完後檢查是否有未提交改動
-# 有改動 → exit 2 擋住，讓 AI 先 commit + push
+# Stop hook: 泛化行為合規檢查
+# 問題定義在 stop-patterns.conf，本檔只是通用引擎
+# 加新問題 = 在 conf 加一行，不改這個檔案
 
 INPUT=$(cat)
 
-# 防無限循環：已經被擋過一次就放行
+# 防無限循環：被擋過一次就放行
 if echo "$INPUT" | grep -qE '"stop_hook_active"\s*:\s*true'; then
   exit 0
 fi
 
 cd "$CLAUDE_PROJECT_DIR" || exit 0
 
-# 「做完就停」偵測：AI 回覆含有等待用戶的語句 → 軟性提醒（不阻斷）
-if echo "$INPUT" | grep -qE '等用戶|等待指示|等你下一步|下一步指示|無可自主推進'; then
-  echo "偵測到「等用戶」語句。你在等什麼？去找事做（/去論壇看看），不要停下來。" >&2
-fi
-
-# 檢查所有 tracked 檔案的未提交改動
+# ═══ 硬性：未提交改動 → exit 2 ═══
 STAGED=$(git diff --cached --name-only 2>/dev/null)
 UNSTAGED=$(git diff --name-only 2>/dev/null)
 UNTRACKED=$(git ls-files --others --exclude-standard 2>/dev/null)
-
 ALL="$STAGED$UNSTAGED$UNTRACKED"
 
-if [ -z "$ALL" ]; then
-  # 30 分鐘同步提醒（軟性，不阻斷）
-  SYNC_FILE="$CLAUDE_PROJECT_DIR/.last-sync-time"
-  if [ -f "$SYNC_FILE" ]; then
-      LAST_SYNC=$(cat "$SYNC_FILE")
-      NOW=$(date +%s)
-      ELAPSED=$(( NOW - LAST_SYNC ))
-      if [ "$ELAPSED" -gt 1800 ]; then
-          echo "距離上次同步已超過 30 分鐘，考慮是否有需要 /暫存 的結論" >&2
-      fi
-  fi
+if [ -n "$ALL" ]; then
+  echo "有未提交的改動，請先 git add + commit + push：" >&2
+  [ -n "$STAGED" ] && echo "  [staged] $STAGED" >&2
+  [ -n "$UNSTAGED" ] && echo "  [modified] $UNSTAGED" >&2
+  [ -n "$UNTRACKED" ] && echo "  [new] $UNTRACKED" >&2
+  exit 2
+fi
+
+# ═══ 資料驅動行為偵測 ═══
+CONF="$CLAUDE_PROJECT_DIR/.claude/hooks/stop-patterns.conf"
+if [ ! -f "$CONF" ]; then
   exit 0
 fi
 
-# 列出未提交檔案，擋住 AI
-echo "有未提交的改動，請先 git add + commit + push：" >&2
-[ -n "$STAGED" ] && echo "  [staged] $STAGED" >&2
-[ -n "$UNSTAGED" ] && echo "  [modified] $UNSTAGED" >&2
-[ -n "$UNTRACKED" ] && echo "  [new] $UNTRACKED" >&2
-exit 2
+TAIL=$(echo "$INPUT" | tail -10)
+HARD_TRIGGERED=0
+
+while IFS='|' read -r severity pattern message; do
+  # 跳過空行和註解
+  case "$severity" in
+    ""|\#*) continue ;;
+  esac
+
+  if echo "$TAIL" | grep -qE "$pattern"; then
+    echo "$message" >&2
+    if [ "$severity" = "hard" ]; then
+      HARD_TRIGGERED=1
+    fi
+  fi
+done < "$CONF"
+
+if [ "$HARD_TRIGGERED" -eq 1 ]; then
+  exit 2
+fi
+
+exit 0

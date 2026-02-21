@@ -1,4 +1,11 @@
-SNAPSHOT|20260223-0120|A44T|claude-sonnet-4-6
+SNAPSHOT|20260222-0325|A44T|claude-opus-4-6
+
+## 行為備註（改了就移除）
+- push 後直接讀 [ ] 找下一步，不停下報告
+- 提選項時帶判斷，不丟裸選擇題
+- 停頓前問自己：用戶手上有什麼是我拿不到的？
+
+## 工作項目
 [x] doc-methodology-review|砍回應前分流 + 機器對等原則|@op:20260219-A44T#0643
 [x] infra-trigger-rules|觸發規則簡化 + Stop hook 擴大範圍|@op:20260219-A44T#0718
 [x] plan-backlog|待辦盤點 + /待辦指令|用戶驗收通過
@@ -16,3 +23,5 @@ SNAPSHOT|20260223-0120|A44T|claude-sonnet-4-6
 [ ] infra-quality-audit|品管員角色（用戶指派）|SSOT 全域掃描完畢（10 源碼檔、4 批 commit）。AINL 趨勢/圖表卡片審查通過。建議終止角色
 [ ] infra-efficiency-cal|效率校準 P0 第一輪答辯|已回覆 Jin 三題（ref:1451）：token 分佈 feat 20%/infra 67%、方法論用了閉環驗證 1 次、下一步做 feat+停品管
 [v] feat-m03-strategy|M03 戰略分析引擎|Phase 1+2 完成：5維評分引擎（82 tests）+ Hook + FitScoreRadar + FitScoreCard + /strategy 頁面。待用戶驗收
+[ ] infra-scoring-arch|計分板架構重構|論壇 discuss 已發（thread:scoring-architecture），等共識+用戶核准
+[ ] infra-stop-hook|stop hook 泛化重構|已完成：資料驅動引擎 + stop-patterns.conf + 被動性 exit 2
