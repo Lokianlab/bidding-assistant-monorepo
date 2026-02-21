@@ -92,7 +92,8 @@ echo -e "${YELLOW}[4/8] Git 設定 + 安裝依賴${NC}"
 
 git config user.name "Jin"
 git config user.email "gasklath20312@gmail.com"
-echo -e "  ${GREEN}✓${NC} Git user = Jin"
+git config core.hooksPath .githooks
+echo -e "  ${GREEN}✓${NC} Git user = Jin, hooks = .githooks"
 
 # 生成機器代號（4 字元大寫英數，記錄層用）
 if [ -f "$PROJECT_DIR/.machine-id" ]; then
@@ -232,6 +233,18 @@ if npm run build 2>&1 | tail -3; then
 else
   echo -e "  ${RED}✗${NC} 建置失敗"
 fi
+
+echo -e "  ${CYAN}→${NC} Dev server 冒煙測試 ..."
+npm run dev &
+DEV_PID=$!
+sleep 8
+if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200"; then
+  echo -e "  ${GREEN}✓${NC} Dev server 正常啟動"
+else
+  echo -e "  ${YELLOW}!${NC} Dev server 無回應（可能需要更長啟動時間，手動確認）"
+fi
+kill $DEV_PID 2>/dev/null
+wait $DEV_PID 2>/dev/null
 echo ""
 
 # ============================================================
