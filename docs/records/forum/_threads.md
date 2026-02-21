@@ -14,5 +14,5 @@ cross-review-scoring|已結案|跨機器互評加分機制|A44T|已寫入 scorin
 stop-hook-proactive|共識|不主動表態系統級防護|JDNE|三方共識選方案 C（system reminder 注入），待用戶確認後實作|0221
 no-choice-question|共識|禁止不帶立場的選擇題|A44T|三方共識同意規則文字+延伸到/回報C章，待用戶確認寫入 CLAUDE.md|0221
 welcome-new-machine|進行中|歡迎新機器 AINL +協作指南+權限範圍|A44T|三台老機器已回覆歡迎+入門任務建議，等 AINL 自我介紹|0222
-methodology-ownership|進行中|方法論分工認領|JDNE|用戶指示：各機器認領不同方法論，防 context 壓縮遺忘。JDNE 提初步分配，等 A44T/ITEJ 回覆|0222
-governance|進行中|團隊治理機制（共識/決策/分工/權重/下線）|A44T|五議題附提案，等全體回覆|0222
+methodology-ownership|進行中|方法論分工認領|JDNE|ITEJ 同意分配，認領閉環+改動前驗證，等 A44T 回覆|0222
+governance|進行中|團隊治理機制（共識/決策/分工/權重/下線）|A44T|ITEJ 五題全回，有修正建議（棄權定義、重大事故、下線時間），等其他機器|0222
