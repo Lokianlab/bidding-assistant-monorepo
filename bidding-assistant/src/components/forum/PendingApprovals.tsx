@@ -12,6 +12,7 @@ interface PendingApprovalsProps {
   onApprove: (threadId: string, message: string) => Promise<void>;
   onReject: (threadId: string, message: string) => Promise<void>;
   onBatchApprove?: (threadIds: string[]) => Promise<void>;
+  onBatchReject?: (threadIds: string[], message: string) => Promise<void>;
   onViewThread: (thread: ForumThread) => void;
 }
 
@@ -27,6 +28,7 @@ export function PendingApprovals({
   onApprove,
   onReject,
   onBatchApprove,
+  onBatchReject,
   onViewThread,
 }: PendingApprovalsProps) {
   const [action, setAction] = useState<ActionState>({
@@ -36,6 +38,8 @@ export function PendingApprovals({
     submitting: false,
   });
   const [batchSubmitting, setBatchSubmitting] = useState(false);
+  const [batchRejectMode, setBatchRejectMode] = useState(false);
+  const [batchRejectMessage, setBatchRejectMessage] = useState("");
 
   // 篩選出需要核准的討論串：狀態是「共識」的
   const pendingThreads = threads.filter((t) => t.status === "共識");
@@ -53,6 +57,19 @@ export function PendingApprovals({
     setBatchSubmitting(true);
     try {
       await onBatchApprove(pendingThreads.map((t) => t.id));
+    } finally {
+      setBatchSubmitting(false);
+    }
+  };
+
+  const handleBatchReject = async () => {
+    if (!onBatchReject) return;
+    const msg = batchRejectMessage.trim() || "退回";
+    setBatchSubmitting(true);
+    try {
+      await onBatchReject(pendingThreads.map((t) => t.id), msg);
+      setBatchRejectMode(false);
+      setBatchRejectMessage("");
     } finally {
       setBatchSubmitting(false);
     }
@@ -77,18 +94,51 @@ export function PendingApprovals({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <h2 className="text-lg font-semibold">待核准決策</h2>
-        <Badge className="bg-yellow-400 text-yellow-900">{pendingThreads.length}</Badge>
-        {onBatchApprove && pendingThreads.length > 1 && (
-          <Button
-            size="sm"
-            className="ml-auto bg-green-600 hover:bg-green-700 text-white"
-            disabled={batchSubmitting}
-            onClick={handleBatchApprove}
-          >
-            {batchSubmitting ? "批准中..." : `全部批准（${pendingThreads.length} 項）`}
-          </Button>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <h2 className="text-lg font-semibold">待核准決策</h2>
+          <Badge className="bg-yellow-400 text-yellow-900">{pendingThreads.length}</Badge>
+          <div className="ml-auto flex gap-2">
+            {onBatchReject && pendingThreads.length > 1 && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-red-300 text-red-700 hover:bg-red-50"
+                disabled={batchSubmitting}
+                onClick={() => setBatchRejectMode(!batchRejectMode)}
+              >
+                {batchRejectMode ? "取消" : `全部退回（${pendingThreads.length} 項）`}
+              </Button>
+            )}
+            {onBatchApprove && pendingThreads.length > 1 && (
+              <Button
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 text-white"
+                disabled={batchSubmitting}
+                onClick={handleBatchApprove}
+              >
+                {batchSubmitting ? "處理中..." : `全部批准（${pendingThreads.length} 項）`}
+              </Button>
+            )}
+          </div>
+        </div>
+        {batchRejectMode && (
+          <div className="flex gap-2 items-end rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-3">
+            <textarea
+              className="flex-1 min-h-[40px] rounded-md border bg-background px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-red-400"
+              placeholder="退回理由..."
+              value={batchRejectMessage}
+              onChange={(e) => setBatchRejectMessage(e.target.value)}
+            />
+            <Button
+              size="sm"
+              className="bg-red-600 hover:bg-red-700 text-white shrink-0"
+              disabled={batchSubmitting}
+              onClick={handleBatchReject}
+            >
+              {batchSubmitting ? "退回中..." : "確認全部退回"}
+            </Button>
+          </div>
         )}
       </div>
 
