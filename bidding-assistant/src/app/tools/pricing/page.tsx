@@ -108,17 +108,19 @@ export default function PricingPage() {
                       <TableCell>
                         <Input
                           type="number"
+                          min="0"
                           className="h-7 text-sm"
                           value={item.quantity}
-                          onChange={(e) => updateItem(item.id, { quantity: Number(e.target.value) })}
+                          onChange={(e) => updateItem(item.id, { quantity: Math.max(0, Number(e.target.value)) })}
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           type="number"
+                          min="0"
                           className="h-7 text-sm"
                           value={item.unitPrice}
-                          onChange={(e) => updateItem(item.id, { unitPrice: Number(e.target.value) })}
+                          onChange={(e) => updateItem(item.id, { unitPrice: Math.max(0, Number(e.target.value)) })}
                         />
                       </TableCell>
                       <TableCell className="text-right font-mono text-sm">
@@ -153,8 +155,9 @@ export default function PricingPage() {
                 <Label>標案預算（元）</Label>
                 <Input
                   type="number"
+                  min="0"
                   value={budgetCeiling}
-                  onChange={(e) => setBudgetCeiling(Number(e.target.value))}
+                  onChange={(e) => setBudgetCeiling(Math.max(0, Number(e.target.value)))}
                 />
               </div>
             </CardContent>
