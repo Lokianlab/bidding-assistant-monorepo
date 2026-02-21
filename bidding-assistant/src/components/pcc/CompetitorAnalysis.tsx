@@ -5,6 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  ComposedChart,
+} from "recharts";
 import { useCompetitorAnalysis } from "@/lib/pcc/useCompetitorAnalysis";
 import type { SelfAnalysis, CompetitorStats, AgencyStats } from "@/lib/pcc/types";
 
@@ -74,6 +85,7 @@ function AnalysisResults({ data }: { data: SelfAnalysis }) {
       <OverviewCards data={data} />
 
       {/* 年度趨勢 */}
+      {data.yearlyStats.length > 0 && <YearlyTrendChart stats={data.yearlyStats} />}
       {data.yearlyStats.length > 0 && <YearlyTable stats={data.yearlyStats} />}
 
       {/* 競爭對手排行 */}
@@ -120,11 +132,66 @@ function StatCard({ label, value, sub }: { label: string; value: string; sub?: s
 
 // ====== 年度趨勢 ======
 
-function YearlyTable({ stats }: { stats: SelfAnalysis["yearlyStats"] }) {
+function YearlyTrendChart({ stats }: { stats: SelfAnalysis["yearlyStats"] }) {
+  // 按年份正序排列（圖表左到右）
+  const chartData = [...stats]
+    .sort((a, b) => a.year - b.year)
+    .map((s) => ({
+      year: String(s.year),
+      得標: s.wins,
+      未得標: s.total - s.wins,
+      得標率: s.total > 0 ? Math.round((s.wins / s.total) * 100) : 0,
+    }));
+
+  if (chartData.length < 2) return null;
+
   return (
     <Card>
       <CardHeader className="py-3">
         <CardTitle className="text-base">年度趨勢</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="h-[250px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+              <XAxis dataKey="year" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+              <YAxis yAxisId="left" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                tick={{ fontSize: 12 }}
+                tickLine={false}
+                axisLine={false}
+                domain={[0, 100]}
+                tickFormatter={(v: number) => `${v}%`}
+              />
+              <Tooltip />
+              <Legend />
+              <Bar yAxisId="left" dataKey="得標" stackId="a" fill="#10b981" radius={[0, 0, 0, 0]} />
+              <Bar yAxisId="left" dataKey="未得標" stackId="a" fill="#ef4444" radius={[4, 4, 0, 0]} />
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="得標率"
+                stroke="#6366f1"
+                strokeWidth={2}
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function YearlyTable({ stats }: { stats: SelfAnalysis["yearlyStats"] }) {
+  return (
+    <Card>
+      <CardHeader className="py-3">
+        <CardTitle className="text-base">年度明細</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
