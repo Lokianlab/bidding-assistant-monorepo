@@ -109,6 +109,8 @@ Monorepo 透過 GitHub 同步。遠端：`https://github.com/Lokianlab/bidding-a
 
 git status → 有未提交就 commit → pull → 掃論壇 directive → 條件觸發碰撞偵測（只在 CLAUDE.md 有改動時）→ 代碼變化時 npm test → 工具檢查（CLI + MCP）→ 讀 dev-map + 自己的 snapshot 恢復上下文 → 一句話報告
 
+首次啟動（找不到自己的 `_snapshot-{機器碼}.md`）時，額外讀 `docs/collaboration-onboarding.md` 了解協作方式。
+
 ### 壓縮流程（context compact 後）
 
 pre-compact hook 自動 commit/push（不保證完成）→ 檢查 hook 遺漏 → 掃論壇 directive → 讀自己的 snapshot → 接回工作
