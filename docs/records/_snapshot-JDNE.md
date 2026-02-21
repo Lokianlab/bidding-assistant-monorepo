@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-2150|JDNE
+SNAPSHOT|20260221-1420|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -27,4 +27,4 @@ SNAPSHOT|20260221-2150|JDNE
 [ ] infra-user-auth|用戶驗證系統|註冊流程重寫、顯示規則定案、Saint 已移除、安全清理完成
 [ ] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE)已設定
 [?] infra-temp-machine-code|臨時機器碼制度|論壇 discuss 進行中，缺 ITEJ+A44T 回覆
-[ ] infra-efficiency-calibration|效率校準|/質問 directive 已發，等各機器 reply 提出改善措施
+[ ] infra-efficiency-calibration|效率校準|P0 追加指令已發：現有回覆不達標，全員重做+三輪答辯制
