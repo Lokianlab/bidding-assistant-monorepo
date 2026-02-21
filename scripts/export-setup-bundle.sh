@@ -110,6 +110,20 @@ cd "$PROJECT_DIR"
 git config user.name "Jin"
 git config user.email "gasklath20312@gmail.com"
 
+# 生成機器代號
+if [ ! -f "$PROJECT_DIR/.machine-id" ]; then
+  while true; do
+    MACHINE_ID=$(cat /dev/urandom | tr -dc 'A-Z0-9' | head -c 4)
+    if ! ls "$PROJECT_DIR/docs/records/_snapshot-"*.md 2>/dev/null | grep -q "$MACHINE_ID"; then
+      break
+    fi
+  done
+  echo "$MACHINE_ID" > "$PROJECT_DIR/.machine-id"
+  echo -e "  ${GREEN}✓${NC} 機器代號 = $MACHINE_ID"
+else
+  echo -e "  ${GREEN}✓${NC} 機器代號 = $(cat "$PROJECT_DIR/.machine-id")"
+fi
+
 echo -e "  ${CYAN}→${NC} bidding-assistant"
 cd "$PROJECT_DIR/bidding-assistant" && npm install --no-audit --no-fund 2>&1 | tail -1
 

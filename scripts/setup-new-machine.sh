@@ -94,6 +94,22 @@ git config user.name "Jin"
 git config user.email "gasklath20312@gmail.com"
 echo -e "  ${GREEN}✓${NC} Git user = Jin"
 
+# 生成機器代號（4 字元大寫英數，記錄層用）
+if [ -f "$PROJECT_DIR/.machine-id" ]; then
+  MACHINE_ID=$(cat "$PROJECT_DIR/.machine-id")
+  echo -e "  ${GREEN}✓${NC} 機器代號 = $MACHINE_ID"
+else
+  # 避免跟已有的機器碰撞
+  while true; do
+    MACHINE_ID=$(cat /dev/urandom | tr -dc 'A-Z0-9' | head -c 4)
+    if ! ls "$PROJECT_DIR/docs/records/_snapshot-"*.md 2>/dev/null | grep -q "$MACHINE_ID"; then
+      break
+    fi
+  done
+  echo "$MACHINE_ID" > "$PROJECT_DIR/.machine-id"
+  echo -e "  ${GREEN}✓${NC} 機器代號 = $MACHINE_ID（新生成）"
+fi
+
 echo -e "  ${CYAN}→${NC} bidding-assistant ..."
 cd "$PROJECT_DIR/bidding-assistant" && npm install --no-audit --no-fund 2>&1 | tail -1
 
