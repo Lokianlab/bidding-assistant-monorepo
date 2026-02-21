@@ -46,3 +46,4 @@ plan-devplan-push|進行中|/修改計畫 批量推進 6 條任務線（04/06/07
 feat-pcc-web|進行中|PCC 情報模組：Phase 3 完成+P偵察+評委交叉分析純函式（602測試），Phase 4 UI 未做|@op:20260221-JDNE#0853|2026-02-21
 infra-sync-optimize|完成|同步機制優化：scoring append-only + /更新輕量化 + 重啟/壓縮流程精簡|@op:20260221-A44T#2100|2026-02-21
 infra-db-safety|進行中|資料庫安全規則：可讀不可寫原始資料庫，實驗用沙盒（已寫入 CLAUDE.md，具體沙盒方案未定）|@op:20260221-A44T#2330|2026-02-21
+infra-forum|待驗收|機器論壇（跨機器通訊）+ /質問（全面校準）：brief/feedback/score/directive/response 五種貼文，整合進重啟/壓縮/更新流程|@op:20260221-ITEJ#1730|2026-02-21
