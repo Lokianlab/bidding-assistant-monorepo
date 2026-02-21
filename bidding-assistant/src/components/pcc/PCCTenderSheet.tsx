@@ -35,6 +35,8 @@ interface PCCTenderSheetProps {
 }
 
 export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany }: PCCTenderSheetProps) {
+  const { settings } = useSettings();
+  const myCompany = settings.company?.brand || "大員洛川";
   const [detail, setDetail] = useState<PCCTenderDetail | null>(null);
   const [summary, setSummary] = useState<TenderSummary | null>(null);
   const [loading, setLoading] = useState(false);
@@ -69,8 +71,7 @@ export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany }: PC
     return () => { cancelled = true; };
   }, [record, open]);
 
-  const { settings } = useSettings();
-  const agencyIntel = useAgencyIntel(record?.unit_id ?? null, open, settings.company.brand);
+  const agencyIntel = useAgencyIntel(record?.unit_id ?? null, open, myCompany);
 
   if (!record) return null;
 

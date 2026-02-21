@@ -20,6 +20,8 @@ import { useCompetitorAnalysis } from "@/lib/pcc/useCompetitorAnalysis";
 import { useSettings } from "@/lib/context/settings-context";
 import type { SelfAnalysis, CompetitorStats, AgencyStats } from "@/lib/pcc/types";
 
+const FALLBACK_COMPANY = "大員洛川";
+
 interface CompetitorAnalysisProps {
   targetCompany?: string | null;
   onTargetConsumed?: () => void;
@@ -27,7 +29,8 @@ interface CompetitorAnalysisProps {
 
 export function CompetitorAnalysis({ targetCompany, onTargetConsumed }: CompetitorAnalysisProps = {}) {
   const { settings } = useSettings();
-  const [companyName, setCompanyName] = useState<string>(settings.company.brand);
+  const defaultCompany = settings.company?.brand || FALLBACK_COMPANY;
+  const [companyName, setCompanyName] = useState<string>(defaultCompany);
   const { data, loading, progress, error, run } = useCompetitorAnalysis();
   const consumedRef = useRef<string | null>(null);
 
