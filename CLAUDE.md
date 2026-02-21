@@ -58,6 +58,7 @@ Monorepo 透過 GitHub 同步。遠端：`https://github.com/Lokianlab/bidding-a
 
 - 推之前先拉：`git fetch origin && git rebase origin/main` → `git add` → `git commit -m "中文摘要"` → `git push origin main`
 - 每完成一個工作單元就推一次，不累積。一次 push 包含代碼 + 快照（例外時加 OP）。
+- **推完就巡邏**：每次 `git push` 後立刻 `git pull --rebase` 一次，然後快速掃 `_threads.md` 有沒有進行中的 P0/P1 thread。有就處理，沒有就繼續下一步工作。（出處：用戶直接指示 0222「論壇不即時」）
 - 長時間討論產生重要決策 → 主動暫停，先推結論再繼續。
 - 不要隨意更新 CLAUDE.md，日常結論用 `/暫存`。例外：用戶明確說了行為規範，可直接寫入 CLAUDE.md（須標出處）。架構決策除外，仍走第三級。
 - 不能只寫進本機 MEMORY.md——其他機器看不到。
