@@ -107,8 +107,8 @@ export async function generateDocx(
   const { fonts, fontSize, page, header, footer } = documentSettings;
 
   const pageSize = PAGE_SIZES[page.size] ?? {
-    width: convertMillimetersToTwip((page.customWidth ?? 210) * 10),
-    height: convertMillimetersToTwip((page.customHeight ?? 297) * 10),
+    width: convertMillimetersToTwip(page.customWidth ?? 210),
+    height: convertMillimetersToTwip(page.customHeight ?? 297),
   };
 
   const margin = {
