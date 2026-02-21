@@ -24,6 +24,42 @@ const VALID_POST_TYPES = new Set<string>([
 ]);
 
 /**
+ * 把 YYYYMMDD-HHMM 格式的時間戳轉成 epoch 毫秒數。
+ * 處理小時溢出（如 2455 → 隔天 0055）。
+ */
+function timestampToEpoch(ts: string): number {
+  if (!/^\d{8}-\d{4}$/.test(ts)) return 0;
+  const year = parseInt(ts.slice(0, 4));
+  const month = parseInt(ts.slice(4, 6)) - 1;
+  const day = parseInt(ts.slice(6, 8));
+  let hour = parseInt(ts.slice(9, 11));
+  const min = parseInt(ts.slice(11, 13));
+
+  let extraDays = 0;
+  if (hour >= 24) {
+    extraDays = Math.floor(hour / 24);
+    hour = hour % 24;
+  }
+
+  return Date.UTC(year, month, day + extraDays, hour, min);
+}
+
+/**
+ * 從 ref 字串解析引用的時間戳 epoch 值。
+ * ref 格式：MACHINE:YYYYMMDD-HHMM，多個以逗號分隔。
+ */
+function parseRefTimestamps(ref: string): number[] {
+  if (!ref || ref === "none") return [];
+  return ref
+    .split(",")
+    .map((r) => {
+      const match = r.trim().match(/\w+:(\d{8}-\d{4})/);
+      return match ? timestampToEpoch(match[1]) : 0;
+    })
+    .filter((t) => t > 0);
+}
+
+/**
  * 把投票欄字串拆成機器碼陣列。
  * 空字串、空白、"-" 都回傳空陣列。
  * "JDNE,ITEJ" → ["JDNE", "ITEJ"]
@@ -209,13 +245,47 @@ export function attachPostsToThreads(
     }
   }
 
-  // 每個 thread 內的帖子排序：純按時間升序（最早的在最上面）
-  // 使用逐字元比較（不依賴 localeCompare），確保跨語系環境下排序穩定
+  // 每個 thread 內的帖子排序：discuss 永遠在最前，其餘按有效時間順序。
+  // 用 ref 引用關係修正時間戳偏差：如果帖子引用了比自己晚的帖子，
+  // 把排序時間調整到被引用帖子之後，確保閱讀順序合理。
+  // 使用 epoch 數值比較（不依賴 localeCompare），確保跨語系一致。
   for (const thread of threadMap.values()) {
+    // 預先計算每則帖子的有效排序時間
+    const sortTimes = new Map<
+      ForumPost,
+      { effective: number; original: number }
+    >();
+    for (const post of thread.posts) {
+      const original = timestampToEpoch(post.timestamp);
+      const refEpochs = parseRefTimestamps(post.ref);
+      const maxRef = refEpochs.length > 0 ? Math.max(...refEpochs) : 0;
+      // 帖子引用了比自己晚的帖子 → 用 maxRef + 1 分鐘作為排序時間
+      const effective = maxRef > original ? maxRef + 60000 : original;
+      sortTimes.set(post, { effective, original });
+    }
+
     thread.posts.sort((a, b) => {
-      if (a.timestamp < b.timestamp) return -1;
-      if (a.timestamp > b.timestamp) return 1;
-      // 時間戳相同時，按機器碼排序確保穩定性
+      // discuss 永遠在最前（ThreadDetail.tsx 的 posts[0] 當作原始帖顯示）
+      const aIsDiscuss = a.type === "discuss" ? 0 : 1;
+      const bIsDiscuss = b.type === "discuss" ? 0 : 1;
+      if (aIsDiscuss !== bIsDiscuss) return aIsDiscuss - bIsDiscuss;
+
+      const aTime = sortTimes.get(a)!;
+      const bTime = sortTimes.get(b)!;
+
+      // 先按有效時間排序
+      if (aTime.effective !== bTime.effective)
+        return aTime.effective - bTime.effective;
+
+      // 有效時間相同：檢查是否有直接引用關係
+      const aRefsB = a.ref.includes(`${b.machineCode}:${b.timestamp}`);
+      const bRefsA = b.ref.includes(`${a.machineCode}:${a.timestamp}`);
+      if (aRefsB && !bRefsA) return 1; // a 引用了 b → a 在 b 後面
+      if (bRefsA && !aRefsB) return -1;
+
+      // 原始時間戳排，同時間用機器碼確保穩定性
+      if (aTime.original !== bTime.original)
+        return aTime.original - bTime.original;
       return a.machineCode < b.machineCode ? -1 : a.machineCode > b.machineCode ? 1 : 0;
     });
   }
