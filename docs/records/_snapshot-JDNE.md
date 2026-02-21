@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-2000|JDNE
+SNAPSHOT|20260221-0900|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -18,3 +18,5 @@ SNAPSHOT|20260221-2000|JDNE
 [v] method-observation-capture|AI觀察捕捉框架|v2 系統已定義 obs- 前綴約定，待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建，待推入技術選型文件
 [v] infra-meta-methodology|元方法論框架建構|機器可做的評估全部完成（P1-P5逐檔+系統交叉比對+效度自證），待用戶驗收
+[ ] feat-pcc-web|評委交叉分析|純函式+11測試完成，下一步建 hook + UI 元件
+[?] infra-backup-mechanism|備份/回復安全節點|用戶提出，範圍待釐清（git tag？資料庫 snapshot？設定匯出？）
