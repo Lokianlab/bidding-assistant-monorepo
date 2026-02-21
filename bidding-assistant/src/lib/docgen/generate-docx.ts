@@ -379,6 +379,7 @@ export async function generateDocx(
     height: convertMillimetersToTwip(page.customHeight ?? 297),
   };
 
+  // 設定值存 cm，乘 10 轉 mm 後再由 convertMillimetersToTwip 轉 twip
   const margin = {
     top: convertMillimetersToTwip(page.margins.top * 10),
     bottom: convertMillimetersToTwip(page.margins.bottom * 10),
@@ -476,11 +477,16 @@ export async function generateDocx(
   return Packer.toBlob(doc);
 }
 
+/** 清除檔名中不安全的字元（Windows + 通用檔案系統） */
+export function sanitizeFilename(name: string): string {
+  return name.replace(/[/\\:*?"<>|]/g, "_").trim() || "untitled";
+}
+
 export function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = filename;
+  a.download = sanitizeFilename(filename);
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

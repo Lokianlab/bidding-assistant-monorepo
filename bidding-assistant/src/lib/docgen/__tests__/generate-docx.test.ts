@@ -6,6 +6,7 @@ import {
   resolveTemplate,
   isTableSeparator,
   isTableRow,
+  sanitizeFilename,
   type GenerateDocxOptions,
 } from "../generate-docx";
 import type { DocumentSettings, CompanySettings } from "@/lib/settings/types";
@@ -816,5 +817,39 @@ describe("generateDocx — 混合格式", () => {
       })
     );
     expect(mixed.size).toBeGreaterThan(plain.size);
+  });
+});
+
+// ====== sanitizeFilename ======
+
+describe("sanitizeFilename", () => {
+  it("returns name unchanged if no unsafe chars", () => {
+    expect(sanitizeFilename("report.docx")).toBe("report.docx");
+  });
+
+  it("replaces Windows-unsafe characters with underscore", () => {
+    expect(sanitizeFilename('file/name\\with:bad*chars?"<>|')).toBe(
+      "file_name_with_bad_chars_____",
+    );
+  });
+
+  it("handles Chinese filenames", () => {
+    expect(sanitizeFilename("提案書_v2.docx")).toBe("提案書_v2.docx");
+  });
+
+  it("trims whitespace", () => {
+    expect(sanitizeFilename("  report.docx  ")).toBe("report.docx");
+  });
+
+  it("returns 'untitled' for empty string", () => {
+    expect(sanitizeFilename("")).toBe("untitled");
+  });
+
+  it("returns 'untitled' for whitespace-only", () => {
+    expect(sanitizeFilename("   ")).toBe("untitled");
+  });
+
+  it("preserves dots and hyphens", () => {
+    expect(sanitizeFilename("my-file.v2.1.docx")).toBe("my-file.v2.1.docx");
   });
 });
