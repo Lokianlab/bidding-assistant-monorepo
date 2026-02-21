@@ -146,6 +146,48 @@ describe("checkIronLaws", () => {
     const results = checkIronLaws(text, allDisabled);
     expect(results).toHaveLength(0);
   });
+
+  it("偵測多處金額或預算描述", () => {
+    const text = "預算500萬元，經費分四期撥付，報價含稅，費用明細如附件";
+    const results = checkIronLaws(text, { ...allDisabled, budgetConsistency: true });
+    const budgetCheck = results.find((r) => r.rule === "預算一致性");
+    expect(budgetCheck).toBeDefined();
+    expect(budgetCheck!.type).toBe("info");
+  });
+
+  it("金額描述 ≤3 處不觸發預算一致性", () => {
+    const text = "預算500萬元，經費分期撥付";
+    const results = checkIronLaws(text, { ...allDisabled, budgetConsistency: true });
+    expect(results.find((r) => r.rule === "預算一致性")).toBeUndefined();
+  });
+
+  it("偵測多處人員角色描述", () => {
+    const text = "主持人負責統籌，協同主持人協助，專任助理執行，工程師開發";
+    const results = checkIronLaws(text, { ...allDisabled, teamConsistency: true });
+    const teamCheck = results.find((r) => r.rule === "人力一致性");
+    expect(teamCheck).toBeDefined();
+    expect(teamCheck!.type).toBe("info");
+  });
+
+  it("角色描述 ≤3 處不觸發人力一致性", () => {
+    const text = "主持人負責統籌，工程師開發";
+    const results = checkIronLaws(text, { ...allDisabled, teamConsistency: true });
+    expect(results.find((r) => r.rule === "人力一致性")).toBeUndefined();
+  });
+
+  it("偵測多處工作範圍描述", () => {
+    const text = "工作範圍涵蓋系統開發，服務範圍包括維護，辦理事項詳列如下";
+    const results = checkIronLaws(text, { ...allDisabled, scopeConsistency: true });
+    const scopeCheck = results.find((r) => r.rule === "範圍一致性");
+    expect(scopeCheck).toBeDefined();
+    expect(scopeCheck!.type).toBe("info");
+  });
+
+  it("範圍描述 ≤2 處不觸發範圍一致性", () => {
+    const text = "工作範圍涵蓋系統開發與維護";
+    const results = checkIronLaws(text, { ...allDisabled, scopeConsistency: true });
+    expect(results.find((r) => r.rule === "範圍一致性")).toBeUndefined();
+  });
 });
 
 // ====== 提案專用規則 ======
