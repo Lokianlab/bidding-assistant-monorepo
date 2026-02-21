@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-2110|A44T
+SNAPSHOT|20260222-2310|A44T
 [x] doc-methodology-review|砍回應前分流 + 機器對等原則|@op:20260219-A44T#0643
 [x] infra-trigger-rules|觸發規則簡化 + Stop hook 擴大範圍|@op:20260219-A44T#0718
 [x] plan-backlog|待辦盤點 + /待辦指令|用戶驗收通過
@@ -11,3 +11,4 @@ SNAPSHOT|20260222-2110|A44T
 [v] infra-new-machine-setup|安裝流程防呆改造：.bat 啟動器+腳本移除 set -e+npm 重試+指南簡易版|待用戶驗收
 [ ] plan-product-pivot|產品開發轉向|情報模組 4 Tab 齊全，下一個模組待決（M02 知識庫？M03 戰略引擎？）
 [?] infra-db-safety|資料庫安全規則|沙盒方案暫存檔已建（推薦混合 JSON mock + UI 複製），待用戶決定
+[ ] infra-governance|治理機制寫入 CLAUDE.md|governance 三方共識（含修正），multi-user-governance 四方回覆完畢，均待用戶核准
