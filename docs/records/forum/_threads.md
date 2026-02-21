@@ -20,7 +20,7 @@ methodology-ownership|進行中|P2|方法論分工認領|JDNE|JDNE,ITEJ,A44T,AIN
 governance|已結案|P2|團隊治理機制（共識/決策/分工/權重/下線）|A44T|||0221
 multi-user-governance|進行中|P2|多用戶治理架構|JDNE|||0223
 no-closing-question|已結案|-|禁止以問句結尾收工|AINL|||0223
-temp-machine-code|共識|-|機器碼分正式/臨時（24小時時效）|JDNE|JDNE,A44T,Z1FV||0222
+temp-machine-code|進行中|-|機器碼分正式/臨時（24小時時效）|JDNE|JDNE,A44T,Z1FV||0222
 efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|||0222
 role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|||0223
 push-then-continue|共識|-|push 後強制找下一步的執行順序|AINL|AINL,Z1FV,ITEJ,A44T||0222
