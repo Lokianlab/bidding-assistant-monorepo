@@ -85,6 +85,13 @@ export const DEFAULT_SETTINGS: AppSettings = {
     },
   },
   yearlyGoal: 0,
+  qualityGate: {
+    gates: { factCheck: true, requirementTrace: true, feasibility: true },
+    factCheckThreshold: 3,
+    feasibilityMarginMin: 10,
+    overallPassThreshold: 70,
+    overallRiskThreshold: 50,
+  },
   dashboardLayout: DEFAULT_DASHBOARD_LAYOUT,
   workflow: {
     stages: STAGES.map((s) => ({

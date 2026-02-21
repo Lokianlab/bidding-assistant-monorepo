@@ -123,6 +123,16 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
     defaultEnabled: true,
   },
   {
+    id: "quality-gate",
+    name: "品質閘門",
+    description: "三道品質檢查：事實查核、需求對照、實務檢驗",
+    icon: "🛡️",
+    routes: ["/tools/quality-gate"],
+    section: "tools",
+    defaultEnabled: true,
+    dependencies: ["quality"],
+  },
+  {
     id: "strategy",
     name: "戰略分析",
     description: "投標適配度評分：五維分析（領域、機關、競爭、規模、團隊），幫助決策是否投標",
