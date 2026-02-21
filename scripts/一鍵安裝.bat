@@ -25,13 +25,9 @@ if errorlevel 1 goto :no_winget_git
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 if errorlevel 1 goto :git_install_failed
 echo.
-echo   ========================================
-echo    Git installed!
-echo    Close this window and double-click
-echo    this file again to continue.
-echo   ========================================
-echo.
-pause
+echo   [OK] Git installed! Restarting...
+timeout /t 3 >nul
+start "" "%~f0"
 exit /b 0
 
 :no_winget_git
@@ -63,13 +59,9 @@ if errorlevel 1 goto :no_winget_gh
 winget install GitHub.cli -e --accept-package-agreements --accept-source-agreements
 if errorlevel 1 goto :gh_install_failed
 echo.
-echo   ========================================
-echo    GitHub CLI installed!
-echo    Close this window and double-click
-echo    this file again to continue.
-echo   ========================================
-echo.
-pause
+echo   [OK] GitHub CLI installed! Restarting...
+timeout /t 3 >nul
+start "" "%~f0"
 exit /b 0
 
 :no_winget_gh
@@ -104,6 +96,26 @@ goto :check_repo
 
 :auth_ok
 echo   [OK] GitHub logged in
+echo.
+echo   Current account:
+gh auth status
+echo.
+echo   Is this Jin's account? (Y/N)
+set /p "CONFIRM=   > "
+if /i "%CONFIRM%"=="N" goto :switch_account
+if /i "%CONFIRM%"=="n" goto :switch_account
+goto :check_repo
+
+:switch_account
+echo.
+echo   Logging out...
+gh auth logout -h github.com
+echo.
+echo   Now log in with Jin's account:
+echo.
+gh auth login --web --git-protocol https
+if errorlevel 1 goto :auth_failed
+echo   [OK] GitHub login OK
 goto :check_repo
 
 :auth_failed
@@ -132,10 +144,34 @@ goto :launch_setup
 :clone_failed
 echo.
 echo   Download failed!
-echo.
 echo   Most likely: wrong GitHub account.
-echo   Fix: run "gh auth logout" then try again
-echo   with Jin's account.
+echo.
+echo   Options:
+echo     1. Switch account and retry
+echo     2. Exit
+echo.
+set /p "CHOICE=   Choose (1 or 2): "
+if "%CHOICE%"=="1" goto :retry_auth
+goto :exit_fail
+
+:retry_auth
+echo.
+echo   Logging out current account...
+gh auth logout -h github.com
+echo.
+echo   Log in with Jin's account:
+echo.
+gh auth login --web --git-protocol https
+if errorlevel 1 goto :auth_failed
+echo.
+echo   Retrying download...
+if not exist "C:\dev" mkdir "C:\dev"
+git clone "https://github.com/Lokianlab/bidding-assistant-monorepo.git" "C:\dev\cc程式"
+if errorlevel 1 goto :clone_failed
+echo   [OK] Download complete
+goto :launch_setup
+
+:exit_fail
 echo.
 pause
 exit /b 1
