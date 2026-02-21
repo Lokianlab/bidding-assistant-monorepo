@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-0720|JDNE|claude-opus-4-6
+SNAPSHOT|20260223-0830|JDNE|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - 快照無 feat [ ] 時不要自動找 infra 做，停下等用戶分配
@@ -33,3 +33,4 @@ SNAPSHOT|20260223-0720|JDNE|claude-opus-4-6
 [v] infra-efficiency-calibration|效率校準|兩輪答辯完成，機器主官整合摘要已提交，待 Jin 裁決
 [x] cleanup-dead-code|CardRenderer 死碼清理|已完成
 [v] plan-team-optimization|團隊運作優化方案|暫存檔完整（角色+流程+機制審計+瘦身+inbox），待用戶核准執行
+[x] infra-todo-upgrade|/待辦 指令升級|加驗收清單+待核准決策（verification-queue + consensus-backlog 共識落地）
