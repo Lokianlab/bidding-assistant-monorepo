@@ -19,6 +19,8 @@ export function splitIntoSentences(text: string): string[] {
 /**
  * 從句子中提取中文詞組（n-gram 方式）用於 KB 比對。
  * 中文沒有空格分詞，改為提取 2-4 字元的連續子串。
+ *
+ * @remarks Phase 2 預留：目前 matchSentenceToKB 改用 LCS 直接比對，此函式尚未接入生產路徑。
  */
 export function extractKeywords(sentence: string): string[] {
   // 移除標點符號
