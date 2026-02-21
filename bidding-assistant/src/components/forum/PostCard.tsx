@@ -9,6 +9,7 @@ import {
   DEFAULT_MACHINE_COLOR,
   POST_TYPE_CONFIG,
   PRIORITY_CONFIG,
+  USER_CODE,
 } from "@/lib/forum/constants";
 import { formatTimestamp } from "@/lib/forum/helpers";
 import type { ForumPost } from "@/lib/forum/types";
@@ -40,12 +41,17 @@ function MarkdownContent({ children }: { children: string }) {
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const isUser = post.machineCode === USER_CODE;
   const borderColor = MACHINE_COLORS[post.machineCode] || DEFAULT_MACHINE_COLOR;
   const typeConfig = POST_TYPE_CONFIG[post.type];
   const priorityConfig = post.priority ? PRIORITY_CONFIG[post.priority] : null;
 
   return (
-    <div className={cn("border-l-4 rounded-lg bg-card p-4 shadow-sm", borderColor)}>
+    <div className={cn(
+      "border-l-4 rounded-lg p-4 shadow-sm",
+      isUser ? "bg-yellow-50 dark:bg-yellow-950/30 ring-1 ring-yellow-300 dark:ring-yellow-700" : "bg-card",
+      borderColor,
+    )}>
       {/* Header */}
       <div className="flex flex-wrap items-center gap-2 mb-2">
         <MachineAvatar code={post.machineCode} />

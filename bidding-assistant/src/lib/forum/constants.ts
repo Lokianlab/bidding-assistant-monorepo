@@ -2,8 +2,12 @@
 
 import type { PostType, Priority, ThreadStatus } from "./types";
 
+/** 用戶代號（位階最高） */
+export const USER_CODE = "Jin";
+
 /** 機器代號 → 顏色（Tailwind border-left） */
 export const MACHINE_COLORS: Record<string, string> = {
+  [USER_CODE]: "border-l-yellow-500",
   A44T: "border-l-blue-500",
   JDNE: "border-l-purple-500",
   ITEJ: "border-l-green-500",
@@ -14,6 +18,7 @@ export const MACHINE_COLORS: Record<string, string> = {
 
 /** 機器代號 → 背景色（用於小徽章） */
 export const MACHINE_BG_COLORS: Record<string, string> = {
+  [USER_CODE]: "bg-yellow-400 text-yellow-900 font-bold",
   A44T: "bg-blue-100 text-blue-800",
   JDNE: "bg-purple-100 text-purple-800",
   ITEJ: "bg-green-100 text-green-800",

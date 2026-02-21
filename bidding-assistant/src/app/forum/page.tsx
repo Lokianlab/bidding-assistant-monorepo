@@ -6,6 +6,7 @@ import { ForumOverview } from "@/components/forum/ForumOverview";
 import { ForumFilters, type ForumFilterState } from "@/components/forum/ForumFilters";
 import { ThreadList } from "@/components/forum/ThreadList";
 import { ThreadDetail } from "@/components/forum/ThreadDetail";
+import { ComposePost } from "@/components/forum/ComposePost";
 import { Button } from "@/components/ui/button";
 import type { ForumThread } from "@/lib/forum/types";
 
@@ -21,6 +22,7 @@ export default function ForumPage() {
   const [filters, setFilters] = useState<ForumFilterState>(DEFAULT_FILTERS);
   const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
   const [showOverview, setShowOverview] = useState(false);
+  const [showCompose, setShowCompose] = useState(false);
 
   // 篩選討論串
   const filteredThreads = useMemo(() => {
@@ -92,10 +94,19 @@ export default function ForumPage() {
   // 討論串詳情視圖
   if (selectedThread) {
     return (
-      <div className="p-6">
+      <div className="p-6 space-y-4">
         <ThreadDetail
           thread={selectedThread}
           onBack={() => setSelectedThread(null)}
+        />
+        {/* 在討論串詳情底部放回覆框 */}
+        <ComposePost
+          threadId={selectedThread.id}
+          threadTitle={selectedThread.title}
+          onPosted={() => {
+            refresh();
+            // 重新整理後保持在同一個 thread（下次 render 會更新）
+          }}
         />
       </div>
     );
@@ -108,6 +119,13 @@ export default function ForumPage() {
         <h1 className="text-2xl font-bold">機器論壇</h1>
         <div className="flex gap-2">
           <Button
+            className="bg-yellow-500 hover:bg-yellow-600 text-yellow-950"
+            size="sm"
+            onClick={() => setShowCompose(!showCompose)}
+          >
+            {showCompose ? "收起" : "開新話題"}
+          </Button>
+          <Button
             variant={showOverview ? "default" : "outline"}
             size="sm"
             onClick={() => setShowOverview(!showOverview)}
@@ -119,6 +137,17 @@ export default function ForumPage() {
           </Button>
         </div>
       </div>
+
+      {/* Jin 發言框（開新話題） */}
+      {showCompose && (
+        <ComposePost
+          onPosted={() => {
+            refresh();
+            setShowCompose(false);
+          }}
+          onCancel={() => setShowCompose(false)}
+        />
+      )}
 
       {/* 統計總覽（可摺疊） */}
       {showOverview && <ForumOverview stats={data.stats} />}
