@@ -150,6 +150,20 @@ else
     sed -i "s|^NOTION_DATABASE_ID=.*|NOTION_DATABASE_ID=$NOTION_DATABASE_ID|" "$ENV_FILE"
   fi
 
+  # 驗證 Notion Token 有效性
+  if [ -n "$NOTION_TOKEN" ]; then
+    echo -e "  ${CYAN}→${NC} 驗證 Notion Token ..."
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+      -H "Authorization: Bearer $NOTION_TOKEN" \
+      -H "Notion-Version: 2022-06-28" \
+      "https://api.notion.com/v1/users/me")
+    if [ "$HTTP_CODE" = "200" ]; then
+      echo -e "  ${GREEN}✓${NC} Notion Token 有效"
+    else
+      echo -e "  ${YELLOW}!${NC} Notion Token 可能無效（HTTP $HTTP_CODE），請確認後手動編輯 .env.local"
+    fi
+  fi
+
   echo -e "  ${GREEN}✓${NC} .env.local 已建立"
 fi
 echo ""
