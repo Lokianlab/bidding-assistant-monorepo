@@ -11,5 +11,5 @@ SNAPSHOT|20260221-0215|ITEJ
 [x] infra-hooks|簡化 pre-compact hook（砍快照提醒）|小結 ITEJ-0003
 [x] feat-kb-skill-fix|/kb 精靈 00C/00D 錨點+最後更新欄位修正|小結 ITEJ-0004
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決
-[?] infra-claude-md-modular|CLAUDE.md 模組化|討論過但暫緩
+[x] infra-claude-md-modular|CLAUDE.md 拆分|JDNE 已完成（記錄格式搬到 rules/，主檔精簡到 208 行），待用戶驗收
 [?] plan-notion-mcp-status|Notion MCP 定位|JDNE 說暫緩，CLAUDE.md 寫待建，不一致
