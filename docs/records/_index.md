@@ -52,3 +52,4 @@ feat-pricing-refactor|待驗收|報價計算模組重構：邏輯抽到 lib/pric
 feat-assembly-refactor|待驗收|提案組裝引擎重構：邏輯抽到 lib/assembly/（6 個純函式），31 個測試，頁面從 724→~620 行|@op:20260222-ITEJ#1730|2026-02-22
 infra-new-machine-setup|待驗收|新機器一鍵設定：互動腳本+.mcp.json.example+論壇協調，A44T/ITEJ 已回覆|@op:20260222-JDNE#1730|2026-02-22
 infra-machine-profile|進行中|三台機器側寫（JDNE 設計深/A44T 交付快/ITEJ 工具鏈穩），協作策略待跨機器討論|@op:20260222-JDNE#1800|2026-02-22
+infra-quality-tiers|待驗收|三級品質制度（自主/展示/先討論），三台機器論壇共識後寫入 CLAUDE.md|@op:20260222-A44T#1840|2026-02-22
