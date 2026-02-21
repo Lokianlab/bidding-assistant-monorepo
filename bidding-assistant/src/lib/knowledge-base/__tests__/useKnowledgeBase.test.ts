@@ -4,6 +4,7 @@ import { useKnowledgeBase } from "../useKnowledgeBase";
 import { KB_STORAGE_KEY, KB_DATA_VERSION, EMPTY_KB_DATA } from "../constants";
 import type {
   KBEntry00A,
+  KBEntry00B,
   KBEntry00E,
   KnowledgeBaseData,
 } from "../types";
@@ -22,6 +23,26 @@ function makeEntry00A(overrides: Partial<KBEntry00A> = {}): KBEntry00A {
     experiences: [],
     projects: [],
     additionalCapabilities: "",
+    entryStatus: "active",
+    updatedAt: "2024-01-01",
+    ...overrides,
+  };
+}
+
+function makeEntry00B(overrides: Partial<KBEntry00B> = {}): KBEntry00B {
+  return {
+    id: "P-2025-001",
+    projectName: "Test Project",
+    client: "測試機關",
+    contractAmount: "1,000,000",
+    period: "民國 114 年 3 月至 8 月",
+    entity: "大員洛川股份有限公司",
+    role: "得標廠商（與機關簽約）",
+    completionStatus: "已驗收結案",
+    teamMembers: "計畫主持人：Test（M-001）",
+    workItems: [{ item: "開幕式統籌", description: "具體描述" }],
+    outcomes: "量化成果",
+    documentLinks: "",
     entryStatus: "active",
     updatedAt: "2024-01-01",
     ...overrides,
@@ -168,6 +189,31 @@ describe("useKnowledgeBase — add", () => {
     expect(result.current.data["00A"]).toHaveLength(2);
     expect(result.current.data["00A"][0].name).toBe("First");
     expect(result.current.data["00A"][1].name).toBe("Second");
+  });
+});
+
+// ── 00B smoke test (add + update + delete) ──────────────────
+
+describe("useKnowledgeBase — 00B smoke test", () => {
+  it("add → update → delete cycle for 00B", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00B(makeEntry00B({ id: "P-2025-001", projectName: "Original" }));
+    });
+    expect(result.current.data["00B"]).toHaveLength(1);
+    expect(result.current.data["00B"][0].projectName).toBe("Original");
+
+    act(() => {
+      result.current.updateEntry00B("P-2025-001", { projectName: "Updated" });
+    });
+    expect(result.current.data["00B"][0].projectName).toBe("Updated");
+    expect(result.current.data["00B"][0].client).toBe("測試機關");
+
+    act(() => {
+      result.current.deleteEntry("00B", "P-2025-001");
+    });
+    expect(result.current.data["00B"]).toHaveLength(0);
   });
 });
 
