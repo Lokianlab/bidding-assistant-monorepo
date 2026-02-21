@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-2130|JDNE
+SNAPSHOT|20260221-2150|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -14,16 +14,17 @@ SNAPSHOT|20260222-2130|JDNE
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決，Layer 3 討論中斷
 [v] plan-conclusion-layer|結論層設計|ITEJ 已實作（infra-staging-upgrade），待用戶驗收
 [v] infra-claude-md-modular|CLAUDE.md 拆分|記錄格式搬到 .claude/rules/，CLAUDE.md 479→376 行，待用戶驗收
-[v] infra-methodology-v2|方法論 v2 系統整合|全部落地：CLAUDE.md 精簡 + rules + Skill + 獎懲回饋 + 正負向強化指令 + /順便說一下 溝通通道，待用戶驗收
+[v] infra-methodology-v2|方法論 v2 系統整合|全部落地，待用戶驗收
 [v] method-observation-capture|AI觀察捕捉框架|v2 系統已定義 obs- 前綴約定，待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建，待推入技術選型文件
-[v] infra-meta-methodology|元方法論框架建構|機器可做的評估全部完成（P1-P5逐檔+系統交叉比對+效度自證），待用戶驗收
+[v] infra-meta-methodology|元方法論框架建構|機器可做的評估全部完成，待用戶驗收
 [v] feat-pcc-web|情報模組改善：機關情報內嵌+四tab跨tab導航完成|build零錯誤、758測試全過，待用戶驗收
 [?] infra-backup-mechanism|備份/回復安全節點|用戶提出，範圍待釐清
-[?] infra-cross-machine-consult|機器間互相諮詢機制|ITEJ 已建論壇機制（forum/），可能已解決。待用戶驗收論壇後確認
-[v] infra-new-machine-setup|新機器加入流程自動化|bat + bash 腳本 + 協作入門指南重寫（防雷型自助式），待用戶驗收
-[v] infra-machine-profile|三台機器側寫與協作策略|三方共識：方向 1（輕量自評 1-3 分）+ 方向 4（/回報時刷新），待用戶驗收
+[?] infra-cross-machine-consult|機器間互相諮詢機制|ITEJ 已建論壇機制（forum/），可能已解決
+[v] infra-new-machine-setup|新機器加入流程自動化|bat + bash 腳本 + 協作入門指南重寫，待用戶驗收
+[v] infra-machine-profile|三台機器側寫與協作策略|三方共識，待用戶驗收
 [v] infra-forum-upgrade|論壇制度升級|討論串機制+共識協議+類型拆分+索引，待用戶驗收
-[ ] infra-user-auth|用戶驗證系統|註冊流程重寫（四條紅線）、顯示規則定案、Saint 已移除、安全清理完成、臨時機器碼提案論壇討論中
-[ ] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE)已設定，.machine-nickname（gitignored），顯示規則：{暱稱}({機器碼})
-[?] infra-temp-machine-code|臨時機器碼制度|論壇 discuss 已發（~前綴+24小時+權限差異），3O5L+Z1FV 已回覆同意，缺 ITEJ+A44T+AINL
+[ ] infra-user-auth|用戶驗證系統|註冊流程重寫、顯示規則定案、Saint 已移除、安全清理完成
+[ ] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE)已設定
+[?] infra-temp-machine-code|臨時機器碼制度|論壇 discuss 進行中，缺 ITEJ+A44T 回覆
+[ ] infra-efficiency-calibration|效率校準|/質問 directive 已發，等各機器 reply 提出改善措施
