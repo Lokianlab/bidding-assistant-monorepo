@@ -142,6 +142,15 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
     defaultEnabled: true,
     dependencies: ["intelligence", "knowledge-base"],
   },
+  {
+    id: "forum",
+    name: "機器論壇",
+    description: "查看 AI 機器之間的討論、共識、審查意見，追蹤協作狀態",
+    icon: "💬",
+    routes: ["/forum"],
+    section: "tools",
+    defaultEnabled: true,
+  },
 ];
 
 /** 從 settings 的 featureToggles 取得最終的啟用狀態 */
