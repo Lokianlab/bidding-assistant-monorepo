@@ -85,3 +85,37 @@ export type PCCAction =
   | "getTenderDetail"
   | "listByUnit"
   | "getInfo";
+
+// ====== 競爭分析型別 ======
+
+/** 競爭對手統計 */
+export interface CompetitorStats {
+  id: string;          // 統編
+  name: string;        // 公司名稱
+  encounters: number;  // 撞案次數（同案出現）
+  theirWins: number;   // 對手得標次數
+  myWins: number;      // 我方得標次數
+  agencies: string[];  // 常碰的機關（去重）
+}
+
+/** 機關統計 */
+export interface AgencyStats {
+  unitId: string;
+  unitName: string;
+  totalCases: number;    // 該機關出現次數
+  myWins: number;        // 我方得標
+  myLosses: number;      // 我方未得標
+  avgBidders: number;    // 平均投標家數
+}
+
+/** 自我分析總覽 */
+export interface SelfAnalysis {
+  totalRecords: number;     // 全部紀錄筆數
+  awardRecords: number;     // 決標公告筆數
+  wins: number;
+  losses: number;
+  winRate: number;
+  competitors: CompetitorStats[];  // 按撞案次數排序
+  agencies: AgencyStats[];         // 按案件數排序
+  yearlyStats: { year: number; total: number; wins: number }[];
+}

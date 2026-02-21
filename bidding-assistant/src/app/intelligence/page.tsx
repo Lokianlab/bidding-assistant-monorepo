@@ -2,6 +2,8 @@
 
 import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { PCCSearchPanel } from "@/components/pcc/PCCSearchPanel";
+import { CompetitorAnalysis } from "@/components/pcc/CompetitorAnalysis";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function IntelligencePage() {
   return (
@@ -17,8 +19,21 @@ export default function IntelligencePage() {
         </div>
       </div>
 
-      {/* 搜尋面板 */}
-      <PCCSearchPanel />
+      {/* 主要功能 Tab */}
+      <Tabs defaultValue="search">
+        <TabsList>
+          <TabsTrigger value="search">案件搜尋</TabsTrigger>
+          <TabsTrigger value="analysis">競爭分析</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="search" className="mt-4">
+          <PCCSearchPanel />
+        </TabsContent>
+
+        <TabsContent value="analysis" className="mt-4">
+          <CompetitorAnalysis />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
