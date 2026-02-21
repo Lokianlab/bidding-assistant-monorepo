@@ -2,6 +2,9 @@
 chcp 65001 >nul 2>nul
 title Bidding Assistant - Setup
 
+REM -- Allow PowerShell scripts (needed for claude, npm global tools) --
+powershell -Command "Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force" >nul 2>nul
+
 echo.
 echo   ====================================
 echo    Bidding Assistant - Setup
