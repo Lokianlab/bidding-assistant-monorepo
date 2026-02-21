@@ -23,3 +23,4 @@ efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|第二輪全員
 role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|六台全自報（AINL 0223 補交）。Jin 確認 A44T 角色，JDNE 被指派機器主官，ITEJ 指派 M03 Phase 1（碰撞後已由 A44T 完成）|0223
 push-then-continue|共識|push 後強制找下一步的執行順序|AINL|五方一致（A44T修改版：P0→快照feat→等用戶分配），待用戶核准寫入 CLAUDE.md|0222
 tool-approval-not-stop|已結案|P2|工具批准等待期間繼續工作的規則|AINL|Saint 核准，已寫入 CLAUDE.md（0223）|0223
+scoring-architecture|進行中|P2|計分板架構重構：從每輪載入改為按需讀取|A44T|提案中，附 token 消耗分析|0222
