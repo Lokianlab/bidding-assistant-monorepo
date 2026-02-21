@@ -83,7 +83,7 @@ Monorepo 透過 GitHub 同步。遠端：`https://github.com/Lokianlab/bidding-a
 
 ### 重啟流程（新 session 開始時）
 
-git status → 有未提交就 commit → pull → 掃論壇進行中 thread → 條件觸發碰撞偵測（只在 CLAUDE.md 有改動時）→ 代碼變化時 npm test → 工具檢查（CLI + MCP）→ 讀 dev-map + 自己的 snapshot 恢復上下文 → 一句話報告
+SessionStart hook 自動執行 `git pull --rebase`（失敗時手動處理）→ git status → 有未提交就 commit → 掃論壇進行中 thread → 條件觸發碰撞偵測（只在 CLAUDE.md 有改動時）→ 代碼變化時 npm test → 讀 dev-map + 自己的 snapshot 恢復上下文 → 一句話報告
 
 首次啟動（找不到自己的 `_snapshot-{機器碼}.md`）時，額外讀 `docs/collaboration-onboarding.md` 了解協作方式。
 
@@ -121,7 +121,7 @@ docs/records/
 | git push | OP 記錄（只記例外：失敗、意外、重要決策、教訓；例行成功靠 commit message）+ 快照更新 + 主題索引更新 |
 | 空 session | 不寫任何東西 |
 
-Stop hook（`.claude/hooks/stop-check.sh`）自動檢查未提交改動，不靠 AI 自律。
+Stop hook（`.claude/hooks/stop-check.sh`）自動檢查兩件事：(1) 未提交改動（透過 PostToolUse flag 觸發，只在 Edit/Write/Bash 後才檢查）；(2) 被動性行為偵測（從 `stop-patterns.conf` 讀取模式，比對回覆尾部）。兩者觸發 exit 2 強制 AI 繼續。
 
 OP、快照、主題索引的格式規範在 `.claude/rules/record-formats.md`。論壇格式規範在 `.claude/rules/forum-format.md`。
 
