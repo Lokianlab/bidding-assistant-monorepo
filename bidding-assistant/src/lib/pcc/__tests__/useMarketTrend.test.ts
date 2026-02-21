@@ -186,6 +186,38 @@ describe("useMarketTrend — run", () => {
   });
 });
 
+// ── Edge cases ────────────────────────────────────────────
+
+describe("useMarketTrend — edge cases", () => {
+  it("skips whitespace-only keyword", async () => {
+    const { result } = renderHook(() => useMarketTrend());
+
+    await act(async () => {
+      await result.current.run("   ");
+    });
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result.current.loading).toBe(false);
+  });
+
+  it("handles mid-pagination failure", async () => {
+    // Page 1 succeeds, page 2 fails
+    mockFetch
+      .mockResolvedValueOnce(makeSearchResponse([makeRecord("P1")], 3, 1))
+      .mockRejectedValueOnce(new Error("Page 2 timeout"));
+
+    const { result } = renderHook(() => useMarketTrend());
+
+    await act(async () => {
+      await result.current.run("斷頁");
+    });
+
+    expect(result.current.error).toBe("Page 2 timeout");
+    expect(result.current.data).toBeNull();
+    expect(mockCacheSet).not.toHaveBeenCalled();
+  });
+});
+
 // ── Cache hit ──────────────────────────────────────────────
 
 describe("useMarketTrend — cache", () => {

@@ -225,6 +225,68 @@ describe("useCommitteeAnalysis — cache", () => {
   });
 });
 
+// ── Edge cases ────────────────────────────────────────────
+
+describe("useCommitteeAnalysis — edge cases", () => {
+  it("slices awards to MAX_DETAILS (30)", async () => {
+    // 35 決標公告 records — hook should only fetch details for first 30
+    const records = Array.from({ length: 35 }, (_, i) =>
+      makeRecord("決標公告", `J${String(i + 1).padStart(3, "0")}`),
+    );
+    mockFetch
+      // listByUnit returns 35 records
+      .mockResolvedValueOnce({ records });
+
+    // Mock 30 detail responses (only first 30 should be fetched)
+    for (let i = 0; i < 30; i++) {
+      mockFetch.mockResolvedValueOnce(makeDetail([]));
+    }
+
+    mockAnalyze.mockReturnValueOnce(makeAnalysis({ totalTenders: 0 }));
+
+    const { result } = renderHook(() => useCommitteeAnalysis());
+
+    await act(async () => {
+      await result.current.run("U001", "Agency");
+    });
+
+    // 1 listByUnit + 30 detail fetches = 31 total
+    expect(mockFetch).toHaveBeenCalledTimes(31);
+  });
+
+  it("does NOT cache empty results (0 awards)", async () => {
+    mockFetch.mockResolvedValueOnce({ records: [] });
+
+    const { result } = renderHook(() => useCommitteeAnalysis());
+
+    await act(async () => {
+      await result.current.run("U001", "Agency");
+    });
+
+    expect(result.current.data).toEqual({ totalMembers: 0, totalTenders: 0, frequentMembers: [] });
+    expect(mockCacheSet).not.toHaveBeenCalled();
+  });
+
+  it("caches result after successful analysis", async () => {
+    mockFetch
+      .mockResolvedValueOnce({ records: [makeRecord("決標公告")] })
+      .mockResolvedValueOnce(makeDetail([
+        { name: "王委員", status: "出席", sequence: "1", attendance: "1/1", experience: "教授" },
+      ]));
+
+    const analysis = makeAnalysis();
+    mockAnalyze.mockReturnValueOnce(analysis);
+
+    const { result } = renderHook(() => useCommitteeAnalysis());
+
+    await act(async () => {
+      await result.current.run("U001", "Agency");
+    });
+
+    expect(mockCacheSet).toHaveBeenCalledWith("analysis", "committee:U001", analysis);
+  });
+});
+
 // ── Error handling ─────────────────────────────────────────
 
 describe("useCommitteeAnalysis — error", () => {
@@ -240,5 +302,17 @@ describe("useCommitteeAnalysis — error", () => {
     expect(result.current.error).toBe("API error");
     expect(result.current.data).toBeNull();
     expect(result.current.loading).toBe(false);
+  });
+
+  it("sets generic error for non-Error throws", async () => {
+    mockFetch.mockRejectedValueOnce("string error");
+
+    const { result } = renderHook(() => useCommitteeAnalysis());
+
+    await act(async () => {
+      await result.current.run("U001", "Agency");
+    });
+
+    expect(result.current.error).toBe("分析失敗");
   });
 });

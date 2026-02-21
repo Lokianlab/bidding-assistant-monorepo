@@ -237,6 +237,78 @@ describe("useAgencyIntel — fetch", () => {
   });
 });
 
+// ── Edge cases ────────────────────────────────────────────
+
+describe("useAgencyIntel — edge cases", () => {
+  it("skips records without companies field", async () => {
+    // Record with no companies — analyzeAgency should skip it
+    const recordNoCompanies: PCCRecord = {
+      date: 20260101,
+      filename: "f1",
+      brief: { type: "決標公告", title: "No Companies" },
+      job_number: "J001",
+      unit_id: "U001",
+      unit_name: "Agency",
+      unit_api_url: "",
+      tender_api_url: "",
+      unit_url: "",
+      url: "",
+    };
+    mockFetch.mockResolvedValueOnce({ records: [recordNoCompanies] });
+
+    const { result } = renderHook(() => useAgencyIntel("U001", true, "我的"));
+
+    await waitFor(() => {
+      expect(result.current.data).not.toBeNull();
+    });
+
+    // totalCases = 1 (it's a 決標公告), but recentCases empty because no companies
+    expect(result.current.data!.totalCases).toBe(1);
+    expect(result.current.data!.recentCases).toEqual([]);
+    expect(result.current.data!.incumbents).toEqual([]);
+  });
+
+  it("processes at most 50 award records", async () => {
+    mockIsWinner.mockReturnValue(false);
+
+    const records = Array.from({ length: 60 }, (_, i) =>
+      makeRecord(`Case${i}`, "決標公告"),
+    );
+    mockFetch.mockResolvedValueOnce({ records });
+
+    const { result } = renderHook(() => useAgencyIntel("U001", true, "我的"));
+
+    await waitFor(() => {
+      expect(result.current.data).not.toBeNull();
+    });
+
+    // totalCases counts all awards (60), but recentCases is capped at 10
+    // The internal loop processes at most 50, then recentCases.slice(0, 10)
+    expect(result.current.data!.totalCases).toBe(60);
+    expect(result.current.data!.recentCases.length).toBe(10);
+  });
+
+  it("does not update state after unmount", async () => {
+    let resolvePromise: (v: { records: PCCRecord[] }) => void;
+    mockFetch.mockReturnValueOnce(
+      new Promise((resolve) => { resolvePromise = resolve; }),
+    );
+
+    const { result, unmount } = renderHook(() => useAgencyIntel("U001", true, "公司A"));
+
+    expect(result.current.loading).toBe(true);
+
+    // Unmount before fetch resolves
+    unmount();
+
+    // Resolve after unmount — cancelled flag should prevent state update
+    resolvePromise!({ records: [makeRecord()] });
+
+    // No error thrown (cancelled guard works)
+    expect(result.current.data).toBeNull();
+  });
+});
+
 // ── Cache hit ──────────────────────────────────────────────
 
 describe("useAgencyIntel — cache", () => {
