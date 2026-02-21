@@ -23,7 +23,7 @@ no-closing-question|已結案|-|禁止以問句結尾收工|AINL|||0223
 temp-machine-code|共識|-|機器碼分正式/臨時（24小時時效）|JDNE|JDNE,A44T,Z1FV||0222
 efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|||0222
 role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|||0223
-push-then-continue|共識|-|push 後強制找下一步的執行順序|AINL|AINL,Z1FV,ITEJ,A44T,JDNE||0223
+push-then-continue|進行中|-|push 後強制找下一步的執行順序|AINL|AINL,Z1FV,ITEJ,A44T,JDNE||0223
 tool-approval-not-stop|已結案|P2|工具批准等待期間繼續工作的規則|AINL|||0223
 scoring-architecture|進行中|P2|計分板架構重構：從每輪載入改為按需讀取|A44T|A44T,JDNE,ITEJ,Z1FV||0223
 rebase-standard|進行中|P2|git pull --rebase 標準化|Z1FV|Z1FV,JDNE,ITEJ,A44T||0223
