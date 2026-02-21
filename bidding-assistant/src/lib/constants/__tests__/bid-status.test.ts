@@ -235,7 +235,7 @@ describe("PERFORMANCE_STATUS_COLUMNS", () => {
   });
 
   it("matches REVIEW_STATUSES exactly", () => {
-    const perfSet = new Set(PERFORMANCE_STATUS_COLUMNS);
+    const perfSet = new Set<string>(PERFORMANCE_STATUS_COLUMNS);
     expect(perfSet.size).toBe(REVIEW_STATUSES.size);
     for (const s of REVIEW_STATUSES) {
       expect(perfSet.has(s)).toBe(true);
