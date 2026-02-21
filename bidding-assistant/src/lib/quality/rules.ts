@@ -120,6 +120,42 @@ export function checkIronLaws(
     }
   }
 
+  if (flags.budgetConsistency) {
+    // 偵測金額相關詞彙出現多次，提醒人工確認金額一致
+    const amounts = text.match(/[\d,]+\s*[萬億元]|預算|經費|報價|費用/g);
+    if (amounts && amounts.length > 3) {
+      results.push({
+        type: "info",
+        rule: "預算一致性",
+        message: `文件中出現 ${amounts.length} 處金額或預算相關描述，請確認各處金額一致`,
+      });
+    }
+  }
+
+  if (flags.teamConsistency) {
+    // 偵測人員角色描述出現多次，提醒人工確認人力配置一致
+    const roles = text.match(/主持人|協同主持人|專任助理|研究員|工程師|顧問|計畫經理/g);
+    if (roles && roles.length > 3) {
+      results.push({
+        type: "info",
+        rule: "人力一致性",
+        message: `文件中出現 ${roles.length} 處人員角色描述，請確認組織架構章與人力配置表一致`,
+      });
+    }
+  }
+
+  if (flags.scopeConsistency) {
+    // 偵測工作範圍相關描述出現多次，提醒各章節範圍一致
+    const scopes = text.match(/工作範圍|服務範圍|辦理事項|工作項目|服務項目|工作內容/g);
+    if (scopes && scopes.length > 2) {
+      results.push({
+        type: "info",
+        rule: "範圍一致性",
+        message: `文件中出現 ${scopes.length} 處工作範圍描述，請確認各章節的範圍界定一致`,
+      });
+    }
+  }
+
   return results;
 }
 
