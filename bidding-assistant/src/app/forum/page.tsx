@@ -9,6 +9,7 @@ import { ThreadDetail } from "@/components/forum/ThreadDetail";
 import { ComposePost } from "@/components/forum/ComposePost";
 import { PendingApprovals } from "@/components/forum/PendingApprovals";
 import { Button } from "@/components/ui/button";
+import { formatTimestamp } from "@/lib/forum/helpers";
 import type { ForumThread, ForumPost } from "@/lib/forum/types";
 
 const DEFAULT_FILTERS: ForumFilterState = {
@@ -199,7 +200,7 @@ export default function ForumPage() {
           threadId={selectedThread.id}
           threadTitle={selectedThread.title}
           replyToRef={replyingTo ? `${replyingTo.machineCode}:${replyingTo.timestamp}` : undefined}
-          replyToPreview={replyingTo ? `${replyingTo.machineCode} ${replyingTo.timestamp}：${replyingTo.content.slice(0, 60)}...` : undefined}
+          replyToPreview={replyingTo ? `${replyingTo.machineCode} ${formatTimestamp(replyingTo.timestamp)}：${replyingTo.content.slice(0, 60)}...` : undefined}
           onClearReplyTo={() => setReplyingTo(null)}
           onPosted={() => {
             refresh();
@@ -272,3 +273,4 @@ export default function ForumPage() {
     </div>
   );
 }
+

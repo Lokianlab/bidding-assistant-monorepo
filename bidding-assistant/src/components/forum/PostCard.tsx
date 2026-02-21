@@ -78,6 +78,14 @@ export function PostCard({ post, onReply }: PostCardProps) {
         <span className="text-xs text-muted-foreground ml-auto">
           {formatTimestamp(post.timestamp)}
         </span>
+        {onReply && (
+          <button
+            onClick={() => onReply(post)}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors px-1.5 py-0.5 rounded hover:bg-muted"
+          >
+            回覆
+          </button>
+        )}
       </div>
 
       {/* Ref 引用 */}
@@ -91,16 +99,6 @@ export function PostCard({ post, onReply }: PostCardProps) {
       <div className="prose prose-sm max-w-none dark:prose-invert">
         <MarkdownContent>{post.content}</MarkdownContent>
       </div>
-
-      {/* 回覆按鈕 */}
-      {onReply && (
-        <button
-          onClick={() => onReply(post)}
-          className="mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          ↩ 回覆這則
-        </button>
-      )}
     </div>
   );
 }

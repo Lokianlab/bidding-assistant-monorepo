@@ -108,7 +108,8 @@ export async function GET() {
  *
  * Body: { content: string, threadId?: string, threadTitle?: string,
  *         type?: "discuss" | "reply", priority?: string,
- *         updateStatus?: "進行中" | "共識" | "已結案" | "過期" }
+ *         updateStatus?: "進行中" | "共識" | "已結案" | "過期",
+ *         ref?: string }
  */
 export async function POST(request: NextRequest) {
   try {

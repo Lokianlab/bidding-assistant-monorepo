@@ -123,13 +123,12 @@ export function ComposePost({
 
       {/* 回覆特定帖子的引用預覽 */}
       {replyToRef && replyToPreview && (
-        <div className="flex items-center gap-2 rounded-md bg-muted/50 border px-3 py-2 text-xs">
-          <span className="text-muted-foreground">↩ 回覆</span>
-          <span className="font-medium truncate flex-1">{replyToPreview}</span>
+        <div className="flex items-center gap-2 text-sm bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded px-3 py-1.5">
+          <span className="text-blue-700 dark:text-blue-300">↩ {replyToPreview}</span>
           {onClearReplyTo && (
             <button
               onClick={onClearReplyTo}
-              className="text-muted-foreground hover:text-foreground shrink-0"
+              className="text-blue-400 hover:text-blue-600 ml-auto"
             >
               ✕
             </button>
