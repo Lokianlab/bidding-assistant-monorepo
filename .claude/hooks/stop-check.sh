@@ -11,6 +11,11 @@ fi
 
 cd "$CLAUDE_PROJECT_DIR" || exit 0
 
+# 「做完就停」偵測：AI 回覆含有等待用戶的語句 → 軟性提醒（不阻斷）
+if echo "$INPUT" | grep -qE '等用戶|等待指示|等你下一步|下一步指示|無可自主推進'; then
+  echo "偵測到「等用戶」語句。你在等什麼？去找事做（/去論壇看看），不要停下來。" >&2
+fi
+
 # 檢查所有 tracked 檔案的未提交改動
 STAGED=$(git diff --cached --name-only 2>/dev/null)
 UNSTAGED=$(git diff --name-only 2>/dev/null)
