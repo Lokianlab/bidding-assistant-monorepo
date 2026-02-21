@@ -19,4 +19,4 @@ governance|共識|P2|團隊治理機制（共識/決策/分工/權重/下線）|
 multi-user-governance|進行中|P2|多用戶治理架構|JDNE|Saint 註冊申請已送出（用戶名+雜湊+email），指名 JDNE 轉交 Jin 審核|0222
 no-closing-question|已結案|禁止以問句結尾收工|AINL|用戶核准，已寫入 CLAUDE.md|0223
 temp-machine-code|共識|機器碼分正式/臨時（24小時時效）|JDNE|五台一致同意（~前綴+24hr生成時算+過期歸檔不刪+臨時不能審查），待實作|0223
-efficiency-calibration|進行中|P2|效率校準：六台機器效率優化|3O5L|ITEJ 已回覆 + 3O5L 發效益驗證提案（根因：耦合太高、產品比例低），6 項改善建議，等各機器討論|0221
+efficiency-calibration|進行中|P2|效率校準：全機器檢討原因+對焦+改進|JDNE|ITEJ+AINL+3O5L 已回覆，3O5L 附效益驗證數據+6 項改善建議|0221
