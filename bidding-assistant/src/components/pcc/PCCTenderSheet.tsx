@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Sheet,
   SheetContent,
@@ -18,6 +18,7 @@ import {
   parseCompanyRoles,
 } from "@/lib/pcc/helpers";
 import { useAgencyIntel } from "@/lib/pcc/useAgencyIntel";
+import { generateScoutPrompt, buildScoutInput } from "@/lib/pcc/scout-report";
 import type {
   PCCRecord,
   PCCTenderDetail,
@@ -224,8 +225,14 @@ export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany }: PC
           <Separator />
           <AgencyIntelSection intel={agencyIntel} unitName={record.unit_name} />
 
-          {/* PCC 原始連結 */}
+          {/* P 偵察報告 + PCC 原始連結 */}
           <Separator />
+          <ScoutReportButton
+            record={record}
+            summary={summary}
+            agencyIntel={agencyIntel.data}
+            companies={companies}
+          />
           <div className="flex gap-2">
             <a
               href={record.url}
@@ -340,6 +347,52 @@ function AgencyIntelSection({
         </details>
       )}
     </section>
+  );
+}
+
+function ScoutReportButton({
+  record,
+  summary,
+  agencyIntel,
+  companies,
+}: {
+  record: PCCRecord;
+  summary: TenderSummary | null;
+  agencyIntel: { totalCases: number; incumbents: { name: string; wins: number }[]; myHistory: { title: string; date: number; won: boolean }[] } | null;
+  companies: { name: string; id?: string; roles: ("投標" | "得標" | "未得標")[] }[];
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(() => {
+    const competitorNames = companies
+      .filter((c) => c.roles.includes("得標") || c.roles.includes("未得標"))
+      .map((c) => c.name.replace(/\s*\(.*\)\s*$/, "").trim());
+
+    const input = buildScoutInput({
+      title: record.brief.title,
+      agency: record.unit_name,
+      jobNumber: record.job_number,
+      summary,
+      agencyIntel,
+      competitorNames,
+    });
+
+    const prompt = generateScoutPrompt(input);
+    navigator.clipboard.writeText(prompt).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [record, summary, agencyIntel, companies]);
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      className="w-full text-xs"
+      onClick={handleCopy}
+    >
+      {copied ? "已複製！貼到 Perplexity 即可" : "複製 P 偵察 Prompt"}
+    </Button>
   );
 }
 
