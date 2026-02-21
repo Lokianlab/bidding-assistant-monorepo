@@ -7,7 +7,7 @@ import {
   computeActiveFiles,
   assembleContent,
 } from "../helpers";
-import { RULE_MAP, PROMPT_FILES } from "@/data/config/prompt-assembly";
+import { RULE_MAP } from "@/data/config/prompt-assembly";
 import type { FileListItem } from "../types";
 
 // ====== estimateTokens ======
