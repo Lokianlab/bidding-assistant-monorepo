@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -8,19 +9,38 @@ import { PostCard } from "./PostCard";
 import {
   THREAD_STATUS_CONFIG,
   PRIORITY_CONFIG,
+  USER_CODE,
 } from "@/lib/forum/constants";
 import type { ForumThread } from "@/lib/forum/types";
 
 interface ThreadDetailProps {
   thread: ForumThread;
   onBack: () => void;
+  onVote?: (threadId: string, vote: "agree" | "disagree" | "withdraw") => Promise<void>;
 }
 
-export function ThreadDetail({ thread, onBack }: ThreadDetailProps) {
+export function ThreadDetail({ thread, onBack, onVote }: ThreadDetailProps) {
+  const [voting, setVoting] = useState(false);
   const statusConfig = THREAD_STATUS_CONFIG[thread.status];
   const priorityConfig = thread.priority
     ? PRIORITY_CONFIG[thread.priority]
     : null;
+
+  const myVote = thread.agree.includes(USER_CODE)
+    ? "agree"
+    : thread.disagree.includes(USER_CODE)
+      ? "disagree"
+      : null;
+
+  const handleVote = async (vote: "agree" | "disagree" | "withdraw") => {
+    if (!onVote || voting) return;
+    setVoting(true);
+    try {
+      await onVote(thread.id, vote);
+    } finally {
+      setVoting(false);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -56,6 +76,87 @@ export function ThreadDetail({ thread, onBack }: ThreadDetailProps) {
           </div>
         </div>
       </div>
+
+      {/* 投票區塊 */}
+      {(thread.status === "進行中" || thread.status === "共識") && onVote && (
+        <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+          {/* 投票狀態 */}
+          <div className="flex items-center gap-4">
+            {thread.agree.length > 0 && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm text-green-600 font-medium">同意</span>
+                <div className="flex items-center gap-1">
+                  {thread.agree.map((code) => (
+                    <MachineAvatar key={code} code={code} />
+                  ))}
+                </div>
+              </div>
+            )}
+            {thread.disagree.length > 0 && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm text-red-600 font-medium">反對</span>
+                <div className="flex items-center gap-1">
+                  {thread.disagree.map((code) => (
+                    <MachineAvatar key={code} code={code} />
+                  ))}
+                </div>
+              </div>
+            )}
+            {thread.agree.length === 0 && thread.disagree.length === 0 && (
+              <span className="text-sm text-muted-foreground">尚無投票</span>
+            )}
+          </div>
+
+          {/* 投票按鈕 */}
+          <div className="flex items-center gap-2">
+            {myVote === "agree" ? (
+              <>
+                <Badge className="bg-green-100 text-green-800">你已投同意</Badge>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={voting}
+                  onClick={() => handleVote("withdraw")}
+                >
+                  撤回
+                </Button>
+              </>
+            ) : myVote === "disagree" ? (
+              <>
+                <Badge className="bg-red-100 text-red-800">你已投反對</Badge>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={voting}
+                  onClick={() => handleVote("withdraw")}
+                >
+                  撤回
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  disabled={voting}
+                  onClick={() => handleVote("agree")}
+                >
+                  同意
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-red-300 text-red-700 hover:bg-red-50"
+                  disabled={voting}
+                  onClick={() => handleVote("disagree")}
+                >
+                  反對
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 帖子流：帖主在上，回覆依序排下 */}
       {thread.posts.length === 0 ? (

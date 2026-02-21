@@ -30,6 +30,8 @@ claude-md-boundary|已結案|CLAUDE.md 邊界|JDNE|用戶核准|0221`;
       initiator: "A44T",
       summary: "三方共識",
       lastUpdate: "0222",
+      agree: [],
+      disagree: [],
       posts: [],
     });
 
@@ -112,6 +114,47 @@ quality-tiers|共識|三級品質制度|A44T|摘要|0222
     const content = `quality-tiers|無效狀態|三級品質制度|A44T|摘要|0222`;
     const threads = parseThreadsIndex(content);
     expect(threads).toHaveLength(0);
+  });
+
+  it("解析 8 欄投票格式", () => {
+    const content = `forum-optimization|進行中|P0|論壇機制升級|ITEJ|JDNE,ITEJ,Z1FV|3O5L|0223
+decision-making|共識|P1|決策方式優化|ITEJ|||0223`;
+
+    const threads = parseThreadsIndex(content);
+    expect(threads).toHaveLength(2);
+
+    // 有投票的 thread
+    expect(threads[0].id).toBe("forum-optimization");
+    expect(threads[0].agree).toEqual(["JDNE", "ITEJ", "Z1FV"]);
+    expect(threads[0].disagree).toEqual(["3O5L"]);
+    expect(threads[0].lastUpdate).toBe("0223");
+    expect(threads[0].summary).toBe("");
+
+    // 空投票欄
+    expect(threads[1].agree).toEqual([]);
+    expect(threads[1].disagree).toEqual([]);
+  });
+
+  it("8 欄格式投票欄為 - 視為空", () => {
+    const content = `test-thread|進行中|P2|測試|-|-|-|0223`;
+
+    const threads = parseThreadsIndex(content);
+    expect(threads).toHaveLength(1);
+    expect(threads[0].agree).toEqual([]);
+    expect(threads[0].disagree).toEqual([]);
+  });
+
+  it("混合 6/7/8 欄格式", () => {
+    const content = `old-thread|共識|舊議題|A44T|摘要|0221
+mid-thread|已結案|P2|中期議題|JDNE|摘要|0222
+new-thread|進行中|P0|新議題|ITEJ|JDNE,Z1FV||0223`;
+
+    const threads = parseThreadsIndex(content);
+    expect(threads).toHaveLength(3);
+    expect(threads[0].agree).toEqual([]);  // 舊格式沒投票欄
+    expect(threads[1].agree).toEqual([]);  // 7 欄沒投票欄
+    expect(threads[2].agree).toEqual(["JDNE", "Z1FV"]);  // 8 欄有
+    expect(threads[2].disagree).toEqual([]);
   });
 
   it("空字串回傳空陣列", () => {
@@ -237,6 +280,8 @@ describe("attachPostsToThreads", () => {
         initiator: "A44T",
         summary: "測試摘要",
         lastUpdate: "0222",
+        agree: [],
+        disagree: [],
         posts: [],
       },
     ];
@@ -290,6 +335,8 @@ describe("attachPostsToThreads", () => {
         initiator: "",
         summary: "",
         lastUpdate: "",
+        agree: [],
+        disagree: [],
         posts: [],
       },
     ];
@@ -338,6 +385,8 @@ describe("sortThreads", () => {
     initiator: "",
     summary: "",
     lastUpdate,
+    agree: [] as string[],
+    disagree: [] as string[],
     posts: [],
   });
 
@@ -381,6 +430,8 @@ describe("computeForumStats", () => {
         initiator: "",
         summary: "",
         lastUpdate: "",
+        agree: [],
+        disagree: [],
         posts: [],
       },
       {
@@ -391,6 +442,8 @@ describe("computeForumStats", () => {
         initiator: "",
         summary: "",
         lastUpdate: "",
+        agree: [],
+        disagree: [],
         posts: [],
       },
       {
@@ -401,6 +454,8 @@ describe("computeForumStats", () => {
         initiator: "",
         summary: "",
         lastUpdate: "",
+        agree: [],
+        disagree: [],
         posts: [],
       },
     ];

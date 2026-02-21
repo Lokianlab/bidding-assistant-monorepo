@@ -24,12 +24,24 @@ const VALID_POST_TYPES = new Set<string>([
 ]);
 
 /**
+ * 把投票欄字串拆成機器碼陣列。
+ * 空字串、空白、"-" 都回傳空陣列。
+ * "JDNE,ITEJ" → ["JDNE", "ITEJ"]
+ */
+function parseVoteColumn(raw: string): string[] {
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "-") return [];
+  return trimmed.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+/**
  * 解析 _threads.md 的內容，回傳討論串陣列（不含帖子）。
  *
- * 支援三種格式：
+ * 支援四種格式：
  * - 6 欄（舊）：id|狀態|標題|發起人|摘要|日期
  * - 7 欄（舊+優先級）：id|狀態|P2|標題|發起人|摘要|日期
  * - 6 欄（新）：id|狀態|P2/-|標題|發起人|日期（無摘要）
+ * - 8 欄（投票）：id|狀態|P2/-|標題|發起人|同意|反對|日期
  */
 export function parseThreadsIndex(content: string): ForumThread[] {
   const lines = content.split("\n");
@@ -54,9 +66,19 @@ export function parseThreadsIndex(content: string): ForumThread[] {
       title: string,
       initiator: string,
       summary: string,
-      lastUpdate: string;
+      lastUpdate: string,
+      agree: string[] = [],
+      disagree: string[] = [];
 
-    if (isPriorityLike && parts.length >= 7) {
+    if (isPriorityLike && parts.length >= 8) {
+      // 8 欄投票格式：id|狀態|P2/-|標題|發起人|同意|反對|日期
+      [id, status, , title, initiator] = parts.map((p) => p.trim());
+      agree = parseVoteColumn(parts[5]);
+      disagree = parseVoteColumn(parts[6]);
+      lastUpdate = parts[7].trim();
+      priority = col2 === "-" ? null : (col2 as Priority);
+      summary = "";
+    } else if (isPriorityLike && parts.length >= 7) {
       // 7 欄舊格式 + 優先級：id|狀態|P2|標題|發起人|摘要|日期
       [id, status, , title, initiator, summary, lastUpdate] = parts.map((p) =>
         p.trim(),
@@ -87,6 +109,8 @@ export function parseThreadsIndex(content: string): ForumThread[] {
       initiator,
       summary,
       lastUpdate,
+      agree,
+      disagree,
       posts: [],
     });
   }

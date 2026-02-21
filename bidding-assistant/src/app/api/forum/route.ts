@@ -10,6 +10,7 @@ import {
   sortThreads,
   computeForumStats,
 } from "@/lib/forum/helpers";
+import { USER_CODE } from "@/lib/forum/constants";
 
 const execAsync = promisify(exec);
 
@@ -187,59 +188,154 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/** 解析投票欄字串 */
+function parseVoteStr(raw: string): string[] {
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "-") return [];
+  return trimmed.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
 /**
  * PATCH /api/forum
- * 更新討論串狀態（_threads.md）。
- * 用於 Jin 批准/退回後同步狀態。
+ * 兩種操作（根據 body 欄位決定）：
  *
- * Body: { threadId: string, status: "已結案" | "進行中" | "共識" | "過期" }
+ * 1. 狀態更新：{ threadId: string, status: "已結案" | "進行中" | "共識" | "過期" }
+ * 2. 投票：{ threadId: string, vote: "agree" | "disagree" | "withdraw" }
  */
 export async function PATCH(request: NextRequest) {
   try {
-    const { threadId, status } = (await request.json()) as {
+    const body = await request.json();
+    const { threadId, status, vote } = body as {
       threadId?: string;
       status?: string;
+      vote?: string;
     };
 
-    if (!threadId || !status) {
-      return NextResponse.json({ error: "缺少 threadId 或 status" }, { status: 400 });
-    }
-
-    const validStatuses = new Set(["進行中", "共識", "已結案", "過期"]);
-    if (!validStatuses.has(status)) {
-      return NextResponse.json({ error: "無效的狀態值" }, { status: 400 });
+    if (!threadId) {
+      return NextResponse.json({ error: "缺少 threadId" }, { status: 400 });
     }
 
     const forumDir = getForumDir();
     const threadsPath = path.join(forumDir, "_threads.md");
     const content = await fs.readFile(threadsPath, "utf-8");
-
-    // 找到對應的 thread 行並更新狀態（第二個 | 分隔的欄位）
     const lines = content.split("\n");
-    let updated = false;
-    const newLines = lines.map((line) => {
-      const parts = line.split("|");
-      if (parts.length >= 2 && parts[0].trim() === threadId) {
-        parts[1] = status;
-        updated = true;
-        return parts.join("|");
-      }
-      return line;
-    });
 
-    if (!updated) {
-      return NextResponse.json({ error: `找不到 thread: ${threadId}` }, { status: 404 });
+    // 操作 1：狀態更新
+    if (status) {
+      const validStatuses = new Set(["進行中", "共識", "已結案", "過期"]);
+      if (!validStatuses.has(status)) {
+        return NextResponse.json({ error: "無效的狀態值" }, { status: 400 });
+      }
+
+      let updated = false;
+      const newLines = lines.map((line) => {
+        const parts = line.split("|");
+        if (parts.length >= 2 && parts[0].trim() === threadId) {
+          parts[1] = status;
+          updated = true;
+          return parts.join("|");
+        }
+        return line;
+      });
+
+      if (!updated) {
+        return NextResponse.json({ error: `找不到 thread: ${threadId}` }, { status: 404 });
+      }
+
+      await fs.writeFile(threadsPath, newLines.join("\n"), "utf-8");
+
+      const commitMsg = `[admin] Jin 更新 ${threadId} 狀態 → ${status}`;
+      const { synced, error: syncError } = await gitSyncForumPost(commitMsg);
+
+      return NextResponse.json({ success: true, synced, syncError: syncError ?? null });
     }
 
-    await fs.writeFile(threadsPath, newLines.join("\n"), "utf-8");
+    // 操作 2：投票
+    if (vote) {
+      if (!["agree", "disagree", "withdraw"].includes(vote)) {
+        return NextResponse.json(
+          { error: "vote 必須是 agree、disagree 或 withdraw" },
+          { status: 400 },
+        );
+      }
 
-    // 同步到 git
-    const commitMsg = `[admin] Jin 更新 ${threadId} 狀態 → ${status}`;
-    const { synced, error: syncError } = await gitSyncForumPost(commitMsg);
+      let found = false;
+      const updatedLines = lines.map((line) => {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith(">")) {
+          return line;
+        }
 
-    return NextResponse.json({ success: true, synced, syncError: syncError ?? null });
+        const parts = trimmed.split("|");
+        if (parts.length < 6) return line;
+        if (parts[0].trim() !== threadId) return line;
+
+        found = true;
+
+        // 解析現有投票狀態
+        const col2 = parts[2].trim();
+        const isPriorityLike = ["P0", "P1", "P2", "P3", "-"].includes(col2);
+
+        let id: string, threadStatus: string, priority: string, title: string, initiator: string;
+        let agreeList: string[] = [];
+        let disagreeList: string[] = [];
+        let lastUpdate: string;
+
+        if (isPriorityLike && parts.length >= 8) {
+          // 已經是 8 欄
+          [id, threadStatus, priority, title, initiator] = parts.map((p) => p.trim());
+          agreeList = parseVoteStr(parts[5]);
+          disagreeList = parseVoteStr(parts[6]);
+          lastUpdate = parts[7].trim();
+        } else if (isPriorityLike && parts.length >= 7) {
+          // 7 欄→升級為 8 欄（摘要欄棄用）
+          [id, threadStatus, priority, title, initiator, , lastUpdate] = parts.map((p) => p.trim());
+        } else if (isPriorityLike) {
+          // 6 欄新格式→升級為 8 欄
+          [id, threadStatus, priority, title, initiator, lastUpdate] = parts.map((p) => p.trim());
+        } else {
+          // 6 欄舊格式（無優先級）→升級為 8 欄
+          [id, threadStatus, title, initiator, , lastUpdate] = parts.map((p) => p.trim());
+          priority = "-";
+        }
+
+        // 執行投票操作
+        const voterCode = USER_CODE;
+        // 先從兩邊移除
+        agreeList = agreeList.filter((c) => c !== voterCode);
+        disagreeList = disagreeList.filter((c) => c !== voterCode);
+
+        if (vote === "agree") {
+          agreeList.push(voterCode);
+        } else if (vote === "disagree") {
+          disagreeList.push(voterCode);
+        }
+        // withdraw：已經從兩邊移除了
+
+        const agreeStr = agreeList.length > 0 ? agreeList.join(",") : "";
+        const disagreeStr = disagreeList.length > 0 ? disagreeList.join(",") : "";
+
+        return `${id}|${threadStatus}|${priority}|${title}|${initiator}|${agreeStr}|${disagreeStr}|${lastUpdate}`;
+      });
+
+      if (!found) {
+        return NextResponse.json(
+          { error: `找不到討論串：${threadId}` },
+          { status: 404 },
+        );
+      }
+
+      await fs.writeFile(threadsPath, updatedLines.join("\n"), "utf-8");
+
+      return NextResponse.json({ success: true, threadId, vote });
+    }
+
+    return NextResponse.json(
+      { error: "需要 status 或 vote 欄位" },
+      { status: 400 },
+    );
   } catch (e) {
-    const message = e instanceof Error ? e.message : "更新失敗";
+    const message = e instanceof Error ? e.message : "操作失敗";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

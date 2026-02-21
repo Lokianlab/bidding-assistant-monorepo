@@ -76,6 +76,28 @@ export function ThreadList({ threads, onSelect }: ThreadListProps) {
                   {thread.summary}
                 </p>
 
+                {/* 投票狀態 */}
+                {(thread.agree.length > 0 || thread.disagree.length > 0) && (
+                  <div className="flex items-center gap-3 mt-1.5">
+                    {thread.agree.length > 0 && (
+                      <span className="text-xs text-green-600 flex items-center gap-1">
+                        <span>&#x2713;</span>
+                        {thread.agree.map((code) => (
+                          <MachineAvatar key={code} code={code} />
+                        ))}
+                      </span>
+                    )}
+                    {thread.disagree.length > 0 && (
+                      <span className="text-xs text-red-600 flex items-center gap-1">
+                        <span>&#x2717;</span>
+                        {thread.disagree.map((code) => (
+                          <MachineAvatar key={code} code={code} />
+                        ))}
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 {/* 底部資訊 */}
                 <div className="flex items-center gap-2 mt-2">
                   <MachineAvatar code={thread.initiator} />

@@ -25,6 +25,8 @@ export interface ForumThread {
   initiator: string;
   summary: string; // 新格式無此欄，解析時填空字串
   lastUpdate: string; // MMDD 格式
+  agree: string[]; // 投票同意的機器碼
+  disagree: string[]; // 投票反對的機器碼
   posts: ForumPost[];
 }
 

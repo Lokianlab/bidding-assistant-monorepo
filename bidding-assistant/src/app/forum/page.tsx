@@ -119,6 +119,23 @@ export default function ForumPage() {
     refresh();
   };
 
+  // 投票
+  const handleVote = async (threadId: string, vote: "agree" | "disagree" | "withdraw") => {
+    await fetch("/api/forum", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, vote }),
+    });
+    refresh();
+    // 更新 selectedThread 的投票狀態
+    if (selectedThread?.id === threadId) {
+      const res = await fetch("/api/forum");
+      const updated = await res.json();
+      const updatedThread = updated.threads?.find((t: ForumThread) => t.id === threadId);
+      if (updatedThread) setSelectedThread(updatedThread);
+    }
+  };
+
   // 從所有帖子收集活躍機器清單
   const availableMachines = useMemo(() => {
     if (!data) return [];
@@ -160,6 +177,7 @@ export default function ForumPage() {
         <ThreadDetail
           thread={selectedThread}
           onBack={() => setSelectedThread(null)}
+          onVote={handleVote}
         />
         {/* 在討論串詳情底部放回覆框 */}
         <ComposePost
