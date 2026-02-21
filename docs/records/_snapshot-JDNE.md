@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-1030|JDNE
+SNAPSHOT|20260221-1100|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -18,7 +18,7 @@ SNAPSHOT|20260221-1030|JDNE
 [v] method-observation-capture|AI觀察捕捉框架|v2 系統已定義 obs- 前綴約定，待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建，待推入技術選型文件
 [v] infra-meta-methodology|元方法論框架建構|機器可做的評估全部完成（P1-P5逐檔+系統交叉比對+效度自證），待用戶驗收
-[v] feat-pcc-web|評委交叉分析 hook + UI + 頁面整合|純函式+hook+UI+跨tab導航，M01 Phase 4 完成，待用戶驗收
+[v] feat-pcc-web|情報模組改善：機關表格可展開+機關情報內嵌+跨tab導航到評委分析|build零錯誤、749測試全過，待用戶驗收
 [?] infra-backup-mechanism|備份/回復安全節點|用戶提出，範圍待釐清（git tag？資料庫 snapshot？設定匯出？）
 [?] infra-cross-machine-consult|機器間互相諮詢機制|ITEJ 已建論壇機制（forum/），可能已解決。待用戶驗收論壇後確認
 [v] infra-new-machine-setup|新機器加入流程自動化|另一台機器已推防呆改造（.bat+腳本+指南），JDNE 更新 /安裝 skill，待用戶驗收
