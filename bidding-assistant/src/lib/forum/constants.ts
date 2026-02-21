@@ -43,6 +43,7 @@ export const POST_TYPE_CONFIG: Record<
   brief: { label: "通知", className: "bg-slate-100 text-slate-600" },
   directive: { label: "指令", className: "bg-red-100 text-red-800" },
   response: { label: "回覆", className: "bg-gray-100 text-gray-700" },
+  approval: { label: "申請審核", className: "bg-amber-200 text-amber-900 font-semibold" },
 };
 
 /** 優先級 → Badge 樣式 */

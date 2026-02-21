@@ -37,10 +37,14 @@ export function PostCard({ post }: PostCardProps) {
   const typeConfig = POST_TYPE_CONFIG[post.type];
   const priorityConfig = post.priority ? PRIORITY_CONFIG[post.priority] : null;
 
+  const isApproval = post.type === "approval";
+
   return (
     <div className={cn(
       "border-l-4 rounded-lg p-4 shadow-sm",
-      isUser ? "bg-yellow-50 dark:bg-yellow-950/30 ring-1 ring-yellow-300 dark:ring-yellow-700" : "bg-card",
+      isUser ? "bg-yellow-50 dark:bg-yellow-950/30 ring-1 ring-yellow-300 dark:ring-yellow-700"
+        : isApproval ? "bg-amber-50 dark:bg-amber-950/30 ring-2 ring-amber-400 dark:ring-amber-600"
+        : "bg-card",
       borderColor,
     )}>
       {/* Header */}

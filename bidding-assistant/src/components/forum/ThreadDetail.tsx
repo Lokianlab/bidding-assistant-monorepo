@@ -180,20 +180,23 @@ export function ThreadDetail({ thread, onBack, onVote }: ThreadDetailProps) {
             </Button>
           </div>
           {(() => {
-            // discuss 帖子永遠在最前（提供上下文）
+            // 三層排序：discuss（上下文）→ approval（審核報告）→ 其他回覆
             const discussPosts = thread.posts.filter((p) => p.type === "discuss");
-            const otherPosts = thread.posts.filter((p) => p.type !== "discuss");
+            const approvalPosts = thread.posts.filter((p) => p.type === "approval");
+            const otherPosts = thread.posts.filter((p) => p.type !== "discuss" && p.type !== "approval");
             const sortedOthers = newestFirst ? [...otherPosts].reverse() : otherPosts;
-            const displayPosts = [...discussPosts, ...sortedOthers];
+            const displayPosts = [...discussPosts, ...approvalPosts, ...sortedOthers];
 
             return displayPosts.map((post, i) => {
               const isDiscuss = post.type === "discuss";
+              const isApproval = post.type === "approval";
               return (
                 <div
                   key={`${post.timestamp}-${post.machineCode}-${i}`}
                   className={cn(
                     isDiscuss && "ring-2 ring-blue-200 dark:ring-blue-800 rounded-lg",
-                    !isDiscuss && "ml-4",
+                    isApproval && "ring-2 ring-amber-300 dark:ring-amber-600 rounded-lg",
+                    !isDiscuss && !isApproval && "ml-4",
                   )}
                 >
                   <PostCard post={post} />

@@ -21,6 +21,7 @@ const VALID_POST_TYPES = new Set<string>([
   "brief",
   "directive",
   "response",
+  "approval",
 ]);
 
 /**
@@ -166,7 +167,28 @@ export function parseForumFile(
   content: string,
   sourceFile: string,
 ): ForumPost[] {
-  const blocks = content.split(/^---\s*$/m);
+  const rawBlocks = content.split(/^---\s*$/m);
+
+  // 合併非帖子塊：內容中的 --- (markdown 水平線) 不應拆分帖子
+  // 如果某塊沒有合法 header，把它合併回前一個帖子塊
+  const blocks: string[] = [];
+  for (const raw of rawBlocks) {
+    const trimmed = raw.trim();
+    if (!trimmed) continue;
+    const firstLine = trimmed.split("\n")[0].trim();
+    const parts = firstLine.split("|");
+    const isValidHeader =
+      parts.length >= 3 &&
+      VALID_POST_TYPES.has(parts[0].trim()) &&
+      /^\d{8}-\d{4}$/.test(parts[1].trim());
+    if (isValidHeader || blocks.length === 0) {
+      blocks.push(trimmed);
+    } else {
+      // 非合法帖子開頭 → 合併回前一塊（內容中的 markdown ---）
+      blocks[blocks.length - 1] += "\n\n---\n\n" + trimmed;
+    }
+  }
+
   const posts: ForumPost[] = [];
 
   for (const block of blocks) {
