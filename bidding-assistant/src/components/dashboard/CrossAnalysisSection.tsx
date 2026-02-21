@@ -20,7 +20,7 @@ import {
 import type { DimensionKey } from "@/lib/dashboard/useCrossAnalysis";
 import type { NotionPage } from "@/lib/dashboard/types";
 import { formatCurrency } from "@/lib/chart-config";
-import { STACK_COLORS_HEX } from "@/lib/constants/bid-status";
+import { BID_STATUS, STACK_COLORS_HEX } from "@/lib/constants/bid-status";
 
 // ====== 共用：勝率色塊 ======
 function WinRateBar({ rate, total }: { rate: number; total: number }) {
@@ -59,11 +59,11 @@ function BreakdownChart({ data }: { data: ResultBreakdown[]; title: string }) {
   const chartData = data.slice(0, 15).map((d) => ({
     name: d.key.length > 8 ? d.key.slice(0, 8) + "…" : d.key,
     fullName: d.key,
-    "得標": d.won,
-    "未獲青睞": d.lost,
-    "流標/廢標": d.cancelled,
-    "資格不符": d.disqualified,
-    "領標後未參與": d.withdrawn,
+    [BID_STATUS.得標]: d.won,
+    [BID_STATUS.未獲青睞]: d.lost,
+    [BID_STATUS.流標廢標]: d.cancelled,
+    [BID_STATUS.資格不符]: d.disqualified,
+    [BID_STATUS.領標後未參與]: d.withdrawn,
     "進行中": d.active,
     winRate: d.winRate,
   }));
@@ -369,10 +369,10 @@ export function PersonReportPanel({
             {/* 結果分布 */}
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
               {[
-                { label: "得標", value: report.breakdown.won, color: "text-emerald-600" },
-                { label: "未獲青睞", value: report.breakdown.lost, color: "text-rose-600" },
-                { label: "資格不符", value: report.breakdown.disqualified, color: "text-red-600" },
-                { label: "流標/廢標", value: report.breakdown.cancelled, color: "text-pink-600" },
+                { label: BID_STATUS.得標, value: report.breakdown.won, color: "text-emerald-600" },
+                { label: BID_STATUS.未獲青睞, value: report.breakdown.lost, color: "text-rose-600" },
+                { label: BID_STATUS.資格不符, value: report.breakdown.disqualified, color: "text-red-600" },
+                { label: BID_STATUS.流標廢標, value: report.breakdown.cancelled, color: "text-pink-600" },
                 { label: "領標後棄標", value: report.breakdown.withdrawn, color: "text-gray-500" },
                 { label: "進行中", value: report.breakdown.active, color: "text-indigo-600" },
               ].map((item) => (
