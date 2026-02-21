@@ -64,8 +64,5 @@ feat-docgen-markdown|待驗收|docgen 支援完整 markdown 格式：##標題（
 feat-docgen-cover-toc|待驗收|docgen 封面頁（案名/公司名/民國日期）+自動目錄（HeadingLevel 1-4）+heading 樣式定義，+19 tests|@op:20260221-Z1FV#2330|2026-02-21
 feat-dashboard-charts|待驗收|狀態分布+預算分布+決策分布三張圖表卡片，儀表板圖表 5→8|@op:20260222-AINL#2355|2026-02-22
 plan-m03-strategy|進行中|M03 戰略分析引擎規格草案：適配度評分（5維100分）+決策報告+作戰計畫+組合分析，四期分期|@op:20260222-ITEJ#2330|2026-02-22
-<<<<<<< Updated upstream
 feat-trend-dashboard|待驗收|趨勢分析接入儀表板卡片（滾動勝率趨勢 LineChart + 季度比較 BarChart），6 檔整合+AINL 程式碼審查|@op:20260221-Z1FV#2300|2026-02-21
-=======
 plan-m04-quality-gate|進行中|M04 品質閘門規格草案：三道閘門（事實查核+需求追溯+實務檢驗）疊加在現有品質模組上，四期分期|@op:20260222-ITEJ#2345|2026-02-22
->>>>>>> Stashed changes
