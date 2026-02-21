@@ -61,7 +61,7 @@ export interface QualityRuleSettings {
   blacklist: string[];
   terminology: { wrong: string; correct: string }[];
   ironLawEnabled: Record<string, boolean>;
-  customRules: { pattern: string; message: string; severity: "error" | "warning" }[];
+  customRules: { pattern: string; message: string; severity: "error" | "warning" | "info" }[];
 }
 
 export interface PricingSettings {

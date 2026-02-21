@@ -256,6 +256,26 @@ describe("checkCompanyName", () => {
     expect(results).toHaveLength(1);
     expect(results[0].message).toContain("3 次");
   });
+
+  it("品牌簡稱在文字開頭時正確偵測為獨立出現", () => {
+    const results = checkCompanyName(
+      "全能負責開發。全能科技股份有限公司執行。",
+      "全能科技股份有限公司",
+      "全能",
+    );
+    expect(results).toHaveLength(1);
+    expect(results[0].message).toContain("1 次");
+  });
+
+  it("品牌簡稱在文字結尾時正確偵測為獨立出現", () => {
+    const results = checkCompanyName(
+      "全能科技股份有限公司執行。委託全能",
+      "全能科技股份有限公司",
+      "全能",
+    );
+    expect(results).toHaveLength(1);
+    expect(results[0].message).toContain("1 次");
+  });
 });
 
 // ====== 提案專用規則 ======
