@@ -39,7 +39,7 @@ export function PendingApprovals({
   });
   const [batchSubmitting, setBatchSubmitting] = useState(false);
   const [batchRejectMode, setBatchRejectMode] = useState(false);
-  const [batchRejectMessage, setBatchRejectMessage] = useState("");
+  const [batchRejectMessage, setBatchRejectMessage] = useState("沒完整報告不批");
 
   // 篩選出需要核准的討論串：狀態是「共識」的
   const pendingThreads = threads.filter((t) => t.status === "共識");
@@ -69,7 +69,7 @@ export function PendingApprovals({
     try {
       await onBatchReject(pendingThreads.map((t) => t.id), msg);
       setBatchRejectMode(false);
-      setBatchRejectMessage("");
+      setBatchRejectMessage("沒完整報告不批");
     } finally {
       setBatchSubmitting(false);
     }
@@ -94,12 +94,12 @@ export function PendingApprovals({
 
   return (
     <div className="space-y-3">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold">待核准決策</h2>
-          <Badge className="bg-yellow-400 text-yellow-900">{pendingThreads.length}</Badge>
+      <div className="flex items-center gap-2">
+        <h2 className="text-lg font-semibold">待核准決策</h2>
+        <Badge className="bg-yellow-400 text-yellow-900">{pendingThreads.length}</Badge>
+        {pendingThreads.length > 1 && (
           <div className="ml-auto flex gap-2">
-            {onBatchReject && pendingThreads.length > 1 && (
+            {onBatchReject && (
               <Button
                 size="sm"
                 variant="outline"
@@ -107,10 +107,10 @@ export function PendingApprovals({
                 disabled={batchSubmitting}
                 onClick={() => setBatchRejectMode(!batchRejectMode)}
               >
-                {batchRejectMode ? "取消" : `全部退回（${pendingThreads.length} 項）`}
+                {batchRejectMode ? "收起" : `全部退回（${pendingThreads.length} 項）`}
               </Button>
             )}
-            {onBatchApprove && pendingThreads.length > 1 && (
+            {onBatchApprove && (
               <Button
                 size="sm"
                 className="bg-green-600 hover:bg-green-700 text-white"
@@ -121,26 +121,48 @@ export function PendingApprovals({
               </Button>
             )}
           </div>
-        </div>
-        {batchRejectMode && (
-          <div className="flex gap-2 items-end rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-3">
-            <textarea
-              className="flex-1 min-h-[40px] rounded-md border bg-background px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-red-400"
-              placeholder="退回理由..."
-              value={batchRejectMessage}
-              onChange={(e) => setBatchRejectMessage(e.target.value)}
-            />
+        )}
+      </div>
+
+      {/* 批量退回展開區域 */}
+      {batchRejectMode && (
+        <div className="rounded-lg border-2 border-red-300 bg-red-50 dark:bg-red-950/20 p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <Badge className="bg-red-100 text-red-800 text-xs">批量退回</Badge>
+            <span className="text-sm text-muted-foreground">
+              將退回以下 {pendingThreads.length} 項決策，狀態改回「進行中」
+            </span>
+          </div>
+          <ul className="text-sm space-y-1 pl-4 list-disc text-muted-foreground">
+            {pendingThreads.map((t) => (
+              <li key={t.id}>{t.title}（{t.id}）</li>
+            ))}
+          </ul>
+          <textarea
+            className="w-full min-h-[60px] rounded-md border bg-background px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-red-400"
+            placeholder="退回理由..."
+            value={batchRejectMessage}
+            onChange={(e) => setBatchRejectMessage(e.target.value)}
+          />
+          <div className="flex gap-2">
             <Button
               size="sm"
-              className="bg-red-600 hover:bg-red-700 text-white shrink-0"
+              className="bg-red-600 hover:bg-red-700 text-white"
               disabled={batchSubmitting}
               onClick={handleBatchReject}
             >
-              {batchSubmitting ? "退回中..." : "確認全部退回"}
+              {batchSubmitting ? "退回中..." : `確認全部退回（${pendingThreads.length} 項）`}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setBatchRejectMode(false)}
+            >
+              取消
             </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {pendingThreads.map((thread) => {
         const priorityConfig = thread.priority ? PRIORITY_CONFIG[thread.priority] : null;
