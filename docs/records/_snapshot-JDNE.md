@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-1300|JDNE
+SNAPSHOT|20260222-2230|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -18,11 +18,11 @@ SNAPSHOT|20260222-1300|JDNE
 [v] method-observation-capture|AI觀察捕捉框架|v2 系統已定義 obs- 前綴約定，待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建，待推入技術選型文件
 [v] infra-meta-methodology|元方法論框架建構|機器可做的評估全部完成（P1-P5逐檔+系統交叉比對+效度自證），待用戶驗收
-[v] feat-pcc-web|情報模組改善：機關情報內嵌+四tab跨tab導航完成（搜尋→競爭/評委、競爭→評委、市場→評委）|build零錯誤、758測試全過，待用戶驗收
-[?] infra-backup-mechanism|備份/回復安全節點|用戶提出，範圍待釐清（git tag？資料庫 snapshot？設定匯出？）
+[v] feat-pcc-web|情報模組改善：機關情報內嵌+四tab跨tab導航完成|build零錯誤、758測試全過，待用戶驗收
+[?] infra-backup-mechanism|備份/回復安全節點|用戶提出，範圍待釐清
 [?] infra-cross-machine-consult|機器間互相諮詢機制|ITEJ 已建論壇機制（forum/），可能已解決。待用戶驗收論壇後確認
 [v] infra-new-machine-setup|新機器加入流程自動化|bat + bash 腳本 + 指南 + credential 修正 + 協作入門指南 + 論壇歡迎帖，待用戶驗收
 [v] infra-machine-profile|三台機器側寫與協作策略|三方共識：方向 1（輕量自評 1-3 分）+ 方向 4（/回報時刷新），待用戶驗收
 [v] infra-forum-upgrade|論壇制度升級|討論串機制+共識協議+類型拆分+索引，待用戶驗收
-[ ] infra-user-auth|用戶驗證系統|Jin 已註冊 primary（SHA-256 雜湊廣播），待其他機器設定+協作者註冊+MVP 第二階段（web UI）
+[ ] infra-user-auth|用戶驗證系統|Jin 已註冊 primary，安全清理完成（兩次 force push），新增無用戶在場規則+幕僚監控職責
 [ ] infra-machine-nickname|機器暱稱|.machine-nickname（gitignored），用戶面對輸出用暱稱取代機器碼，待實作
