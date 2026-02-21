@@ -1,541 +1,484 @@
 // ====== M03 戰略分析引擎：適配度評分 ======
+// 五維評分（領域、機關、競爭、規模、團隊），每維 0-20，總分 0-100
 
 import type {
   DimensionScore,
-  DimensionKey,
   FitScore,
+  FitScoreInput,
   FitWeights,
-  VerdictThresholds,
-  AgencyIntel,
-  MarketTrend,
-  KBEntry00A,
-  KBEntry00B,
+  FitVerdict,
+  ConfidenceLevel,
 } from "./types";
+import type { KBEntry00A, KBEntry00B } from "@/lib/knowledge-base/types";
+import type { SelfAnalysis, MarketTrend } from "@/lib/pcc/types";
 import {
   DEFAULT_FIT_WEIGHTS,
-  DEFAULT_VERDICT_THRESHOLDS,
-  DIMENSION_MAX_SCORE,
-  DOMAIN_FULL_SCORE_MATCHES,
-  INCUMBENT_STRONG_THRESHOLD,
-  COMPETITION_BLUE_OCEAN,
-  COMPETITION_RED_OCEAN,
-  SCALE_IQR_COMFORTABLE,
-  SCALE_IQR_STRETCH,
-  TEAM_FULL_SCORE_MEMBERS,
+  FIT_THRESHOLDS,
+  COMPETITION_THRESHOLDS,
+  RED_FLAG_RULES,
+  PI_KEYWORDS,
 } from "./constants";
 import {
   extractKeywords,
-  textMatch,
-  normalizeWeights,
-  computeVerdict,
+  keywordOverlap,
+  parseContractAmount,
+  calculateIQR,
   clampScore,
-  median,
-  iqr,
-  parseAmount,
+  formatBudget,
 } from "./helpers";
 
-// ====== 維度 1：領域匹配 ======
+// ====== 維度評分函式 ======
 
 /**
- * 評估案名關鍵字與實績庫的匹配程度。
- * - 0 匹配 → 0 分（全新領域）
- * - 1-2 匹配 → 中分
- * - 3+ 匹配且含主要實績 → 滿分
+ * 領域匹配（Domain）— 案件類型是否與實績吻合
  */
 export function scoreDomain(
-  tenderTitle: string,
-  tenderKeywords: string[],
+  caseName: string,
   portfolio: KBEntry00B[],
 ): DimensionScore {
-  if (!portfolio.length) {
-    return { score: 0, confidence: "低", evidence: "實績庫為空，無法評估領域匹配" };
+  const active = portfolio.filter((p) => p.entryStatus === "active");
+
+  if (active.length === 0) {
+    return { score: 0, confidence: "低", evidence: "知識庫無實績資料" };
   }
 
-  const keywords = tenderKeywords.length > 0 ? tenderKeywords : extractKeywords(tenderTitle);
-  if (keywords.length === 0) {
-    return { score: 0, confidence: "低", evidence: "無法從案名提取關鍵字" };
+  const { categories, terms } = extractKeywords(caseName);
+
+  if (terms.length === 0) {
+    return {
+      score: 5,
+      confidence: "低",
+      evidence: "案件名稱無法辨識業務類型",
+    };
   }
 
-  // 計算每個關鍵字在實績庫中的匹配情況
-  let totalMatches = 0;
-  const matchedProjects = new Set<string>();
-
-  for (const kw of keywords) {
-    for (const proj of portfolio) {
-      if (proj.entryStatus !== "active") continue;
-      // 匹配案名、工作項目
-      const matchTitle = textMatch(proj.projectName, kw);
-      const matchWork = proj.workItems.some((w) => textMatch(w.item, kw) > 0.5 || textMatch(w.description, kw) > 0.5);
-      if (matchTitle > 0.5 || matchWork) {
-        totalMatches++;
-        matchedProjects.add(proj.id);
-      }
-    }
-  }
-
-  const uniqueMatches = matchedProjects.size;
-
-  // 評分：匹配案件數 → 分數
-  let score: number;
-  if (uniqueMatches >= DOMAIN_FULL_SCORE_MATCHES) {
-    score = DIMENSION_MAX_SCORE;
-  } else if (uniqueMatches > 0) {
-    score = (uniqueMatches / DOMAIN_FULL_SCORE_MATCHES) * DIMENSION_MAX_SCORE;
-  } else {
-    score = 0;
-  }
-
-  // 有已驗收結案的加分
-  const completedMatches = portfolio.filter(
-    (p) => matchedProjects.has(p.id) && p.completionStatus === "已驗收結案",
+  // 找出有關鍵字重疊的實績
+  const matches = active.filter(
+    (p) => keywordOverlap(caseName, p.projectName) > 0,
   );
-  if (completedMatches.length > 0 && score < DIMENSION_MAX_SCORE) {
-    score = Math.min(score + 2, DIMENSION_MAX_SCORE);
+
+  if (matches.length >= 3) {
+    return {
+      score: 20,
+      confidence: "高",
+      evidence: `領域關鍵字「${terms.slice(0, 3).join("、")}」在 ${matches.length} 筆實績中出現`,
+    };
   }
 
-  const confidence = uniqueMatches >= DOMAIN_FULL_SCORE_MATCHES ? "高" : uniqueMatches > 0 ? "中" : "低";
-  const evidence = uniqueMatches > 0
-    ? `匹配到 ${uniqueMatches} 筆實績（共 ${totalMatches} 次關鍵字命中）`
-    : `${keywords.join("、")} 在實績庫中沒有匹配`;
-
-  return { score: clampScore(score), confidence, evidence };
-}
-
-// ====== 維度 2：機關熟悉度 ======
-
-/**
- * 評估與目標機關的往來紀錄。
- * - 有得標紀錄 → 高分
- * - 有投標紀錄但沒得標 → 中分
- * - 在位者弱 → 加分；在位者強 → 減分
- * - 從未接觸 → 低分但不是 0
- */
-export function scoreAgency(
-  agencyIntel: AgencyIntel | null,
-  portfolio: KBEntry00B[],
-  agencyName?: string,
-): DimensionScore {
-  // 無機關情報
-  if (!agencyIntel) {
-    // 嘗試從實績庫找機關匹配
-    if (agencyName && portfolio.length > 0) {
-      const agencyMatches = portfolio.filter(
-        (p) => p.entryStatus === "active" && textMatch(p.client, agencyName) > 0.5,
-      );
-      if (agencyMatches.length > 0) {
-        return {
-          score: clampScore(8),
-          confidence: "中",
-          evidence: `實績庫有 ${agencyMatches.length} 筆此機關案件，但缺乏投標紀錄分析`,
-        };
-      }
-    }
-    return { score: clampScore(4), confidence: "低", evidence: "無機關情報，無法評估熟悉度" };
+  if (matches.length >= 1) {
+    const score = 10 + matches.length * 3;
+    return {
+      score: clampScore(score),
+      confidence: "中",
+      evidence: `找到 ${matches.length} 筆相關實績（${matches.map((m) => m.projectName).slice(0, 2).join("、")}）`,
+    };
   }
-
-  let score = 0;
-  const reasons: string[] = [];
-
-  // 我方歷史
-  const wins = agencyIntel.myHistory.filter((h) => h.won).length;
-  const losses = agencyIntel.myHistory.filter((h) => !h.won).length;
-
-  if (wins > 0) {
-    score += 12; // 有得標基底分
-    score += Math.min(wins - 1, 3) * 2; // 每多得標一次 +2，上限 +6
-    reasons.push(`在此機關得標 ${wins} 次`);
-  } else if (losses > 0) {
-    score += 6; // 有投標但沒得標
-    reasons.push(`在此機關投標 ${losses} 次但未得標`);
-  } else {
-    score += 4; // 有資料但沒有我方紀錄
-    reasons.push("此機關無我方投標紀錄");
-  }
-
-  // 在位者分析
-  const strongIncumbent = agencyIntel.incumbents.find(
-    (inc) => inc.wins >= INCUMBENT_STRONG_THRESHOLD,
-  );
-  if (strongIncumbent) {
-    score -= 4;
-    reasons.push(`在位者 ${strongIncumbent.name} 連續得標 ${strongIncumbent.wins} 次`);
-  } else if (agencyIntel.incumbents.length === 0 || agencyIntel.incumbents.every((inc) => inc.wins <= 1)) {
-    score += 2;
-    reasons.push("無明顯在位者優勢");
-  }
-
-  const confidence = wins > 0 ? "高" : agencyIntel.totalCases > 0 ? "中" : "低";
 
   return {
-    score: clampScore(score),
-    confidence,
-    evidence: reasons.join("；"),
+    score: 3,
+    confidence: "低",
+    evidence: `案件涉及「${categories.join("、")}」，但無直接相關實績`,
   };
 }
 
-// ====== 維度 3：競爭強度 ======
+/**
+ * 機關熟悉度（Agency）— 與該機關的歷史互動
+ */
+export function scoreAgency(
+  agencyName: string,
+  selfAnalysis: SelfAnalysis | null,
+): DimensionScore {
+  if (!selfAnalysis || selfAnalysis.agencies.length === 0) {
+    return { score: 5, confidence: "低", evidence: "無歷史投標資料" };
+  }
+
+  const record = selfAnalysis.agencies.find(
+    (a) => a.unitName.includes(agencyName) || agencyName.includes(a.unitName),
+  );
+
+  if (!record) {
+    return {
+      score: 5,
+      confidence: "中",
+      evidence: `無「${agencyName}」投標紀錄，屬新開發機關`,
+    };
+  }
+
+  const { totalCases, myWins } = record;
+  const winRate = totalCases > 0 ? myWins / totalCases : 0;
+
+  if (myWins >= 3) {
+    return {
+      score: 20,
+      confidence: "高",
+      evidence: `在「${record.unitName}」得標 ${myWins} 次（${totalCases} 案），得標率 ${(winRate * 100).toFixed(0)}%`,
+    };
+  }
+
+  if (myWins >= 1) {
+    const score = 14 + myWins * 2;
+    return {
+      score: clampScore(score),
+      confidence: "高",
+      evidence: `在「${record.unitName}」得標 ${myWins} 次，共投標 ${totalCases} 次`,
+    };
+  }
+
+  if (totalCases >= 1) {
+    return {
+      score: 8,
+      confidence: "中",
+      evidence: `曾在「${record.unitName}」投標 ${totalCases} 次但未得標`,
+    };
+  }
+
+  return {
+    score: 5,
+    confidence: "低",
+    evidence: `與「${record.unitName}」有接觸但無投標紀錄`,
+  };
+}
 
 /**
- * 評估此類案件的競爭程度。
- * - 藍海（< 3 家） → 高分
- * - 一般（3-6 家） → 中分
- * - 紅海（> 6 家） → 低分
- * - 趨勢減少 → 加分
+ * 競爭強度（Competition）— 分數越高表示競爭越低（對我方越有利）
  */
 export function scoreCompetition(
   marketTrend: MarketTrend | null,
   bidderCount: number | null,
 ): DimensionScore {
   // 優先使用實際投標家數
-  const effectiveBidders = bidderCount ?? marketTrend?.yearlyData.at(-1)?.avgBidders ?? null;
+  if (bidderCount !== null && bidderCount > 0) {
+    let score: number;
 
-  if (effectiveBidders === null && !marketTrend) {
-    return { score: clampScore(10), confidence: "低", evidence: "無競爭資料，預設中等競爭" };
+    if (bidderCount <= COMPETITION_THRESHOLDS.blueOcean) {
+      score = 20;
+    } else if (bidderCount <= COMPETITION_THRESHOLDS.redSea) {
+      // 線性插值：3 家 → 15 分，6 家 → 8 分
+      const ratio =
+        (bidderCount - COMPETITION_THRESHOLDS.blueOcean) /
+        (COMPETITION_THRESHOLDS.redSea - COMPETITION_THRESHOLDS.blueOcean);
+      score = 20 - ratio * 12;
+    } else {
+      score = Math.max(0, 8 - (bidderCount - COMPETITION_THRESHOLDS.redSea) * 1.5);
+    }
+
+    const label =
+      bidderCount <= COMPETITION_THRESHOLDS.blueOcean
+        ? "（藍海）"
+        : bidderCount > COMPETITION_THRESHOLDS.redSea
+          ? "（紅海）"
+          : "";
+
+    return {
+      score: clampScore(score),
+      confidence: "高",
+      evidence: `實際投標 ${bidderCount} 家${label}`,
+    };
   }
 
-  let score: number;
-  const reasons: string[] = [];
+  // 退而求其次：市場趨勢資料
+  if (!marketTrend) {
+    return {
+      score: 10,
+      confidence: "低",
+      evidence: "無市場趨勢資料，預設中等競爭",
+    };
+  }
 
-  if (effectiveBidders !== null) {
-    if (effectiveBidders < COMPETITION_BLUE_OCEAN) {
-      score = DIMENSION_MAX_SCORE;
-      reasons.push(`投標家數 ${effectiveBidders}，藍海市場`);
-    } else if (effectiveBidders <= COMPETITION_RED_OCEAN) {
-      // 線性內插：3 家 → 15 分，6 家 → 8 分
-      score = 15 - ((effectiveBidders - COMPETITION_BLUE_OCEAN) / (COMPETITION_RED_OCEAN - COMPETITION_BLUE_OCEAN)) * 7;
-      reasons.push(`投標家數 ${effectiveBidders}，一般競爭`);
-    } else {
-      // > 6 家：6→8 分，每多 1 家 -1 分，最低 2 分
-      score = Math.max(2, 8 - (effectiveBidders - COMPETITION_RED_OCEAN));
-      reasons.push(`投標家數 ${effectiveBidders}，紅海市場`);
-    }
+  const latestYear =
+    marketTrend.yearlyData[marketTrend.yearlyData.length - 1];
+  const avgBidders = latestYear?.avgBidders ?? 0;
+
+  let score: number;
+  if (marketTrend.competitionLevel === "藍海") {
+    score = 18;
+  } else if (marketTrend.competitionLevel === "一般") {
+    score = 12;
   } else {
-    // 用市場趨勢的 competitionLevel
-    score = marketTrend!.competitionLevel === "藍海" ? 16
-      : marketTrend!.competitionLevel === "一般" ? 10
-        : 5;
-    reasons.push(`市場判定為${marketTrend!.competitionLevel}`);
+    score = 5;
   }
 
   // 趨勢加減分
-  if (marketTrend) {
-    if (marketTrend.trendDirection === "減少") {
-      score += 2;
-      reasons.push("案件量趨勢減少，競爭可能緩和");
-    } else if (marketTrend.trendDirection === "增加") {
-      score -= 1;
-      reasons.push("案件量趨勢增加，競爭可能加劇");
-    }
-  }
-
-  const confidence = bidderCount !== null ? "高" : marketTrend ? "中" : "低";
+  if (marketTrend.trendDirection === "減少") score += 2;
+  if (marketTrend.trendDirection === "增加") score -= 2;
 
   return {
     score: clampScore(score),
-    confidence,
-    evidence: reasons.join("；"),
+    confidence: "中",
+    evidence: `市場「${marketTrend.keyword}」：${marketTrend.competitionLevel}（平均 ${avgBidders.toFixed(1)} 家），趨勢${marketTrend.trendDirection}`,
   };
 }
 
-// ====== 維度 4：規模適合度 ======
-
 /**
- * 評估案件預算是否在公司歷史案件的舒適範圍內。
- * - 預算在 IQR 內 → 滿分
- * - 在 1.5×IQR 內 → 中分
- * - 超出 2×IQR → 低分
+ * 規模適合度（Scale）— 預算是否在我們的舒適區
  */
 export function scoreScale(
   budget: number | null,
   portfolio: KBEntry00B[],
 ): DimensionScore {
-  if (budget === null || budget <= 0) {
-    return { score: clampScore(10), confidence: "低", evidence: "無預算資料，預設中等適合度" };
+  if (budget === null) {
+    return { score: 10, confidence: "低", evidence: "無預算資料" };
   }
 
-  // 從實績庫提取金額
-  const amounts = portfolio
-    .filter((p) => p.entryStatus === "active")
-    .map((p) => parseAmount(p.contractAmount))
+  const active = portfolio.filter((p) => p.entryStatus === "active");
+  const amounts = active
+    .map((p) => parseContractAmount(p.contractAmount))
     .filter((a): a is number => a !== null && a > 0);
 
-  if (amounts.length === 0) {
-    return { score: clampScore(10), confidence: "低", evidence: "實績庫無金額資料可比較" };
+  if (amounts.length < 4) {
+    return {
+      score: 10,
+      confidence: "低",
+      evidence: `實績資料不足（${amounts.length} 筆），無法判斷規模適合度`,
+    };
   }
 
-  const med = median(amounts);
-  const { q1, q3, iqr: iqrVal } = iqr(amounts);
+  const iqr = calculateIQR(amounts);
+  if (!iqr) {
+    return { score: 10, confidence: "低", evidence: "無法計算實績規模分佈" };
+  }
 
-  // IQR 為 0 時用中位數的 ±50% 作為範圍
-  const effectiveIQR = iqrVal > 0 ? iqrVal : med * 0.5;
+  const { q1, q3, iqr: range } = iqr;
 
-  let score: number;
-  let description: string;
+  // 極端值：預算不到 Q1 的 10% 或超過 Q3 的 5 倍 → 直接判定不適合
+  if (budget < q1 * 0.1) {
+    return {
+      score: 3,
+      confidence: "高",
+      evidence: `預算 ${formatBudget(budget)} 遠低於實績規模下限 ${formatBudget(q1)}`,
+    };
+  }
+  if (budget > q3 * 5) {
+    return {
+      score: 3,
+      confidence: "高",
+      evidence: `預算 ${formatBudget(budget)} 遠超實績規模上限 ${formatBudget(q3)}`,
+    };
+  }
 
   if (budget >= q1 && budget <= q3) {
-    score = DIMENSION_MAX_SCORE;
-    description = "預算在歷史案件 IQR 範圍內";
-  } else {
-    const distanceFromRange = budget < q1 ? q1 - budget : budget - q3;
-    const ratio = effectiveIQR > 0 ? distanceFromRange / effectiveIQR : 2;
-
-    if (ratio <= SCALE_IQR_COMFORTABLE) {
-      score = 14 - ratio * 4; // 0→14, 1.5→8
-      description = `預算偏離 IQR ${ratio.toFixed(1)} 倍，尚在舒適範圍`;
-    } else if (ratio <= SCALE_IQR_STRETCH) {
-      score = 6 - (ratio - SCALE_IQR_COMFORTABLE) * 4; // 1.5→6, 2→4
-      description = `預算偏離 IQR ${ratio.toFixed(1)} 倍，規模差距較大`;
-    } else {
-      score = Math.max(1, 4 - (ratio - SCALE_IQR_STRETCH) * 2);
-      description = budget > q3
-        ? `案子太大：預算 ${budget.toLocaleString()} 遠超歷史中位數 ${med.toLocaleString()}`
-        : `案子太小：預算 ${budget.toLocaleString()} 遠低於歷史中位數 ${med.toLocaleString()}`;
-    }
+    return {
+      score: 20,
+      confidence: "高",
+      evidence: `預算 ${formatBudget(budget)} 在實績常見範圍內（${formatBudget(q1)} ~ ${formatBudget(q3)}）`,
+    };
   }
 
-  const confidence = amounts.length >= 5 ? "高" : amounts.length >= 2 ? "中" : "低";
+  if (budget >= q1 - range * 0.5 && budget <= q3 + range * 0.5) {
+    return {
+      score: 14,
+      confidence: "中",
+      evidence: `預算 ${formatBudget(budget)} 略超出實績常見範圍（${formatBudget(q1)} ~ ${formatBudget(q3)}）`,
+    };
+  }
 
+  if (budget >= q1 - range * 1.5 && budget <= q3 + range * 1.5) {
+    return {
+      score: 8,
+      confidence: "中",
+      evidence: `預算 ${formatBudget(budget)} 偏離實績範圍（${formatBudget(q1)} ~ ${formatBudget(q3)}）`,
+    };
+  }
+
+  const direction = budget > q3 ? "遠超實績規模上限" : "遠低於實績規模下限";
+  const boundary = budget > q3 ? q3 : q1;
   return {
-    score: clampScore(score),
-    confidence,
-    evidence: `${description}（歷史案件中位數 ${med.toLocaleString()}，${amounts.length} 筆比較資料）`,
+    score: 3,
+    confidence: "高",
+    evidence: `預算 ${formatBudget(budget)} ${direction} ${formatBudget(boundary)}`,
   };
 }
 
-// ====== 維度 5：團隊可用性 ======
-
 /**
- * 評估團隊是否有適合此案的人選。
- * - 3+ 人匹配 → 滿分
- * - 1-2 人匹配 → 中分
- * - 匹配者有主管級 → 加分
+ * 團隊可用性（Team）— 是否有能做這案子的人
  */
 export function scoreTeam(
-  tenderKeywords: string[],
+  caseName: string,
   team: KBEntry00A[],
 ): DimensionScore {
-  if (team.length === 0) {
-    return { score: 0, confidence: "低", evidence: "團隊資料庫為空" };
-  }
-  if (tenderKeywords.length === 0) {
-    return { score: clampScore(10), confidence: "低", evidence: "無案件關鍵字可匹配團隊" };
-  }
+  const active = team.filter(
+    (m) => m.entryStatus === "active" && m.status === "在職",
+  );
 
-  const activeTeam = team.filter((m) => m.entryStatus === "active" && m.status !== "已離職");
-  const matchedMembers = new Map<string, string[]>(); // id → 匹配原因
-
-  for (const member of activeTeam) {
-    const matchReasons: string[] = [];
-
-    for (const kw of tenderKeywords) {
-      // 匹配認證
-      const certMatch = member.certifications.some((c) => textMatch(c.name, kw) > 0.5);
-      if (certMatch) matchReasons.push(`認證含「${kw}」`);
-
-      // 匹配經歷
-      const expMatch = member.experiences.some(
-        (e) => textMatch(e.description, kw) > 0.3 || textMatch(e.title, kw) > 0.5,
-      );
-      if (expMatch) matchReasons.push(`經歷含「${kw}」`);
-
-      // 匹配專案
-      const projMatch = member.projects.some(
-        (p) => textMatch(p.projectName, kw) > 0.5 || textMatch(p.role, kw) > 0.5,
-      );
-      if (projMatch) matchReasons.push(`專案含「${kw}」`);
-
-      // 匹配授權角色
-      const roleMatch = member.authorizedRoles.some((r) => textMatch(r, kw) > 0.5);
-      if (roleMatch) matchReasons.push(`授權角色含「${kw}」`);
-
-      // 匹配附加能力
-      if (member.additionalCapabilities && textMatch(member.additionalCapabilities, kw) > 0.3) {
-        matchReasons.push(`附加能力含「${kw}」`);
-      }
-    }
-
-    if (matchReasons.length > 0) {
-      matchedMembers.set(member.id, [...new Set(matchReasons)]);
-    }
+  if (active.length === 0) {
+    return { score: 0, confidence: "低", evidence: "知識庫無團隊資料" };
   }
 
-  const matchCount = matchedMembers.size;
+  const { categories, terms } = extractKeywords(caseName);
+
+  // 逐人比對經驗、證照、專案
+  const matched = active.filter((member) => {
+    const text = [
+      member.title,
+      member.additionalCapabilities,
+      ...member.experiences.map((e) => `${e.description} ${e.title}`),
+      ...member.certifications.map((c) => c.name),
+      ...member.projects.map((p) => `${p.projectName} ${p.role}`),
+    ].join(" ");
+
+    return (
+      terms.some((t) => text.includes(t)) ||
+      categories.some((c) => text.includes(c))
+    );
+  });
+
+  // 檢查計畫主持人資格
+  const hasPI = active.some((member) => {
+    const text = [
+      ...member.authorizedRoles,
+      ...member.projects.map((p) => p.role),
+    ].join(" ");
+    return PI_KEYWORDS.some((kw) => text.includes(kw));
+  });
+
+  const needsPI = PI_KEYWORDS.some((kw) => caseName.includes(kw));
 
   let score: number;
-  if (matchCount >= TEAM_FULL_SCORE_MEMBERS) {
-    score = DIMENSION_MAX_SCORE;
-  } else if (matchCount > 0) {
-    score = (matchCount / TEAM_FULL_SCORE_MEMBERS) * DIMENSION_MAX_SCORE * 0.8; // 未滿最高打八折
+  let confidence: ConfidenceLevel;
+  let evidence: string;
+
+  if (matched.length >= 3) {
+    score = hasPI ? 20 : 17;
+    confidence = "高";
+    evidence = `${matched.length} 名團隊成員有相關經驗（${matched.map((m) => m.name).slice(0, 3).join("、")}）${hasPI ? "，含計畫主持人資格" : ""}`;
+  } else if (matched.length >= 1) {
+    score = 10 + matched.length * 3;
+    confidence = "中";
+    evidence = `${matched.length} 名成員相關（${matched.map((m) => m.name).join("、")}）`;
   } else {
-    score = 0;
+    score = active.length >= 3 ? 5 : 2;
+    confidence = "低";
+    evidence = `團隊 ${active.length} 人，但無直接相關經驗`;
   }
 
-  // 有主管級加分（「計畫主持人」在授權角色中）
-  const hasLeader = activeTeam.some(
-    (m) =>
-      matchedMembers.has(m.id) &&
-      m.authorizedRoles.some((r) => r.includes("計畫主持人") || r.includes("主持人")),
-  );
-  if (hasLeader && score < DIMENSION_MAX_SCORE) {
-    score = Math.min(score + 3, DIMENSION_MAX_SCORE);
+  // 案件需要計畫主持人但團隊沒有
+  if (needsPI && !hasPI) {
+    score = Math.max(0, score - 5);
+    evidence += "。案件要求計畫主持人但團隊無此資格";
   }
-
-  const confidence = matchCount >= TEAM_FULL_SCORE_MEMBERS ? "高" : matchCount > 0 ? "中" : "低";
-  const memberNames = activeTeam
-    .filter((m) => matchedMembers.has(m.id))
-    .map((m) => m.name)
-    .slice(0, 5);
-
-  const evidence = matchCount > 0
-    ? `匹配 ${matchCount} 位團隊成員（${memberNames.join("、")}）${hasLeader ? "，含主管級人選" : ""}`
-    : `${tenderKeywords.join("、")} 在團隊庫中沒有匹配`;
 
   return { score: clampScore(score), confidence, evidence };
 }
 
-// ====== 總分計算 ======
+// ====== 輔助函式 ======
 
-/** 適配度評分所需的輸入 */
-export interface FitScoringInput {
-  tenderTitle: string;
-  tenderKeywords?: string[];
-  budget: number | null;
-  agencyName?: string;
-  bidderCount?: number | null;
-  agencyIntel: AgencyIntel | null;
-  marketTrend: MarketTrend | null;
-  portfolio: KBEntry00B[];
-  team: KBEntry00A[];
-  weights?: FitWeights;
-  thresholds?: VerdictThresholds;
+/** 偵測紅旗 */
+export function detectRedFlags(caseName: string): string[] {
+  return RED_FLAG_RULES.filter((rule) => rule.pattern.test(caseName)).map(
+    (rule) => rule.flag,
+  );
 }
 
-/**
- * 計算完整的五維適配度評分。
- * 純函式，不碰任何外部狀態。
- */
-export function computeFitScore(input: FitScoringInput): FitScore {
-  const {
-    tenderTitle,
-    budget,
-    agencyName,
-    agencyIntel,
-    marketTrend,
-    portfolio,
-    team,
-    weights = DEFAULT_FIT_WEIGHTS,
-    thresholds = DEFAULT_VERDICT_THRESHOLDS,
-  } = input;
-
-  const tenderKeywords = input.tenderKeywords ?? extractKeywords(tenderTitle);
-  const bidderCount = input.bidderCount ?? null;
-
-  // 計算五個維度
-  const dimensions: FitScore["dimensions"] = {
-    domain: scoreDomain(tenderTitle, tenderKeywords, portfolio),
-    agency: scoreAgency(agencyIntel, portfolio, agencyName),
-    competition: scoreCompetition(marketTrend, bidderCount),
-    scale: scoreScale(budget, portfolio),
-    team: scoreTeam(tenderKeywords, team),
-  };
-
-  // 加權總分
-  const normalizedW = normalizeWeights(weights);
-  const keys: DimensionKey[] = ["domain", "agency", "competition", "scale", "team"];
-  const total = Math.round(
-    keys.reduce((sum, k) => sum + (dimensions[k].score / DIMENSION_MAX_SCORE) * normalizedW[k], 0) * 10,
-  ) / 10;
-
-  // 判定
-  const verdict = computeVerdict(total, dimensions, thresholds, weights);
-
-  // 生成理由
-  const reasons = generateReasons(dimensions, total, verdict);
-
-  // 紅旗
-  const redFlags = generateRedFlags(dimensions, budget, agencyIntel);
-
-  return { total, dimensions, verdict, reasons, redFlags };
-}
-
-/** 根據評分結果自動生成 2-3 句判斷理由 */
-function generateReasons(
-  dimensions: FitScore["dimensions"],
+/** 根據總分和信心度判定建議 */
+export function determineVerdict(
   total: number,
-  verdict: FitVerdict,
+  dimensions: FitScore["dimensions"],
+  thresholds = FIT_THRESHOLDS,
+): FitVerdict {
+  const lowCount = Object.values(dimensions).filter(
+    (d) => d.confidence === "低",
+  ).length;
+  if (lowCount >= 3) return "資料不足";
+
+  if (total >= thresholds.recommend) return "建議投標";
+  if (total >= thresholds.evaluate) return "值得評估";
+  return "不建議";
+}
+
+/** 產生判斷理由 */
+export function generateReasons(
+  dimensions: FitScore["dimensions"],
 ): string[] {
   const reasons: string[] = [];
-  const keys: DimensionKey[] = ["domain", "agency", "competition", "scale", "team"];
 
-  // 找出最強和最弱維度
-  const sorted = keys.sort((a, b) => dimensions[b].score - dimensions[a].score);
-  const strongest = sorted[0];
-  const weakest = sorted[sorted.length - 1];
-
-  const dimLabels: Record<DimensionKey, string> = {
+  const dimNames: Record<string, string> = {
     domain: "領域匹配",
     agency: "機關熟悉度",
-    competition: "競爭強度",
+    competition: "競爭環境",
     scale: "規模適合度",
     team: "團隊可用性",
   };
 
-  if (verdict === "建議投標") {
-    reasons.push(`總分 ${total} 達投標門檻，最強項為${dimLabels[strongest]}（${dimensions[strongest].score}/${DIMENSION_MAX_SCORE}）`);
-  } else if (verdict === "值得評估") {
-    reasons.push(`總分 ${total} 在評估區間，需進一步分析`);
-  } else if (verdict === "不建議") {
-    reasons.push(`總分 ${total} 低於投標門檻，最弱項為${dimLabels[weakest]}（${dimensions[weakest].score}/${DIMENSION_MAX_SCORE}）`);
+  const entries = Object.entries(dimensions) as [string, DimensionScore][];
+  const sorted = [...entries].sort((a, b) => b[1].score - a[1].score);
+
+  // 最強項
+  const best = sorted[0];
+  if (best[1].score >= 15) {
+    reasons.push(`${dimNames[best[0]]}是主要優勢（${best[1].evidence}）`);
+  }
+
+  // 最弱項
+  const worst = sorted[sorted.length - 1];
+  if (worst[1].score <= 8) {
+    reasons.push(`${dimNames[worst[0]]}是主要風險（${worst[1].evidence}）`);
+  }
+
+  // 總評
+  const total = entries.reduce((sum, [, d]) => sum + d.score, 0);
+  if (total >= 70) {
+    reasons.push("整體條件有利，建議積極準備");
+  } else if (total >= 50) {
+    reasons.push("條件中等，需評估投入資源是否值得");
   } else {
-    reasons.push(`部分維度資料不足，評分參考性有限`);
+    reasons.push("整體條件不利，建議優先考慮其他案件");
   }
 
-  // 補充最強/最弱的證據
-  if (dimensions[strongest].score >= 15) {
-    reasons.push(dimensions[strongest].evidence);
-  }
-  if (dimensions[weakest].score <= 5 && weakest !== strongest) {
-    reasons.push(`注意：${dimLabels[weakest]} — ${dimensions[weakest].evidence}`);
-  }
-
-  return reasons.slice(0, 3);
+  return reasons;
 }
 
-/** 自動生成紅旗警示 */
-function generateRedFlags(
-  dimensions: FitScore["dimensions"],
-  budget: number | null,
-  agencyIntel: AgencyIntel | null,
-): string[] {
-  const flags: string[] = [];
+// ====== 主函式 ======
 
-  // 領域完全不匹配
-  if (dimensions.domain.score === 0) {
-    flags.push("全新領域：實績庫無任何相關案件");
-  }
+/**
+ * 計算完整適配度評分
+ *
+ * 各維度 0-20 分，以權重加權後正規化為 0-100 總分。
+ * 預設五維等權（各 20），調整權重後仍自動正規化。
+ */
+export function calculateFitScore(
+  input: FitScoreInput,
+  weights: FitWeights = DEFAULT_FIT_WEIGHTS,
+): FitScore {
+  const { caseName, agency, budget, intelligence, kb } = input;
 
-  // 在位者太強
-  if (agencyIntel) {
-    const strongIncumbent = agencyIntel.incumbents.find((inc) => inc.wins >= INCUMBENT_STRONG_THRESHOLD);
-    if (strongIncumbent) {
-      flags.push(`強勢在位者：${strongIncumbent.name} 連續得標 ${strongIncumbent.wins} 次`);
-    }
-  }
+  const domain = scoreDomain(caseName, kb["00B"]);
+  const agencyDim = scoreAgency(agency, intelligence.selfAnalysis);
+  const competition = scoreCompetition(
+    intelligence.marketTrend,
+    intelligence.tenderSummary?.bidderCount ?? null,
+  );
+  const scale = scoreScale(budget, kb["00B"]);
+  const team = scoreTeam(caseName, kb["00A"]);
 
-  // 規模異常
-  if (dimensions.scale.score <= 3 && budget !== null) {
-    flags.push(`規模偏離：預算 ${budget.toLocaleString()} 與歷史案件差距過大`);
-  }
+  const dimensions = {
+    domain,
+    agency: agencyDim,
+    competition,
+    scale,
+    team,
+  };
 
-  // 團隊匹配為零
-  if (dimensions.team.score === 0) {
-    flags.push("團隊斷層：無人選匹配此案需求");
-  }
+  // 加權平均：每維 0-20，加權後正規化到 0-100
+  const totalWeight =
+    weights.domain +
+    weights.agency +
+    weights.competition +
+    weights.scale +
+    weights.team;
 
-  // 競爭過於激烈
-  if (dimensions.competition.score <= 4) {
-    flags.push("紅海市場：投標家數偏高，得標機率較低");
-  }
+  const weightedSum =
+    domain.score * weights.domain +
+    agencyDim.score * weights.agency +
+    competition.score * weights.competition +
+    scale.score * weights.scale +
+    team.score * weights.team;
 
-  return flags;
+  const total =
+    totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 5) : 0;
+
+  const verdict = determineVerdict(total, dimensions);
+  const reasons = generateReasons(dimensions);
+  const redFlags = detectRedFlags(caseName);
+
+  return { total, dimensions, verdict, reasons, redFlags };
 }

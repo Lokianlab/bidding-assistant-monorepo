@@ -1,12 +1,9 @@
 import { describe, it, expect } from "vitest";
 import {
   DEFAULT_FIT_WEIGHTS,
-  DEFAULT_VERDICT_THRESHOLDS,
-  BUSINESS_TYPE_VOCABULARY,
-  COMPETITION_BLUE_OCEAN,
-  COMPETITION_RED_OCEAN,
-  DIMENSION_MAX_SCORE,
-  LOW_CONFIDENCE_RATIO_THRESHOLD,
+  FIT_THRESHOLDS,
+  BUSINESS_KEYWORDS,
+  COMPETITION_THRESHOLDS,
 } from "../constants";
 
 describe("DEFAULT_FIT_WEIGHTS", () => {
@@ -18,53 +15,45 @@ describe("DEFAULT_FIT_WEIGHTS", () => {
   });
 });
 
-describe("DEFAULT_VERDICT_THRESHOLDS", () => {
+describe("FIT_THRESHOLDS", () => {
   it("recommend 高於 evaluate", () => {
-    expect(DEFAULT_VERDICT_THRESHOLDS.recommend).toBeGreaterThan(
-      DEFAULT_VERDICT_THRESHOLDS.evaluate,
-    );
+    expect(FIT_THRESHOLDS.recommend).toBeGreaterThan(FIT_THRESHOLDS.evaluate);
   });
 
   it("門檻值合理（0-100 範圍）", () => {
-    expect(DEFAULT_VERDICT_THRESHOLDS.recommend).toBeGreaterThan(0);
-    expect(DEFAULT_VERDICT_THRESHOLDS.recommend).toBeLessThanOrEqual(100);
-    expect(DEFAULT_VERDICT_THRESHOLDS.evaluate).toBeGreaterThan(0);
+    expect(FIT_THRESHOLDS.recommend).toBeGreaterThan(0);
+    expect(FIT_THRESHOLDS.recommend).toBeLessThanOrEqual(100);
+    expect(FIT_THRESHOLDS.evaluate).toBeGreaterThan(0);
   });
 });
 
-describe("BUSINESS_TYPE_VOCABULARY", () => {
-  it("包含詞彙（非空）", () => {
-    expect(BUSINESS_TYPE_VOCABULARY.length).toBeGreaterThan(0);
+describe("BUSINESS_KEYWORDS", () => {
+  it("包含業務分類（非空）", () => {
+    expect(Object.keys(BUSINESS_KEYWORDS).length).toBeGreaterThan(0);
   });
 
-  it("所有詞彙都是非空字串", () => {
-    BUSINESS_TYPE_VOCABULARY.forEach((word) => {
-      expect(typeof word).toBe("string");
-      expect(word.length).toBeGreaterThan(0);
-    });
+  it("每個分類都包含非空詞彙陣列", () => {
+    for (const [category, keywords] of Object.entries(BUSINESS_KEYWORDS)) {
+      expect(Array.isArray(keywords)).toBe(true);
+      expect(keywords.length).toBeGreaterThan(0);
+      keywords.forEach((kw) => {
+        expect(typeof kw).toBe("string");
+        expect(kw.length).toBeGreaterThan(0);
+      });
+      expect(typeof category).toBe("string");
+    }
   });
 });
 
 describe("COMPETITION_THRESHOLDS", () => {
   it("藍海門檻低於紅海門檻", () => {
-    expect(COMPETITION_BLUE_OCEAN).toBeLessThan(COMPETITION_RED_OCEAN);
+    expect(COMPETITION_THRESHOLDS.blueOcean).toBeLessThan(
+      COMPETITION_THRESHOLDS.redSea,
+    );
   });
 
   it("門檻為正整數", () => {
-    expect(COMPETITION_BLUE_OCEAN).toBeGreaterThan(0);
-    expect(COMPETITION_RED_OCEAN).toBeGreaterThan(0);
-  });
-});
-
-describe("DIMENSION_MAX_SCORE", () => {
-  it("各維度上限為 20", () => {
-    expect(DIMENSION_MAX_SCORE).toBe(20);
-  });
-});
-
-describe("LOW_CONFIDENCE_RATIO_THRESHOLD", () => {
-  it("在 0 到 1 之間", () => {
-    expect(LOW_CONFIDENCE_RATIO_THRESHOLD).toBeGreaterThan(0);
-    expect(LOW_CONFIDENCE_RATIO_THRESHOLD).toBeLessThan(1);
+    expect(COMPETITION_THRESHOLDS.blueOcean).toBeGreaterThan(0);
+    expect(COMPETITION_THRESHOLDS.redSea).toBeGreaterThan(0);
   });
 });

@@ -5,476 +5,733 @@ import {
   scoreCompetition,
   scoreScale,
   scoreTeam,
-  computeFitScore,
+  detectRedFlags,
+  determineVerdict,
+  generateReasons,
+  calculateFitScore,
 } from "../fit-scoring";
-import type { KBEntry00A, KBEntry00B, AgencyIntel, MarketTrend } from "../types";
+import type { KBEntry00A, KBEntry00B } from "@/lib/knowledge-base/types";
+import type { SelfAnalysis, MarketTrend } from "@/lib/pcc/types";
+import type { FitScore, FitScoreInput } from "../types";
 
-// ====== Test fixtures ======
+// ====== Mock 資料 ======
 
-function makePortfolio(overrides: Partial<KBEntry00B>[] = []): KBEntry00B[] {
-  const base: KBEntry00B = {
+function makePortfolio(
+  overrides: Partial<KBEntry00B> & { projectName: string },
+): KBEntry00B {
+  return {
     id: "P-2025-001",
-    projectName: "113年度藝術節策展服務案",
-    client: "文化部",
-    contractAmount: "3,500,000",
-    period: "民國 113 年 3 月至 8 月",
+    client: "臺北市政府文化局",
+    contractAmount: "3,000,000",
+    period: "民國 114 年 3 月至 8 月",
     entity: "大員洛川股份有限公司",
     role: "得標廠商（與機關簽約）",
     completionStatus: "已驗收結案",
     teamMembers: "計畫主持人：黃偉誠（M-001）",
-    workItems: [
-      { item: "策展規劃", description: "藝術節主題策展規劃與執行" },
-      { item: "展覽設計", description: "展場空間設計與施工管理" },
-    ],
-    outcomes: "參觀人次達 5 萬人",
+    workItems: [],
+    outcomes: "",
     documentLinks: "",
     entryStatus: "active",
-    updatedAt: "2025-12-01",
+    updatedAt: "2025-01-01",
+    ...overrides,
   };
-  if (overrides.length === 0) return [base];
-  return overrides.map((o, i) => ({ ...base, id: `P-2025-${String(i + 1).padStart(3, "0")}`, ...o }));
 }
 
-function makeTeam(overrides: Partial<KBEntry00A>[] = []): KBEntry00A[] {
-  const base: KBEntry00A = {
+function makeTeamMember(
+  overrides: Partial<KBEntry00A> & { name: string },
+): KBEntry00A {
+  return {
+    id: "M-001",
+    title: "總監",
+    status: "在職",
+    authorizedRoles: [],
+    education: [],
+    certifications: [],
+    experiences: [],
+    projects: [],
+    additionalCapabilities: "",
+    entryStatus: "active",
+    updatedAt: "2025-01-01",
+    ...overrides,
+  };
+}
+
+const mockPortfolio: KBEntry00B[] = [
+  makePortfolio({
+    id: "P-001",
+    projectName: "113 年臺灣文化節活動策展計畫",
+    client: "文化部",
+    contractAmount: "5,000,000",
+  }),
+  makePortfolio({
+    id: "P-002",
+    projectName: "臺北市博物館常設展策展及展場設計",
+    client: "臺北市政府文化局",
+    contractAmount: "8,000,000",
+  }),
+  makePortfolio({
+    id: "P-003",
+    projectName: "112 年國慶典禮活動規劃執行",
+    client: "國防部",
+    contractAmount: "12,000,000",
+  }),
+  makePortfolio({
+    id: "P-004",
+    projectName: "客家文化園區導覽解說服務計畫",
+    client: "客家委員會",
+    contractAmount: "2,000,000",
+  }),
+  makePortfolio({
+    id: "P-005",
+    projectName: "城市行銷推廣影片製作",
+    client: "臺中市政府觀光旅遊局",
+    contractAmount: "1,500,000",
+  }),
+  makePortfolio({
+    id: "P-006",
+    projectName: "社區營造工作坊培訓計畫",
+    client: "文化部",
+    contractAmount: "800,000",
+  }),
+];
+
+const mockTeam: KBEntry00A[] = [
+  makeTeamMember({
     id: "M-001",
     name: "黃偉誠",
-    title: "計畫主持人",
-    status: "在職",
-    authorizedRoles: ["計畫主持人", "策展人"],
-    education: [{ school: "台大", department: "藝術研究所", degree: "碩士" }],
-    certifications: [{ name: "策展人認證", issuer: "文化部", expiry: "永久" }],
+    title: "總監",
+    authorizedRoles: ["計畫主持人"],
     experiences: [
-      { period: "2018-2022", organization: "文化局", title: "策展人", description: "主導三屆藝術節策展工作" },
+      {
+        period: "2018-2024",
+        organization: "大員洛川",
+        title: "活動總監",
+        description: "主持多項文化活動與展覽策展計畫",
+      },
+    ],
+    certifications: [
+      { name: "專案管理師 PMP", issuer: "PMI", expiry: "永久" },
     ],
     projects: [
-      { role: "計畫主持人", projectName: "藝術節策展", client: "文化部", year: "2024", outcome: "5萬人次" },
+      {
+        role: "計畫主持人",
+        projectName: "臺灣文化節",
+        client: "文化部",
+        year: "2024",
+        outcome: "圓滿完成",
+      },
     ],
-    additionalCapabilities: "展覽設計、文化資產調查",
-    entryStatus: "active",
-    updatedAt: "2025-12-01",
-  };
-  if (overrides.length === 0) return [base];
-  return overrides.map((o, i) => ({ ...base, id: `M-${String(i + 1).padStart(3, "0")}`, ...o }));
-}
-
-function makeAgencyIntel(overrides: Partial<AgencyIntel> = {}): AgencyIntel {
-  return {
-    totalCases: 20,
-    recentCases: [
-      { title: "策展服務案", date: 20250601, winner: "大員洛川", bidders: 4 },
+    additionalCapabilities: "活動策劃、展覽策展、文化推廣",
+  }),
+  makeTeamMember({
+    id: "M-002",
+    name: "林小芳",
+    title: "設計師",
+    experiences: [
+      {
+        period: "2020-2024",
+        organization: "大員洛川",
+        title: "視覺設計師",
+        description: "負責展覽視覺設計與多媒體製作",
+      },
     ],
-    incumbents: [{ name: "某公司", wins: 2 }],
-    myHistory: [{ title: "策展案", date: 20240301, won: true }],
-    ...overrides,
-  };
-}
-
-function makeMarketTrend(overrides: Partial<MarketTrend> = {}): MarketTrend {
-  return {
-    keyword: "策展",
-    totalRecords: 100,
-    yearRange: [2020, 2025],
-    yearlyData: [
-      { year: 2025, totalCases: 20, awardCases: 15, tenderCases: 5, avgBidders: 4, maxBidders: 8, minBidders: 1, topAgencies: ["文化部"] },
+    additionalCapabilities: "平面設計、展場設計、視覺",
+  }),
+  makeTeamMember({
+    id: "M-003",
+    name: "陳大明",
+    title: "企劃",
+    experiences: [
+      {
+        period: "2019-2024",
+        organization: "大員洛川",
+        title: "專案企劃",
+        description: "文化活動企劃與行銷推廣",
+      },
     ],
-    topAgencies: [{ name: "文化部", unitId: "U001", count: 10 }],
-    competitionLevel: "一般",
-    trendDirection: "持平",
-    ...overrides,
-  };
-}
+    additionalCapabilities: "活動企劃、行銷、社群媒體",
+  }),
+  makeTeamMember({
+    id: "M-004",
+    name: "王小華",
+    title: "行政專員",
+    status: "已離職",
+    additionalCapabilities: "行政庶務",
+  }),
+];
 
-// ====== scoreDomain ======
+const mockSelfAnalysis: SelfAnalysis = {
+  totalRecords: 50,
+  awardRecords: 30,
+  wins: 18,
+  losses: 12,
+  winRate: 0.6,
+  competitors: [],
+  agencies: [
+    {
+      unitId: "A01",
+      unitName: "文化部",
+      totalCases: 10,
+      myWins: 5,
+      myLosses: 5,
+      avgBidders: 4,
+    },
+    {
+      unitId: "A02",
+      unitName: "臺北市政府文化局",
+      totalCases: 8,
+      myWins: 2,
+      myLosses: 6,
+      avgBidders: 5,
+    },
+    {
+      unitId: "A03",
+      unitName: "新北市政府文化局",
+      totalCases: 3,
+      myWins: 0,
+      myLosses: 3,
+      avgBidders: 7,
+    },
+  ],
+  yearlyStats: [],
+};
+
+const mockMarketTrend: MarketTrend = {
+  keyword: "文化活動",
+  totalRecords: 200,
+  yearRange: [2022, 2025],
+  yearlyData: [
+    {
+      year: 2025,
+      totalCases: 60,
+      awardCases: 40,
+      tenderCases: 20,
+      avgBidders: 4.5,
+      maxBidders: 12,
+      minBidders: 1,
+      topAgencies: ["文化部", "臺北市政府"],
+    },
+  ],
+  topAgencies: [{ name: "文化部", unitId: "A01", count: 25 }],
+  competitionLevel: "一般",
+  trendDirection: "持平",
+};
+
+// ====== scoreDomain 測試 ======
 
 describe("scoreDomain", () => {
-  it("空實績庫 → 0 分、低信心", () => {
-    const result = scoreDomain("策展服務案", ["策展"], []);
+  it("空實績 → 0 分低信心", () => {
+    const result = scoreDomain("文化活動策展", []);
     expect(result.score).toBe(0);
     expect(result.confidence).toBe("低");
   });
 
-  it("完全不匹配 → 0 分", () => {
-    const portfolio = makePortfolio([{ projectName: "道路工程案", workItems: [{ item: "鋪路", description: "道路鋪設" }] }]);
-    const result = scoreDomain("資訊系統建置", ["資訊系統"], portfolio);
-    expect(result.score).toBe(0);
-  });
-
-  it("單筆匹配 → 中分", () => {
-    const portfolio = makePortfolio();
-    const result = scoreDomain("藝術節策展服務", ["策展", "藝術節"], portfolio);
-    expect(result.score).toBeGreaterThan(0);
-    expect(result.score).toBeLessThan(20);
-  });
-
-  it("3+ 匹配 → 滿分", () => {
-    const portfolio = makePortfolio([
-      { projectName: "藝術節策展案" },
-      { projectName: "文化策展計畫" },
-      { projectName: "展覽策展服務" },
-    ]);
-    const result = scoreDomain("策展服務", ["策展"], portfolio);
-    expect(result.score).toBe(20);
-    expect(result.confidence).toBe("高");
-  });
-
-  it("空關鍵字從案名提取", () => {
-    const portfolio = makePortfolio();
-    const result = scoreDomain("藝術節策展服務案", [], portfolio);
-    // 應該能自動提取關鍵字並匹配
-    expect(result.score).toBeGreaterThan(0);
-  });
-
-  it("已驗收案件加分", () => {
-    const portfolio = makePortfolio([
-      { projectName: "策展案", completionStatus: "已驗收結案" },
-    ]);
-    const result = scoreDomain("策展服務", ["策展"], portfolio);
-    expect(result.score).toBeGreaterThan(0);
-  });
-
-  it("分數不超過 20", () => {
-    const portfolio = makePortfolio([
-      { projectName: "策展案一", completionStatus: "已驗收結案" },
-      { projectName: "策展案二", completionStatus: "已驗收結案" },
-      { projectName: "策展案三", completionStatus: "已驗收結案" },
-      { projectName: "策展案四", completionStatus: "已驗收結案" },
-    ]);
-    const result = scoreDomain("策展", ["策展"], portfolio);
-    expect(result.score).toBeLessThanOrEqual(20);
-  });
-});
-
-// ====== scoreAgency ======
-
-describe("scoreAgency", () => {
-  it("無機關情報、無實績 → 低分低信心", () => {
-    const result = scoreAgency(null, []);
+  it("完全無關的案名 → 低分", () => {
+    const result = scoreDomain("道路鋪設工程", mockPortfolio);
     expect(result.score).toBeLessThanOrEqual(5);
     expect(result.confidence).toBe("低");
   });
 
-  it("有得標紀錄 → 高分", () => {
-    const intel = makeAgencyIntel({ myHistory: [{ title: "案件", date: 20240301, won: true }] });
-    const result = scoreAgency(intel, []);
-    expect(result.score).toBeGreaterThanOrEqual(12);
-    expect(result.confidence).toBe("高");
-  });
-
-  it("有投標但沒得標 → 中分", () => {
-    const intel = makeAgencyIntel({ myHistory: [{ title: "案件", date: 20240301, won: false }] });
-    const result = scoreAgency(intel, []);
-    expect(result.score).toBeGreaterThanOrEqual(5);
-    expect(result.score).toBeLessThan(12);
-  });
-
-  it("在位者強 → 扣分", () => {
-    const intel = makeAgencyIntel({ incumbents: [{ name: "強敵", wins: 5 }] });
-    const withoutIncumbent = makeAgencyIntel({ incumbents: [] });
-    const scoreWithStrong = scoreAgency(intel, []);
-    const scoreWithout = scoreAgency(withoutIncumbent, []);
-    expect(scoreWithStrong.score).toBeLessThan(scoreWithout.score);
-  });
-
-  it("在位者弱 → 加分", () => {
-    const intel = makeAgencyIntel({ incumbents: [{ name: "弱者", wins: 1 }] });
-    const result = scoreAgency(intel, []);
-    expect(result.evidence).toContain("無明顯在位者優勢");
-  });
-
-  it("無情報但實績庫有此機關 → 中分", () => {
-    const portfolio = makePortfolio([{ client: "文化部" }]);
-    const result = scoreAgency(null, portfolio, "文化部");
-    expect(result.score).toBeGreaterThan(4);
+  it("1-2 筆匹配 → 中等分數", () => {
+    // "影像攝影" 只匹配 P-005（影片）
+    const result = scoreDomain("觀光旅遊遊程規劃", mockPortfolio);
+    expect(result.score).toBeGreaterThanOrEqual(10);
+    expect(result.score).toBeLessThanOrEqual(16);
     expect(result.confidence).toBe("中");
   });
 
-  it("分數不超過 20", () => {
-    const intel = makeAgencyIntel({
-      myHistory: [
-        { title: "案1", date: 20230101, won: true },
-        { title: "案2", date: 20230601, won: true },
-        { title: "案3", date: 20240101, won: true },
-        { title: "案4", date: 20240601, won: true },
-      ],
-      incumbents: [],
-    });
-    const result = scoreAgency(intel, []);
-    expect(result.score).toBeLessThanOrEqual(20);
+  it("多筆匹配（活動+文化+策展）→ 滿分", () => {
+    const result = scoreDomain("臺灣文化節活動策展", mockPortfolio);
+    expect(result.score).toBe(20);
+    expect(result.confidence).toBe("高");
+  });
+
+  it("忽略 archived 實績", () => {
+    const archived = [
+      makePortfolio({
+        projectName: "活動策展",
+        entryStatus: "archived",
+      }),
+    ];
+    const result = scoreDomain("活動策展", archived);
+    expect(result.score).toBe(0);
+    expect(result.confidence).toBe("低");
+  });
+
+  it("無法辨識的案名 → 5 分低信心", () => {
+    const result = scoreDomain("XYZ-123 案", mockPortfolio);
+    expect(result.score).toBe(5);
+    expect(result.confidence).toBe("低");
   });
 });
 
-// ====== scoreCompetition ======
+// ====== scoreAgency 測試 ======
+
+describe("scoreAgency", () => {
+  it("無歷史資料 → 5 分低信心", () => {
+    const result = scoreAgency("文化部", null);
+    expect(result.score).toBe(5);
+    expect(result.confidence).toBe("低");
+  });
+
+  it("多次得標（≥3）→ 滿分", () => {
+    const result = scoreAgency("文化部", mockSelfAnalysis);
+    expect(result.score).toBe(20);
+    expect(result.confidence).toBe("高");
+    expect(result.evidence).toContain("得標 5 次");
+  });
+
+  it("少量得標（1-2）→ 高分", () => {
+    const result = scoreAgency("臺北市政府文化局", mockSelfAnalysis);
+    expect(result.score).toBeGreaterThanOrEqual(14);
+    expect(result.confidence).toBe("高");
+  });
+
+  it("投標但未得標 → 中等", () => {
+    const result = scoreAgency("新北市政府文化局", mockSelfAnalysis);
+    expect(result.score).toBe(8);
+    expect(result.confidence).toBe("中");
+  });
+
+  it("從未接觸的機關 → 5 分中信心", () => {
+    const result = scoreAgency("高雄市政府", mockSelfAnalysis);
+    expect(result.score).toBe(5);
+    expect(result.confidence).toBe("中");
+    expect(result.evidence).toContain("新開發機關");
+  });
+
+  it("空 agencies 列表 → 5 分低信心", () => {
+    const empty: SelfAnalysis = {
+      ...mockSelfAnalysis,
+      agencies: [],
+    };
+    const result = scoreAgency("文化部", empty);
+    expect(result.score).toBe(5);
+    expect(result.confidence).toBe("低");
+  });
+});
+
+// ====== scoreCompetition 測試 ======
 
 describe("scoreCompetition", () => {
-  it("無資料 → 預設中分", () => {
+  it("藍海（≤3 家）→ 滿分", () => {
+    const result = scoreCompetition(null, 2);
+    expect(result.score).toBe(20);
+    expect(result.confidence).toBe("高");
+  });
+
+  it("紅海（>6 家）→ 低分", () => {
+    const result = scoreCompetition(null, 10);
+    expect(result.score).toBeLessThanOrEqual(5);
+    expect(result.evidence).toContain("紅海");
+  });
+
+  it("中等競爭（4 家）→ 中間分數", () => {
+    const result = scoreCompetition(null, 4);
+    expect(result.score).toBeGreaterThan(8);
+    expect(result.score).toBeLessThan(20);
+  });
+
+  it("無實際家數、有市場趨勢 → 用趨勢", () => {
+    const result = scoreCompetition(mockMarketTrend, null);
+    expect(result.score).toBe(12); // 一般 = 12
+    expect(result.confidence).toBe("中");
+  });
+
+  it("趨勢減少 → 加分", () => {
+    const cooling: MarketTrend = {
+      ...mockMarketTrend,
+      competitionLevel: "一般",
+      trendDirection: "減少",
+    };
+    const result = scoreCompetition(cooling, null);
+    expect(result.score).toBe(14); // 12 + 2
+  });
+
+  it("趨勢增加 → 扣分", () => {
+    const heating: MarketTrend = {
+      ...mockMarketTrend,
+      competitionLevel: "一般",
+      trendDirection: "增加",
+    };
+    const result = scoreCompetition(heating, null);
+    expect(result.score).toBe(10); // 12 - 2
+  });
+
+  it("完全無資料 → 10 分低信心", () => {
     const result = scoreCompetition(null, null);
     expect(result.score).toBe(10);
     expect(result.confidence).toBe("低");
   });
 
-  it("藍海（< 3 家）→ 高分", () => {
-    const result = scoreCompetition(null, 2);
-    expect(result.score).toBe(20);
-  });
-
-  it("紅海（> 6 家）→ 低分", () => {
-    const result = scoreCompetition(null, 10);
-    expect(result.score).toBeLessThanOrEqual(5);
-  });
-
-  it("一般（3-6 家）→ 中分", () => {
-    const result = scoreCompetition(null, 4);
-    expect(result.score).toBeGreaterThan(5);
-    expect(result.score).toBeLessThan(20);
-  });
-
-  it("趨勢減少 → 加分", () => {
-    const trend = makeMarketTrend({ trendDirection: "減少" });
-    const resultDecreasing = scoreCompetition(trend, 4);
-    const resultFlat = scoreCompetition(makeMarketTrend({ trendDirection: "持平" }), 4);
-    expect(resultDecreasing.score).toBeGreaterThan(resultFlat.score);
-  });
-
-  it("實際投標家數優先於市場平均", () => {
-    const trend = makeMarketTrend({ competitionLevel: "紅海" });
-    // 即使市場是紅海，實際只有 2 家 → 應該是藍海分數
-    const result = scoreCompetition(trend, 2);
-    expect(result.score).toBeGreaterThanOrEqual(18);
-  });
-
-  it("分數不低於 0", () => {
-    const result = scoreCompetition(null, 100);
-    expect(result.score).toBeGreaterThanOrEqual(0);
+  it("實際家數優先於市場趨勢", () => {
+    const result = scoreCompetition(mockMarketTrend, 2);
+    expect(result.score).toBe(20); // 用實際的 2 家，不用趨勢
+    expect(result.confidence).toBe("高");
   });
 });
 
-// ====== scoreScale ======
+// ====== scoreScale 測試 ======
 
 describe("scoreScale", () => {
-  it("無預算 → 中分低信心", () => {
-    const result = scoreScale(null, makePortfolio());
-    expect(result.score).toBe(10);
-    expect(result.confidence).toBe("低");
-  });
-
-  it("預算為 0 → 中分低信心", () => {
-    const result = scoreScale(0, makePortfolio());
-    expect(result.score).toBe(10);
-    expect(result.confidence).toBe("低");
-  });
-
-  it("空實績庫 → 中分低信心", () => {
-    const result = scoreScale(3000000, []);
+  it("無預算 → 10 分低信心", () => {
+    const result = scoreScale(null, mockPortfolio);
     expect(result.score).toBe(10);
     expect(result.confidence).toBe("低");
   });
 
   it("預算在 IQR 內 → 滿分", () => {
-    const portfolio = makePortfolio([
-      { contractAmount: "1,000,000" },
-      { contractAmount: "2,000,000" },
-      { contractAmount: "3,000,000" },
-      { contractAmount: "4,000,000" },
-      { contractAmount: "5,000,000" },
-      { contractAmount: "6,000,000" },
-      { contractAmount: "7,000,000" },
-      { contractAmount: "8,000,000" },
-    ]);
-    const result = scoreScale(4000000, portfolio);
-    expect(result.score).toBe(20);
-  });
-
-  it("預算遠超歷史範圍 → 低分", () => {
-    const portfolio = makePortfolio([
-      { contractAmount: "1,000,000" },
-      { contractAmount: "2,000,000" },
-      { contractAmount: "3,000,000" },
-      { contractAmount: "4,000,000" },
-      { contractAmount: "5,000,000" },
-    ]);
-    const result = scoreScale(50000000, portfolio);
-    expect(result.score).toBeLessThan(10);
-  });
-
-  it("預算遠低於歷史範圍 → 低分", () => {
-    const portfolio = makePortfolio([
-      { contractAmount: "5,000,000" },
-      { contractAmount: "6,000,000" },
-      { contractAmount: "7,000,000" },
-      { contractAmount: "8,000,000" },
-      { contractAmount: "9,000,000" },
-    ]);
-    const result = scoreScale(100000, portfolio);
-    expect(result.score).toBeLessThan(10);
-  });
-
-  it("分數不超過 20 不低於 0", () => {
-    const portfolio = makePortfolio([{ contractAmount: "3,500,000" }]);
-    const result = scoreScale(3500000, portfolio);
-    expect(result.score).toBeLessThanOrEqual(20);
-    expect(result.score).toBeGreaterThanOrEqual(0);
-  });
-});
-
-// ====== scoreTeam ======
-
-describe("scoreTeam", () => {
-  it("空團隊庫 → 0 分", () => {
-    const result = scoreTeam(["策展"], []);
-    expect(result.score).toBe(0);
-    expect(result.confidence).toBe("低");
-  });
-
-  it("空關鍵字 → 中分低信心", () => {
-    const result = scoreTeam([], makeTeam());
-    expect(result.score).toBe(10);
-    expect(result.confidence).toBe("低");
-  });
-
-  it("有匹配 → 有分數", () => {
-    const team = makeTeam();
-    const result = scoreTeam(["策展"], team);
-    expect(result.score).toBeGreaterThan(0);
-    expect(result.evidence).toContain("黃偉誠");
-  });
-
-  it("3+ 人匹配 → 滿分", () => {
-    const team = makeTeam([
-      { name: "甲", authorizedRoles: ["策展人"], experiences: [{ period: "2020-2024", organization: "文化局", title: "策展人", description: "策展工作" }] },
-      { name: "乙", authorizedRoles: ["展場設計"], experiences: [{ period: "2020-2024", organization: "美術館", title: "設計師", description: "策展空間設計" }] },
-      { name: "丙", authorizedRoles: ["展覽企劃"], experiences: [{ period: "2020-2024", organization: "博物館", title: "企劃", description: "策展企劃" }] },
-    ]);
-    const result = scoreTeam(["策展"], team);
+    // 實績金額：800K, 1.5M, 2M, 3M, 5M, 8M, 12M
+    // Q1 ≈ 1.5M, Q3 ≈ 8M
+    const result = scoreScale(3_000_000, mockPortfolio);
     expect(result.score).toBe(20);
     expect(result.confidence).toBe("高");
   });
 
-  it("有主管級人選 → 加分", () => {
-    const teamWithLeader = makeTeam([{ authorizedRoles: ["計畫主持人", "策展人"] }]);
-    const teamWithoutLeader = makeTeam([{ authorizedRoles: ["策展助理"] }]);
-    const withLeader = scoreTeam(["策展"], teamWithLeader);
-    const withoutLeader = scoreTeam(["策展"], teamWithoutLeader);
-    expect(withLeader.score).toBeGreaterThanOrEqual(withoutLeader.score);
+  it("預算略超出範圍 → 中等", () => {
+    const result = scoreScale(10_000_000, mockPortfolio);
+    expect(result.score).toBeGreaterThanOrEqual(8);
+    expect(result.score).toBeLessThanOrEqual(14);
   });
 
-  it("已離職人員不計入", () => {
-    const team = makeTeam([{ status: "已離職" }]);
-    const result = scoreTeam(["策展"], team);
-    expect(result.score).toBe(0);
+  it("預算遠超範圍 → 低分", () => {
+    const result = scoreScale(100_000_000, mockPortfolio);
+    expect(result.score).toBeLessThanOrEqual(8);
   });
 
-  it("分數不超過 20", () => {
-    const team = makeTeam([
-      { name: "甲", authorizedRoles: ["計畫主持人", "策展人"] },
-      { name: "乙", authorizedRoles: ["策展人"] },
-      { name: "丙", authorizedRoles: ["策展人"] },
-      { name: "丁", authorizedRoles: ["策展人"] },
-      { name: "戊", authorizedRoles: ["策展人"] },
-    ]);
-    const result = scoreTeam(["策展"], team);
-    expect(result.score).toBeLessThanOrEqual(20);
+  it("預算遠低於範圍 → 低分", () => {
+    const result = scoreScale(10_000, mockPortfolio);
+    // 10K vs portfolio 800K-12M → 應明確偏低
+    expect(result.score).toBeLessThanOrEqual(8);
+  });
+
+  it("實績不足 4 筆 → 10 分低信心", () => {
+    const few = mockPortfolio.slice(0, 2);
+    const result = scoreScale(3_000_000, few);
+    expect(result.score).toBe(10);
+    expect(result.confidence).toBe("低");
   });
 });
 
-// ====== computeFitScore ======
+// ====== scoreTeam 測試 ======
 
-describe("computeFitScore", () => {
-  it("完整輸入產出有效結果", () => {
-    const result = computeFitScore({
-      tenderTitle: "113年度藝術節策展服務案",
-      budget: 3500000,
-      agencyName: "文化部",
-      agencyIntel: makeAgencyIntel(),
-      marketTrend: makeMarketTrend(),
-      portfolio: makePortfolio(),
-      team: makeTeam(),
-    });
+describe("scoreTeam", () => {
+  it("空團隊 → 0 分", () => {
+    const result = scoreTeam("文化活動", []);
+    expect(result.score).toBe(0);
+    expect(result.confidence).toBe("低");
+  });
+
+  it("多名成員匹配 + 有主持人 → 滿分", () => {
+    const result = scoreTeam("文化活動策展計畫", mockTeam);
+    expect(result.score).toBe(20);
+    expect(result.confidence).toBe("高");
+    expect(result.evidence).toContain("計畫主持人");
+  });
+
+  it("1-2 名匹配 → 中等分數", () => {
+    const result = scoreTeam("行銷推廣", mockTeam);
+    expect(result.score).toBeGreaterThanOrEqual(10);
+    expect(result.score).toBeLessThanOrEqual(16);
+  });
+
+  it("無匹配但有人 → 低分", () => {
+    const result = scoreTeam("道路工程施工", mockTeam);
+    expect(result.score).toBeLessThanOrEqual(5);
+    expect(result.confidence).toBe("低");
+  });
+
+  it("忽略已離職成員", () => {
+    // M-004 王小華已離職，不應計入
+    const allInactive = mockTeam.map((m) => ({
+      ...m,
+      status: "已離職" as const,
+    }));
+    const result = scoreTeam("文化活動", allInactive);
+    expect(result.score).toBe(0);
+  });
+
+  it("案件要求主持人但團隊沒有 → 扣分", () => {
+    const noPI = mockTeam.map((m) => ({
+      ...m,
+      authorizedRoles: [],
+      projects: m.projects.map((p) => ({ ...p, role: "專案成員" })),
+    }));
+    const result = scoreTeam("計畫主持人帶領之文化活動", noPI);
+    // Should lose 5 points for missing PI
+    expect(result.evidence).toContain("計畫主持人");
+  });
+});
+
+// ====== detectRedFlags 測試 ======
+
+describe("detectRedFlags", () => {
+  it("正常案名 → 無紅旗", () => {
+    expect(detectRedFlags("文化活動策展計畫")).toHaveLength(0);
+  });
+
+  it("限制性招標 → 偵測", () => {
+    const flags = detectRedFlags("限制性招標：文化展覽");
+    expect(flags).toHaveLength(1);
+    expect(flags[0]).toContain("限制性招標");
+  });
+
+  it("最有利標 → 偵測", () => {
+    const flags = detectRedFlags("最有利標文化活動");
+    expect(flags).toHaveLength(1);
+    expect(flags[0]).toContain("最有利標");
+  });
+
+  it("多重紅旗", () => {
+    const flags = detectRedFlags("限制性招標統包文化中心");
+    expect(flags).toHaveLength(2);
+  });
+});
+
+// ====== determineVerdict 測試 ======
+
+describe("determineVerdict", () => {
+  const makeDimensions = (
+    scores: number[],
+    confidences: ("高" | "中" | "低")[] = ["高", "高", "高", "高", "高"],
+  ): FitScore["dimensions"] => ({
+    domain: { score: scores[0], confidence: confidences[0], evidence: "" },
+    agency: { score: scores[1], confidence: confidences[1], evidence: "" },
+    competition: {
+      score: scores[2],
+      confidence: confidences[2],
+      evidence: "",
+    },
+    scale: { score: scores[3], confidence: confidences[3], evidence: "" },
+    team: { score: scores[4], confidence: confidences[4], evidence: "" },
+  });
+
+  it("高分 → 建議投標", () => {
+    expect(determineVerdict(80, makeDimensions([16, 16, 16, 16, 16]))).toBe(
+      "建議投標",
+    );
+  });
+
+  it("中分 → 值得評估", () => {
+    expect(determineVerdict(60, makeDimensions([12, 12, 12, 12, 12]))).toBe(
+      "值得評估",
+    );
+  });
+
+  it("低分 → 不建議", () => {
+    expect(determineVerdict(30, makeDimensions([6, 6, 6, 6, 6]))).toBe(
+      "不建議",
+    );
+  });
+
+  it("≥3 維低信心 → 資料不足", () => {
+    expect(
+      determineVerdict(
+        80,
+        makeDimensions(
+          [16, 16, 16, 16, 16],
+          ["低", "低", "低", "高", "高"],
+        ),
+      ),
+    ).toBe("資料不足");
+  });
+
+  it("邊界值：剛好 70 → 建議投標", () => {
+    expect(determineVerdict(70, makeDimensions([14, 14, 14, 14, 14]))).toBe(
+      "建議投標",
+    );
+  });
+
+  it("邊界值：剛好 50 → 值得評估", () => {
+    expect(determineVerdict(50, makeDimensions([10, 10, 10, 10, 10]))).toBe(
+      "值得評估",
+    );
+  });
+});
+
+// ====== generateReasons 測試 ======
+
+describe("generateReasons", () => {
+  it("有明確強弱項時生成多條理由", () => {
+    const dims: FitScore["dimensions"] = {
+      domain: { score: 20, confidence: "高", evidence: "多筆匹配" },
+      agency: { score: 15, confidence: "高", evidence: "得標 3 次" },
+      competition: { score: 12, confidence: "中", evidence: "一般競爭" },
+      scale: { score: 5, confidence: "中", evidence: "偏大" },
+      team: { score: 18, confidence: "高", evidence: "3 人匹配" },
+    };
+    const reasons = generateReasons(dims);
+    expect(reasons.length).toBeGreaterThanOrEqual(2);
+    expect(reasons.some((r) => r.includes("優勢"))).toBe(true);
+    expect(reasons.some((r) => r.includes("風險"))).toBe(true);
+  });
+});
+
+// ====== calculateFitScore 整合測試 ======
+
+describe("calculateFitScore", () => {
+  const emptyKB = {
+    "00A": [] as KBEntry00A[],
+    "00B": [] as KBEntry00B[],
+    "00C": [],
+    "00D": [],
+    "00E": [],
+    lastUpdated: "",
+    version: 1,
+  };
+
+  it("完全無資料 → 資料不足", () => {
+    const input: FitScoreInput = {
+      caseName: "文化活動",
+      agency: "文化部",
+      budget: null,
+      intelligence: {
+        selfAnalysis: null,
+        marketTrend: null,
+        tenderSummary: null,
+      },
+      kb: emptyKB,
+    };
+    const result = calculateFitScore(input);
+    expect(result.verdict).toBe("資料不足");
     expect(result.total).toBeGreaterThanOrEqual(0);
     expect(result.total).toBeLessThanOrEqual(100);
-    expect(result.verdict).toBeTruthy();
-    expect(result.reasons.length).toBeGreaterThan(0);
-    expect(result.dimensions.domain.score).toBeGreaterThanOrEqual(0);
-    expect(result.dimensions.domain.score).toBeLessThanOrEqual(20);
   });
 
-  it("空輸入不崩潰", () => {
-    const result = computeFitScore({
-      tenderTitle: "",
-      budget: null,
-      agencyIntel: null,
-      marketTrend: null,
-      portfolio: [],
-      team: [],
-    });
-    expect(result.total).toBeGreaterThanOrEqual(0);
-    expect(result.verdict).toBeTruthy();
-  });
-
-  it("總分 = 加權各維度分數", () => {
-    const result = computeFitScore({
-      tenderTitle: "策展案",
-      budget: 3500000,
-      agencyIntel: makeAgencyIntel(),
-      marketTrend: makeMarketTrend(),
-      portfolio: makePortfolio(),
-      team: makeTeam(),
-    });
-    // 手動驗算
-    const dims = result.dimensions;
-    const expectedTotal =
-      (dims.domain.score / 20) * 20 +
-      (dims.agency.score / 20) * 20 +
-      (dims.competition.score / 20) * 20 +
-      (dims.scale.score / 20) * 20 +
-      (dims.team.score / 20) * 20;
-    expect(result.total).toBeCloseTo(Math.round(expectedTotal * 10) / 10, 0);
-  });
-
-  it("自訂權重影響總分", () => {
-    const input = {
-      tenderTitle: "策展案",
-      tenderKeywords: ["策展"],
-      budget: 3500000,
-      agencyIntel: makeAgencyIntel(),
-      marketTrend: makeMarketTrend(),
-      portfolio: makePortfolio(),
-      team: makeTeam(),
+  it("高匹配案件 → 建議投標", () => {
+    const input: FitScoreInput = {
+      caseName: "114 年臺灣文化節活動策展計畫",
+      agency: "文化部",
+      budget: 5_000_000,
+      intelligence: {
+        selfAnalysis: mockSelfAnalysis,
+        marketTrend: mockMarketTrend,
+        tenderSummary: {
+          title: "",
+          agency: "文化部",
+          budget: 5_000_000,
+          floorPrice: null,
+          awardAmount: null,
+          bidderCount: 3,
+          awardDate: null,
+          deadline: null,
+          procurementType: null,
+          awardMethod: null,
+        },
+      },
+      kb: {
+        ...emptyKB,
+        "00A": mockTeam,
+        "00B": mockPortfolio,
+      },
     };
-    const normal = computeFitScore(input);
-    const domainHeavy = computeFitScore({
-      ...input,
-      weights: { domain: 80, agency: 5, competition: 5, scale: 5, team: 5 },
+    const result = calculateFitScore(input);
+    expect(result.total).toBeGreaterThanOrEqual(70);
+    expect(result.verdict).toBe("建議投標");
+    expect(result.reasons.length).toBeGreaterThan(0);
+  });
+
+  it("低匹配案件 → 不建議", () => {
+    const input: FitScoreInput = {
+      caseName: "高速公路施工工程",
+      agency: "交通部公路局",
+      budget: 500_000_000,
+      intelligence: {
+        selfAnalysis: mockSelfAnalysis,
+        marketTrend: null,
+        tenderSummary: {
+          title: "",
+          agency: "交通部公路局",
+          budget: 500_000_000,
+          floorPrice: null,
+          awardAmount: null,
+          bidderCount: 15,
+          awardDate: null,
+          deadline: null,
+          procurementType: null,
+          awardMethod: null,
+        },
+      },
+      kb: {
+        ...emptyKB,
+        "00A": mockTeam,
+        "00B": mockPortfolio,
+      },
+    };
+    const result = calculateFitScore(input);
+    expect(result.total).toBeLessThan(50);
+    expect(result.verdict).toBe("不建議");
+  });
+
+  it("紅旗偵測正確", () => {
+    const input: FitScoreInput = {
+      caseName: "限制性招標：博物館策展",
+      agency: "故宮博物院",
+      budget: 3_000_000,
+      intelligence: {
+        selfAnalysis: null,
+        marketTrend: null,
+        tenderSummary: null,
+      },
+      kb: {
+        ...emptyKB,
+        "00A": mockTeam,
+        "00B": mockPortfolio,
+      },
+    };
+    const result = calculateFitScore(input);
+    expect(result.redFlags.length).toBeGreaterThan(0);
+    expect(result.redFlags[0]).toContain("限制性招標");
+  });
+
+  it("總分在 0-100 之間", () => {
+    const input: FitScoreInput = {
+      caseName: "活動",
+      agency: "文化部",
+      budget: 1_000_000,
+      intelligence: {
+        selfAnalysis: mockSelfAnalysis,
+        marketTrend: mockMarketTrend,
+        tenderSummary: null,
+      },
+      kb: {
+        ...emptyKB,
+        "00A": mockTeam,
+        "00B": mockPortfolio,
+      },
+    };
+    const result = calculateFitScore(input);
+    expect(result.total).toBeGreaterThanOrEqual(0);
+    expect(result.total).toBeLessThanOrEqual(100);
+  });
+
+  it("自訂權重正確正規化", () => {
+    const input: FitScoreInput = {
+      caseName: "臺灣文化節活動策展",
+      agency: "文化部",
+      budget: 5_000_000,
+      intelligence: {
+        selfAnalysis: mockSelfAnalysis,
+        marketTrend: mockMarketTrend,
+        tenderSummary: null,
+      },
+      kb: {
+        ...emptyKB,
+        "00A": mockTeam,
+        "00B": mockPortfolio,
+      },
+    };
+
+    // 加重領域權重
+    const domainHeavy = calculateFitScore(input, {
+      domain: 40,
+      agency: 15,
+      competition: 15,
+      scale: 15,
+      team: 15,
     });
-    // 不要求相等，但結構都有效
+
     expect(domainHeavy.total).toBeGreaterThanOrEqual(0);
     expect(domainHeavy.total).toBeLessThanOrEqual(100);
-    expect(normal.total !== domainHeavy.total || normal.total === domainHeavy.total).toBe(true);
-  });
-
-  it("verdict 門檻正確觸發", () => {
-    // 用空資料造低分
-    const lowResult = computeFitScore({
-      tenderTitle: "道路工程",
-      budget: null,
-      agencyIntel: null,
-      marketTrend: null,
-      portfolio: [],
-      team: [],
-    });
-    // 空資料 → 大部分維度是低信心，應觸發「資料不足」
-    expect(["不建議", "資料不足"]).toContain(lowResult.verdict);
-  });
-
-  it("紅旗正確生成", () => {
-    const result = computeFitScore({
-      tenderTitle: "未知領域案",
-      budget: 100000000,
-      agencyIntel: makeAgencyIntel({ incumbents: [{ name: "壟斷者", wins: 10 }] }),
-      marketTrend: null,
-      portfolio: makePortfolio([{ contractAmount: "1,000,000" }]),
-      team: [],
-    });
-    expect(result.redFlags.length).toBeGreaterThan(0);
   });
 });
