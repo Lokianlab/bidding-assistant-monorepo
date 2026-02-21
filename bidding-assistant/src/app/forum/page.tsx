@@ -62,7 +62,7 @@ export default function ForumPage() {
     return threads;
   }, [data, filters]);
 
-  // 批准/退回：以 Jin 身分發帖，同時更新 _threads.md 狀態
+  // 批准/退回：以 Jin 身分發帖，POST 帶 updateStatus 會同時更新 _threads.md 狀態並 git push
   const handleApprove = async (threadId: string, message: string) => {
     await fetch("/api/forum", {
       method: "POST",
@@ -74,12 +74,6 @@ export default function ForumPage() {
         priority: "P0",
         updateStatus: "已結案",
       }),
-    });
-    // 更新狀態為已結案（git sync 已在 POST 時完成，這裡不重複 push）
-    await fetch("/api/forum", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ threadId, status: "已結案" }),
     });
     refresh();
   };
@@ -95,12 +89,6 @@ export default function ForumPage() {
         priority: "P0",
         updateStatus: "進行中",
       }),
-    });
-    // 退回後狀態改回進行中
-    await fetch("/api/forum", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ threadId, status: "進行中" }),
     });
     refresh();
   };
