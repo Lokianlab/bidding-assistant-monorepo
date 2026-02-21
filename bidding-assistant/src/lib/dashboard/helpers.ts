@@ -295,6 +295,11 @@ export function loadPerfCache(): PerfCacheData | null {
       return null;
     }
     const data = JSON.parse(raw);
+    if (!data || typeof data !== "object" || !Array.isArray(data.pages)) {
+      logger.debug("cache", "績效快取格式無效，清除", undefined, "helpers.ts");
+      localStorage.removeItem(PERF_CACHE_KEY);
+      return null;
+    }
     // 相容舊格式（沒有 complete 欄位的視為完成）
     if (data.complete === undefined) data.complete = true;
     logger.debug("cache", "載入績效快取", `${data.pages?.length ?? 0} 筆，完成=${data.complete}`, "helpers.ts");

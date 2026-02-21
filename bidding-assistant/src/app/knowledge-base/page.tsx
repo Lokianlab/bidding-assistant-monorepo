@@ -32,7 +32,7 @@ import {
 import { useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import { useKnowledgeBase } from "@/lib/knowledge-base/useKnowledgeBase";
-import { KB_CATEGORIES, KB_CATEGORY_MAP } from "@/lib/knowledge-base/constants";
+import { KB_CATEGORIES, KB_CATEGORY_MAP, ENTRY_STATUS_LABELS } from "@/lib/knowledge-base/constants";
 import {
   generateNextId,
   generateProjectId,
@@ -416,9 +416,7 @@ export default function KnowledgeBasePage() {
                                       : "outline"
                                 }
                               >
-                                {e.entryStatus === "active" ? "啟用"
-                                  : e.entryStatus === "draft" ? "草稿"
-                                    : "封存"}
+                                {ENTRY_STATUS_LABELS[e.entryStatus as import("@/lib/knowledge-base/types").KBEntryStatus] ?? e.entryStatus}
                               </Badge>
                             </TableCell>
                             <TableCell>

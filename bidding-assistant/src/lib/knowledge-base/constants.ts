@@ -1,6 +1,6 @@
 // ====== 知識庫常數定義 ======
 
-import type { KBCategoryDef, KnowledgeBaseData } from "./types";
+import type { KBCategoryDef, KBEntryStatus, KnowledgeBaseData } from "./types";
 
 /** localStorage key */
 export const KB_STORAGE_KEY = "bidding-assistant-knowledge-base";
@@ -66,4 +66,11 @@ export const EMPTY_KB_DATA: KnowledgeBaseData = {
   "00E": [],
   lastUpdated: new Date().toISOString(),
   version: KB_DATA_VERSION,
+};
+
+/** Entry 狀態中文標籤（SSOT：page.tsx 從這裡讀） */
+export const ENTRY_STATUS_LABELS: Record<KBEntryStatus, string> = {
+  active: "啟用",
+  draft: "草稿",
+  archived: "封存",
 };
