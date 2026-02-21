@@ -309,6 +309,19 @@ describe("scoreAgency", () => {
     expect(result.score).toBe(5);
     expect(result.confidence).toBe("低");
   });
+
+  it("有機關紀錄但 totalCases = 0 → 5 分低信心", () => {
+    const touched: SelfAnalysis = {
+      ...mockSelfAnalysis,
+      agencies: [
+        { unitId: "A99", unitName: "國科會", totalCases: 0, myWins: 0, myLosses: 0, avgBidders: 0 },
+      ],
+    };
+    const result = scoreAgency("國科會", touched);
+    expect(result.score).toBe(5);
+    expect(result.confidence).toBe("低");
+    expect(result.evidence).toContain("有接觸");
+  });
 });
 
 // ====== scoreCompetition 測試 ======
@@ -369,6 +382,20 @@ describe("scoreCompetition", () => {
     expect(result.score).toBe(20); // 用實際的 2 家，不用趨勢
     expect(result.confidence).toBe("高");
   });
+
+  it("市場趨勢為藍海 → 18 分", () => {
+    const blueOcean: MarketTrend = { ...mockMarketTrend, competitionLevel: "藍海", trendDirection: "持平" };
+    const result = scoreCompetition(blueOcean, null);
+    expect(result.score).toBe(18);
+    expect(result.confidence).toBe("中");
+  });
+
+  it("市場趨勢為紅海 → 5 分", () => {
+    const redSea: MarketTrend = { ...mockMarketTrend, competitionLevel: "紅海", trendDirection: "持平" };
+    const result = scoreCompetition(redSea, null);
+    expect(result.score).toBe(5);
+    expect(result.confidence).toBe("中");
+  });
 });
 
 // ====== scoreScale 測試 ======
@@ -410,6 +437,15 @@ describe("scoreScale", () => {
     const result = scoreScale(3_000_000, few);
     expect(result.score).toBe(10);
     expect(result.confidence).toBe("低");
+  });
+
+  it("預算大幅超出但未到極端 → 8 分中信心", () => {
+    // Q1=1.5M, Q3=8M, IQR=6.5M
+    // q3+iqr*0.5=11.25M, q3+iqr*1.5=17.75M
+    // 15M 落在 (11.25M, 17.75M] → score=8
+    const result = scoreScale(15_000_000, mockPortfolio);
+    expect(result.score).toBe(8);
+    expect(result.confidence).toBe("中");
   });
 });
 
@@ -460,6 +496,14 @@ describe("scoreTeam", () => {
     const result = scoreTeam("計畫主持人帶領之文化活動", noPI);
     // Should lose 5 points for missing PI
     expect(result.evidence).toContain("計畫主持人");
+  });
+
+  it("只有 1 名在職成員且無匹配 → 2 分", () => {
+    // 黃偉誠無道路工程相關經驗，1 人 < 3 → score=2
+    const singleMember = mockTeam.filter((m) => m.name === "黃偉誠");
+    const result = scoreTeam("道路工程施工", singleMember);
+    expect(result.score).toBe(2);
+    expect(result.confidence).toBe("低");
   });
 });
 
@@ -564,6 +608,32 @@ describe("generateReasons", () => {
     expect(reasons.length).toBeGreaterThanOrEqual(2);
     expect(reasons.some((r) => r.includes("優勢"))).toBe(true);
     expect(reasons.some((r) => r.includes("風險"))).toBe(true);
+  });
+
+  it("中等分數（50-69）生成「條件中等」總評", () => {
+    // total = 10+12+12+10+10 = 54，無項目 ≥15 也無項目 ≤8
+    const dims: FitScore["dimensions"] = {
+      domain: { score: 10, confidence: "中", evidence: "" },
+      agency: { score: 12, confidence: "中", evidence: "" },
+      competition: { score: 12, confidence: "中", evidence: "" },
+      scale: { score: 10, confidence: "中", evidence: "" },
+      team: { score: 10, confidence: "中", evidence: "" },
+    };
+    const reasons = generateReasons(dims);
+    expect(reasons.some((r) => r.includes("中等"))).toBe(true);
+  });
+
+  it("低分（<50）生成「整體條件不利」總評", () => {
+    // total = 3+5+3+5+2 = 18
+    const dims: FitScore["dimensions"] = {
+      domain: { score: 3, confidence: "低", evidence: "" },
+      agency: { score: 5, confidence: "中", evidence: "" },
+      competition: { score: 3, confidence: "中", evidence: "" },
+      scale: { score: 5, confidence: "中", evidence: "" },
+      team: { score: 2, confidence: "低", evidence: "" },
+    };
+    const reasons = generateReasons(dims);
+    expect(reasons.some((r) => r.includes("不利"))).toBe(true);
   });
 });
 
