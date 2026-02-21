@@ -6,68 +6,186 @@ import { F } from "../types";
 
 // ── Helpers ────────────────────────────────────────────────
 
-function makePage(props: Record<string, unknown>): NotionPage {
-  return { id: "test-id", url: "https://notion.so/test", properties: props };
+let pageIdx = 0;
+
+function makePage(
+  props: Record<string, unknown>,
+  overrides?: Partial<NotionPage>,
+): NotionPage {
+  return {
+    id: `page-${++pageIdx}`,
+    url: `https://notion.so/page-${pageIdx}`,
+    properties: props,
+    ...overrides,
+  };
+}
+
+function makeWonPage(writer: string, agency: string, budget: number) {
+  return makePage({
+    [F.企劃主筆]: [writer],
+    [F.招標機關]: agency,
+    [F.標案類型]: ["勞務"],
+    [F.進程]: "得標",
+    [F.預算]: budget,
+    [F.押標金]: 10000,
+    [F.領標費]: 2000,
+  });
+}
+
+function makeLostPage(writer: string, agency: string, budget: number) {
+  return makePage({
+    [F.企劃主筆]: [writer],
+    [F.招標機關]: agency,
+    [F.標案類型]: ["勞務"],
+    [F.進程]: "未獲青睞",
+    [F.預算]: budget,
+    [F.押標金]: 10000,
+    [F.領標費]: 2000,
+  });
 }
 
 // ── Tests ──────────────────────────────────────────────────
 
 describe("useCrossAnalysis", () => {
-  it("returns all expected fields", () => {
-    const { result } = renderHook(() => useCrossAnalysis([]));
+  // --- 空輸入 ---
 
-    expect(result.current).toHaveProperty("byWriter");
-    expect(result.current).toHaveProperty("byAgency");
-    expect(result.current).toHaveProperty("byType");
-    expect(result.current).toHaveProperty("byMethod");
-    expect(result.current).toHaveProperty("byBudgetRange");
-    expect(result.current).toHaveProperty("byPriority");
-    expect(result.current).toHaveProperty("byDecision");
-    expect(result.current).toHaveProperty("globalInsights");
-    expect(result.current).toHaveProperty("costAnalysis");
-    expect(result.current).toHaveProperty("writerNames");
-  });
-
-  it("returns empty arrays for empty pages", () => {
+  it("returns empty results for empty pages", () => {
     const { result } = renderHook(() => useCrossAnalysis([]));
 
     expect(result.current.byWriter).toEqual([]);
     expect(result.current.byAgency).toEqual([]);
+    expect(result.current.byType).toEqual([]);
+    expect(result.current.byMethod).toEqual([]);
+    expect(result.current.byBudgetRange).toEqual([]);
+    expect(result.current.byPriority).toEqual([]);
+    expect(result.current.byDecision).toEqual([]);
     expect(result.current.writerNames).toEqual([]);
     expect(result.current.globalInsights).toEqual([]);
+    expect(result.current.costAnalysis.totalInvested).toBe(0);
+    expect(result.current.costAnalysis.totalWonBudget).toBe(0);
+    expect(result.current.costAnalysis.overallROI).toBe(0);
   });
 
-  it("produces breakdowns from pages with data", () => {
+  // --- byWriter 分組 ---
+
+  it("groups by writer with correct counts", () => {
+    const pages = [
+      makeWonPage("Alice", "機關A", 1000000),
+      makeLostPage("Alice", "機關B", 500000),
+      makeWonPage("Bob", "機關A", 800000),
+    ];
+
+    const { result } = renderHook(() => useCrossAnalysis(pages));
+
+    expect(result.current.byWriter).toHaveLength(2);
+    const alice = result.current.byWriter.find((w) => w.key === "Alice");
+    const bob = result.current.byWriter.find((w) => w.key === "Bob");
+
+    expect(alice).toBeDefined();
+    expect(alice!.total).toBe(2);
+    expect(alice!.won).toBe(1);
+    expect(alice!.lost).toBe(1);
+    expect(alice!.winRate).toBe(50); // 1 won / (1 won + 1 lost) * 100
+
+    expect(bob).toBeDefined();
+    expect(bob!.total).toBe(1);
+    expect(bob!.won).toBe(1);
+    expect(bob!.winRate).toBe(100);
+  });
+
+  // --- writerNames 排序 ---
+
+  it("writerNames are sorted alphabetically", () => {
+    const pages = [
+      makeWonPage("Charlie", "機關A", 100000),
+      makeWonPage("Alice", "機關B", 200000),
+      makeWonPage("Bob", "機關C", 300000),
+    ];
+
+    const { result } = renderHook(() => useCrossAnalysis(pages));
+
+    expect(result.current.writerNames).toEqual(["Alice", "Bob", "Charlie"]);
+  });
+
+  // --- byType 分組（修正：陣列格式） ---
+
+  it("groups by type correctly (array format)", () => {
     const pages = [
       makePage({
         [F.企劃主筆]: ["Alice"],
-        [F.招標機關]: "Agency A",
-        [F.標案類型]: "勞務",
+        [F.標案類型]: ["勞務"],
         [F.進程]: "得標",
-        [F.預算]: 1000000,
       }),
       makePage({
         [F.企劃主筆]: ["Bob"],
-        [F.招標機關]: "Agency B",
-        [F.標案類型]: "財物",
+        [F.標案類型]: ["財物"],
         [F.進程]: "未獲青睞",
-        [F.預算]: 500000,
+      }),
+      makePage({
+        [F.企劃主筆]: ["Charlie"],
+        [F.標案類型]: ["勞務"],
+        [F.進程]: "得標",
       }),
     ];
 
     const { result } = renderHook(() => useCrossAnalysis(pages));
 
-    // byWriter should have 2 entries (Alice, Bob)
-    expect(result.current.byWriter.length).toBeGreaterThanOrEqual(2);
+    expect(result.current.byType).toHaveLength(2);
+    const labor = result.current.byType.find((t) => t.key === "勞務");
+    const goods = result.current.byType.find((t) => t.key === "財物");
 
-    // writerNames should be sorted
-    const names = result.current.writerNames;
-    const sorted = [...names].sort();
-    expect(names).toEqual(sorted);
+    expect(labor).toBeDefined();
+    expect(labor!.total).toBe(2);
+    expect(labor!.won).toBe(2);
+
+    expect(goods).toBeDefined();
+    expect(goods!.total).toBe(1);
+    expect(goods!.lost).toBe(1);
   });
 
-  it("memoizes results (same reference for same pages)", () => {
-    const pages = [makePage({ [F.企劃主筆]: ["Alice"], [F.進程]: "得標" })];
+  // --- costAnalysis 精確計算 ---
+
+  it("costAnalysis calculates correct totals", () => {
+    const pages = [
+      makePage({
+        [F.進程]: "得標",
+        [F.預算]: 1000000,
+        [F.押標金]: 50000,
+        [F.領標費]: 5000,
+      }),
+      makePage({
+        [F.進程]: "未獲青睞",
+        [F.預算]: 500000,
+        [F.押標金]: 30000,
+        [F.領標費]: 3000,
+      }),
+    ];
+
+    const { result } = renderHook(() => useCrossAnalysis(pages));
+
+    // totalInvested = (50000+5000) + (30000+3000) = 88000
+    expect(result.current.costAnalysis.totalInvested).toBe(88000);
+    // totalWonBudget = 1000000 (only 得標)
+    expect(result.current.costAnalysis.totalWonBudget).toBe(1000000);
+    // overallROI = 1000000 / 88000 ≈ 11.36
+    expect(result.current.costAnalysis.overallROI).toBeCloseTo(11.36, 1);
+  });
+
+  it("costAnalysis returns 0 ROI when no investment", () => {
+    const pages = [
+      makePage({ [F.進程]: "追蹤中" }), // not in PROCURED_STATUSES
+    ];
+
+    const { result } = renderHook(() => useCrossAnalysis(pages));
+
+    expect(result.current.costAnalysis.totalInvested).toBe(0);
+    expect(result.current.costAnalysis.overallROI).toBe(0);
+  });
+
+  // --- memoization ---
+
+  it("memoizes results for same pages reference", () => {
+    const pages = [makeWonPage("Alice", "機關A", 100000)];
 
     const { result, rerender } = renderHook(
       ({ p }) => useCrossAnalysis(p),
@@ -80,10 +198,10 @@ describe("useCrossAnalysis", () => {
   });
 
   it("recomputes on new pages array", () => {
-    const pages1 = [makePage({ [F.企劃主筆]: ["Alice"], [F.進程]: "得標" })];
+    const pages1 = [makeWonPage("Alice", "機關A", 100000)];
     const pages2 = [
-      makePage({ [F.企劃主筆]: ["Alice"], [F.進程]: "得標" }),
-      makePage({ [F.企劃主筆]: ["Bob"], [F.進程]: "未獲青睞" }),
+      makeWonPage("Alice", "機關A", 100000),
+      makeWonPage("Bob", "機關B", 200000),
     ];
 
     const { result, rerender } = renderHook(
@@ -91,28 +209,80 @@ describe("useCrossAnalysis", () => {
       { initialProps: { p: pages1 } },
     );
 
-    const firstWriterCount = result.current.byWriter.length;
+    expect(result.current.byWriter).toHaveLength(1);
     rerender({ p: pages2 });
-
-    // More data → potentially more writer entries
-    expect(result.current.byWriter.length).toBeGreaterThanOrEqual(firstWriterCount);
+    expect(result.current.byWriter).toHaveLength(2);
   });
 
-  it("costAnalysis has expected structure", () => {
+  // --- 缺欄位容錯 ---
+
+  it("handles pages with missing fields gracefully", () => {
     const pages = [
-      makePage({
-        [F.進程]: "得標",
-        [F.預算]: 1000000,
-        [F.押標金]: 50000,
-      }),
+      makePage({}), // completely empty properties
+      makePage({ [F.進程]: "得標" }), // no writer/agency/budget
     ];
 
     const { result } = renderHook(() => useCrossAnalysis(pages));
 
-    expect(result.current.costAnalysis).toHaveProperty("totalInvested");
-    expect(result.current.costAnalysis).toHaveProperty("totalWonBudget");
-    expect(result.current.costAnalysis).toHaveProperty("overallROI");
-    expect(result.current.costAnalysis).toHaveProperty("sunkCostTotal");
-    expect(typeof result.current.costAnalysis.totalInvested).toBe("number");
+    // Should not crash
+    expect(result.current.costAnalysis.totalWonBudget).toBe(0);
+  });
+
+  // --- byAgency 分組 ---
+
+  it("groups by agency with correct win rate", () => {
+    const pages = [
+      makeWonPage("Alice", "教育部", 1000000),
+      makeLostPage("Bob", "教育部", 500000),
+      makeLostPage("Charlie", "教育部", 300000),
+      makeWonPage("Alice", "衛福部", 800000),
+    ];
+
+    const { result } = renderHook(() => useCrossAnalysis(pages));
+
+    const edu = result.current.byAgency.find((a) => a.key === "教育部");
+    const health = result.current.byAgency.find((a) => a.key === "衛福部");
+
+    expect(edu).toBeDefined();
+    expect(edu!.total).toBe(3);
+    expect(edu!.won).toBe(1);
+    expect(edu!.winRate).toBe(33); // 1/3 = 33%
+
+    expect(health).toBeDefined();
+    expect(health!.total).toBe(1);
+    expect(health!.winRate).toBe(100);
+  });
+
+  // --- globalInsights 觸發 ---
+
+  it("generates agency difficulty insight when 5+ losses at same agency", () => {
+    // 在同一機關投 5 件全部未得標 → 觸發「機關難度高」洞見
+    const pages = Array.from({ length: 5 }, (_, i) =>
+      makeLostPage(`Writer${i}`, "難搞機關", 100000 * (i + 1)),
+    );
+
+    const { result } = renderHook(() => useCrossAnalysis(pages));
+
+    const agencyInsight = result.current.globalInsights.find(
+      (ins) => ins.text.includes("難搞機關"),
+    );
+    expect(agencyInsight).toBeDefined();
+  });
+
+  it("generates agency advantage insight when 50%+ win rate at agency with 3+ bids", () => {
+    // 在同一機關投 4 件得標 3 件 → 勝率 75% ≥ 50% 且 ≥3 件 → 觸發「機關優勢」
+    const pages = [
+      makeWonPage("Alice", "友善機關", 1000000),
+      makeWonPage("Bob", "友善機關", 800000),
+      makeWonPage("Charlie", "友善機關", 600000),
+      makeLostPage("Dave", "友善機關", 400000),
+    ];
+
+    const { result } = renderHook(() => useCrossAnalysis(pages));
+
+    const goodInsight = result.current.globalInsights.find(
+      (ins) => ins.type === "good" && ins.text.includes("友善機關"),
+    );
+    expect(goodInsight).toBeDefined();
   });
 });
