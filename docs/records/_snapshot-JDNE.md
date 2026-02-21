@@ -21,7 +21,7 @@ SNAPSHOT|20260222-2130|JDNE
 [v] feat-pcc-web|情報模組改善：機關情報內嵌+四tab跨tab導航完成|build零錯誤、758測試全過，待用戶驗收
 [?] infra-backup-mechanism|備份/回復安全節點|用戶提出，範圍待釐清
 [?] infra-cross-machine-consult|機器間互相諮詢機制|ITEJ 已建論壇機制（forum/），可能已解決。待用戶驗收論壇後確認
-[v] infra-new-machine-setup|新機器加入流程自動化|bat + bash 腳本 + 指南 + credential 修正 + 協作入門指南 + 論壇歡迎帖，待用戶驗收
+[v] infra-new-machine-setup|新機器加入流程自動化|bat + bash 腳本 + 協作入門指南重寫（防雷型自助式），待用戶驗收
 [v] infra-machine-profile|三台機器側寫與協作策略|三方共識：方向 1（輕量自評 1-3 分）+ 方向 4（/回報時刷新），待用戶驗收
 [v] infra-forum-upgrade|論壇制度升級|討論串機制+共識協議+類型拆分+索引，待用戶驗收
 [ ] infra-user-auth|用戶驗證系統|註冊流程重寫（四條紅線）、顯示規則定案、Saint 已移除、安全清理完成、臨時機器碼提案論壇討論中
