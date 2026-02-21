@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-2420|JDNE
+SNAPSHOT|20260222-2430|JDNE|opus-4.6-1m
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
 [x] infra-hooks|PreCompact + Stop + pre-push hooks|@op:20260221-JDNE#0900

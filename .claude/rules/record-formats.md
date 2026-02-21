@@ -47,7 +47,7 @@ OP|{YYYYMMDD}-{HHMM}|{機器碼}|{狀態}|topic:{主題ID}
 ### 格式與標記
 
 ```
-SNAPSHOT|{YYYYMMDD-HHMM}|{機器碼}
+SNAPSHOT|{YYYYMMDD-HHMM}|{機器碼}|{模型}
 [ ] {主題ID}|{描述}|{進度}
 [v] {主題ID}|{描述}|{待驗收內容}
 [x] {主題ID}|{描述}|{OP引用}
