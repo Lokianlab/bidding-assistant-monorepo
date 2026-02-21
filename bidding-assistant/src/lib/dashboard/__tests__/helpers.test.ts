@@ -168,30 +168,29 @@ describe("daysLeft", () => {
     expect(result as number).toBeGreaterThan(0);
   });
 
-  it('returns "應交寄" when prep deadline passed but bid deadline is still future', () => {
-    // We need a date where the prep deadline is before today but bid deadline is still >= today
-    // This is tricky because it depends on calcPrepDeadline.
-    // Use electronic bidding (1 day before) and set the deadline to tomorrow
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
+  it('returns "應交寄" when prep deadline passed but bid deadline still future', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2024, 5, 15, 12, 0, 0)); // June 15 noon
 
-    // For electronic: prep = deadline - 1 day = today
-    // daysLeft checks: prepTs >= todayMs -> could be 0 days (still valid)
-    // Let's use a deadline of today for electronic:
-    const today = new Date();
-    today.setHours(12, 0, 0, 0); // noon today
+    // Electronic bidding, deadline = today noon
+    // prep = yesterday noon (past), bid = today noon (>= today midnight) → "應交寄"
+    const todayNoon = new Date(2024, 5, 15, 12, 0, 0).toISOString();
+    expect(daysLeft(todayNoon, true)).toBe("應交寄");
 
-    const result = daysLeft(today.toISOString(), true);
-    // prep = today noon - 1 day = yesterday noon -> past
-    // bid = today noon -> depends on whether todayMs <= bidTs
-    // todayMs is today midnight, bidTs is today noon -> bidTs >= todayMs -> "應交寄"
-    if (result === "應交寄") {
-      expect(result).toBe("應交寄");
-    } else {
-      // Could also be a number if prep deadline is still >= today
-      expect(typeof result === "number" || result === "應交寄" || result === null).toBe(true);
-    }
+    vi.useRealTimers();
+  });
+
+  it("returns correct number of days until prep deadline", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2024, 5, 15, 12, 0, 0)); // June 15 noon
+
+    // Electronic bidding, deadline = June 25 noon
+    // prep = June 24 noon, today midnight = June 15 00:00
+    // diff = 9 days 12 hours → ceil = 10
+    const future = new Date(2024, 5, 25, 12, 0, 0).toISOString();
+    expect(daysLeft(future, true)).toBe(10);
+
+    vi.useRealTimers();
   });
 });
 
@@ -496,6 +495,36 @@ describe("getSortValue", () => {
   it('returns 99999 for "剩餘" when no deadline', () => {
     const page = makePage({});
     expect(getSortValue(page, "剩餘")).toBe(99999);
+  });
+
+  it('returns positive days for "剩餘" when prep deadline is future', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2024, 5, 15, 12, 0, 0)); // June 15 noon
+
+    // Electronic, deadline = June 25 noon → prep = June 24 noon
+    // diff from June 15 midnight = 9.5 days → ceil = 10
+    const page = makePage({
+      [F.截標]: new Date(2024, 5, 25, 12, 0, 0).toISOString(),
+      [F.電子投標]: true,
+    });
+    expect(getSortValue(page, "剩餘")).toBe(10);
+
+    vi.useRealTimers();
+  });
+
+  it('returns -1 for "剩餘" when prep deadline passed but bid still future', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2024, 5, 15, 12, 0, 0)); // June 15 noon
+
+    // Electronic, deadline = today noon → prep = yesterday noon (past)
+    // bid today noon >= today midnight → -1
+    const page = makePage({
+      [F.截標]: new Date(2024, 5, 15, 12, 0, 0).toISOString(),
+      [F.電子投標]: true,
+    });
+    expect(getSortValue(page, "剩餘")).toBe(-1);
+
+    vi.useRealTimers();
   });
 });
 
