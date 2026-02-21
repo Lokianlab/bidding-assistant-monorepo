@@ -1,8 +1,8 @@
 import type { CostItem, PricingConfig, PricingSummary, CategoryTotals } from "./types";
 
-/** 計算單筆項目金額 */
+/** 計算單筆項目金額（負數視為 0） */
 export function itemAmount(item: CostItem): number {
-  return item.quantity * item.unitPrice;
+  return Math.max(0, item.quantity) * Math.max(0, item.unitPrice);
 }
 
 /** 計算各類別小計 */

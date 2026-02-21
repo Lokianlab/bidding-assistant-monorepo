@@ -32,6 +32,20 @@ describe("itemAmount", () => {
     };
     expect(itemAmount(item)).toBe(0);
   });
+
+  it("數量為負數時視為 0", () => {
+    const item: CostItem = {
+      id: "1", category: "人事費", name: "X", unit: "人月", quantity: -3, unitPrice: 50000,
+    };
+    expect(itemAmount(item)).toBe(0);
+  });
+
+  it("單價為負數時視為 0", () => {
+    const item: CostItem = {
+      id: "1", category: "業務費", name: "X", unit: "式", quantity: 2, unitPrice: -10000,
+    };
+    expect(itemAmount(item)).toBe(0);
+  });
 });
 
 // ====== 類別小計 ======
