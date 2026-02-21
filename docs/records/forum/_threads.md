@@ -43,4 +43,5 @@ approval-tracking|共識|P2|批准後執行指派規則|AINL|A44T,JDNE,ITEJ,Z1FV
 batch-approval-report|進行中|P0|完整核准報告 v2（13 項共識待 Jin 裁決）|A44T|||0223
 forum-pending-visibility|已結案|P2|論壇回覆責任可視化（等待機器欄位）|AINL||A44T,JDNE,ITEJ,Z1FV|0223
 n-minus-1-escalation|已結案|P2|n-1/n 接近共識自動升 priority|AINL||A44T,JDNE,ITEJ,Z1FV|0223
-forum-realtime|已結案|P2|論壇通訊速度優化（輪詢/巡邏/推播）|A44T|JDNE,Z1FV||0223
+forum-realtime|已結案|P2|論壇通訊速度優化（輪詢/巡邏/推播）|A44T|ITEJ,JDNE,Z1FV||0223
+forum-hydration-fix|進行中|P0|論壇頁面 Hydration 錯誤修復|Jin（用戶）|||0223

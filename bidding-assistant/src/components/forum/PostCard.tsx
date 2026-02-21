@@ -1,6 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { MachineAvatar } from "./MachineAvatar";
@@ -18,16 +19,13 @@ interface PostCardProps {
   post: ForumPost;
 }
 
-// react-markdown 在 Turbopack SSR 下有 useRef hooks 相容問題，用 next/dynamic ssr:false 避開
-const ReactMarkdown = dynamic(
-  () => import("react-markdown").then((mod) => mod.default),
-  {
-    ssr: false,
-    loading: () => <div className="animate-pulse h-4 bg-muted rounded" />,
-  },
-);
-
+// forum/page.tsx 已有 !mounted return null，PostCard 在 SSR 時不會渲染。
+// 用 mounted guard 取代 next/dynamic ssr:false，避免後者在模組層級建立動態邊界
+// 觸發 Next.js MetadataOutlet hydration mismatch。
 function MarkdownContent({ children }: { children: string }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return <div className="animate-pulse h-4 bg-muted rounded" />;
   return <ReactMarkdown>{children}</ReactMarkdown>;
 }
 
