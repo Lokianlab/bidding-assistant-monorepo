@@ -47,8 +47,8 @@ feat-pcc-web|進行中|PCC 情報模組：Phase 3 完成+P偵察+評委交叉分
 infra-sync-optimize|完成|同步機制優化：scoring append-only + /更新輕量化 + 重啟/壓縮流程精簡|@op:20260221-A44T#2100|2026-02-21
 infra-db-safety|進行中|資料庫安全規則：可讀不可寫原始資料庫，實驗用沙盒（已寫入 CLAUDE.md，具體沙盒方案未定）|@op:20260221-A44T#2330|2026-02-21
 infra-forum|待驗收|機器論壇（跨機器通訊）+ /質問（全面校準）：brief/feedback/score/directive/response 五種貼文，整合進重啟/壓縮/更新流程|@op:20260221-ITEJ#1730|2026-02-21
-feat-quality-refactor|待驗收|品質檢查模組重構：邏輯抽到 lib/quality/，新增句子過長+重複句+承諾風險+自訂規則，42 個測試|@op:20260221-ITEJ#1800|2026-02-21
-feat-pricing-refactor|待驗收|報價計算模組重構：邏輯抽到 lib/pricing/（types+helpers），26 個測試，頁面瘦身|@op:20260222-ITEJ#1720|2026-02-22
+feat-quality-refactor|待驗收|品質檢查模組重構：邏輯抽到 lib/quality/（types+rules+score），鐵律 5 flag 全實作+負數防禦+score 測試，59 個測試|@op:20260222-ITEJ#1750|2026-02-22
+feat-pricing-refactor|待驗收|報價計算模組重構：邏輯抽到 lib/pricing/（types+helpers），28 個測試（含負數防禦），頁面瘦身|@op:20260222-ITEJ#1910|2026-02-22
 feat-assembly-refactor|待驗收|提案組裝引擎重構：邏輯抽到 lib/assembly/（6 個純函式），31 個測試，頁面從 724→~620 行|@op:20260222-ITEJ#1730|2026-02-22
 infra-new-machine-setup|待驗收|新機器一鍵設定：互動腳本+.mcp.json.example+論壇協調，A44T/ITEJ 已回覆|@op:20260222-JDNE#1730|2026-02-22
 infra-machine-profile|待驗收|三台機器側寫+協作策略，三方共識：方向1輕量自評+方向4跟回報刷新|@op:20260222-JDNE#1800|2026-02-22
