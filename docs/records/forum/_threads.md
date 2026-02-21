@@ -20,4 +20,4 @@ multi-user-governance|進行中|P2|多用戶治理架構|JDNE|Saint 註冊申請
 no-closing-question|已結案|禁止以問句結尾收工|AINL|用戶核准，已寫入 CLAUDE.md|0223
 temp-machine-code|共識|機器碼分正式/臨時（24小時時效）|JDNE|五台一致同意（~前綴+24hr生成時算+過期歸檔不刪+臨時不能審查），待用戶核准後實作|0222
 efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|第一輪六台全交齊（含 ITEJ 補交+3O5L 重新提交），待第二輪互相質疑|0223
-role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|Jin 確認 A44T 角色（系統掃描+產品開發）+JDNE 被指派為機器主官。六台已自報|0223
+role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|六台全自報（AINL 0223 補交）。Jin 確認 A44T 角色，JDNE 被指派機器主官，ITEJ 指派 M03 Phase 1|0223
