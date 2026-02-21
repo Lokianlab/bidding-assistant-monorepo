@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-1300|JDNE
+SNAPSHOT|20260221-1500|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -7,7 +7,7 @@ SNAPSHOT|20260221-1300|JDNE
 [x] cleanup-index|主題索引清理|@op:20260219-JDNE#0930
 [x] infra-snapshot-rules|快照時間完備原則|@op:20260219-JDNE#1237
 [~] plan-discord-bot|Discord Bot 架構|放棄：改為 SaaS 網頁，見 plan-saas-pivot
-[ ] plan-update-devplan|更新 v4.0 開發計畫|用 /修改計畫 整合暫存檔（5 份待推）
+[ ] plan-update-devplan|更新 v4.0 開發計畫|暫存區 8 份待推 + 4 份待決，用 /修改計畫 推入
 [v] plan-build-pcc-mcp|建 PCC MCP server|程式碼+安裝+建置完成，待用戶驗收
 [ ] plan-build-notion-mcp|建 Notion MCP server|內建 Notion MCP 夠用，暫緩到多 AI 協作階段
 [?] plan-saas-pivot|SaaS 產品方向|改為自適應網頁 SaaS。知識庫精靈已有 prompt（v2.0），需聊天介面+認證+多租戶
