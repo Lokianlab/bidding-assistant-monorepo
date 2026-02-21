@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { ForumData } from "./types";
 
 interface UseForumResult {
@@ -10,14 +10,23 @@ interface UseForumResult {
   refresh: () => void;
 }
 
+const POLL_INTERVAL = 30_000; // 30 秒自動刷新
+
 export function useForum(): UseForumResult {
   const [data, setData] = useState<ForumData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const fetchingRef = useRef(false);
 
-  const fetchForum = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const fetchForum = useCallback(async (silent = false) => {
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+
+    if (!silent) {
+      setLoading(true);
+      setError(null);
+    }
+
     try {
       const res = await fetch("/api/forum");
       if (!res.ok) {
@@ -25,16 +34,27 @@ export function useForum(): UseForumResult {
       }
       const json = await res.json();
       setData(json);
+      if (!silent) setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "未知錯誤");
+      if (!silent) {
+        setError(e instanceof Error ? e.message : "未知錯誤");
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
+      fetchingRef.current = false;
     }
   }, []);
 
+  // 初次載入
   useEffect(() => {
-    fetchForum();
+    fetchForum(false);
   }, [fetchForum]);
 
-  return { data, loading, error, refresh: fetchForum };
+  // 自動輪詢（每 30 秒靜默刷新，不顯示 loading 狀態）
+  useEffect(() => {
+    const interval = setInterval(() => fetchForum(true), POLL_INTERVAL);
+    return () => clearInterval(interval);
+  }, [fetchForum]);
+
+  return { data, loading, error, refresh: () => fetchForum(false) };
 }

@@ -122,6 +122,24 @@ export default function ForumPage() {
     refresh();
   };
 
+  // 批量退回所有待核准的 thread
+  const handleBatchReject = async (threadIds: string[], message: string) => {
+    for (const threadId of threadIds) {
+      await fetch("/api/forum", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: `❌ 退回：${message}`,
+          threadId,
+          type: "reply",
+          priority: "P0",
+          updateStatus: "進行中",
+        }),
+      });
+    }
+    refresh();
+  };
+
   // 投票
   const handleVote = async (threadId: string, vote: "agree" | "disagree" | "withdraw") => {
     await fetch("/api/forum", {
@@ -245,6 +263,7 @@ export default function ForumPage() {
         onApprove={handleApprove}
         onReject={handleReject}
         onBatchApprove={handleBatchApprove}
+        onBatchReject={handleBatchReject}
         onViewThread={setSelectedThread}
       />
 
