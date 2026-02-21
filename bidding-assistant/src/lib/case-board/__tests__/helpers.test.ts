@@ -12,7 +12,7 @@ import {
   getDeadlineUrgency,
   getUrgencyColor,
 } from "../helpers";
-import type { CaseProgress, CalendarEvent, BoardFilters } from "../types";
+import type { CaseProgress, CalendarEvent } from "../types";
 import type { NotionPage } from "@/lib/dashboard/types";
 import { F } from "@/lib/dashboard/types";
 
