@@ -61,7 +61,7 @@ export default function IntelligencePage() {
         </TabsContent>
 
         <TabsContent value="market" className="mt-4">
-          <MarketTrend />
+          <MarketTrend onViewCommittee={handleViewCommittee} />
         </TabsContent>
 
         <TabsContent value="committee" className="mt-4">
