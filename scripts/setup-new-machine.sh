@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 # ============================================================
-# 全能標案助理 — 新機器自動設定腳本
-# 在 Git Bash (Windows) 中執行
+# 全能標案助理 — 新機器一鍵設定
+#
+# 用法（二選一）：
+#   A) 已 clone repo：  bash scripts/setup-new-machine.sh
+#   B) 全新機器：       把這個檔案複製過去，bash setup-new-machine.sh
+#
+# 腳本會自動搞定一切，中途只問你貼幾個 token。
 # ============================================================
 set -euo pipefail
 
@@ -9,157 +14,164 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 PROJECT_DIR="/c/dev/cc程式"
 REPO_URL="https://github.com/Lokianlab/bidding-assistant-monorepo.git"
 
-echo -e "${CYAN}=== 全能標案助理：新機器設定 ===${NC}"
+echo -e "${CYAN}╔══════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║   全能標案助理 — 新機器一鍵設定     ║${NC}"
+echo -e "${CYAN}╚══════════════════════════════════════╝${NC}"
 echo ""
 
 # ============================================================
-# Phase 1: 檢查基礎工具
+# [1] 工具檢查 + 自動安裝
 # ============================================================
-echo -e "${YELLOW}[Phase 1] 檢查基礎工具${NC}"
+echo -e "${YELLOW}[1/8] 檢查工具${NC}"
 
 NEED_RESTART=false
 
-check_tool() {
-  local name="$1"
-  local cmd="$2"
-  local install_cmd="$3"
+install_if_missing() {
+  local name="$1" cmd="$2" install="$3"
   if command -v "$cmd" &> /dev/null; then
-    local ver
-    ver=$("$cmd" --version 2>&1 | head -1)
-    echo -e "  ${GREEN}✓${NC} $name: $ver"
+    echo -e "  ${GREEN}✓${NC} $name"
   else
-    echo -e "  ${RED}✗${NC} $name 未安裝"
-    if [ -n "$install_cmd" ]; then
-      echo -e "  ${CYAN}→ 安裝中...${NC}"
-      eval "$install_cmd"
-      NEED_RESTART=true
-    fi
+    echo -e "  ${CYAN}→${NC} 安裝 $name ..."
+    eval "$install" 2>&1 | tail -2
+    NEED_RESTART=true
   fi
 }
 
-check_tool "Node.js"     "node"   "winget install OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements"
-check_tool "Git"         "git"    "winget install Git.Git --accept-package-agreements --accept-source-agreements"
-check_tool "GitHub CLI"  "gh"     "winget install GitHub.cli --accept-package-agreements --accept-source-agreements"
+install_if_missing "Node.js"    "node"  "winget install OpenJS.NodeJS.LTS -e --accept-package-agreements --accept-source-agreements"
+install_if_missing "Git"        "git"   "winget install Git.Git -e --accept-package-agreements --accept-source-agreements"
+install_if_missing "GitHub CLI" "gh"    "winget install GitHub.cli -e --accept-package-agreements --accept-source-agreements"
 
-# npm 全域工具（需要 Node.js 已裝）
 if command -v node &> /dev/null; then
-  check_tool "Claude Code" "claude" "npm install -g @anthropic-ai/claude-code"
-  check_tool "Gemini CLI"  "gemini" "npm install -g @google/gemini-cli"
-  check_tool "Codex CLI"   "codex"  "npm install -g @openai/codex"
+  install_if_missing "Claude Code" "claude" "npm install -g @anthropic-ai/claude-code"
+  install_if_missing "Gemini CLI"  "gemini" "npm install -g @google/gemini-cli"
+  install_if_missing "Codex CLI"   "codex"  "npm install -g @openai/codex"
 fi
 
 if [ "$NEED_RESTART" = true ]; then
   echo ""
-  echo -e "${RED}有新安裝的工具！請：${NC}"
-  echo -e "  1. ${YELLOW}關閉此終端機${NC}"
-  echo -e "  2. ${YELLOW}重新開啟 Git Bash${NC}"
-  echo -e "  3. ${YELLOW}再次執行此腳本${NC}"
+  echo -e "${RED}══ 有新裝的工具！請關掉終端機、重開、再跑一次此腳本 ══${NC}"
   exit 0
 fi
-
 echo ""
 
 # ============================================================
-# Phase 2: GitHub 登入
+# [2] GitHub 登入
 # ============================================================
-echo -e "${YELLOW}[Phase 2] GitHub 登入${NC}"
-
+echo -e "${YELLOW}[2/8] GitHub 登入${NC}"
 if gh auth status &> /dev/null; then
-  echo -e "  ${GREEN}✓${NC} GitHub 已登入"
+  echo -e "  ${GREEN}✓${NC} 已登入"
 else
-  echo -e "  ${CYAN}→ 請在瀏覽器完成 GitHub 登入${NC}"
+  echo -e "  ${CYAN}→${NC} 請在瀏覽器完成登入"
   gh auth login --web --git-protocol https
 fi
-
 echo ""
 
 # ============================================================
-# Phase 3: 下載專案
+# [3] 下載專案
 # ============================================================
-echo -e "${YELLOW}[Phase 3] 下載專案${NC}"
-
+echo -e "${YELLOW}[3/8] 下載專案${NC}"
 if [ -d "$PROJECT_DIR/.git" ]; then
-  echo -e "  ${GREEN}✓${NC} 專案已存在於 $PROJECT_DIR"
-  cd "$PROJECT_DIR"
-  git pull origin main
+  echo -e "  ${GREEN}✓${NC} 已存在，拉最新"
+  cd "$PROJECT_DIR" && git pull origin main
 else
-  echo -e "  ${CYAN}→ 下載中...${NC}"
   mkdir -p "$(dirname "$PROJECT_DIR")"
   git clone "$REPO_URL" "$PROJECT_DIR"
-  cd "$PROJECT_DIR"
 fi
-
+cd "$PROJECT_DIR"
 echo ""
 
 # ============================================================
-# Phase 4: Git 設定
+# [4] Git 設定 + 安裝依賴 + 建置 MCP
 # ============================================================
-echo -e "${YELLOW}[Phase 4] Git 設定${NC}"
+echo -e "${YELLOW}[4/8] Git 設定 + 安裝依賴${NC}"
 
 git config user.name "Jin"
 git config user.email "gasklath20312@gmail.com"
-echo -e "  ${GREEN}✓${NC} user.name = Jin"
-echo -e "  ${GREEN}✓${NC} user.email = gasklath20312@gmail.com"
+echo -e "  ${GREEN}✓${NC} Git user = Jin"
 
+echo -e "  ${CYAN}→${NC} bidding-assistant ..."
+cd "$PROJECT_DIR/bidding-assistant" && npm install --no-audit --no-fund 2>&1 | tail -1
+
+echo -e "  ${CYAN}→${NC} pcc-api-mcp ..."
+cd "$PROJECT_DIR/pcc-api-mcp" && npm install --no-audit --no-fund 2>&1 | tail -1 && npm run build 2>&1 | tail -1
+
+echo -e "  ${CYAN}→${NC} smugmug-mcp ..."
+cd "$PROJECT_DIR/smugmug-mcp" && npm install --no-audit --no-fund 2>&1 | tail -1 && npm run build 2>&1 | tail -1
+
+echo -e "  ${GREEN}✓${NC} 依賴全部裝好"
 echo ""
 
 # ============================================================
-# Phase 5: 安裝依賴 + 建置 MCP
+# [5] 互動設定機密 — .env.local
 # ============================================================
-echo -e "${YELLOW}[Phase 5] 安裝依賴${NC}"
+echo -e "${YELLOW}[5/8] 設定環境變數（.env.local）${NC}"
 
-# 主 Web App
-echo -e "  ${CYAN}→ bidding-assistant (npm install)${NC}"
-cd "$PROJECT_DIR/bidding-assistant"
-npm install --no-audit --no-fund 2>&1 | tail -1
+ENV_FILE="$PROJECT_DIR/bidding-assistant/.env.local"
 
-# PCC API MCP Server
-echo -e "  ${CYAN}→ pcc-api-mcp (npm install + build)${NC}"
-cd "$PROJECT_DIR/pcc-api-mcp"
-npm install --no-audit --no-fund 2>&1 | tail -1
-npm run build 2>&1 | tail -1
-
-# SmugMug MCP Server
-echo -e "  ${CYAN}→ smugmug-mcp (npm install + build)${NC}"
-cd "$PROJECT_DIR/smugmug-mcp"
-npm install --no-audit --no-fund 2>&1 | tail -1
-npm run build 2>&1 | tail -1
-
-cd "$PROJECT_DIR"
-echo -e "  ${GREEN}✓${NC} 所有依賴安裝完成"
-
-echo ""
-
-# ============================================================
-# Phase 6: 環境變數
-# ============================================================
-echo -e "${YELLOW}[Phase 6] 環境變數${NC}"
-
-if [ -f "$PROJECT_DIR/bidding-assistant/.env.local" ]; then
-  echo -e "  ${GREEN}✓${NC} .env.local 已存在"
+if [ -f "$ENV_FILE" ] && grep -q "^NOTION_TOKEN=." "$ENV_FILE" 2>/dev/null; then
+  echo -e "  ${GREEN}✓${NC} .env.local 已有 Notion Token"
 else
-  cp "$PROJECT_DIR/bidding-assistant/.env.example" "$PROJECT_DIR/bidding-assistant/.env.local"
-  echo -e "  ${YELLOW}!${NC} 已建立 .env.local（從 .env.example 複製）"
-  echo -e "  ${RED}→ 請手動編輯 bidding-assistant/.env.local 填入 API Key${NC}"
-fi
+  echo -e "  ${CYAN}需要 Notion API Token 和 Database ID${NC}"
+  echo -e "  （從現有機器的 bidding-assistant/.env.local 複製，或從 Notion 設定取得）"
+  echo ""
 
+  read -rp "  NOTION_TOKEN（貼上後按 Enter，留空跳過）: " NOTION_TOKEN
+  read -rp "  NOTION_DATABASE_ID（貼上後按 Enter，留空跳過）: " NOTION_DATABASE_ID
+
+  # 從 .env.example 複製基底，填入值
+  cp "$PROJECT_DIR/bidding-assistant/.env.example" "$ENV_FILE"
+
+  if [ -n "$NOTION_TOKEN" ]; then
+    sed -i "s|^NOTION_TOKEN=.*|NOTION_TOKEN=$NOTION_TOKEN|" "$ENV_FILE"
+  fi
+  if [ -n "$NOTION_DATABASE_ID" ]; then
+    sed -i "s|^NOTION_DATABASE_ID=.*|NOTION_DATABASE_ID=$NOTION_DATABASE_ID|" "$ENV_FILE"
+  fi
+
+  echo -e "  ${GREEN}✓${NC} .env.local 已建立"
+fi
 echo ""
 
 # ============================================================
-# Phase 7: Claude Code MCP 設定
+# [6] 互動設定機密 — .mcp.json
 # ============================================================
-echo -e "${YELLOW}[Phase 7] MCP Server 設定${NC}"
+echo -e "${YELLOW}[6/8] 設定 MCP Server（.mcp.json）${NC}"
 
 MCP_FILE="$PROJECT_DIR/.mcp.json"
+MCP_TEMPLATE="$PROJECT_DIR/.mcp.json.example"
+
 if [ -f "$MCP_FILE" ]; then
   echo -e "  ${GREEN}✓${NC} .mcp.json 已存在"
 else
-  cat > "$MCP_FILE" << 'MCPEOF'
+  if [ -f "$MCP_TEMPLATE" ]; then
+    # Windows 路徑：C:\dev\cc程式 → C:\\dev\\cc程式
+    WIN_PATH="C:\\\\dev\\\\cc程式"
+
+    echo -e "  ${CYAN}需要 SmugMug OAuth Token${NC}"
+    echo -e "  （從現有機器的 .mcp.json 複製 smugmug.env 區塊的四個值）"
+    echo ""
+
+    read -rp "  SMUGMUG_API_KEY（留空跳過 SmugMug）: " SM_KEY
+
+    if [ -n "$SM_KEY" ]; then
+      read -rp "  SMUGMUG_API_SECRET: " SM_SECRET
+      read -rp "  SMUGMUG_ACCESS_TOKEN: " SM_ACCESS
+      read -rp "  SMUGMUG_TOKEN_SECRET: " SM_TOKEN
+
+      sed -e "s|__PROJECT_DIR__|$WIN_PATH|g" \
+          -e "s|__SMUGMUG_API_KEY__|$SM_KEY|g" \
+          -e "s|__SMUGMUG_API_SECRET__|$SM_SECRET|g" \
+          -e "s|__SMUGMUG_ACCESS_TOKEN__|$SM_ACCESS|g" \
+          -e "s|__SMUGMUG_TOKEN_SECRET__|$SM_TOKEN|g" \
+          "$MCP_TEMPLATE" > "$MCP_FILE"
+    else
+      # 沒有 SmugMug token，只設定 PCC 和 NotebookLM
+      cat > "$MCP_FILE" << MCPEOF
 {
   "mcpServers": {
     "notebooklm": {
@@ -168,103 +180,60 @@ else
     },
     "pcc-api": {
       "command": "node",
-      "args": ["C:\\dev\\cc程式\\pcc-api-mcp\\dist\\index.js"]
-    },
-    "smugmug": {
-      "command": "node",
-      "args": ["C:\\dev\\cc程式\\smugmug-mcp\\dist\\index.js"],
-      "env": {
-        "SMUGMUG_API_KEY": "填入你的 SmugMug API Key",
-        "SMUGMUG_API_SECRET": "填入你的 SmugMug API Secret",
-        "SMUGMUG_ACCESS_TOKEN": "填入你的 SmugMug Access Token",
-        "SMUGMUG_TOKEN_SECRET": "填入你的 SmugMug Token Secret"
-      }
+      "args": ["$WIN_PATH\\\\pcc-api-mcp\\\\dist\\\\index.js"]
     }
   }
 }
 MCPEOF
-  echo -e "  ${YELLOW}!${NC} 已建立 .mcp.json 範本"
-  echo -e "  ${RED}→ 請手動編輯 .mcp.json 填入 SmugMug OAuth Token${NC}"
-fi
+      echo -e "  ${YELLOW}!${NC} 跳過 SmugMug，之後要用再補"
+    fi
 
+    echo -e "  ${GREEN}✓${NC} .mcp.json 已建立"
+  else
+    echo -e "  ${YELLOW}!${NC} 找不到 .mcp.json.example 範本，需手動建立"
+  fi
+fi
 echo ""
 
 # ============================================================
-# Phase 8: 驗證
+# [7] 驗證
 # ============================================================
-echo -e "${YELLOW}[Phase 8] 驗證${NC}"
-
+echo -e "${YELLOW}[7/8] 驗證${NC}"
 cd "$PROJECT_DIR/bidding-assistant"
 
-echo -e "  ${CYAN}→ 執行測試...${NC}"
+echo -e "  ${CYAN}→${NC} 執行測試 ..."
 if npx vitest run 2>&1 | tail -3; then
   echo -e "  ${GREEN}✓${NC} 測試通過"
 else
-  echo -e "  ${RED}✗${NC} 測試失敗！嘗試重裝..."
-  rm -rf node_modules
-  npm install --no-audit --no-fund
-  npx vitest run
+  echo -e "  ${RED}✗${NC} 測試失敗，嘗試重裝 ..."
+  rm -rf node_modules && npm install --no-audit --no-fund 2>&1 | tail -1
+  npx vitest run 2>&1 | tail -3
 fi
 
-echo ""
-echo -e "  ${CYAN}→ 執行建置...${NC}"
+echo -e "  ${CYAN}→${NC} 執行建置 ..."
 if npm run build 2>&1 | tail -3; then
   echo -e "  ${GREEN}✓${NC} 建置成功"
 else
-  echo -e "  ${RED}✗${NC} 建置失敗！請檢查錯誤訊息"
+  echo -e "  ${RED}✗${NC} 建置失敗"
 fi
-
 echo ""
 
 # ============================================================
-# Phase 9: 檢查 MCP Server
+# [8] 完成
 # ============================================================
-echo -e "${YELLOW}[Phase 9] 檢查 MCP Server${NC}"
-
+echo -e "${YELLOW}[8/8] 最終檢查${NC}"
 cd "$PROJECT_DIR"
-
-if [ -f "pcc-api-mcp/dist/index.js" ]; then
-  echo -e "  ${GREEN}✓${NC} pcc-api-mcp 已建置"
-else
-  echo -e "  ${RED}✗${NC} pcc-api-mcp 未建置"
-fi
-
-if [ -f "smugmug-mcp/dist/index.js" ]; then
-  echo -e "  ${GREEN}✓${NC} smugmug-mcp 已建置"
-else
-  echo -e "  ${RED}✗${NC} smugmug-mcp 未建置"
-fi
+[ -f "pcc-api-mcp/dist/index.js" ]  && echo -e "  ${GREEN}✓${NC} PCC API MCP"    || echo -e "  ${RED}✗${NC} PCC API MCP"
+[ -f "smugmug-mcp/dist/index.js" ]  && echo -e "  ${GREEN}✓${NC} SmugMug MCP"    || echo -e "  ${YELLOW}—${NC} SmugMug MCP（未設定）"
+[ -f ".mcp.json" ]                   && echo -e "  ${GREEN}✓${NC} .mcp.json"      || echo -e "  ${RED}✗${NC} .mcp.json"
+[ -f "bidding-assistant/.env.local" ] && echo -e "  ${GREEN}✓${NC} .env.local"    || echo -e "  ${RED}✗${NC} .env.local"
 
 echo ""
-
-# ============================================================
-# 完成
-# ============================================================
-echo -e "${GREEN}============================================================${NC}"
-echo -e "${GREEN}  設定完成！${NC}"
-echo -e "${GREEN}============================================================${NC}"
+echo -e "${GREEN}╔══════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║          設定完成！                  ║${NC}"
+echo -e "${GREEN}╚══════════════════════════════════════╝${NC}"
 echo ""
-echo -e "  還需要手動做的事："
-echo ""
-
-MANUAL_STEPS=0
-
-if ! grep -q "^NOTION_TOKEN=." "$PROJECT_DIR/bidding-assistant/.env.local" 2>/dev/null; then
-  MANUAL_STEPS=$((MANUAL_STEPS + 1))
-  echo -e "  ${YELLOW}$MANUAL_STEPS.${NC} 編輯 bidding-assistant/.env.local，填入 Notion API Key"
-fi
-
-if grep -q "填入你的" "$MCP_FILE" 2>/dev/null; then
-  MANUAL_STEPS=$((MANUAL_STEPS + 1))
-  echo -e "  ${YELLOW}$MANUAL_STEPS.${NC} 編輯 .mcp.json，填入 SmugMug OAuth Token"
-fi
-
-if [ $MANUAL_STEPS -eq 0 ]; then
-  echo -e "  ${GREEN}沒有！所有設定已完成。${NC}"
-fi
-
-echo ""
-echo -e "  開工方式："
+echo -e "  開工："
 echo -e "  ${CYAN}cd C:\\dev\\cc程式${NC}"
 echo -e "  ${CYAN}claude${NC}"
 echo ""
