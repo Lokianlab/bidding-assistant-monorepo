@@ -1,0 +1,370 @@
+import { describe, it, expect } from "vitest";
+import {
+  runChecks,
+  checkBlacklist,
+  checkTerminology,
+  checkCustomRules,
+  checkIronLaws,
+  checkParagraphLength,
+  checkSentenceLength,
+  checkDuplicateSentences,
+  checkRiskyPromises,
+} from "../rules";
+import { calculateScore } from "../score";
+import type { QualityConfig } from "../types";
+
+// ====== 基礎規則 ======
+
+describe("checkBlacklist", () => {
+  it("偵測禁用詞", () => {
+    const results = checkBlacklist("本公司有豐富的經驗", ["豐富的經驗"]);
+    expect(results).toHaveLength(1);
+    expect(results[0].type).toBe("error");
+    expect(results[0].rule).toBe("禁用詞");
+    expect(results[0].message).toContain("豐富的經驗");
+  });
+
+  it("同一禁用詞出現多次各自回報", () => {
+    const results = checkBlacklist("高品質的高品質服務", ["高品質"]);
+    expect(results).toHaveLength(2);
+  });
+
+  it("沒有禁用詞時回傳空陣列", () => {
+    const results = checkBlacklist("本計畫採用明確的執行策略", ["豐富的經驗"]);
+    expect(results).toHaveLength(0);
+  });
+
+  it("空白清單回傳空陣列", () => {
+    const results = checkBlacklist("隨便什麼文字", []);
+    expect(results).toHaveLength(0);
+  });
+
+  it("正確 escape regex 特殊字元", () => {
+    const results = checkBlacklist("成本為 100+200", ["100+200"]);
+    expect(results).toHaveLength(1);
+  });
+});
+
+describe("checkTerminology", () => {
+  it("偵測錯誤用語並建議修正", () => {
+    const results = checkTerminology("請貴單位審核", [
+      { wrong: "貴單位", correct: "貴機關" },
+    ]);
+    expect(results).toHaveLength(1);
+    expect(results[0].type).toBe("warning");
+    expect(results[0].message).toContain("貴機關");
+  });
+
+  it("多組用語各自檢查", () => {
+    const results = checkTerminology("合約簽訂後由專案經理負責", [
+      { wrong: "合約", correct: "契約" },
+      { wrong: "專案經理", correct: "計畫主持人" },
+    ]);
+    expect(results).toHaveLength(2);
+  });
+
+  it("正確用語不觸發", () => {
+    const results = checkTerminology("貴機關審核", [
+      { wrong: "貴單位", correct: "貴機關" },
+    ]);
+    expect(results).toHaveLength(0);
+  });
+});
+
+describe("checkCustomRules", () => {
+  it("自訂 regex 規則正常運作", () => {
+    const results = checkCustomRules("金額為 NTD 100,000", [
+      { pattern: "NTD", message: "請使用「新臺幣」", severity: "warning" },
+    ]);
+    expect(results).toHaveLength(1);
+    expect(results[0].rule).toBe("自訂規則");
+    expect(results[0].type).toBe("warning");
+  });
+
+  it("無效 regex 不會拋錯", () => {
+    const results = checkCustomRules("任何文字", [
+      { pattern: "[invalid(", message: "不會觸發", severity: "error" },
+    ]);
+    expect(results).toHaveLength(0);
+  });
+
+  it("空規則陣列回傳空結果", () => {
+    const results = checkCustomRules("任何文字", []);
+    expect(results).toHaveLength(0);
+  });
+
+  it("支援 error 嚴重程度", () => {
+    const results = checkCustomRules("機密資料", [
+      { pattern: "機密", message: "不應出現在提案中", severity: "error" },
+    ]);
+    expect(results[0].type).toBe("error");
+  });
+});
+
+// ====== 鐵律規則 ======
+
+describe("checkIronLaws", () => {
+  const allEnabled = {
+    crossValidateNumbers: true,
+    budgetConsistency: true,
+    dateConsistency: true,
+    teamConsistency: true,
+    scopeConsistency: true,
+  };
+
+  const allDisabled = {
+    crossValidateNumbers: false,
+    budgetConsistency: false,
+    dateConsistency: false,
+    teamConsistency: false,
+    scopeConsistency: false,
+  };
+
+  it("偵測多個數字需要交叉驗證", () => {
+    const text = "預算 100 萬，人力 5 人，工期 12 個月，費率 2000";
+    const results = checkIronLaws(text, allEnabled);
+    const numCheck = results.find((r) => r.rule === "數字交叉驗證");
+    expect(numCheck).toBeDefined();
+    expect(numCheck!.type).toBe("info");
+  });
+
+  it("3 個以下數字不觸發", () => {
+    const text = "預算 100 萬，人力 5 人";
+    const results = checkIronLaws(text, allEnabled);
+    expect(results.find((r) => r.rule === "數字交叉驗證")).toBeUndefined();
+  });
+
+  it("偵測多個日期需要一致性確認", () => {
+    const text = "起始日 2026年3月1日，結束日 2026年12月31日";
+    const results = checkIronLaws(text, allEnabled);
+    const dateCheck = results.find((r) => r.rule === "日期一致性");
+    expect(dateCheck).toBeDefined();
+  });
+
+  it("關閉的旗標不觸發", () => {
+    const text = "預算 100 萬，人力 5 人，工期 12 個月，費率 2000";
+    const results = checkIronLaws(text, allDisabled);
+    expect(results).toHaveLength(0);
+  });
+});
+
+// ====== 提案專用規則 ======
+
+describe("checkParagraphLength", () => {
+  it("超過 500 字的段落觸發警告", () => {
+    const longParagraph = "字".repeat(501);
+    const results = checkParagraphLength(longParagraph);
+    expect(results).toHaveLength(1);
+    expect(results[0].type).toBe("warning");
+    expect(results[0].message).toContain("501");
+  });
+
+  it("500 字以內不觸發", () => {
+    const normalParagraph = "字".repeat(500);
+    const results = checkParagraphLength(normalParagraph);
+    expect(results).toHaveLength(0);
+  });
+
+  it("多段落各自檢查", () => {
+    const text = "字".repeat(600) + "\n\n" + "字".repeat(600);
+    const results = checkParagraphLength(text);
+    expect(results).toHaveLength(2);
+    expect(results[0].message).toContain("第 1 段");
+    expect(results[1].message).toContain("第 2 段");
+  });
+});
+
+describe("checkSentenceLength", () => {
+  it("超過 80 字的句子觸發警告", () => {
+    const longSentence = "字".repeat(81) + "。";
+    const results = checkSentenceLength(longSentence);
+    expect(results).toHaveLength(1);
+    expect(results[0].rule).toBe("句子過長");
+    expect(results[0].message).toContain("81");
+  });
+
+  it("80 字以內不觸發", () => {
+    const normalSentence = "字".repeat(80) + "。";
+    const results = checkSentenceLength(normalSentence);
+    expect(results).toHaveLength(0);
+  });
+
+  it("用問號和驚嘆號正確分句", () => {
+    const text = "字".repeat(81) + "？" + "字".repeat(81) + "！";
+    const results = checkSentenceLength(text);
+    expect(results).toHaveLength(2);
+  });
+
+  it("換行也算分句", () => {
+    const text = "字".repeat(81) + "\n" + "正常短句。";
+    const results = checkSentenceLength(text);
+    expect(results).toHaveLength(1);
+  });
+});
+
+describe("checkDuplicateSentences", () => {
+  it("偵測重複句", () => {
+    const text = "本計畫的執行策略如下所述。其他內容。本計畫的執行策略如下所述。";
+    const results = checkDuplicateSentences(text);
+    expect(results).toHaveLength(1);
+    expect(results[0].rule).toBe("重複內容");
+  });
+
+  it("短句（<10字）不檢查", () => {
+    const text = "是的。其他。是的。";
+    const results = checkDuplicateSentences(text);
+    expect(results).toHaveLength(0);
+  });
+
+  it("不同內容不觸發", () => {
+    const text = "第一段完整內容說明。第二段不同的內容描述。";
+    const results = checkDuplicateSentences(text);
+    expect(results).toHaveLength(0);
+  });
+
+  it("空白差異視為相同", () => {
+    const text = "本計畫的 執行策略如下。其他。本計畫的執行策略如下。";
+    const results = checkDuplicateSentences(text);
+    expect(results).toHaveLength(1);
+  });
+
+  it("同句出現 3 次只報一次", () => {
+    const s = "這是一個會重複出現的完整句子";
+    const text = `${s}。其他。${s}。更多。${s}。`;
+    const results = checkDuplicateSentences(text);
+    expect(results).toHaveLength(1);
+  });
+});
+
+describe("checkRiskyPromises", () => {
+  it("偵測保證", () => {
+    const results = checkRiskyPromises("本公司保證如期完成");
+    expect(results).toHaveLength(1);
+    expect(results[0].rule).toBe("承諾風險");
+    expect(results[0].message).toContain("保證");
+  });
+
+  it("偵測多個風險用語", () => {
+    const results = checkRiskyPromises("我們一定做到零風險");
+    expect(results).toHaveLength(2); // 一定 + 零風險
+  });
+
+  it("正常用語不觸發", () => {
+    const results = checkRiskyPromises("本計畫將採用風險管理措施降低執行風險");
+    expect(results).toHaveLength(0);
+  });
+
+  it("偵測百分之百", () => {
+    const results = checkRiskyPromises("百分之百達成目標");
+    expect(results).toHaveLength(1);
+    expect(results[0].message).toContain("不切實際");
+  });
+});
+
+// ====== 整合測試 ======
+
+describe("runChecks", () => {
+  const defaultConfig: QualityConfig = {
+    blacklist: ["豐富的經驗", "高品質"],
+    terminology: [{ wrong: "貴單位", correct: "貴機關" }],
+    ironLawEnabled: {
+      crossValidateNumbers: true,
+      budgetConsistency: true,
+      dateConsistency: true,
+      teamConsistency: true,
+      scopeConsistency: true,
+    },
+    customRules: [],
+  };
+
+  it("空文字回傳空結果", () => {
+    expect(runChecks("", defaultConfig)).toHaveLength(0);
+    expect(runChecks("   ", defaultConfig)).toHaveLength(0);
+  });
+
+  it("乾淨文字只有提案規則的結果", () => {
+    const results = runChecks("一句正常的短句。", defaultConfig);
+    // 不應有禁用詞、用語修正或鐵律問題
+    const errors = results.filter((r) => r.type === "error");
+    expect(errors).toHaveLength(0);
+  });
+
+  it("綜合情境：多種問題同時偵測", () => {
+    const text = "本公司有豐富的經驗，保證貴單位滿意。預算100萬，工期12月，人力5人，費率2000。";
+    const results = runChecks(text, defaultConfig);
+
+    const rules = results.map((r) => r.rule);
+    expect(rules).toContain("禁用詞");
+    expect(rules).toContain("用語修正");
+    expect(rules).toContain("承諾風險");
+  });
+
+  it("自訂規則整合運作", () => {
+    const config = {
+      ...defaultConfig,
+      customRules: [{ pattern: "TODO", message: "未完成項目", severity: "error" as const }],
+    };
+    const results = runChecks("這裡有個 TODO 要處理", config);
+    expect(results.find((r) => r.rule === "自訂規則")).toBeDefined();
+  });
+});
+
+// ====== 分數計算 ======
+
+describe("calculateScore", () => {
+  it("無問題得 100 分", () => {
+    const score = calculateScore([]);
+    expect(score.value).toBe(100);
+    expect(score.label).toBe("品質良好");
+  });
+
+  it("每個 error 扣 10 分", () => {
+    const results = [
+      { type: "error" as const, rule: "test", message: "test" },
+      { type: "error" as const, rule: "test", message: "test" },
+    ];
+    const score = calculateScore(results);
+    expect(score.value).toBe(80);
+    expect(score.errorCount).toBe(2);
+  });
+
+  it("每個 warning 扣 3 分", () => {
+    const results = [
+      { type: "warning" as const, rule: "test", message: "test" },
+    ];
+    const score = calculateScore(results);
+    expect(score.value).toBe(97);
+    expect(score.warningCount).toBe(1);
+  });
+
+  it("info 不扣分", () => {
+    const results = [
+      { type: "info" as const, rule: "test", message: "test" },
+    ];
+    const score = calculateScore(results);
+    expect(score.value).toBe(100);
+    expect(score.infoCount).toBe(1);
+  });
+
+  it("分數不低於 0", () => {
+    const results = Array.from({ length: 20 }, () => ({
+      type: "error" as const,
+      rule: "test",
+      message: "test",
+    }));
+    const score = calculateScore(results);
+    expect(score.value).toBe(0);
+    expect(score.label).toBe("品質不佳");
+  });
+
+  it("60-79 分標示需要改善", () => {
+    const results = Array.from({ length: 3 }, () => ({
+      type: "error" as const,
+      rule: "test",
+      message: "test",
+    }));
+    const score = calculateScore(results);
+    expect(score.value).toBe(70);
+    expect(score.label).toBe("需要改善");
+  });
+});

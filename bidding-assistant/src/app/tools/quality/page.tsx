@@ -8,99 +8,37 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { useState, useMemo } from "react";
-
-interface CheckResult {
-  type: "error" | "warning" | "info";
-  rule: string;
-  message: string;
-  position?: string;
-}
+import { runChecks } from "@/lib/quality/rules";
+import { calculateScore } from "@/lib/quality/score";
+import type { CheckResult, QualityConfig } from "@/lib/quality/types";
 
 export default function QualityPage() {
   const { settings } = useSettings();
-  const { blacklist, terminology, ironLawEnabled } = settings.modules.qualityRules;
+  const { blacklist, terminology, ironLawEnabled, customRules } = settings.modules.qualityRules;
 
   const [text, setText] = useState("");
   const [results, setResults] = useState<CheckResult[]>([]);
   const [checked, setChecked] = useState(false);
 
-  function runCheck() {
+  function handleCheck() {
     if (!text.trim()) return;
-    const found: CheckResult[] = [];
 
-    // 禁用詞檢查
-    blacklist.forEach((word) => {
-      const regex = new RegExp(word, "g");
-      let match;
-      while ((match = regex.exec(text)) !== null) {
-        found.push({
-          type: "error",
-          rule: "禁用詞",
-          message: `發現禁用詞「${word}」`,
-          position: `位置 ${match.index}`,
-        });
-      }
-    });
+    const config: QualityConfig = {
+      blacklist,
+      terminology,
+      ironLawEnabled,
+      customRules,
+      companyName: settings.company.name,
+      companyBrand: settings.company.brand,
+    };
 
-    // 用語修正
-    terminology.forEach((t) => {
-      const regex = new RegExp(t.wrong, "g");
-      let match;
-      while ((match = regex.exec(text)) !== null) {
-        found.push({
-          type: "warning",
-          rule: "用語修正",
-          message: `「${t.wrong}」建議改為「${t.correct}」`,
-          position: `位置 ${match.index}`,
-        });
-      }
-    });
-
-    // 鐵律檢查（簡化模擬）
-    if (ironLawEnabled.crossValidateNumbers) {
-      const numbers = text.match(/\d{1,3}(,\d{3})+|\d+/g);
-      if (numbers && numbers.length > 3) {
-        found.push({
-          type: "info",
-          rule: "數字交叉驗證",
-          message: `文件中出現 ${numbers.length} 個數字，請人工交叉比對`,
-        });
-      }
-    }
-
-    if (ironLawEnabled.dateConsistency) {
-      const dates = text.match(/\d{2,4}[年/.-]\d{1,2}[月/.-]\d{1,2}[日]?/g);
-      if (dates && dates.length > 1) {
-        found.push({
-          type: "info",
-          rule: "日期一致性",
-          message: `文件中出現 ${dates.length} 個日期，請確認一致性`,
-        });
-      }
-    }
-
-    // 段落長度
-    const paragraphs = text.split(/\n\n+/).filter(Boolean);
-    paragraphs.forEach((p, i) => {
-      if (p.length > 500) {
-        found.push({
-          type: "warning",
-          rule: "段落長度",
-          message: `第 ${i + 1} 段超過 500 字（${p.length} 字），建議分段`,
-        });
-      }
-    });
-
-    setResults(found);
+    setResults(runChecks(text, config));
     setChecked(true);
   }
 
   const score = useMemo(() => {
     if (!checked || !text.trim()) return null;
-    const errorCount = results.filter((r) => r.type === "error").length;
-    const warnCount = results.filter((r) => r.type === "warning").length;
-    const raw = 100 - errorCount * 10 - warnCount * 3;
-    return Math.max(0, Math.min(100, raw));
+    return calculateScore(results);
   }, [results, checked, text]);
 
   const errorCount = results.filter((r) => r.type === "error").length;
@@ -112,7 +50,7 @@ export default function QualityPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold">品質檢查</h1>
         <p className="text-muted-foreground mt-1">
-          檢查禁用詞、用語修正、鐵律規則
+          檢查禁用詞、用語修正、鐵律規則、承諾風險、重複內容
         </p>
       </div>
 
@@ -138,7 +76,7 @@ export default function QualityPage() {
                 <span className="text-xs text-muted-foreground">
                   {text.length} 字
                 </span>
-                <Button onClick={runCheck} disabled={!text.trim()}>
+                <Button onClick={handleCheck} disabled={!text.trim()}>
                   執行檢查
                 </Button>
               </div>
@@ -209,19 +147,17 @@ export default function QualityPage() {
               <CardContent className="text-center space-y-4">
                 <div
                   className={`text-5xl font-bold ${
-                    score >= 80
+                    score.value >= 80
                       ? "text-green-600"
-                      : score >= 60
+                      : score.value >= 60
                         ? "text-yellow-600"
                         : "text-destructive"
                   }`}
                 >
-                  {score}
+                  {score.value}
                 </div>
-                <Progress value={score} className="h-3" />
-                <p className="text-sm text-muted-foreground">
-                  {score >= 80 ? "品質良好" : score >= 60 ? "需要改善" : "品質不佳"}
-                </p>
+                <Progress value={score.value} className="h-3" />
+                <p className="text-sm text-muted-foreground">{score.label}</p>
               </CardContent>
             </Card>
           )}
@@ -239,10 +175,15 @@ export default function QualityPage() {
                 <span>用語對照</span>
                 <Badge variant="secondary">{terminology.length} 組</Badge>
               </div>
+              <div className="flex justify-between">
+                <span>自訂規則</span>
+                <Badge variant="secondary">{customRules.length} 個</Badge>
+              </div>
               <Separator />
-              <p className="text-xs text-muted-foreground">
-                至「設定 → 模組更新 → 品質規則」調整
-              </p>
+              <div className="text-xs text-muted-foreground space-y-1">
+                <p>內建規則：段落長度、句子長度、重複內容、承諾風險</p>
+                <p>至「設定 → 模組更新 → 品質規則」調整</p>
+              </div>
             </CardContent>
           </Card>
         </div>
