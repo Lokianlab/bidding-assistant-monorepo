@@ -222,4 +222,12 @@ describe("assembleContent", () => {
   it("空檔案清單回傳空字串", () => {
     expect(assembleContent([], {})).toBe("");
   });
+
+  it("跳過內容為空字串的檔案", () => {
+    const files = [mockFile("a", "檔案A"), mockFile("b", "檔案B")];
+    const contents = { a: "內容A", b: "" }; // b 是空字串
+    const result = assembleContent(files, contents);
+    expect(result).toContain("檔案A");
+    expect(result).not.toContain("檔案B");
+  });
 });
