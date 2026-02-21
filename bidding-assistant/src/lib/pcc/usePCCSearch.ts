@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import type { PCCSearchResponse, PCCSearchMode, PCCAction } from "./types";
+import { cacheGet, cacheSet } from "./cache";
 
 interface UsePCCSearchReturn {
   results: PCCSearchResponse | null;
@@ -36,9 +37,17 @@ export function usePCCSearch(): UsePCCSearchReturn {
     setError(null);
 
     try {
+      const cacheKey = `${mode}:${query.trim()}:p${page}`;
+      const cached = cacheGet<PCCSearchResponse>("search", cacheKey);
+      if (cached) {
+        setResults(cached);
+        return;
+      }
+
       const action: PCCAction = mode === "title" ? "searchByTitle" : "searchByCompany";
       const data = await pccApi(action, { query: query.trim(), page }) as PCCSearchResponse;
       setResults(data);
+      cacheSet("search", cacheKey, data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "搜尋失敗");
       setResults(null);
@@ -55,10 +64,16 @@ export function usePCCSearch(): UsePCCSearchReturn {
   return { results, loading, error, search, clearResults };
 }
 
-/** 取得標案詳情 */
+/** 取得標案詳情（快取 7 天） */
 export async function fetchTenderDetail(
   unitId: string,
   jobNumber: string,
 ): Promise<unknown> {
-  return pccApi("getTenderDetail", { unitId, jobNumber });
+  const cacheKey = `${unitId}:${jobNumber}`;
+  const cached = cacheGet("detail", cacheKey);
+  if (cached) return cached;
+
+  const data = await pccApi("getTenderDetail", { unitId, jobNumber });
+  cacheSet("detail", cacheKey, data);
+  return data;
 }
