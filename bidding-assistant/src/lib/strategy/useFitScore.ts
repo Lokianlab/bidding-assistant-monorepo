@@ -43,6 +43,14 @@ export function useFitScore(
       return { fitScore: null, kbMatch: null };
     }
 
+    const input: FitScoreInput = {
+      caseName,
+      agency,
+      budget,
+      intelligence,
+      kb,
+    };
+
     const weights = settings.strategy?.fitWeights ?? DEFAULT_FIT_WEIGHTS;
 
     const input: FitScoreInput = {
