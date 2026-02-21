@@ -160,6 +160,8 @@ function resolveMetricValue(
     typeAnalysis: () => metrics.typeAnalysis,
     statusDistribution: () => metrics.statusDistribution,
     costBreakdown: () => metrics.totalCostByPeriod,
+    rollingWinRate: () => [],
+    quarterComparison: () => null,
   };
 
   const resolver = MAP[metricKey];

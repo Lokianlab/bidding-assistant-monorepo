@@ -214,6 +214,34 @@ export const CARD_REGISTRY: CardDefinition[] = [
     },
   },
 
+  // ── Trend cards ────────────────────────────────────────────
+  {
+    type: "chart-rolling-winrate",
+    name: "滾動勝率趨勢",
+    description: "近 6 個月的 3 個月滾動得標率折線圖",
+    icon: "📈",
+    category: "chart",
+    allowedSizes: ["medium", "large", "wide"],
+    defaultSize: "medium",
+    defaultConfig: {
+      title: "滾動勝率趨勢",
+      period: "year",
+    },
+  },
+  {
+    type: "chart-quarter-compare",
+    name: "季度對比",
+    description: "當季與上季的案件數、得標數、得標率比較",
+    icon: "📊",
+    category: "chart",
+    allowedSizes: ["medium", "large", "wide"],
+    defaultSize: "medium",
+    defaultConfig: {
+      title: "季度對比",
+      period: "year",
+    },
+  },
+
   // ── Custom card ─────────────────────────────────────────────
   {
     type: "custom",

@@ -14,6 +14,7 @@ import type {
   CardSizePreset,
 } from "@/lib/dashboard/card-layout/types";
 import type { DashboardMetrics } from "@/lib/dashboard/useDashboardMetrics";
+import type { TrendAnalysis } from "@/lib/dashboard/useTrendAnalysis";
 import { CustomCard } from "./CustomCard";
 
 interface CardRendererProps {
@@ -21,6 +22,7 @@ interface CardRendererProps {
   config: CardConfig | CustomCardConfig;
   metrics: DashboardMetrics;
   size: CardSizePreset;
+  trendAnalysis?: TrendAnalysis;
 }
 
 // ── Shared chart tooltip ─────────────────────────────────────
@@ -78,7 +80,7 @@ function CircleProgress({ value, size = 44, stroke = 3.5 }: { value: number; siz
  * card visualization. Renders real metrics data for all preset card types,
  * and delegates to CustomCard for the "custom" type.
  */
-export function CardRenderer({ type, config, metrics, size }: CardRendererProps) {
+export function CardRenderer({ type, config, metrics, size, trendAnalysis }: CardRendererProps) {
   // ── Custom card ────────────────────────────────────────────
   if (type === "custom") {
     return (
@@ -286,6 +288,71 @@ export function CardRenderer({ type, config, metrics, size }: CardRendererProps)
           )}
         </div>
       );
+  }
+
+  // ── Trend cards ───────────────────────────────────────────
+  if (trendAnalysis) {
+    switch (type) {
+      case "chart-rolling-winrate": {
+        const data = trendAnalysis.recentMetrics.map((m) => ({
+          month: m.month.split("-")[1] + "月",
+          勝率: m.rollingWinRate ?? 0,
+          得標: m.won,
+          總數: m.total,
+        }));
+        return (
+          <div className="w-full" style={{ minHeight: chartHeight }}>
+            {data.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-sm text-muted-foreground" style={{ minHeight: chartHeight }}>
+                尚無趨勢資料
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={chartHeight}>
+                <LineChart data={data} margin={{ left: 0, right: 16, top: 4, bottom: 4 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} domain={[0, 100]} unit="%" />
+                  <RTooltip content={<ChartTooltip />} />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  <Line type="monotone" dataKey="勝率" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} name="3 個月滾動勝率 %" />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        );
+      }
+
+      case "chart-quarter-compare": {
+        const qc = trendAnalysis.quarterComparison;
+        if (!qc) {
+          return (
+            <div className="h-full flex items-center justify-center text-sm text-muted-foreground" style={{ minHeight: chartHeight }}>
+              資料不足，無法比較季度
+            </div>
+          );
+        }
+        const data = [
+          { 項目: "案件數", [qc.previousLabel]: qc.previous.total, [qc.currentLabel]: qc.current.total },
+          { 項目: "得標數", [qc.previousLabel]: qc.previous.won, [qc.currentLabel]: qc.current.won },
+          { 項目: "勝率%", [qc.previousLabel]: qc.previous.winRate, [qc.currentLabel]: qc.current.winRate },
+        ];
+        return (
+          <div className="w-full" style={{ minHeight: chartHeight }}>
+            <ResponsiveContainer width="100%" height={chartHeight}>
+              <BarChart data={data} margin={{ left: 0, right: 16, top: 4, bottom: 4 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="項目" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <RTooltip content={<ChartTooltip />} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Bar dataKey={qc.previousLabel} fill="#94a3b8" radius={[4, 4, 0, 0]} />
+                <Bar dataKey={qc.currentLabel} fill="#6366f1" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        );
+      }
+    }
   }
 
   // ── Gauge cards ────────────────────────────────────────────

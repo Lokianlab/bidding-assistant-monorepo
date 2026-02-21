@@ -175,6 +175,25 @@ export const METRIC_REGISTRY: MetricDefinition[] = [
     defaultVisualization: "bar",
   },
 
+  // ── Trend metrics ──────────────────────────────────────────
+  {
+    key: "rollingWinRate",
+    name: "滾動勝率",
+    description: "近 3 個月的滾動得標率趨勢",
+    dataType: "array",
+    compatibleVisualizations: ["line", "bar", "mini-table"],
+    defaultVisualization: "line",
+    defaultNumberFormat: "percentage",
+  },
+  {
+    key: "quarterComparison",
+    name: "季度對比",
+    description: "當季與上季的案件數、得標率、金額比較",
+    dataType: "array",
+    compatibleVisualizations: ["bar", "mini-table"],
+    defaultVisualization: "bar",
+  },
+
   // ── Matrix metrics ─────────────────────────────────────────
   {
     key: "costBreakdown",

@@ -21,6 +21,7 @@ import { DashboardGrid } from "@/components/dashboard/DashboardGrid";
 import { SearchBar, useDebouncedValue } from "@/components/dashboard/SearchBar";
 import { ProjectDetailSheet } from "@/components/dashboard/ProjectDetailSheet";
 import { useDashboardMetrics } from "@/lib/dashboard/useDashboardMetrics";
+import { useTrendAnalysis } from "@/lib/dashboard/useTrendAnalysis";
 import { isFeatureEnabled } from "@/lib/modules/feature-registry";
 import { logger } from "@/lib/logger";
 
@@ -320,6 +321,7 @@ export default function DashboardPage() {
 
   // ====== useDashboardMetrics（用搜尋前的全部 pages 算 KPI，搜尋後的 filteredPages 用於表格） ======
   const metrics = useDashboardMetrics(pages, PRIORITY_MAP, historicalPages);
+  const trendAnalysis = useTrendAnalysis(pages);
 
   // 年度目標
   const yearlyGoal = settings.yearlyGoal ?? 0;
@@ -506,6 +508,7 @@ export default function DashboardPage() {
       {customDashboardEnabled ? (
         <DashboardGrid
           metrics={metrics}
+          trendAnalysis={trendAnalysis}
           yearlyGoal={yearlyGoal}
           onGoalEdit={(val) => updateSettings({ yearlyGoal: val })}
           monthlyTarget={monthlyBidTarget}

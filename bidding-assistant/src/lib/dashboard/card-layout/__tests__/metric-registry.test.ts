@@ -50,8 +50,8 @@ describe("METRIC_REGISTRY", () => {
     }
   });
 
-  it("has exactly 19 entries (one per MetricKey)", () => {
-    expect(METRIC_REGISTRY).toHaveLength(19);
+  it("has exactly 21 entries (one per MetricKey)", () => {
+    expect(METRIC_REGISTRY).toHaveLength(21);
   });
 
   it("each key is unique", () => {

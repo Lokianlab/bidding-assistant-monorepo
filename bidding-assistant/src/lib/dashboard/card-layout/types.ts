@@ -42,7 +42,9 @@ export type MetricKey =
   | "monthlyTrend"
   | "typeAnalysis"
   | "statusDistribution"
-  | "costBreakdown";
+  | "costBreakdown"
+  | "rollingWinRate"
+  | "quarterComparison";
 
 export type MetricDataType = "number" | "ratio" | "array" | "matrix";
 

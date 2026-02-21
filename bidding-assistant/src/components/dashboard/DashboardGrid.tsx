@@ -21,6 +21,7 @@ import { getCardDefinition } from "@/lib/dashboard/card-layout/card-registry";
 import { CARD_SIZE_MAP } from "@/lib/dashboard/card-layout/types";
 import type { DashboardCardLayout } from "@/lib/dashboard/card-layout/types";
 import type { DashboardMetrics } from "@/lib/dashboard/useDashboardMetrics";
+import type { TrendAnalysis } from "@/lib/dashboard/useTrendAnalysis";
 import { DashboardCard } from "./cards/DashboardCard";
 import { CardRenderer } from "./cards/CardRenderer";
 import { CardPickerDialog } from "./cards/CardPickerDialog";
@@ -29,6 +30,7 @@ import { CardPickerDialog } from "./cards/CardPickerDialog";
 
 interface DashboardGridProps {
   metrics: DashboardMetrics;
+  trendAnalysis?: TrendAnalysis;
   yearlyGoal: number;
   onGoalEdit: (v: number) => void;
   monthlyTarget: number;
@@ -44,6 +46,7 @@ interface SortableItemProps {
   card: DashboardCardLayout;
   isEditing: boolean;
   metrics: DashboardMetrics;
+  trendAnalysis?: TrendAnalysis;
   onResize: (cardId: string, size: DashboardCardLayout["size"]) => void;
   onRemove: (cardId: string) => void;
 }
@@ -52,6 +55,7 @@ function SortableItem({
   card,
   isEditing,
   metrics,
+  trendAnalysis,
   onResize,
   onRemove,
 }: SortableItemProps) {
@@ -95,6 +99,7 @@ function SortableItem({
           config={card.config}
           metrics={metrics}
           size={card.size}
+          trendAnalysis={trendAnalysis}
         />
       </DashboardCard>
     </div>
@@ -126,7 +131,7 @@ function SkeletonGrid() {
  * Uses @dnd-kit for drag-and-drop reordering of cards.
  */
 export function DashboardGrid(props: DashboardGridProps) {
-  const { metrics, showSkeleton } = props;
+  const { metrics, trendAnalysis, showSkeleton } = props;
   const { layout, reorder, resize, add, remove, reset } = useCardLayout();
   const [isEditing, setIsEditing] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -241,6 +246,7 @@ export function DashboardGrid(props: DashboardGridProps) {
                 card={card}
                 isEditing={isEditing}
                 metrics={metrics}
+                trendAnalysis={trendAnalysis}
                 onResize={handleResize}
                 onRemove={handleRemove}
               />
