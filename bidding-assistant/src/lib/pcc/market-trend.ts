@@ -18,6 +18,7 @@ export function analyzeMarketTrend(
       yearlyData: [],
       topAgencies: [],
       competitionLevel: "藍海",
+      trendDirection: "持平",
     };
   }
 
@@ -102,6 +103,9 @@ export function analyzeMarketTrend(
   const recentYears = yearlyData.slice(-3);
   const competitionLevel = judgeCompetition(recentYears);
 
+  // 趨勢方向判斷：基於近 3 年案件量變化
+  const trendDirection = judgeTrend(yearlyData);
+
   const years = yearlyData.map((d) => d.year);
 
   return {
@@ -111,7 +115,32 @@ export function analyzeMarketTrend(
     yearlyData,
     topAgencies,
     competitionLevel,
+    trendDirection,
   };
+}
+
+/**
+ * 判斷案件量趨勢方向。
+ * 比較前半段和後半段的平均案件量，差異超過 20% 才判定為增加或減少。
+ */
+export function judgeTrend(yearlyData: YearlyMarketData[]): MarketTrend["trendDirection"] {
+  if (yearlyData.length < 2) return "持平";
+
+  // 至少取 2 年比較：前半 vs 後半
+  const mid = Math.floor(yearlyData.length / 2);
+  const firstHalf = yearlyData.slice(0, mid);
+  const secondHalf = yearlyData.slice(mid);
+
+  const avgFirst = firstHalf.reduce((s, d) => s + d.totalCases, 0) / firstHalf.length;
+  const avgSecond = secondHalf.reduce((s, d) => s + d.totalCases, 0) / secondHalf.length;
+
+  if (avgFirst === 0) return avgSecond > 0 ? "增加" : "持平";
+
+  const changeRate = (avgSecond - avgFirst) / avgFirst;
+
+  if (changeRate > 0.2) return "增加";
+  if (changeRate < -0.2) return "減少";
+  return "持平";
 }
 
 /** 根據近年平均投標家數判斷競爭程度 */
