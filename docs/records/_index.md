@@ -45,3 +45,4 @@ infra-claude-md-modular|完成|CLAUDE.md 拆分：記錄格式搬到 .claude/rul
 plan-devplan-push|進行中|/修改計畫 批量推進 6 條任務線（04/06/07/09/A02/M07），暫存區 16→5 碎片|@op:20260221-ITEJ#1521|2026-02-21
 feat-pcc-web|待驗收|PCC 情報搜尋接進 Web App：API route + 搜尋面板 + 標案詳情 + 評委名單 + 得標率（第 11 個模組）|@op:20260221-ITEJ#1540|2026-02-21
 infra-sync-optimize|完成|同步機制優化：scoring append-only + /更新輕量化 + 重啟/壓縮流程精簡|@op:20260221-A44T#2100|2026-02-21
+infra-forum|待驗收|機器論壇（跨機器通訊）+ /質問（全面校準）：brief/feedback/score/directive/response 五種貼文，整合進重啟/壓縮/更新流程|@op:20260221-ITEJ#1730|2026-02-21
