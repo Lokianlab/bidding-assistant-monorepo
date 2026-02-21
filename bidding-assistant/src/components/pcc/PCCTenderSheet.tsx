@@ -246,6 +246,7 @@ export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany, onVi
             summary={summary}
             agencyIntel={agencyIntel.data}
             companies={companies}
+            committee={detail?.evaluation_committee}
           />
           <div className="flex gap-2">
             <a
@@ -369,11 +370,13 @@ function ScoutReportButton({
   summary,
   agencyIntel,
   companies,
+  committee,
 }: {
   record: PCCRecord;
   summary: TenderSummary | null;
   agencyIntel: { totalCases: number; incumbents: { name: string; wins: number }[]; myHistory: { title: string; date: number; won: boolean }[] } | null;
   companies: { name: string; id?: string; roles: ("投標" | "得標" | "未得標")[] }[];
+  committee?: EvaluationCommitteeMember[];
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -389,6 +392,7 @@ function ScoutReportButton({
       summary,
       agencyIntel,
       competitorNames,
+      committee,
     });
 
     const prompt = generateScoutPrompt(input);
@@ -396,7 +400,7 @@ function ScoutReportButton({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
-  }, [record, summary, agencyIntel, companies]);
+  }, [record, summary, agencyIntel, companies, committee]);
 
   return (
     <Button
