@@ -22,6 +22,20 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": {
+          "toolName": ["Edit", "Write", "Bash", "NotebookEdit"]
+        },
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-tool-flag.sh",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }

@@ -12,18 +12,22 @@ fi
 
 cd "$CLAUDE_PROJECT_DIR" || exit 0
 
-# ═══ 硬性：未提交改動 → exit 2 ═══
-STAGED=$(git diff --cached --name-only 2>/dev/null)
-UNSTAGED=$(git diff --name-only 2>/dev/null)
-UNTRACKED=$(git ls-files --others --exclude-standard 2>/dev/null)
-ALL="$STAGED$UNSTAGED$UNTRACKED"
+# ═══ 硬性：未提交改動（只在有旗標時才跑 git check）═══
+FLAG="$CLAUDE_PROJECT_DIR/.file-modified-flag"
+if [ -f "$FLAG" ]; then
+  rm -f "$FLAG"
+  STAGED=$(git diff --cached --name-only 2>/dev/null)
+  UNSTAGED=$(git diff --name-only 2>/dev/null)
+  UNTRACKED=$(git ls-files --others --exclude-standard 2>/dev/null)
+  ALL="$STAGED$UNSTAGED$UNTRACKED"
 
-if [ -n "$ALL" ]; then
-  echo "有未提交的改動，請先 git add + commit + push：" >&2
-  [ -n "$STAGED" ] && echo "  [staged] $STAGED" >&2
-  [ -n "$UNSTAGED" ] && echo "  [modified] $UNSTAGED" >&2
-  [ -n "$UNTRACKED" ] && echo "  [new] $UNTRACKED" >&2
-  exit 2
+  if [ -n "$ALL" ]; then
+    echo "有未提交的改動，請先 git add + commit + push：" >&2
+    [ -n "$STAGED" ] && echo "  [staged] $STAGED" >&2
+    [ -n "$UNSTAGED" ] && echo "  [modified] $UNSTAGED" >&2
+    [ -n "$UNTRACKED" ] && echo "  [new] $UNTRACKED" >&2
+    exit 2
+  fi
 fi
 
 # ═══ 資料驅動行為偵測 ═══
