@@ -1,8 +1,7 @@
 #!/bin/bash
-# Stop hook: 行為合規檢查（泛化版）
-# 設計原則：不逐條拼症狀，按嚴重度分兩層
-#   exit 2 = 硬性阻斷（AI 不能停，必須繼續）
-#   stderr = 軟性提醒（AI 可以停但下次注意）
+# Stop hook: 泛化行為合規檢查
+# 問題定義在 stop-patterns.conf，本檔只是通用引擎
+# 加新問題 = 在 conf 加一行，不改這個檔案
 
 INPUT=$(cat)
 
@@ -13,9 +12,7 @@ fi
 
 cd "$CLAUDE_PROJECT_DIR" || exit 0
 
-# ═══ 硬性阻斷 ═══
-
-# 1. 未提交改動 → 必須先 commit + push
+# ═══ 硬性：未提交改動 → exit 2 ═══
 STAGED=$(git diff --cached --name-only 2>/dev/null)
 UNSTAGED=$(git diff --name-only 2>/dev/null)
 UNTRACKED=$(git ls-files --others --exclude-standard 2>/dev/null)
@@ -29,23 +26,34 @@ if [ -n "$ALL" ]; then
   exit 2
 fi
 
-# 2. 被動性偵測：回覆尾部把決策丟給用戶 → 強制繼續
-#    覆蓋：做完就停、不主動表態、報告不行動、分析不行動
-#    這些 pattern 的共同特徵：AI 該自己判斷/行動，卻轉交用戶
+# ═══ 資料驅動行為偵測 ═══
+CONF="$CLAUDE_PROJECT_DIR/.claude/hooks/stop-patterns.conf"
+if [ ! -f "$CONF" ]; then
+  exit 0
+fi
+
 TAIL=$(echo "$INPUT" | tail -10)
-if echo "$TAIL" | grep -qE '需要我做什麼|有什麼.*要我做|要我.*繼續嗎|接下來做什麼|要不要我|你來決定|你.*選擇|還是你'; then
-  echo "被動性阻斷：你把決策丟給用戶了。規則：只在用戶手上有 AI 拿不到的東西時才停。自己判斷，直接做。" >&2
+HARD_TRIGGERED=0
+
+while IFS='|' read -r severity pattern message; do
+  # 跳過空行和註解
+  case "$severity" in
+    ""|\#*) continue ;;
+  esac
+
+  if echo "$TAIL" | grep -qE "$pattern"; then
+    echo "$message" >&2
+    if [ "$severity" = "hard" ]; then
+      HARD_TRIGGERED=1
+    fi
+  fi
+done < "$CONF"
+
+if [ "$HARD_TRIGGERED" -eq 1 ]; then
   exit 2
 fi
 
-# ═══ 軟性提醒 ═══
-
-# 等待語句：可能合理（真的需要用戶輸入），但提醒邊等邊做
-if echo "$TAIL" | grep -qE '等用戶|等待指示|等你下一步|下一步指示|無可自主推進'; then
-  echo "偵測到等待語句。確認：用戶手上有什麼是你拿不到的？有其他能自主推進的工作嗎？" >&2
-fi
-
-# 30 分鐘同步提醒
+# ═══ 軟性：30 分鐘同步提醒 ═══
 SYNC_FILE="$CLAUDE_PROJECT_DIR/.last-sync-time"
 if [ -f "$SYNC_FILE" ]; then
     LAST_SYNC=$(cat "$SYNC_FILE")
