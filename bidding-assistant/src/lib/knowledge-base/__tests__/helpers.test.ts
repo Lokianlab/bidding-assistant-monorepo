@@ -147,6 +147,14 @@ describe("generateNextId", () => {
   it("handles all-invalid IDs", () => {
     expect(generateNextId(["M-abc", "M-xyz"], "M-")).toBe("M-001");
   });
+
+  it("produces 4-digit number when sequence exceeds 999", () => {
+    expect(generateNextId(["M-999"], "M-")).toBe("M-1000");
+  });
+
+  it("handles sequence at exactly 998 (still 3 digits)", () => {
+    expect(generateNextId(["M-998"], "M-")).toBe("M-999");
+  });
 });
 
 // ====== generateProjectId ======
@@ -172,6 +180,11 @@ describe("generateProjectId", () => {
   it("handles empty array", () => {
     const year = new Date().getFullYear();
     expect(generateProjectId([])).toBe(`P-${year}-001`);
+  });
+
+  it("produces 4-digit number when sequence exceeds 999", () => {
+    const year = new Date().getFullYear();
+    expect(generateProjectId([`P-${year}-999`])).toBe(`P-${year}-1000`);
   });
 });
 
