@@ -106,20 +106,22 @@ describe("analyzeMarketTrend", () => {
     expect(result.yearlyData[0].maxBidders).toBe(0);
   });
 
-  it("統計活躍機關", () => {
+  it("統計活躍機關（含 unitId）", () => {
     const records = [
-      mockRecord({ date: 20240101, unit_name: "機關A" }),
-      mockRecord({ date: 20240201, unit_name: "機關A" }),
-      mockRecord({ date: 20240301, unit_name: "機關B" }),
-      mockRecord({ date: 20240401, unit_name: "機關C" }),
-      mockRecord({ date: 20240501, unit_name: "機關C" }),
-      mockRecord({ date: 20240601, unit_name: "機關C" }),
+      mockRecord({ date: 20240101, unit_id: "UA", unit_name: "機關A" }),
+      mockRecord({ date: 20240201, unit_id: "UA", unit_name: "機關A" }),
+      mockRecord({ date: 20240301, unit_id: "UB", unit_name: "機關B" }),
+      mockRecord({ date: 20240401, unit_id: "UC", unit_name: "機關C" }),
+      mockRecord({ date: 20240501, unit_id: "UC", unit_name: "機關C" }),
+      mockRecord({ date: 20240601, unit_id: "UC", unit_name: "機關C" }),
     ];
     const result = analyzeMarketTrend(records, "test");
 
     expect(result.topAgencies[0].name).toBe("機關C");
+    expect(result.topAgencies[0].unitId).toBe("UC");
     expect(result.topAgencies[0].count).toBe(3);
     expect(result.topAgencies[1].name).toBe("機關A");
+    expect(result.topAgencies[1].unitId).toBe("UA");
   });
 
   it("紅海判斷：近年平均投標 ≥ 5 家", () => {

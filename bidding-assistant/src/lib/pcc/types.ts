@@ -140,7 +140,7 @@ export interface MarketTrend {
   totalRecords: number;
   yearRange: [number, number];       // [最早年, 最近年]
   yearlyData: YearlyMarketData[];    // 按年度排序
-  topAgencies: { name: string; count: number }[];  // 全期最活躍機關
+  topAgencies: { name: string; unitId: string; count: number }[];  // 全期最活躍機關
   competitionLevel: "藍海" | "一般" | "紅海";       // 競爭程度判斷
   trendDirection: "增加" | "持平" | "減少";         // 案件量趨勢方向
 }
