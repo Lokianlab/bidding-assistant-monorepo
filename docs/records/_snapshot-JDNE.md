@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-2440|JDNE|sonnet-4.6
+SNAPSHOT|20260222-2500|JDNE|opus-4.6
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
 [x] infra-hooks|PreCompact + Stop + pre-push hooks|@op:20260221-JDNE#0900
@@ -23,9 +23,9 @@ SNAPSHOT|20260222-2440|JDNE|sonnet-4.6
 [v] infra-new-machine-setup|新機器加入流程自動化|bat + bash 腳本，待用戶驗收
 [v] infra-machine-profile|三台機器側寫與協作策略|三方共識，待用戶驗收
 [v] infra-forum-upgrade|論壇制度升級|討論串+共識協議，待用戶驗收
-[ ] infra-user-auth|用戶驗證系統|Saint 註冊待 Jin 審核
+[ ] infra-user-auth|用戶驗證系統|Saint 已核准為 collaborator（Jin 授權），AINL 可設定
 [ ] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE) 已設定
 [?] infra-temp-machine-code|臨時機器碼制度|五台共識，待用戶核准後實作
-[ ] infra-efficiency-calibration|效率校準|第一輪六台全交齊，待第二輪
+[v] infra-efficiency-calibration|效率校準|兩輪答辯完成，機器主官整合摘要已提交，待 Jin 裁決
 [x] cleanup-dead-code|CardRenderer 死碼清理|已完成
-[>] plan-team-optimization|團隊運作優化方案|暫存檔已建（角色+流程+機制審計+瘦身+inbox），待用戶核准執行
+[v] plan-team-optimization|團隊運作優化方案|暫存檔完整（角色+流程+機制審計+瘦身+inbox），待用戶核准執行
