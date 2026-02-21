@@ -18,7 +18,7 @@ no-choice-question|已結案|-|禁止不帶立場的選擇題|A44T|||0221
 welcome-new-machine|已結案|-|歡迎新機器 AINL +協作指南+權限範圍|A44T|||0221
 methodology-ownership|進行中|P2|方法論分工認領|JDNE|JDNE,ITEJ,A44T,AINL||0223
 governance|已結案|P2|團隊治理機制（共識/決策/分工/權重/下線）|A44T|||0221
-multi-user-governance|共識|P2|多用戶治理架構|JDNE|||0223
+multi-user-governance|進行中|P2|多用戶治理架構|JDNE|||0223
 no-closing-question|已結案|-|禁止以問句結尾收工|AINL|||0223
 temp-machine-code|共識|-|機器碼分正式/臨時（24小時時效）|JDNE|JDNE,A44T,Z1FV||0222
 efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|||0222
