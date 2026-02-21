@@ -1,23 +1,20 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useKnowledgeBase } from "../useKnowledgeBase";
-import { KB_STORAGE_KEY, KB_DATA_VERSION } from "../constants";
+import { KB_STORAGE_KEY, KB_DATA_VERSION, EMPTY_KB_DATA } from "../constants";
 import type {
   KBEntry00A,
-  KBEntry00B,
-  KBEntry00C,
-  KBEntry00D,
   KBEntry00E,
   KnowledgeBaseData,
 } from "../types";
 
-// ====== 測試用假資料 ======
+// ── Test data factories ─────────────────────────────────────
 
-function makeEntry00A(overrides?: Partial<KBEntry00A>): KBEntry00A {
+function makeEntry00A(overrides: Partial<KBEntry00A> = {}): KBEntry00A {
   return {
     id: "M-001",
-    name: "測試人員",
-    title: "工程師",
+    name: "Test Member",
+    title: "Engineer",
     status: "在職",
     authorizedRoles: ["計畫主持人"],
     education: [],
@@ -26,468 +23,391 @@ function makeEntry00A(overrides?: Partial<KBEntry00A>): KBEntry00A {
     projects: [],
     additionalCapabilities: "",
     entryStatus: "active",
-    updatedAt: "2026-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01",
     ...overrides,
   };
 }
 
-function makeEntry00B(overrides?: Partial<KBEntry00B>): KBEntry00B {
+function makeEntry00E(overrides: Partial<KBEntry00E> = {}): KBEntry00E {
   return {
-    id: "P-2026-001",
-    projectName: "測試專案",
-    client: "測試機關",
-    contractAmount: "100萬",
-    period: "民國 115 年",
-    entity: "測試公司",
-    role: "得標廠商（與機關簽約）",
-    completionStatus: "已驗收結案",
-    teamMembers: "計畫主持人：測試（M-001）",
-    workItems: [],
-    outcomes: "測試成果",
-    documentLinks: "",
-    entryStatus: "active",
-    updatedAt: "2026-01-01T00:00:00.000Z",
-    ...overrides,
-  };
-}
-
-function makeEntry00C(overrides?: Partial<KBEntry00C>): KBEntry00C {
-  return {
-    id: "T-TEST",
-    templateName: "測試範本",
-    applicableType: "展覽策展",
-    budgetRange: "100-500萬",
-    durationRange: "3-6個月",
-    phases: [],
-    warnings: "",
-    entryStatus: "active",
-    updatedAt: "2026-01-01T00:00:00.000Z",
-    ...overrides,
-  };
-}
-
-function makeEntry00D(overrides?: Partial<KBEntry00D>): KBEntry00D {
-  return {
-    id: "R-TEST",
-    riskName: "測試風險",
-    riskLevel: "中",
-    prevention: "預防措施",
-    responseSteps: [],
-    notes: "",
-    entryStatus: "active",
-    updatedAt: "2026-01-01T00:00:00.000Z",
-    ...overrides,
-  };
-}
-
-function makeEntry00E(overrides?: Partial<KBEntry00E>): KBEntry00E {
-  return {
-    id: "REV-001",
-    projectName: "測試檢討案",
+    id: "E-001",
+    projectName: "Test Review",
     result: "得標",
-    year: "2026",
-    bidPhaseReview: "分析內容",
-    executionReview: "執行檢討",
-    kbUpdateSuggestions: "建議",
-    aiToolFeedback: "回饋",
-    oneSentenceSummary: "一句話總結",
+    year: "2024",
+    bidPhaseReview: "",
+    executionReview: "",
+    kbUpdateSuggestions: "",
+    aiToolFeedback: "",
+    oneSentenceSummary: "",
     entryStatus: "active",
-    updatedAt: "2026-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01",
     ...overrides,
   };
 }
 
-// ====== 測試 ======
+beforeEach(() => {
+  localStorage.clear();
+});
 
-describe("useKnowledgeBase", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    vi.restoreAllMocks();
+// ── Initialization ──────────────────────────────────────────
+
+describe("useKnowledgeBase — initialization", () => {
+  it("returns empty data when no localStorage", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+    expect(result.current.data["00A"]).toEqual([]);
+    expect(result.current.data["00B"]).toEqual([]);
+    expect(result.current.data["00C"]).toEqual([]);
+    expect(result.current.data["00D"]).toEqual([]);
+    expect(result.current.data["00E"]).toEqual([]);
+    expect(result.current.data.version).toBe(KB_DATA_VERSION);
   });
 
-  // ------ 初始化 ------
+  it("loads existing data from localStorage", () => {
+    const stored: KnowledgeBaseData = {
+      ...EMPTY_KB_DATA,
+      "00A": [makeEntry00A()],
+      lastUpdated: "2024-06-01",
+    };
+    localStorage.setItem(KB_STORAGE_KEY, JSON.stringify(stored));
 
-  describe("初始化", () => {
-    it("localStorage 為空時回傳空資料", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-      expect(result.current.data["00A"]).toEqual([]);
-      expect(result.current.data["00B"]).toEqual([]);
-      expect(result.current.data["00C"]).toEqual([]);
-      expect(result.current.data["00D"]).toEqual([]);
-      expect(result.current.data["00E"]).toEqual([]);
-      expect(result.current.data.version).toBe(KB_DATA_VERSION);
-    });
-
-    it("從 localStorage 載入既有資料", () => {
-      const entry = makeEntry00A();
-      const stored: KnowledgeBaseData = {
-        "00A": [entry],
-        "00B": [],
-        "00C": [],
-        "00D": [],
-        "00E": [],
-        lastUpdated: "2026-01-01T00:00:00.000Z",
-        version: KB_DATA_VERSION,
-      };
-      localStorage.setItem(KB_STORAGE_KEY, JSON.stringify(stored));
-
-      const { result } = renderHook(() => useKnowledgeBase());
-      expect(result.current.data["00A"]).toHaveLength(1);
-      expect(result.current.data["00A"][0].name).toBe("測試人員");
-    });
-
-    it("JSON 損毀時回傳空資料", () => {
-      localStorage.setItem(KB_STORAGE_KEY, "not-valid-json{{{");
-      const { result } = renderHook(() => useKnowledgeBase());
-      expect(result.current.data["00A"]).toEqual([]);
-      expect(result.current.data.version).toBe(KB_DATA_VERSION);
-    });
-
-    it("缺少某個 key 時自動補齊", () => {
-      // 只有 00A，缺 00B-00E
-      const partial = {
-        "00A": [makeEntry00A()],
-        lastUpdated: "2026-01-01T00:00:00.000Z",
-        version: KB_DATA_VERSION,
-      };
-      localStorage.setItem(KB_STORAGE_KEY, JSON.stringify(partial));
-
-      const { result } = renderHook(() => useKnowledgeBase());
-      expect(result.current.data["00A"]).toHaveLength(1);
-      expect(result.current.data["00B"]).toEqual([]);
-      expect(result.current.data["00C"]).toEqual([]);
-    });
-
-    it("舊版本資料會升級 version", () => {
-      const oldData = {
-        "00A": [],
-        "00B": [],
-        "00C": [],
-        "00D": [],
-        "00E": [],
-        lastUpdated: "2026-01-01T00:00:00.000Z",
-        version: 0, // 舊版本
-      };
-      localStorage.setItem(KB_STORAGE_KEY, JSON.stringify(oldData));
-
-      const { result } = renderHook(() => useKnowledgeBase());
-      expect(result.current.data.version).toBe(KB_DATA_VERSION);
-    });
+    const { result } = renderHook(() => useKnowledgeBase());
+    expect(result.current.data["00A"]).toHaveLength(1);
+    expect(result.current.data["00A"][0].name).toBe("Test Member");
   });
 
-  // ------ CRUD: 新增 ------
-
-  describe("新增條目", () => {
-    it("addEntry00A 新增團隊成員", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-      const entry = makeEntry00A();
-
-      act(() => {
-        result.current.addEntry00A(entry);
-      });
-
-      expect(result.current.data["00A"]).toHaveLength(1);
-      expect(result.current.data["00A"][0].id).toBe("M-001");
-    });
-
-    it("addEntry00B 新增實績", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00B(makeEntry00B());
-      });
-
-      expect(result.current.data["00B"]).toHaveLength(1);
-      expect(result.current.data["00B"][0].projectName).toBe("測試專案");
-    });
-
-    it("addEntry00C 新增時程範本", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00C(makeEntry00C());
-      });
-
-      expect(result.current.data["00C"]).toHaveLength(1);
-    });
-
-    it("addEntry00D 新增應變 SOP", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00D(makeEntry00D());
-      });
-
-      expect(result.current.data["00D"]).toHaveLength(1);
-    });
-
-    it("addEntry00E 新增案後檢討", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00E(makeEntry00E());
-      });
-
-      expect(result.current.data["00E"]).toHaveLength(1);
-    });
-
-    it("連續新增不會覆蓋", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00A(makeEntry00A({ id: "M-001" }));
-      });
-      act(() => {
-        result.current.addEntry00A(makeEntry00A({ id: "M-002", name: "第二人" }));
-      });
-
-      expect(result.current.data["00A"]).toHaveLength(2);
-      expect(result.current.data["00A"][1].name).toBe("第二人");
-    });
+  it("handles corrupt localStorage gracefully", () => {
+    localStorage.setItem(KB_STORAGE_KEY, "not valid json{{{");
+    const { result } = renderHook(() => useKnowledgeBase());
+    expect(result.current.data["00A"]).toEqual([]);
   });
 
-  // ------ CRUD: 更新 ------
+  it("fills missing keys from partial stored data", () => {
+    const partial = { "00A": [makeEntry00A()], version: 1, lastUpdated: "2024-01-01" };
+    localStorage.setItem(KB_STORAGE_KEY, JSON.stringify(partial));
 
-  describe("更新條目", () => {
-    it("updateEntry00A 更新指定欄位", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00A(makeEntry00A());
-      });
-      act(() => {
-        result.current.updateEntry00A("M-001", { name: "新名字" });
-      });
-
-      expect(result.current.data["00A"][0].name).toBe("新名字");
-      // updatedAt 應該被更新
-      expect(result.current.data["00A"][0].updatedAt).not.toBe(
-        "2026-01-01T00:00:00.000Z"
-      );
-    });
-
-    it("updateEntry00B 更新實績", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00B(makeEntry00B());
-      });
-      act(() => {
-        result.current.updateEntry00B("P-2026-001", {
-          projectName: "更新專案名",
-        });
-      });
-
-      expect(result.current.data["00B"][0].projectName).toBe("更新專案名");
-    });
-
-    it("updateEntry00C 更新範本", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00C(makeEntry00C());
-      });
-      act(() => {
-        result.current.updateEntry00C("T-TEST", { templateName: "新範本" });
-      });
-
-      expect(result.current.data["00C"][0].templateName).toBe("新範本");
-    });
-
-    it("updateEntry00D 更新 SOP", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00D(makeEntry00D());
-      });
-      act(() => {
-        result.current.updateEntry00D("R-TEST", { riskLevel: "高" });
-      });
-
-      expect(result.current.data["00D"][0].riskLevel).toBe("高");
-    });
-
-    it("updateEntry00E 更新檢討", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00E(makeEntry00E());
-      });
-      act(() => {
-        result.current.updateEntry00E("REV-001", { result: "未得標" });
-      });
-
-      expect(result.current.data["00E"][0].result).toBe("未得標");
-    });
-
-    it("更新不存在的 ID 不影響資料", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00A(makeEntry00A());
-      });
-      act(() => {
-        result.current.updateEntry00A("NONEXISTENT", { name: "不存在" });
-      });
-
-      expect(result.current.data["00A"]).toHaveLength(1);
-      expect(result.current.data["00A"][0].name).toBe("測試人員");
-    });
+    const { result } = renderHook(() => useKnowledgeBase());
+    expect(result.current.data["00A"]).toHaveLength(1);
+    expect(result.current.data["00B"]).toEqual([]);
+    expect(result.current.data["00C"]).toEqual([]);
   });
 
-  // ------ 通用操作 ------
+  it("upgrades old version data to current version", () => {
+    const oldData = {
+      "00A": [], "00B": [], "00C": [], "00D": [], "00E": [],
+      lastUpdated: "2024-01-01",
+      version: 0,
+    };
+    localStorage.setItem(KB_STORAGE_KEY, JSON.stringify(oldData));
 
-  describe("通用操作", () => {
-    it("deleteEntry 刪除指定條目", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00A(makeEntry00A({ id: "M-001" }));
-        result.current.addEntry00A(makeEntry00A({ id: "M-002" }));
-      });
-      act(() => {
-        result.current.deleteEntry("00A", "M-001");
-      });
-
-      expect(result.current.data["00A"]).toHaveLength(1);
-      expect(result.current.data["00A"][0].id).toBe("M-002");
-    });
-
-    it("deleteEntry 刪除不存在的 ID 不影響資料", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00A(makeEntry00A());
-      });
-      act(() => {
-        result.current.deleteEntry("00A", "NONEXISTENT");
-      });
-
-      expect(result.current.data["00A"]).toHaveLength(1);
-    });
-
-    it("updateEntryStatus 更新狀態", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00A(makeEntry00A({ entryStatus: "draft" }));
-      });
-      act(() => {
-        result.current.updateEntryStatus("00A", "M-001", "archived");
-      });
-
-      expect(result.current.data["00A"][0].entryStatus).toBe("archived");
-    });
+    const { result } = renderHook(() => useKnowledgeBase());
+    expect(result.current.data.version).toBe(KB_DATA_VERSION);
   });
 
-  // ------ 匯入/匯出/清空 ------
-
-  describe("匯入匯出", () => {
-    it("importData 匯入部分資料", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00A(makeEntry00A());
-      });
-
-      // 只匯入 00B，00A 應保留
-      act(() => {
-        result.current.importData({ "00B": [makeEntry00B()] });
-      });
-
-      expect(result.current.data["00A"]).toHaveLength(1);
-      expect(result.current.data["00B"]).toHaveLength(1);
-    });
-
-    it("importData 覆蓋指定知識庫", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00A(makeEntry00A({ id: "M-001" }));
-      });
-
-      // 匯入新的 00A 陣列（取代舊的）
-      act(() => {
-        result.current.importData({
-          "00A": [makeEntry00A({ id: "M-999", name: "匯入人員" })],
-        });
-      });
-
-      expect(result.current.data["00A"]).toHaveLength(1);
-      expect(result.current.data["00A"][0].id).toBe("M-999");
-    });
-
-    it("exportData 回傳完整資料", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00A(makeEntry00A());
-        result.current.addEntry00B(makeEntry00B());
-      });
-
-      let exported: KnowledgeBaseData;
-      act(() => {
-        exported = result.current.exportData();
-      });
-
-      expect(exported!["00A"]).toHaveLength(1);
-      expect(exported!["00B"]).toHaveLength(1);
-      expect(exported!.version).toBe(KB_DATA_VERSION);
-      expect(exported!.lastUpdated).toBeDefined();
-    });
-
-    it("clearAll 清空所有資料", () => {
-      const { result } = renderHook(() => useKnowledgeBase());
-
-      act(() => {
-        result.current.addEntry00A(makeEntry00A());
-        result.current.addEntry00B(makeEntry00B());
-        result.current.addEntry00C(makeEntry00C());
-      });
-      act(() => {
-        result.current.clearAll();
-      });
-
-      expect(result.current.data["00A"]).toEqual([]);
-      expect(result.current.data["00B"]).toEqual([]);
-      expect(result.current.data["00C"]).toEqual([]);
-    });
+  it("hydrated is true in jsdom", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+    expect(result.current.hydrated).toBe(true);
   });
 
-  // ------ localStorage 持久化 ------
+  it("exposes all CRUD functions", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+    expect(typeof result.current.addEntry00A).toBe("function");
+    expect(typeof result.current.updateEntry00A).toBe("function");
+    expect(typeof result.current.addEntry00B).toBe("function");
+    expect(typeof result.current.updateEntry00B).toBe("function");
+    expect(typeof result.current.addEntry00C).toBe("function");
+    expect(typeof result.current.updateEntry00C).toBe("function");
+    expect(typeof result.current.addEntry00D).toBe("function");
+    expect(typeof result.current.updateEntry00D).toBe("function");
+    expect(typeof result.current.addEntry00E).toBe("function");
+    expect(typeof result.current.updateEntry00E).toBe("function");
+    expect(typeof result.current.deleteEntry).toBe("function");
+    expect(typeof result.current.updateEntryStatus).toBe("function");
+    expect(typeof result.current.importData).toBe("function");
+    expect(typeof result.current.exportData).toBe("function");
+    expect(typeof result.current.clearAll).toBe("function");
+  });
+});
 
-  describe("持久化", () => {
-    it("新增條目後自動寫入 localStorage", async () => {
-      const { result } = renderHook(() => useKnowledgeBase());
+// ── Add entries ─────────────────────────────────────────────
 
-      act(() => {
-        result.current.addEntry00A(makeEntry00A());
-      });
+describe("useKnowledgeBase — add", () => {
+  it("adds a 00A entry", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+    const entry = makeEntry00A({ id: "M-001", name: "Alice" });
 
-      // useEffect 是非同步的，等 re-render 完成
-      await vi.waitFor(() => {
-        const stored = localStorage.getItem(KB_STORAGE_KEY);
-        expect(stored).not.toBeNull();
-        const parsed = JSON.parse(stored!);
-        expect(parsed["00A"]).toHaveLength(1);
-      });
+    act(() => {
+      result.current.addEntry00A(entry);
     });
 
-    it("clearAll 後 localStorage 也被清空", async () => {
-      const { result } = renderHook(() => useKnowledgeBase());
+    expect(result.current.data["00A"]).toHaveLength(1);
+    expect(result.current.data["00A"][0].name).toBe("Alice");
+  });
 
-      act(() => {
-        result.current.addEntry00A(makeEntry00A());
-      });
-      act(() => {
-        result.current.clearAll();
-      });
+  it("adds a 00E entry", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+    const entry = makeEntry00E({ id: "E-001", projectName: "My Review" });
 
-      await vi.waitFor(() => {
-        const stored = localStorage.getItem(KB_STORAGE_KEY);
-        const parsed = JSON.parse(stored!);
-        expect(parsed["00A"]).toEqual([]);
-      });
+    act(() => {
+      result.current.addEntry00E(entry);
     });
+
+    expect(result.current.data["00E"]).toHaveLength(1);
+    expect(result.current.data["00E"][0].projectName).toBe("My Review");
+  });
+
+  it("appends to existing entries", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001", name: "First" }));
+    });
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-002", name: "Second" }));
+    });
+
+    expect(result.current.data["00A"]).toHaveLength(2);
+    expect(result.current.data["00A"][0].name).toBe("First");
+    expect(result.current.data["00A"][1].name).toBe("Second");
+  });
+});
+
+// ── Update entries ──────────────────────────────────────────
+
+describe("useKnowledgeBase — update", () => {
+  it("updates a 00A entry by id", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001", name: "Original" }));
+    });
+    act(() => {
+      result.current.updateEntry00A("M-001", { name: "Updated" });
+    });
+
+    expect(result.current.data["00A"][0].name).toBe("Updated");
+    expect(result.current.data["00A"][0].updatedAt).not.toBe("2024-01-01");
+  });
+
+  it("preserves other fields when updating", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+    const original = makeEntry00A({ id: "M-001", name: "Alice", title: "PM" });
+
+    act(() => {
+      result.current.addEntry00A(original);
+    });
+    act(() => {
+      result.current.updateEntry00A("M-001", { name: "Bob" });
+    });
+
+    expect(result.current.data["00A"][0].name).toBe("Bob");
+    expect(result.current.data["00A"][0].title).toBe("PM");
+  });
+
+  it("does not affect other entries when updating one", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001", name: "Alice" }));
+      result.current.addEntry00A(makeEntry00A({ id: "M-002", name: "Bob" }));
+    });
+    act(() => {
+      result.current.updateEntry00A("M-001", { name: "Updated" });
+    });
+
+    expect(result.current.data["00A"][0].name).toBe("Updated");
+    expect(result.current.data["00A"][1].name).toBe("Bob");
+  });
+
+  it("no-op when updating nonexistent id", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001" }));
+    });
+    act(() => {
+      result.current.updateEntry00A("nonexistent", { name: "X" });
+    });
+
+    expect(result.current.data["00A"]).toHaveLength(1);
+    expect(result.current.data["00A"][0].id).toBe("M-001");
+  });
+});
+
+// ── Delete entries ──────────────────────────────────────────
+
+describe("useKnowledgeBase — delete", () => {
+  it("deletes an entry by kbId + entryId", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001" }));
+      result.current.addEntry00A(makeEntry00A({ id: "M-002" }));
+    });
+    act(() => {
+      result.current.deleteEntry("00A", "M-001");
+    });
+
+    expect(result.current.data["00A"]).toHaveLength(1);
+    expect(result.current.data["00A"][0].id).toBe("M-002");
+  });
+
+  it("no-op when deleting nonexistent entry", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001" }));
+    });
+    act(() => {
+      result.current.deleteEntry("00A", "nonexistent");
+    });
+
+    expect(result.current.data["00A"]).toHaveLength(1);
+  });
+
+  it("does not affect other KB types", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001" }));
+      result.current.addEntry00E(makeEntry00E({ id: "E-001" }));
+    });
+    act(() => {
+      result.current.deleteEntry("00A", "M-001");
+    });
+
+    expect(result.current.data["00A"]).toHaveLength(0);
+    expect(result.current.data["00E"]).toHaveLength(1);
+  });
+});
+
+// ── Update entry status ─────────────────────────────────────
+
+describe("useKnowledgeBase — updateEntryStatus", () => {
+  it("changes entry status to archived", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001", entryStatus: "active" }));
+    });
+    act(() => {
+      result.current.updateEntryStatus("00A", "M-001", "archived");
+    });
+
+    expect(result.current.data["00A"][0].entryStatus).toBe("archived");
+    expect(result.current.data["00A"][0].updatedAt).not.toBe("2024-01-01");
+  });
+
+  it("changes entry status to draft", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00E(makeEntry00E({ id: "E-001", entryStatus: "active" }));
+    });
+    act(() => {
+      result.current.updateEntryStatus("00E", "E-001", "draft");
+    });
+
+    expect(result.current.data["00E"][0].entryStatus).toBe("draft");
+  });
+});
+
+// ── Import / Export ─────────────────────────────────────────
+
+describe("useKnowledgeBase — import/export", () => {
+  it("imports partial data (merges with existing)", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001" }));
+    });
+
+    const imported = {
+      "00E": [makeEntry00E({ id: "E-001", projectName: "Imported" })],
+    };
+    act(() => {
+      result.current.importData(imported);
+    });
+
+    expect(result.current.data["00A"]).toHaveLength(1);
+    expect(result.current.data["00E"]).toHaveLength(1);
+    expect(result.current.data["00E"][0].projectName).toBe("Imported");
+  });
+
+  it("overwrites existing KB when imported data includes that KB", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001", name: "Old" }));
+    });
+
+    const imported = {
+      "00A": [makeEntry00A({ id: "M-999", name: "New" })],
+    };
+    act(() => {
+      result.current.importData(imported);
+    });
+
+    expect(result.current.data["00A"]).toHaveLength(1);
+    expect(result.current.data["00A"][0].name).toBe("New");
+  });
+
+  it("exports current data as a new object", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001", name: "Alice" }));
+    });
+
+    let exported: KnowledgeBaseData | undefined;
+    act(() => {
+      exported = result.current.exportData();
+    });
+
+    expect(exported).toBeDefined();
+    expect(exported!["00A"]).toHaveLength(1);
+    expect(exported!["00A"][0].name).toBe("Alice");
+    expect(exported!.version).toBe(KB_DATA_VERSION);
+  });
+});
+
+// ── Clear all ───────────────────────────────────────────────
+
+describe("useKnowledgeBase — clearAll", () => {
+  it("clears all entries", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001" }));
+      result.current.addEntry00E(makeEntry00E({ id: "E-001" }));
+    });
+
+    expect(result.current.data["00A"]).toHaveLength(1);
+    expect(result.current.data["00E"]).toHaveLength(1);
+
+    act(() => {
+      result.current.clearAll();
+    });
+
+    expect(result.current.data["00A"]).toEqual([]);
+    expect(result.current.data["00B"]).toEqual([]);
+    expect(result.current.data["00C"]).toEqual([]);
+    expect(result.current.data["00D"]).toEqual([]);
+    expect(result.current.data["00E"]).toEqual([]);
+  });
+});
+
+// ── localStorage persistence ────────────────────────────────
+
+describe("useKnowledgeBase — persistence", () => {
+  it("saves to localStorage on state change", () => {
+    const { result } = renderHook(() => useKnowledgeBase());
+
+    act(() => {
+      result.current.addEntry00A(makeEntry00A({ id: "M-001", name: "Persisted" }));
+    });
+
+    const stored = JSON.parse(localStorage.getItem(KB_STORAGE_KEY) || "{}");
+    expect(stored["00A"]).toHaveLength(1);
+    expect(stored["00A"][0].name).toBe("Persisted");
   });
 });

@@ -132,6 +132,28 @@ describe("generateDocx", () => {
     expect(blob.size).toBeGreaterThan(0);
   });
 
+  it("自訂紙張與 A4 尺寸相近時 blob 大小也相近", async () => {
+    const a4Blob = await generateDocx(makeOptions());
+    const customBlob = await generateDocx(
+      makeOptions({
+        documentSettings: {
+          ...defaultDocSettings,
+          page: {
+            ...defaultDocSettings.page,
+            size: "custom",
+            customWidth: 210,
+            customHeight: 297,
+          },
+        },
+      })
+    );
+    // 同樣內容、同樣 A4 尺寸，blob 大小差異應在 20% 內
+    // 如果自訂尺寸被意外放大 10 倍，XML 中的數字會明顯不同
+    const ratio = customBlob.size / a4Blob.size;
+    expect(ratio).toBeGreaterThan(0.8);
+    expect(ratio).toBeLessThan(1.2);
+  });
+
   it("頁首不含頁碼佔位符時正常生成", async () => {
     const blob = await generateDocx(
       makeOptions({

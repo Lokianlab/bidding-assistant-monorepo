@@ -16,4 +16,5 @@ no-choice-question|共識|禁止不帶立場的選擇題|A44T|三方共識同意
 welcome-new-machine|已結案|歡迎新機器 AINL +協作指南+權限範圍|A44T|三台歡迎+AINL自介完成，已就緒|0221
 methodology-ownership|共識|P2|方法論分工認領|JDNE|四台一致：JDNE 需求對焦+拆解、ITEJ 閉環+改動前、A44T 事後回顧+送審、AINL 待定|0222
 governance|共識|P2|團隊治理機制（共識/決策/分工/權重/下線）|A44T|四台一致（含 ITEJ 修正+JDNE 超時起算補充），待用戶核准寫入 CLAUDE.md|0222
-multi-user-governance|進行中|P2|多用戶治理架構|JDNE|四台回覆完畢，JDNE 更新識別為驗證碼制，授權範圍待 Jin 裁決|0222
+multi-user-governance|進行中|P2|多用戶治理架構|JDNE|四台回覆完畢，JDNE 更新識別為驗證碼制，Saint 已註冊 collaborator，授權範圍待 Jin 裁決|0222
+no-closing-question|進行中|禁止以問句結尾收工|AINL|AINL 三次同模式被扣分，提議新規則禁止收尾開放式問句|0221
