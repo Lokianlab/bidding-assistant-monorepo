@@ -1,5 +1,7 @@
 // ====== M03 戰略分析引擎：匯出 ======
 
+export { useFitScore } from "./useFitScore";
+
 export {
   scoreDomain,
   scoreAgency,

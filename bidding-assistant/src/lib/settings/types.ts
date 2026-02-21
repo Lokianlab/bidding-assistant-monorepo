@@ -1,6 +1,7 @@
 import type { KBRequirement } from "@/data/config/kb-matrix";
 import type { FieldMappingKey } from "@/lib/constants/field-mapping";
 import type { DashboardLayout } from "@/lib/dashboard/card-layout/types";
+import type { StrategySettings } from "@/lib/strategy/types";
 
 export interface DocumentSettings {
   fonts: {
@@ -127,6 +128,8 @@ export interface AppSettings {
   fieldMapping?: Partial<Record<FieldMappingKey, string>>;
   /** 自訂儀表板佈局 */
   dashboardLayout?: DashboardLayout;
+  /** 戰略分析設定 */
+  strategy?: StrategySettings;
 }
 
 export interface LogEntry {

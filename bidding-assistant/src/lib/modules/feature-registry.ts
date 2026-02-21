@@ -122,6 +122,16 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
     section: "tools",
     defaultEnabled: true,
   },
+  {
+    id: "strategy",
+    name: "戰略分析",
+    description: "投標適配度評分：五維分析（領域、機關、競爭、規模、團隊），幫助決策是否投標",
+    icon: "🎯",
+    routes: ["/strategy"],
+    section: "core",
+    defaultEnabled: true,
+    dependencies: ["intelligence", "knowledge-base"],
+  },
 ];
 
 /** 從 settings 的 featureToggles 取得最終的啟用狀態 */
