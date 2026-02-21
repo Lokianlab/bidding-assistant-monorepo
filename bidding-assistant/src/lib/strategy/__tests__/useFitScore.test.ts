@@ -103,4 +103,35 @@ describe("useFitScore", () => {
     );
     expect(result.current.fitScore).not.toBeNull();
   });
+
+  it("讀取設定中的自訂權重（scale 獨佔 100%）", () => {
+    // emptyKB + emptyIntel + null budget 下各維預設分：
+    //   domain=0, agency=5, competition=10, scale=10, team=0
+    // 自訂 scale=100 其他=0：total = round(10*100/100*5) = 50
+    // 若用預設權重 (all 20)：total = round(500/100*5) = 25
+    localStorage.setItem(
+      "bidding-assistant-settings",
+      JSON.stringify({
+        strategy: {
+          fitWeights: { domain: 0, agency: 0, competition: 0, scale: 100, team: 0 },
+        },
+      }),
+    );
+    const { result } = renderHook(
+      () => useFitScore("測試案件", "測試機關", null, emptyIntel, emptyKB),
+      { wrapper },
+    );
+    expect(result.current.fitScore!.total).toBe(50);
+  });
+
+  it("相同參數再渲染不重新計算（useMemo）", () => {
+    const { result, rerender } = renderHook(
+      () => useFitScore("藝術節策展執行", "臺北市政府", 3_000_000, emptyIntel, emptyKB),
+      { wrapper },
+    );
+    const first = result.current;
+    rerender();
+    // deps 未變 → useMemo 不重算 → 同一 object reference
+    expect(result.current).toBe(first);
+  });
 });
