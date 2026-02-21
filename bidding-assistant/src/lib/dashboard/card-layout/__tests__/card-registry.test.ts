@@ -6,8 +6,8 @@ import {
 } from "../card-registry";
 
 describe("CARD_REGISTRY", () => {
-  it("has 16 entries", () => {
-    expect(CARD_REGISTRY).toHaveLength(16);
+  it("has 18 entries", () => {
+    expect(CARD_REGISTRY).toHaveLength(18);
   });
 
   it("each type is unique", () => {
@@ -57,9 +57,9 @@ describe("getCardsByCategory", () => {
     stats.forEach((card) => expect(card.category).toBe("stat"));
   });
 
-  it("returns 5 chart cards", () => {
+  it("returns 7 chart cards", () => {
     const charts = getCardsByCategory("chart");
-    expect(charts).toHaveLength(5);
+    expect(charts).toHaveLength(7);
     charts.forEach((card) => expect(card.category).toBe("chart"));
   });
 

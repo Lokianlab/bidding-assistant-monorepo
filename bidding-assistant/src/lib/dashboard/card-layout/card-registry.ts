@@ -214,6 +214,33 @@ export const CARD_REGISTRY: CardDefinition[] = [
     },
   },
 
+  {
+    type: "chart-status-distribution",
+    name: "狀態分布",
+    description: "各進程狀態的標案件數甜甜圈圖",
+    icon: "🍩",
+    category: "chart",
+    allowedSizes: ["medium", "large", "wide"],
+    defaultSize: "medium",
+    defaultConfig: {
+      title: "狀態分布",
+      period: "all",
+    },
+  },
+  {
+    type: "chart-budget-status",
+    name: "各狀態預算",
+    description: "按狀態分類的預算金額橫條圖",
+    icon: "💵",
+    category: "chart",
+    allowedSizes: ["medium", "large", "wide"],
+    defaultSize: "medium",
+    defaultConfig: {
+      title: "各狀態預算",
+      period: "all",
+    },
+  },
+
   // ── Trend cards ────────────────────────────────────────────
   {
     type: "chart-rolling-winrate",

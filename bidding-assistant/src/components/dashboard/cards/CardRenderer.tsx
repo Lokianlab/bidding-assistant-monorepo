@@ -5,6 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip as RTooltip, ResponsiveContainer, Cell,
   LineChart, Line, Legend,
+  PieChart, Pie,
 } from "recharts";
 import { CHART_PALETTE } from "@/lib/chart-config";
 import { fmt } from "@/lib/dashboard/helpers";
@@ -288,6 +289,69 @@ export function CardRenderer({ type, config, metrics, size, trendAnalysis }: Car
           )}
         </div>
       );
+
+    case "chart-status-distribution": {
+      const statusData = metrics.statusDistribution;
+      return (
+        <div className="w-full" style={{ minHeight: chartHeight }}>
+          {statusData.length === 0 ? (
+            <div className="h-full flex items-center justify-center text-sm text-muted-foreground" style={{ minHeight: chartHeight }}>
+              尚無狀態分布資料
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={chartHeight}>
+              <PieChart>
+                <Pie
+                  data={statusData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius="45%"
+                  outerRadius="75%"
+                  paddingAngle={2}
+                  label={({ name, value }) => `${name} ${value}`}
+                  labelLine={{ strokeWidth: 1 }}
+                >
+                  {statusData.map((_, i) => (
+                    <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />
+                  ))}
+                </Pie>
+                <RTooltip content={<ChartTooltip />} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      );
+    }
+
+    case "chart-budget-status": {
+      const budgetData = metrics.budgetByStatus;
+      return (
+        <div className="w-full" style={{ minHeight: chartHeight }}>
+          {budgetData.length === 0 ? (
+            <div className="h-full flex items-center justify-center text-sm text-muted-foreground" style={{ minHeight: chartHeight }}>
+              尚無預算分布資料
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={chartHeight}>
+              <BarChart data={budgetData} layout="vertical" margin={{ left: 0, right: 16, top: 4, bottom: 4 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={(v: number) => `$${fmt(v)}`} />
+                <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 11 }} />
+                <RTooltip content={<ChartTooltip />} />
+                <Bar dataKey="budget" name="預算" radius={[0, 4, 4, 0]}>
+                  {budgetData.map((_, i) => (
+                    <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      );
+    }
   }
 
   // ── Trend cards ───────────────────────────────────────────
