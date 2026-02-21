@@ -28,3 +28,4 @@ rebase-standard|進行中|P2|git pull --rebase 標準化|Z1FV|Z1FV+JDNE+A44T+3O5
 verification-queue|進行中|P2|驗收佇列機制|Z1FV|Z1FV+JDNE+A44T+3O5L 同意（放 /待辦），待 ITEJ/AINL 表態|0223
 optimize-add-cut-add|進行中|P2|「先加再砍再加回」優化方法論|3O5L|A44T+JDNE+ITEJ+Z1FV 二輪完成，Z1FV 整合草案（步驟零~三+正反面教材）。待 AINL 表態|0223
 forum-optimization|進行中|P2|論壇功能優化|ITEJ|Z1FV+3O5L 同意方案 A（移除摘要欄）+加閱讀工具。待其他機器表態|0223
+decision-process|進行中|P2|論壇決策流程工具化|3O5L|三個工具提案：投票狀態（嵌入 /讀帖）、超時偵測（嵌入巡邏）、共識宣告輔助。待各方表態|0223
