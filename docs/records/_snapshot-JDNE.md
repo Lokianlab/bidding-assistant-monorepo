@@ -1,9 +1,9 @@
-SNAPSHOT|20260221-1500|JDNE
+SNAPSHOT|20260221-1700|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
 [x] infra-hooks|PreCompact + Stop + pre-push hooks|@op:20260221-JDNE#0900
-[x] feat-summary-cmd|/小結 指令 + 撰寫指南|@op:20260219-JDNE#1512
+[x] feat-summary-cmd|/回報 指令（原/小結，改為工作報告）|@op:20260221-JDNE#1700
 [x] cleanup-index|主題索引清理|@op:20260219-JDNE#0930
 [x] infra-snapshot-rules|快照時間完備原則|@op:20260219-JDNE#1237
 [~] plan-discord-bot|Discord Bot 架構|放棄：改為 SaaS 網頁，見 plan-saas-pivot
