@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-2530|JDNE|claude-opus-4-6
+SNAPSHOT|20260223-0730|JDNE|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - 快照無 feat [ ] 時不要自動找 infra 做，停下等用戶分配
@@ -17,6 +17,7 @@ SNAPSHOT|20260222-2530|JDNE|claude-opus-4-6
 [v] plan-conclusion-layer|結論層設計|ITEJ 已實作，待用戶驗收
 [v] infra-claude-md-modular|CLAUDE.md 拆分|記錄格式搬到 rules/，待用戶驗收
 [v] infra-methodology-v2|方法論 v2 系統整合|全部落地，待用戶驗收
+[v] infra-methodology-05|優化提案驗證方法論|共識整理+草案落地（methodology-05.md + _index + checklists），待用戶驗收
 [v] method-observation-capture|AI觀察捕捉框架|待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建
 [v] infra-meta-methodology|元方法論框架建構|待用戶驗收
@@ -32,3 +33,5 @@ SNAPSHOT|20260222-2530|JDNE|claude-opus-4-6
 [v] infra-efficiency-calibration|效率校準|兩輪答辯完成，機器主官整合摘要已提交，待 Jin 裁決
 [x] cleanup-dead-code|CardRenderer 死碼清理|已完成
 [v] plan-team-optimization|團隊運作優化方案|暫存檔完整（角色+流程+機制審計+瘦身+inbox），待用戶核准執行
+[x] infra-todo-upgrade|/待辦 指令升級|加驗收清單+待核准決策（verification-queue + consensus-backlog 共識落地）
+[v] feat-forum-voting|論壇投票欄功能|8 欄格式 + PATCH API + UI 投票按鈕 + 讀帖指令整合 + 超時規則修正，待用戶驗收

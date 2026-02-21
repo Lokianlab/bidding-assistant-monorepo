@@ -1,5 +1,17 @@
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-start.sh",
+            "timeout": 30,
+            "statusMessage": "同步最新代碼..."
+          }
+        ]
+      }
+    ],
     "PreCompact": [
       {
         "hooks": [
@@ -8,6 +20,34 @@
             "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-compact.sh",
             "timeout": 30,
             "statusMessage": "壓縮前自動保存記錄層..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": {
+          "toolName": ["Bash"]
+        },
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-tool-guard.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": {
+          "toolName": ["Edit", "Write", "Bash", "NotebookEdit"]
+        },
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-tool-flag.sh",
+            "timeout": 5
           }
         ]
       }

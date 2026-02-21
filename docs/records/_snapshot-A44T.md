@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-0325|A44T|claude-opus-4-6
+SNAPSHOT|20260222-2200|A44T|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - push 後直接讀 [ ] 找下一步，不停下報告
@@ -24,4 +24,4 @@ SNAPSHOT|20260222-0325|A44T|claude-opus-4-6
 [ ] infra-efficiency-cal|效率校準 P0 第一輪答辯|已回覆 Jin 三題（ref:1451）：token 分佈 feat 20%/infra 67%、方法論用了閉環驗證 1 次、下一步做 feat+停品管
 [v] feat-m03-strategy|M03 戰略分析引擎|Phase 1+2 完成：5維評分引擎（82 tests）+ Hook + FitScoreRadar + FitScoreCard + /strategy 頁面。待用戶驗收
 [ ] infra-scoring-arch|計分板架構重構|論壇 discuss 已發（thread:scoring-architecture），等共識+用戶核准
-[ ] infra-stop-hook|stop hook 泛化重構|已完成：資料驅動引擎 + stop-patterns.conf + 被動性 exit 2
+[v] infra-stop-hook|hook 架構泛化重構：5 hooks（SessionStart/PreCompact/PreToolUse/PostToolUse/Stop）+ 2 conf（stop-patterns/dangerous-commands）+ CLAUDE.md 更新|驗收：看 .claude/settings.json 確認 5 個 hook 註冊、看 .claude/hooks/ 目錄確認 5 個 .sh + 2 個 .conf
