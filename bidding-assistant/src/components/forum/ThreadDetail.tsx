@@ -158,30 +158,30 @@ export function ThreadDetail({ thread, onBack, onVote }: ThreadDetailProps) {
         </div>
       )}
 
-      {/* 帖子流：帖主在上，回覆依序排下 */}
+      {/* 帖子流：按時間由舊到新 */}
       {thread.posts.length === 0 ? (
         <div className="text-center text-muted-foreground py-8">
           此討論串沒有關聯的帖子
         </div>
       ) : (
         <div className="space-y-3">
-          {/* 帖主（原始帖） */}
-          {thread.posts[0] && (
-            <div className="ring-2 ring-blue-200 dark:ring-blue-800 rounded-lg">
-              <PostCard post={thread.posts[0]} />
-            </div>
-          )}
-          {/* 回覆 */}
-          {thread.posts.length > 1 && (
-            <div className="text-xs text-muted-foreground pl-4 border-l-2 border-muted">
-              以下 {thread.posts.length - 1} 則回覆，由舊到新
-            </div>
-          )}
-          {thread.posts.slice(1).map((post, i) => (
-            <div key={`${post.timestamp}-${post.machineCode}-${i}`} className="ml-4">
-              <PostCard post={post} />
-            </div>
-          ))}
+          <div className="text-xs text-muted-foreground">
+            共 {thread.posts.length} 則帖子，由舊到新
+          </div>
+          {thread.posts.map((post, i) => {
+            const isDiscuss = post.type === "discuss";
+            return (
+              <div
+                key={`${post.timestamp}-${post.machineCode}-${i}`}
+                className={cn(
+                  isDiscuss && "ring-2 ring-blue-200 dark:ring-blue-800 rounded-lg",
+                  !isDiscuss && "ml-4",
+                )}
+              >
+                <PostCard post={post} />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
