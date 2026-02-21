@@ -27,4 +27,5 @@ SNAPSHOT|20260222-2440|JDNE|sonnet-4.6
 [ ] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE) 已設定
 [?] infra-temp-machine-code|臨時機器碼制度|五台共識，待用戶核准後實作
 [ ] infra-efficiency-calibration|效率校準|第一輪六台全交齊，待第二輪
-[>] cleanup-dead-code|CardRenderer 死碼清理|已完成移除，含審查 feedback
+[x] cleanup-dead-code|CardRenderer 死碼清理|已完成
+[>] plan-team-optimization|團隊運作優化方案|暫存檔已建（角色+流程+機制審計+瘦身+inbox），待用戶核准執行
