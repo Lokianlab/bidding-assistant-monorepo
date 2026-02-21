@@ -86,4 +86,31 @@ describe("analysis/index barrel exports", () => {
       expect(typeof analysisModule.computeCostAnalysis).toBe("function");
     });
   });
+
+  // ====== trend ======
+  describe("trend re-exports", () => {
+    it("exports toYearMonth", () => {
+      expect(typeof analysisModule.toYearMonth).toBe("function");
+    });
+
+    it("exports computeMonthlyMetrics", () => {
+      expect(typeof analysisModule.computeMonthlyMetrics).toBe("function");
+    });
+
+    it("exports computeRollingMetrics", () => {
+      expect(typeof analysisModule.computeRollingMetrics).toBe("function");
+    });
+
+    it("exports comparePeriods", () => {
+      expect(typeof analysisModule.comparePeriods).toBe("function");
+    });
+
+    it("exports compareQuarters", () => {
+      expect(typeof analysisModule.compareQuarters).toBe("function");
+    });
+
+    it("exports getRecentMonths", () => {
+      expect(typeof analysisModule.getRecentMonths).toBe("function");
+    });
+  });
 });
