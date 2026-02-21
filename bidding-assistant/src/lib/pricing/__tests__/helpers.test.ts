@@ -192,6 +192,14 @@ describe("formatAmount", () => {
   it("0 不加分隔", () => {
     expect(formatAmount(0)).toBe("0");
   });
+
+  it("負數加千分位", () => {
+    expect(formatAmount(-1234567)).toBe("-1,234,567");
+  });
+
+  it("小數", () => {
+    expect(formatAmount(1234.56)).toContain("1,234");
+  });
 });
 
 describe("createEmptyItem", () => {
