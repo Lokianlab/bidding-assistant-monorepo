@@ -53,6 +53,16 @@ export default function DocxPage() {
     setChapters(chapters.map((c) => (c.id === id ? { ...c, ...patch } : c)));
   }
 
+  function moveChapter(id: string, direction: "up" | "down") {
+    const idx = chapters.findIndex((c) => c.id === id);
+    if (idx < 0) return;
+    const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= chapters.length) return;
+    const next = [...chapters];
+    [next[idx], next[targetIdx]] = [next[targetIdx], next[idx]];
+    setChapters(next);
+  }
+
   async function handleGenerate() {
     if (!projectName.trim()) {
       toast.error("請輸入案名");
@@ -166,14 +176,32 @@ export default function DocxPage() {
                           className="font-mono text-sm"
                         />
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive"
-                        onClick={() => removeChapter(ch.id)}
-                      >
-                        刪除章節
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveChapter(ch.id, "up")}
+                          disabled={idx === 0}
+                        >
+                          上移
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveChapter(ch.id, "down")}
+                          disabled={idx === chapters.length - 1}
+                        >
+                          下移
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive ml-auto"
+                          onClick={() => removeChapter(ch.id)}
+                        >
+                          刪除章節
+                        </Button>
+                      </div>
                     </AccordionContent>
                   </AccordionItem>
                 ))}
