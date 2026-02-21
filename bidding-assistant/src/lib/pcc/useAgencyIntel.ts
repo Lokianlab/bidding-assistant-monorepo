@@ -5,8 +5,6 @@ import type { PCCRecord } from "./types";
 import { isWinner } from "./helpers";
 import { cacheGet, cacheSet } from "./cache";
 
-const DEFAULT_COMPANY = "大員洛川";
-
 interface AgencyIntel {
   totalCases: number;
   recentCases: { title: string; date: number; winner: string | null; bidders: number }[];
@@ -21,7 +19,7 @@ interface UseAgencyIntelReturn {
 }
 
 /** 查某機關的歷史標案，分析在位者和我方紀錄 */
-export function useAgencyIntel(unitId: string | null, open: boolean, myCompany = DEFAULT_COMPANY): UseAgencyIntelReturn {
+export function useAgencyIntel(unitId: string | null, open: boolean, myCompany: string): UseAgencyIntelReturn {
   const [data, setData] = useState<AgencyIntel | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
