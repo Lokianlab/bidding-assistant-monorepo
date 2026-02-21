@@ -36,6 +36,35 @@ OP|{YYYYMMDD}-{HHMM}|{機器碼}|{狀態}|topic:{主題ID}
 類別詞彙表：`feat`(新功能) / `fix`(修正) / `plan`(計畫) / `cleanup`(清理) / `infra`(基建) / `doc`(文件)
 寫 OP 時先掃最近記錄，有已存在的相近 topic 就沿用。
 
+## Commit Message 格式（推送回報）
+
+每次 push 的 commit message 就是向小組的回報。格式：
+
+```
+[類型] 一句話說做了什麼（機器碼）
+```
+
+**類型標籤**：
+
+| 標籤 | 含義 | 例子 |
+|------|------|------|
+| `feat` | 產品功能 | `[feat] M03 適配度評分五維函式完成（ITEJ）` |
+| `fix` | 修 bug | `[fix] 報價負數防護補雙層（ITEJ）` |
+| `test` | 補測試 | `[test] scout-report 邊界測試 +7（AINL）` |
+| `review` | 審查結果 | `[review] ITEJ pricing 模組通過（Z1FV）` |
+| `infra` | 基建 | `[infra] 快照格式加模型欄位（JDNE）` |
+| `admin` | 行政 | `[admin] 論壇巡邏+角色分配（JDNE）` |
+
+**效果**：機器主官跑 `git log --oneline -20` 就能看到：
+- 誰在做什麼
+- feat/infra 比例一目了然
+- 不需要讀 OP 或快照就知道全局動態
+
+**規則**：
+- 括號裡帶機器碼，讓 log 裡能分辨是誰的 commit
+- 類型誠實標——把 infra 標成 feat 會被品管抓
+- 不改現有 OP 和快照機制，這是額外的輕量層
+
 ## 修正記錄
 
 不改原檔，寫新的 OP，摘要前綴「修正:」，背景欄引用原記錄。
