@@ -11,7 +11,7 @@ import { parseCompanyRoles, formatPCCDate, formatAmount, parseAmount, calcWinRat
 import type { PCCRecord, PCCSearchMode } from "@/lib/pcc/types";
 import { PCCTenderSheet } from "./PCCTenderSheet";
 
-export function PCCSearchPanel() {
+export function PCCSearchPanel({ onViewCompany }: { onViewCompany?: (name: string) => void } = {}) {
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState<PCCSearchMode>("title");
   const { results, loading, error, search } = usePCCSearch();
@@ -90,6 +90,7 @@ export function PCCSearchPanel() {
         record={selectedRecord}
         open={!!selectedRecord}
         onOpenChange={(open) => { if (!open) setSelectedRecord(null); }}
+        onViewCompany={onViewCompany ? (name) => { setSelectedRecord(null); onViewCompany(name); } : undefined}
       />
     </div>
   );

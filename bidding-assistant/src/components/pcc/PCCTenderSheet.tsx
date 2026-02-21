@@ -8,6 +8,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { fetchTenderDetail } from "@/lib/pcc/usePCCSearch";
 import {
@@ -28,9 +29,10 @@ interface PCCTenderSheetProps {
   record: PCCRecord | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onViewCompany?: (companyName: string) => void;
 }
 
-export function PCCTenderSheet({ record, open, onOpenChange }: PCCTenderSheetProps) {
+export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany }: PCCTenderSheetProps) {
   const [detail, setDetail] = useState<PCCTenderDetail | null>(null);
   const [summary, setSummary] = useState<TenderSummary | null>(null);
   const [loading, setLoading] = useState(false);
@@ -104,24 +106,38 @@ export function PCCTenderSheet({ record, open, onOpenChange }: PCCTenderSheetPro
               <section>
                 <h4 className="font-medium mb-2">參與廠商</h4>
                 <div className="space-y-1">
-                  {companies.map((c) => (
-                    <div key={c.name} className="flex items-center gap-2">
-                      <span className="text-sm truncate flex-1">{c.name}</span>
-                      {c.roles.map((role) => (
-                        <Badge
-                          key={role}
-                          variant={
-                            role === "得標" ? "default" :
-                            role === "未得標" ? "destructive" :
-                            "secondary"
-                          }
-                          className="text-xs"
-                        >
-                          {role}
-                        </Badge>
-                      ))}
-                    </div>
-                  ))}
+                  {companies.map((c) => {
+                    // 去掉英文括號後的部分，取前面的中文名
+                    const shortName = c.name.replace(/\s*\(.*\)\s*$/, "").trim();
+                    return (
+                      <div key={c.name} className="flex items-center gap-2">
+                        <span className="text-sm truncate flex-1">{c.name}</span>
+                        {c.roles.map((role) => (
+                          <Badge
+                            key={role}
+                            variant={
+                              role === "得標" ? "default" :
+                              role === "未得標" ? "destructive" :
+                              "secondary"
+                            }
+                            className="text-xs"
+                          >
+                            {role}
+                          </Badge>
+                        ))}
+                        {onViewCompany && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 px-2 text-xs"
+                            onClick={() => onViewCompany(shortName)}
+                          >
+                            分析
+                          </Button>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
             </>

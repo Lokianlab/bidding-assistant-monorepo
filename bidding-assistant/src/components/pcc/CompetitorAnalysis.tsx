@@ -1,19 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCompetitorAnalysis } from "@/lib/pcc/useCompetitorAnalysis";
-import { formatAmount } from "@/lib/pcc/helpers";
 import type { SelfAnalysis, CompetitorStats, AgencyStats } from "@/lib/pcc/types";
 
 const DEFAULT_COMPANY = "大員洛川";
 
-export function CompetitorAnalysis() {
+interface CompetitorAnalysisProps {
+  targetCompany?: string | null;
+  onTargetConsumed?: () => void;
+}
+
+export function CompetitorAnalysis({ targetCompany, onTargetConsumed }: CompetitorAnalysisProps = {}) {
   const [companyName, setCompanyName] = useState(DEFAULT_COMPANY);
   const { data, loading, progress, error, run } = useCompetitorAnalysis();
+  const consumedRef = useRef<string | null>(null);
+
+  // 外部跳轉：自動帶入公司名並觸發分析
+  useEffect(() => {
+    if (targetCompany && targetCompany !== consumedRef.current) {
+      consumedRef.current = targetCompany;
+      setCompanyName(targetCompany);
+      run(targetCompany);
+      onTargetConsumed?.();
+    }
+  }, [targetCompany, run, onTargetConsumed]);
 
   const handleRun = () => {
     if (companyName.trim()) run(companyName.trim());

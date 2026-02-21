@@ -1,11 +1,20 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { PCCSearchPanel } from "@/components/pcc/PCCSearchPanel";
 import { CompetitorAnalysis } from "@/components/pcc/CompetitorAnalysis";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function IntelligencePage() {
+  const [tab, setTab] = useState("search");
+  const [targetCompany, setTargetCompany] = useState<string | null>(null);
+
+  const handleViewCompany = useCallback((companyName: string) => {
+    setTargetCompany(companyName);
+    setTab("analysis");
+  }, []);
+
   return (
     <div className="flex flex-col gap-6 p-6 max-w-4xl">
       {/* Header */}
@@ -20,18 +29,21 @@ export default function IntelligencePage() {
       </div>
 
       {/* 主要功能 Tab */}
-      <Tabs defaultValue="search">
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
           <TabsTrigger value="search">案件搜尋</TabsTrigger>
           <TabsTrigger value="analysis">競爭分析</TabsTrigger>
         </TabsList>
 
         <TabsContent value="search" className="mt-4">
-          <PCCSearchPanel />
+          <PCCSearchPanel onViewCompany={handleViewCompany} />
         </TabsContent>
 
         <TabsContent value="analysis" className="mt-4">
-          <CompetitorAnalysis />
+          <CompetitorAnalysis
+            targetCompany={targetCompany}
+            onTargetConsumed={() => setTargetCompany(null)}
+          />
         </TabsContent>
       </Tabs>
     </div>
