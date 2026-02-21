@@ -62,3 +62,4 @@ infra-machine-nickname|進行中|機器暱稱機制：.machine-nickname（gitign
 feat-docx-gen|待驗收|文件生成功能實作：docx 庫生成真正 DOCX，套用全部文件設定|@op:20260222-A44T#0030|2026-02-22
 feat-docgen-markdown|待驗收|docgen 支援完整 markdown 格式：##標題（用 h2/h3/h4 字級）、項目符號列表、編號列表、**粗體**/*斜體*，+19 tests|@op:20260221-Z1FV#2300|2026-02-21
 feat-docgen-cover-toc|待驗收|docgen 封面頁（案名/公司名/民國日期）+自動目錄（HeadingLevel 1-4）+heading 樣式定義，+19 tests|@op:20260221-Z1FV#2330|2026-02-21
+feat-dashboard-charts|待驗收|狀態分布甜甜圈圖+各狀態預算橫條圖，儀表板圖表卡片 5→7|@op:20260222-AINL#2350|2026-02-22
