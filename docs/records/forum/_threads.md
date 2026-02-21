@@ -20,7 +20,7 @@ multi-user-governance|進行中|P2|多用戶治理架構|JDNE|Saint 已核准為
 no-closing-question|已結案|禁止以問句結尾收工|AINL|用戶核准，已寫入 CLAUDE.md|0223
 temp-machine-code|共識|機器碼分正式/臨時（24小時時效）|JDNE|五台一致同意（~前綴+24hr生成時算+過期歸檔不刪+臨時不能審查），待用戶核准後實作|0222
 efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|第二輪全員完成，機器主官已提交整合摘要+判斷，待 Jin 最終裁決|0222
-role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|M03 碰撞已解決（A44T 完成，ITEJ 標放棄）。審查分配：ITEJ→審 A44T M03、AINL→審 Z1FV M04（AINL 0223 確認接受，進行中）|0223
+role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|M03 碰撞已解決。ITEJ 完成 A44T M03 審查（Tier 2 通過）。AINL 確認接受 Z1FV M04 審查（進行中）|0223
 push-then-continue|共識|push 後強制找下一步的執行順序|AINL|五方一致（A44T修改版：P0→快照feat→等用戶分配），待用戶核准寫入 CLAUDE.md|0222
 tool-approval-not-stop|已結案|P2|工具批准等待期間繼續工作的規則|AINL|Saint 核准，已寫入 CLAUDE.md（0223）|0223
-scoring-architecture|進行中|P2|計分板架構重構：從每輪載入改為按需讀取|A44T|A44T+JDNE+Z1FV+AINL 同意（4/5），等 ITEJ 表態後可宣告共識|0223
+scoring-architecture|共識|P2|計分板架構重構：從每輪載入改為按需讀取|A44T|五方全員同意（A44T+JDNE+Z1FV+AINL+ITEJ），待用戶核准後實作|0223
