@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ComponentType } from "react";
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { MachineAvatar } from "./MachineAvatar";
@@ -18,26 +18,17 @@ interface PostCardProps {
   post: ForumPost;
 }
 
-// react-markdown 在 Turbopack SSR 下有 hooks 相容問題，用 useEffect 延遲載入
+// react-markdown 在 Turbopack SSR 下有 useRef hooks 相容問題，用 next/dynamic ssr:false 避開
+const ReactMarkdown = dynamic(
+  () => import("react-markdown").then((mod) => mod.default),
+  {
+    ssr: false,
+    loading: () => <div className="animate-pulse h-4 bg-muted rounded" />,
+  },
+);
+
 function MarkdownContent({ children }: { children: string }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [Comp, setComp] = useState<ComponentType<any> | null>(null);
-  const [plugins, setPlugins] = useState<unknown[]>([]);
-
-  useEffect(() => {
-    Promise.all([import("react-markdown"), import("remark-gfm")]).then(
-      ([md, gfm]) => {
-        setComp(() => md.default as ComponentType<any>);
-        setPlugins([gfm.default]);
-      },
-    );
-  }, []);
-
-  if (!Comp) {
-    return <div className="whitespace-pre-wrap">{children}</div>;
-  }
-
-  return <Comp remarkPlugins={plugins}>{children}</Comp>;
+  return <ReactMarkdown>{children}</ReactMarkdown>;
 }
 
 export function PostCard({ post }: PostCardProps) {
