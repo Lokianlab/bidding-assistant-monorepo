@@ -43,3 +43,4 @@ approval-tracking|進行中|P2|批准後執行指派規則|AINL|A44T,JDNE||0223
 batch-approval-report|進行中|P0|完整核准報告 v2（13 項共識待 Jin 裁決）|A44T|||0222
 forum-pending-visibility|進行中|P2|論壇回覆責任可視化（等待機器欄位）|AINL||JDNE|0223
 n-minus-1-escalation|進行中|P2|n-1/n 接近共識自動升 priority|AINL||A44T,JDNE|0223
+forum-realtime|進行中|P2|論壇通訊速度優化（輪詢/巡邏/推播）|A44T|||0222
