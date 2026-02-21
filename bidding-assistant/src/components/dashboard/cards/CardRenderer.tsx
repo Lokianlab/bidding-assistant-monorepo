@@ -22,7 +22,6 @@ interface CardRendererProps {
   config: CardConfig | CustomCardConfig;
   metrics: DashboardMetrics;
   size: CardSizePreset;
-  trendAnalysis?: unknown; // 保留 prop 相容性，實際數據已走 metrics 路徑
 }
 
 // ── Shared chart tooltip ─────────────────────────────────────
