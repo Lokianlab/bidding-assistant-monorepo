@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import type { SelfAnalysis } from "./types";
 import { fetchAllPages, analyzeSelf } from "./analysis";
+import { cacheGet, cacheSet } from "./cache";
 
 interface UseCompetitorAnalysisReturn {
   data: SelfAnalysis | null;
@@ -27,12 +28,20 @@ export function useCompetitorAnalysis(): UseCompetitorAnalysisReturn {
     setProgress(null);
 
     try {
+      const cacheKey = `competitor:${companyName.trim()}`;
+      const cached = cacheGet<SelfAnalysis>("analysis", cacheKey);
+      if (cached) {
+        setData(cached);
+        return;
+      }
+
       const records = await fetchAllPages(companyName, (loaded, total) => {
         setProgress({ loaded, total });
       });
 
       const analysis = analyzeSelf(records, companyName);
       setData(analysis);
+      cacheSet("analysis", cacheKey, analysis);
     } catch (err) {
       setError(err instanceof Error ? err.message : "分析失敗");
     } finally {

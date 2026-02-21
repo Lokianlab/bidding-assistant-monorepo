@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import type { PCCRecord, PCCTenderDetail } from "./types";
 import type { TenderWithCommittee, CommitteeAnalysis } from "./committee-analysis";
 import { analyzeCommittees } from "./committee-analysis";
+import { cacheGet, cacheSet } from "./cache";
 
 /** 每次詳情請求間隔（配合 PCC API rate limit） */
 const DETAIL_DELAY_MS = 350;
@@ -33,6 +34,13 @@ export function useCommitteeAnalysis(): UseCommitteeAnalysisReturn {
     setProgress(null);
 
     try {
+      const cacheKey = `committee:${unitId}`;
+      const cached = cacheGet<CommitteeAnalysis>("analysis", cacheKey);
+      if (cached) {
+        setData(cached);
+        return;
+      }
+
       // 1. 取得機關所有標案
       const records = await fetchUnitRecords(unitId);
       const awards = records
@@ -76,6 +84,7 @@ export function useCommitteeAnalysis(): UseCommitteeAnalysisReturn {
       // 3. 分析
       const analysis = analyzeCommittees(tenders);
       setData(analysis);
+      cacheSet("analysis", cacheKey, analysis);
     } catch (err) {
       setError(err instanceof Error ? err.message : "分析失敗");
     } finally {

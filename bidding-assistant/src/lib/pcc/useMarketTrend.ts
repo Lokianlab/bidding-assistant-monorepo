@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import type { MarketTrend, PCCRecord, PCCSearchResponse } from "./types";
 import { analyzeMarketTrend } from "./market-trend";
+import { cacheGet, cacheSet } from "./cache";
 
 interface UseMarketTrendReturn {
   data: MarketTrend | null;
@@ -31,6 +32,13 @@ export function useMarketTrend(): UseMarketTrendReturn {
     setProgress(null);
 
     try {
+      const cacheKey = `market:${keyword.trim()}`;
+      const cached = cacheGet<MarketTrend>("analysis", cacheKey);
+      if (cached) {
+        setData(cached);
+        return;
+      }
+
       const allRecords: PCCRecord[] = [];
 
       // 第一頁
@@ -50,6 +58,7 @@ export function useMarketTrend(): UseMarketTrendReturn {
 
       const trend = analyzeMarketTrend(allRecords, keyword);
       setData(trend);
+      cacheSet("analysis", cacheKey, trend);
     } catch (err) {
       setError(err instanceof Error ? err.message : "分析失敗");
     } finally {

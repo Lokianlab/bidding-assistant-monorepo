@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import type { PCCRecord } from "./types";
 import { isWinner } from "./helpers";
+import { cacheGet, cacheSet } from "./cache";
 
 const DEFAULT_COMPANY = "大員洛川";
 
@@ -32,13 +33,23 @@ export function useAgencyIntel(unitId: string | null, open: boolean, myCompany =
     }
 
     let cancelled = false;
+
+    const cacheKey = `agency:${unitId}:${myCompany}`;
+    const cached = cacheGet<AgencyIntel>("analysis", cacheKey);
+    if (cached) {
+      setData(cached);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     fetchUnitRecords(unitId)
       .then((records) => {
         if (cancelled) return;
-        setData(analyzeAgency(records, myCompany));
+        const result = analyzeAgency(records, myCompany);
+        setData(result);
+        cacheSet("analysis", cacheKey, result);
       })
       .catch((err) => {
         if (cancelled) return;
