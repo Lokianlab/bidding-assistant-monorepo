@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import type { PCCSearchResponse, PCCSearchMode, PCCAction } from "./types";
 import { cacheGet, cacheSet } from "./cache";
+import { pccApiFetch } from "./api";
 
 interface UsePCCSearchReturn {
   results: PCCSearchResponse | null;
@@ -10,19 +11,6 @@ interface UsePCCSearchReturn {
   error: string | null;
   search: (query: string, mode: PCCSearchMode, page?: number) => Promise<void>;
   clearResults: () => void;
-}
-
-async function pccApi(action: PCCAction, data: Record<string, unknown>): Promise<unknown> {
-  const res = await fetch("/api/pcc", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action, data }),
-  });
-  const json = await res.json();
-  if (!res.ok) {
-    throw new Error(json.error ?? `API 錯誤 (${res.status})`);
-  }
-  return json;
 }
 
 export function usePCCSearch(): UsePCCSearchReturn {
@@ -45,7 +33,7 @@ export function usePCCSearch(): UsePCCSearchReturn {
       }
 
       const action: PCCAction = mode === "title" ? "searchByTitle" : "searchByCompany";
-      const data = await pccApi(action, { query: query.trim(), page }) as PCCSearchResponse;
+      const data = await pccApiFetch<PCCSearchResponse>(action, { query: query.trim(), page });
       setResults(data);
       cacheSet("search", cacheKey, data);
     } catch (err) {
@@ -73,7 +61,7 @@ export async function fetchTenderDetail(
   const cached = cacheGet("detail", cacheKey);
   if (cached) return cached;
 
-  const data = await pccApi("getTenderDetail", { unitId, jobNumber });
+  const data = await pccApiFetch("getTenderDetail", { unitId, jobNumber });
   cacheSet("detail", cacheKey, data);
   return data;
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import type { PCCRecord } from "./types";
 import { isWinner } from "./helpers";
 import { cacheGet, cacheSet } from "./cache";
+import { pccApiFetch } from "./api";
 
 interface AgencyIntel {
   totalCases: number;
@@ -64,16 +65,7 @@ export function useAgencyIntel(unitId: string | null, open: boolean, myCompany: 
 }
 
 async function fetchUnitRecords(unitId: string): Promise<PCCRecord[]> {
-  const res = await fetch("/api/pcc", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "listByUnit", data: { unitId } }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error ?? `API 錯誤 (${res.status})`);
-  }
-  const json = await res.json();
+  const json = await pccApiFetch<{ records?: PCCRecord[] }>("listByUnit", { unitId });
   return json.records ?? [];
 }
 

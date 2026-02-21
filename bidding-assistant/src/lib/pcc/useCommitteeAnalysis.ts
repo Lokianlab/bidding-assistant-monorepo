@@ -5,6 +5,7 @@ import type { PCCRecord, PCCTenderDetail } from "./types";
 import type { TenderWithCommittee, CommitteeAnalysis } from "./committee-analysis";
 import { analyzeCommittees } from "./committee-analysis";
 import { cacheGet, cacheSet } from "./cache";
+import { pccApiFetch, delay } from "./api";
 
 /** 每次詳情請求間隔（配合 PCC API rate limit） */
 const DETAIL_DELAY_MS = 350;
@@ -99,32 +100,10 @@ export function useCommitteeAnalysis(): UseCommitteeAnalysisReturn {
 // ====== 內部 helpers ======
 
 async function fetchUnitRecords(unitId: string): Promise<PCCRecord[]> {
-  const res = await fetch("/api/pcc", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "listByUnit", data: { unitId } }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error ?? `API 錯誤 (${res.status})`);
-  }
-  const json = await res.json();
+  const json = await pccApiFetch<{ records?: PCCRecord[] }>("listByUnit", { unitId });
   return json.records ?? [];
 }
 
 async function fetchDetail(unitId: string, jobNumber: string): Promise<PCCTenderDetail> {
-  const res = await fetch("/api/pcc", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "getTenderDetail", data: { unitId, jobNumber } }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error ?? `API 錯誤 (${res.status})`);
-  }
-  return res.json();
-}
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return pccApiFetch<PCCTenderDetail>("getTenderDetail", { unitId, jobNumber });
 }
