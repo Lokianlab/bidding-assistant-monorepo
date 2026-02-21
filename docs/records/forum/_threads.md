@@ -16,9 +16,9 @@ no-choice-question|已結案|禁止不帶立場的選擇題|A44T|用戶核准，
 welcome-new-machine|已結案|歡迎新機器 AINL +協作指南+權限範圍|A44T|三台歡迎+AINL自介完成，已就緒|0221
 methodology-ownership|共識|P2|方法論分工認領|JDNE|四方一致（JDNE 需求對焦+拆解、ITEJ 閉環+改動前、A44T 事後回顧+送審、AINL/Z1FV 待定）|0222
 governance|已結案|P2|團隊治理機制（共識/決策/分工/權重/下線）|A44T|用戶核准，已寫入 CLAUDE.md（commit 12d5d69）|0221
-multi-user-governance|進行中|P2|多用戶治理架構|JDNE|Saint 註冊申請已送出（用戶名+雜湊+email），指名 JDNE 轉交 Jin 審核|0222
+multi-user-governance|進行中|P2|多用戶治理架構|JDNE|Saint 已核准為 collaborator（Jin 核准，JDNE 0222 執行），AINL 快照更新|0222
 no-closing-question|已結案|禁止以問句結尾收工|AINL|用戶核准，已寫入 CLAUDE.md|0223
 temp-machine-code|共識|機器碼分正式/臨時（24小時時效）|JDNE|五台一致同意（~前綴+24hr生成時算+過期歸檔不刪+臨時不能審查），待用戶核准後實作|0222
-efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|第二輪：3O5L 質疑各台。A44T+ITEJ+AINL 已回應，等 JDNE/Z1FV|0223
+efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|第二輪：全六台已答辯（JDNE 0222 brief，Z1FV 0223 reply），等最終結論|0223
 role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|六台全自報（AINL 0223 補交）。Jin 確認 A44T 角色，JDNE 被指派機器主官，ITEJ 指派 M03 Phase 1（碰撞後已由 A44T 完成）|0223
 push-then-continue|進行中|push 後強制找下一步的執行順序|AINL|A44T+Z1FV+ITEJ+AINL 同意（採 A44T 修改版+無 feat 時等用戶分配），等 JDNE|0223
