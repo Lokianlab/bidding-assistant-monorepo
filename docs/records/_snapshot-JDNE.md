@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-0650|JDNE|claude-opus-4-6
+SNAPSHOT|20260223-0720|JDNE|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - 快照無 feat [ ] 時不要自動找 infra 做，停下等用戶分配
@@ -17,6 +17,7 @@ SNAPSHOT|20260223-0650|JDNE|claude-opus-4-6
 [v] plan-conclusion-layer|結論層設計|ITEJ 已實作，待用戶驗收
 [v] infra-claude-md-modular|CLAUDE.md 拆分|記錄格式搬到 rules/，待用戶驗收
 [v] infra-methodology-v2|方法論 v2 系統整合|全部落地，待用戶驗收
+[v] infra-methodology-05|優化提案驗證方法論|共識整理+草案落地（methodology-05.md + _index + checklists），待用戶驗收
 [v] method-observation-capture|AI觀察捕捉框架|待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建
 [v] infra-meta-methodology|元方法論框架建構|待用戶驗收
