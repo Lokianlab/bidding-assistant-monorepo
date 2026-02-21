@@ -180,6 +180,22 @@ export default function QualityPage() {
                 <Badge variant="secondary">{customRules.length} 個</Badge>
               </div>
               <Separator />
+              <p className="text-xs font-medium">鐵律檢查</p>
+              {Object.entries(ironLawEnabled).map(([key, enabled]) => (
+                <div key={key} className="flex items-center justify-between text-xs">
+                  <span className={enabled ? "" : "text-muted-foreground"}>
+                    {key === "crossValidateNumbers" && "數字交叉驗證"}
+                    {key === "budgetConsistency" && "預算一致性"}
+                    {key === "dateConsistency" && "日期一致性"}
+                    {key === "teamConsistency" && "團隊一致性"}
+                    {key === "scopeConsistency" && "範疇一致性"}
+                  </span>
+                  <Badge variant={enabled ? "default" : "outline"} className="text-xs">
+                    {enabled ? "開" : "關"}
+                  </Badge>
+                </div>
+              ))}
+              <Separator />
               <div className="text-xs text-muted-foreground space-y-1">
                 <p>內建規則：段落長度、句子長度、重複內容、承諾風險</p>
                 <p>至「設定 → 模組更新 → 品質規則」調整</p>
