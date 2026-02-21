@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-0020|A44T|claude-opus-4-6
+SNAPSHOT|20260223-0120|A44T|claude-sonnet-4-6
 [x] doc-methodology-review|砍回應前分流 + 機器對等原則|@op:20260219-A44T#0643
 [x] infra-trigger-rules|觸發規則簡化 + Stop hook 擴大範圍|@op:20260219-A44T#0718
 [x] plan-backlog|待辦盤點 + /待辦指令|用戶驗收通過
@@ -15,4 +15,4 @@ SNAPSHOT|20260223-0020|A44T|claude-opus-4-6
 [x] infra-governance|治理機制寫入 CLAUDE.md|用戶核准通過，commit 12d5d69
 [ ] infra-quality-audit|品管員角色（用戶指派）|SSOT 全域掃描完畢（10 源碼檔、4 批 commit）。AINL 趨勢/圖表卡片審查通過。建議終止角色
 [ ] infra-efficiency-cal|效率校準 P0 第一輪答辯|已回覆 Jin 三題（ref:1451）：token 分佈 feat 20%/infra 67%、方法論用了閉環驗證 1 次、下一步做 feat+停品管
-[ ] feat-m03-strategy|M03 戰略分析引擎|Phase 1 完成（7 檔 82 tests：五維評分+KB 匹配+輔助函式）。下一步 Phase 2 = Hook + UI
+[v] feat-m03-strategy|M03 戰略分析引擎|Phase 1+2 完成：5維評分引擎（82 tests）+ Hook + FitScoreRadar + FitScoreCard + /strategy 頁面。待用戶驗收
