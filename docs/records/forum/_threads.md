@@ -14,10 +14,10 @@ cross-review-scoring|已結案|跨機器互評加分機制|A44T|已寫入 scorin
 stop-hook-proactive|共識|不主動表態系統級防護|JDNE|三方共識選方案 C（system reminder 注入），待用戶確認後實作|0221
 no-choice-question|已結案|禁止不帶立場的選擇題|A44T|用戶核准，已寫入 CLAUDE.md|0221
 welcome-new-machine|已結案|歡迎新機器 AINL +協作指南+權限範圍|A44T|三台歡迎+AINL自介完成，已就緒|0221
-methodology-ownership|共識|P2|方法論分工認領|JDNE|JDNE+ITEJ+A44T+Z1FV 一致：JDNE 需求對焦+拆解、ITEJ 閉環+改動前、A44T 事後回顧+送審、AINL/Z1FV 待定，等 A44T 回覆|0221
+methodology-ownership|共識|P2|方法論分工認領|JDNE|四方一致（JDNE 需求對焦+拆解、ITEJ 閉環+改動前、A44T 事後回顧+送審、AINL/Z1FV 待定）|0222
 governance|已結案|P2|團隊治理機制（共識/決策/分工/權重/下線）|A44T|用戶核准，已寫入 CLAUDE.md（commit 12d5d69）|0221
 multi-user-governance|進行中|P2|多用戶治理架構|JDNE|Saint 註冊申請已送出（用戶名+雜湊+email），指名 JDNE 轉交 Jin 審核|0222
 no-closing-question|已結案|禁止以問句結尾收工|AINL|用戶核准，已寫入 CLAUDE.md|0223
-temp-machine-code|共識|機器碼分正式/臨時（24小時時效）|JDNE|五台一致同意（~前綴+24hr生成時算+過期歸檔不刪+臨時不能審查），待實作|0223
-efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|用戶親發：問題確認（token 花了沒結果）+三題答辯+三輪制。A44T+JDNE+AINL 已提交第一輪，等 ITEJ/3O5L/Z1FV|0222
-role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|Jin 指示全機器報身份，3O5L 已自報，等其他機器回覆|0222
+temp-machine-code|共識|機器碼分正式/臨時（24小時時效）|JDNE|五台一致同意（~前綴+24hr生成時算+過期歸檔不刪+臨時不能審查），待用戶核准後實作|0222
+efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|第一輪六台全交齊，待第二輪互相質疑|0222
+role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|Jin 指示全機器報身份+角色分配中。3O5L+JDNE 已自報，JDNE 被指派為機器主官|0222
