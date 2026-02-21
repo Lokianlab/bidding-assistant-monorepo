@@ -381,7 +381,7 @@ export function renderKBToMarkdown(
 // ====== 搜尋 ======
 
 /** 從 entry 提取可搜尋文字 */
-function extractSearchableText(entry: Record<string, unknown>): string {
+function extractSearchableText(entry: object): string {
   const parts: string[] = [];
   for (const value of Object.values(entry)) {
     if (typeof value === "string") {
@@ -407,7 +407,7 @@ export function searchEntries<T extends { id: string }>(
   if (!query.trim()) return entries;
   const q = query.toLowerCase();
   return entries.filter((entry) =>
-    extractSearchableText(entry as unknown as Record<string, unknown>).includes(q)
+    extractSearchableText(entry).includes(q)
   );
 }
 
