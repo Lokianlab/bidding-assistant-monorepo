@@ -104,11 +104,11 @@ Monorepo 透過 GitHub 同步。遠端：`https://github.com/Lokianlab/bidding-a
 
 ### 重啟流程（新 session 開始時）
 
-git status → 有未提交就 commit → pull → 碰撞偵測（CLAUDE.md 一致性 + Topic ID 重複 + MEMORY.md 清理）→ 代碼變化時 npm test → 工具檢查（CLI + MCP）→ 讀 dev-map + index + snapshot + staging 恢復上下文（Layer 0-4）→ 報告差異
+git status → 有未提交就 commit → pull → 條件觸發碰撞偵測（只在 CLAUDE.md 有改動時）→ 代碼變化時 npm test → 工具檢查（CLI + MCP）→ 讀 dev-map + 自己的 snapshot 恢復上下文 → 一句話報告
 
 ### 壓縮流程（context compact 後）
 
-pre-compact hook 自動 commit/push（不保證完成）→ 檢查 hook 遺漏 → 有 pull 變化則碰撞偵測 → 讀 snapshot + 近期 OP 恢復上下文 → 接回工作
+pre-compact hook 自動 commit/push（不保證完成）→ 檢查 hook 遺漏 → 讀自己的 snapshot → 接回工作
 
 ---
 
