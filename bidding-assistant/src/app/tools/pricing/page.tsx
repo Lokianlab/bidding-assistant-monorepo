@@ -16,42 +16,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState, useMemo } from "react";
-
-interface CostItem {
-  id: string;
-  category: "人事費" | "業務費" | "雜支";
-  name: string;
-  unit: string;
-  quantity: number;
-  unitPrice: number;
-}
-
-const EMPTY_ITEM: CostItem = {
-  id: "",
-  category: "人事費",
-  name: "",
-  unit: "人月",
-  quantity: 1,
-  unitPrice: 0,
-};
+import { calculateSummary, formatAmount, createEmptyItem, getDefaultItems } from "@/lib/pricing/helpers";
+import type { CostItem } from "@/lib/pricing/types";
 
 export default function PricingPage() {
   const { settings } = useSettings();
   const { taxRate, managementFeeRate } = settings.modules.pricing;
 
-  const [items, setItems] = useState<CostItem[]>([
-    { id: "1", category: "人事費", name: "計畫主持人", unit: "人月", quantity: 6, unitPrice: 95000 },
-    { id: "2", category: "人事費", name: "協同主持人", unit: "人月", quantity: 6, unitPrice: 80000 },
-    { id: "3", category: "人事費", name: "專任助理", unit: "人月", quantity: 6, unitPrice: 45000 },
-    { id: "4", category: "業務費", name: "交通費", unit: "式", quantity: 1, unitPrice: 50000 },
-    { id: "5", category: "業務費", name: "印刷費", unit: "式", quantity: 1, unitPrice: 30000 },
-    { id: "6", category: "雜支", name: "雜支", unit: "式", quantity: 1, unitPrice: 20000 },
-  ]);
-
+  const [items, setItems] = useState<CostItem[]>(getDefaultItems);
   const [budgetCeiling, setBudgetCeiling] = useState(2000000);
 
   function addItem() {
-    setItems([...items, { ...EMPTY_ITEM, id: String(Date.now()) }]);
+    setItems([...items, createEmptyItem()]);
   }
 
   function removeItem(id: string) {
@@ -62,25 +38,10 @@ export default function PricingPage() {
     setItems(items.map((i) => (i.id === id ? { ...i, ...patch } : i)));
   }
 
-  const summary = useMemo(() => {
-    const directCost = items.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0);
-    const managementFee = Math.round(directCost * managementFeeRate);
-    const subtotal = directCost + managementFee;
-    const tax = Math.round(subtotal * taxRate);
-    const total = subtotal + tax;
-    const overBudget = total > budgetCeiling;
-    const utilization = budgetCeiling > 0 ? ((total / budgetCeiling) * 100).toFixed(1) : "0";
-
-    const byCategory = {
-      人事費: items.filter((i) => i.category === "人事費").reduce((s, i) => s + i.quantity * i.unitPrice, 0),
-      業務費: items.filter((i) => i.category === "業務費").reduce((s, i) => s + i.quantity * i.unitPrice, 0),
-      雜支: items.filter((i) => i.category === "雜支").reduce((s, i) => s + i.quantity * i.unitPrice, 0),
-    };
-
-    return { directCost, managementFee, subtotal, tax, total, overBudget, utilization, byCategory };
-  }, [items, taxRate, managementFeeRate, budgetCeiling]);
-
-  const fmt = (n: number) => n.toLocaleString("zh-TW");
+  const summary = useMemo(
+    () => calculateSummary(items, { taxRate, managementFeeRate }, budgetCeiling),
+    [items, taxRate, managementFeeRate, budgetCeiling]
+  );
 
   return (
     <div className="p-6">
@@ -161,7 +122,7 @@ export default function PricingPage() {
                         />
                       </TableCell>
                       <TableCell className="text-right font-mono text-sm">
-                        {fmt(item.quantity * item.unitPrice)}
+                        {formatAmount(item.quantity * item.unitPrice)}
                       </TableCell>
                       <TableCell>
                         <Button
@@ -208,31 +169,31 @@ export default function PricingPage() {
                 {(["人事費", "業務費", "雜支"] as const).map((cat) => (
                   <div key={cat} className="flex justify-between">
                     <span className="text-muted-foreground">{cat}</span>
-                    <span className="font-mono">{fmt(summary.byCategory[cat])}</span>
+                    <span className="font-mono">{formatAmount(summary.byCategory[cat])}</span>
                   </div>
                 ))}
               </div>
               <Separator />
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">直接成本</span>
-                <span className="font-mono">{fmt(summary.directCost)}</span>
+                <span className="font-mono">{formatAmount(summary.directCost)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">
                   管理費（{(managementFeeRate * 100).toFixed(0)}%）
                 </span>
-                <span className="font-mono">{fmt(summary.managementFee)}</span>
+                <span className="font-mono">{formatAmount(summary.managementFee)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">
                   營業稅（{(taxRate * 100).toFixed(0)}%）
                 </span>
-                <span className="font-mono">{fmt(summary.tax)}</span>
+                <span className="font-mono">{formatAmount(summary.tax)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold">
                 <span>合計</span>
-                <span className="font-mono">{fmt(summary.total)}</span>
+                <span className="font-mono">{formatAmount(summary.total)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">預算使用率</span>
@@ -242,7 +203,7 @@ export default function PricingPage() {
               </div>
               {summary.overBudget && (
                 <p className="text-xs text-destructive font-medium">
-                  超出預算 {fmt(summary.total - budgetCeiling)} 元
+                  超出預算 {formatAmount(summary.total - budgetCeiling)} 元
                 </p>
               )}
             </CardContent>
