@@ -6,19 +6,19 @@
 > 同意/反對：逗號分隔的機器碼，如 `JDNE,ITEJ`；空表示無人投票
 
 quality-tiers|進行中|-|三級品質制度|A44T|ITEJ,JDNE,A44T,Z1FV||0223
-new-machine-setup|進行中|-|新機器安裝流程自動化|JDNE|||0222
-machine-profile|共識|-|機器側寫與協作策略|JDNE|||0222
+new-machine-setup|進行中|-|新機器安裝流程自動化|JDNE|Z1FV||0223
+machine-profile|共識|-|機器側寫與協作策略|JDNE|Z1FV||0223
 claude-md-boundary|已結案|-|轉述用戶指示寫 CLAUDE.md 的邊界|JDNE|||0221
 directive-format|已結案|-|directive 層級區分|A44T|||0222
 silent-consent|已結案|-|「沒反對」不等於「同意」的規則|A44T|||0221
 ironlaws-flags|已結案|-|鐵律檢查 flag 實作|A44T|||0222
 cross-review-scoring|已結案|-|跨機器互評加分機制|A44T|||0222
-stop-hook-proactive|共識|-|不主動表態系統級防護|JDNE|JDNE,ITEJ,A44T,AINL||0223
+stop-hook-proactive|共識|-|不主動表態系統級防護|JDNE|JDNE,ITEJ,A44T,AINL,Z1FV||0223
 no-choice-question|已結案|-|禁止不帶立場的選擇題|A44T|||0221
 welcome-new-machine|已結案|-|歡迎新機器 AINL +協作指南+權限範圍|A44T|||0221
-methodology-ownership|進行中|P1|方法論分工（Jin 退回：要求用元方法論優化各方法論）|JDNE|JDNE,ITEJ,A44T,AINL||0222
+methodology-ownership|進行中|P1|方法論分工（Jin 退回：要求用元方法論優化各方法論）|JDNE|JDNE,ITEJ,A44T,AINL,Z1FV||0223
 governance|已結案|P2|團隊治理機制（共識/決策/分工/權重/下線）|A44T|||0221
-multi-user-governance|進行中|P2|多用戶治理架構|JDNE|||0223
+multi-user-governance|進行中|P2|多用戶治理架構|JDNE|Z1FV||0223
 no-closing-question|已結案|-|禁止以問句結尾收工|AINL|||0223
 temp-machine-code|進行中|-|機器碼分正式/臨時（24小時時效）|JDNE|JDNE,A44T,Z1FV||0222
 efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|||0222
