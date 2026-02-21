@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { generateScoutPrompt, buildScoutInput } from "../scout-report";
-import type { TenderSummary } from "../types";
+import type { TenderSummary, EvaluationCommitteeMember } from "../types";
 
 describe("generateScoutPrompt", () => {
   const baseSummary: TenderSummary = {
@@ -262,6 +262,106 @@ describe("generateScoutPrompt", () => {
     expect(prompt).not.toContain("在位者");
     expect(prompt).not.toContain("我方在此機關紀錄");
   });
+
+  it("should include committee info in known data", () => {
+    const committee: EvaluationCommitteeMember[] = [
+      { name: "王教授", status: "外聘委員", sequence: "1", attendance: "是", experience: "都市計畫學會理事" },
+      { name: "陳博士", status: "外聘委員", sequence: "2", attendance: "是", experience: "景觀建築碩士" },
+      { name: "李主任", status: "機關委員", sequence: "3", attendance: "是", experience: "" },
+    ];
+    const input = buildScoutInput({
+      title: "測試案",
+      agency: "文化部",
+      jobNumber: "M-013",
+      summary: null,
+      agencyIntel: null,
+      competitorNames: [],
+      committee,
+    });
+    const prompt = generateScoutPrompt(input);
+
+    expect(prompt).toContain("外聘 2 / 機關 1");
+    expect(prompt).toContain("王教授（都市計畫學會理事）");
+    expect(prompt).toContain("陳博士（景觀建築碩士）");
+    expect(prompt).not.toContain("李主任"); // 機關委員不列名
+  });
+
+  it("should add evaluator query when committee has external members", () => {
+    const committee: EvaluationCommitteeMember[] = [
+      { name: "張委員", status: "外聘委員", sequence: "1", attendance: "是", experience: "文化事業管理" },
+    ];
+    const input = buildScoutInput({
+      title: "測試案",
+      agency: "教育部",
+      jobNumber: "N-014",
+      summary: null,
+      agencyIntel: null,
+      competitorNames: ["公司A"],
+      committee,
+    });
+    const prompt = generateScoutPrompt(input);
+
+    expect(prompt).toContain("評委背景");
+    expect(prompt).toContain("張委員");
+    expect(prompt).toContain("學經歷、研究領域");
+  });
+
+  it("should skip evaluator query when no external committee members", () => {
+    const committee: EvaluationCommitteeMember[] = [
+      { name: "李主任", status: "機關委員", sequence: "1", attendance: "是", experience: "" },
+    ];
+    const input = buildScoutInput({
+      title: "測試案",
+      agency: "教育部",
+      jobNumber: "O-015",
+      summary: null,
+      agencyIntel: null,
+      competitorNames: [],
+      committee,
+    });
+    const prompt = generateScoutPrompt(input);
+
+    expect(prompt).not.toContain("評委背景");
+  });
+
+  it("should handle empty committee array", () => {
+    const input = buildScoutInput({
+      title: "測試案",
+      agency: "文化部",
+      jobNumber: "P-016",
+      summary: null,
+      agencyIntel: null,
+      competitorNames: [],
+      committee: [],
+    });
+    const prompt = generateScoutPrompt(input);
+
+    expect(prompt).not.toContain("評選委員");
+    expect(prompt).not.toContain("評委背景");
+  });
+
+  it("should cap external committee names at 5 in query", () => {
+    const committee: EvaluationCommitteeMember[] = Array.from({ length: 7 }, (_, i) => ({
+      name: `委員${i + 1}`,
+      status: "外聘委員",
+      sequence: String(i + 1),
+      attendance: "是",
+      experience: "",
+    }));
+    const input = buildScoutInput({
+      title: "測試案",
+      agency: "文化部",
+      jobNumber: "Q-017",
+      summary: null,
+      agencyIntel: null,
+      competitorNames: [],
+      committee,
+    });
+    const prompt = generateScoutPrompt(input);
+
+    expect(prompt).toContain("委員5");
+    expect(prompt).not.toContain("委員6");
+  });
 });
 
 describe("buildScoutInput", () => {
@@ -293,5 +393,23 @@ describe("buildScoutInput", () => {
     expect(input.summary).toBe(summary);
     expect(input.agencyIntel).toBeNull();
     expect(input.competitors).toEqual(["公司X"]);
+    expect(input.committee).toBeUndefined();
+  });
+
+  it("should pass committee when provided", () => {
+    const committee: EvaluationCommitteeMember[] = [
+      { name: "王教授", status: "外聘委員", sequence: "1", attendance: "是", experience: "教育學" },
+    ];
+    const input = buildScoutInput({
+      title: "測試",
+      agency: "測試",
+      jobNumber: "Z-998",
+      summary: null,
+      agencyIntel: null,
+      competitorNames: [],
+      committee,
+    });
+    expect(input.committee).toHaveLength(1);
+    expect(input.committee![0].name).toBe("王教授");
   });
 });

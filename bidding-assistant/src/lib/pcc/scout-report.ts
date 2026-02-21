@@ -1,5 +1,5 @@
 import { formatAmount } from "./helpers";
-import type { TenderSummary } from "./types";
+import type { TenderSummary, EvaluationCommitteeMember } from "./types";
 
 interface AgencyContext {
   totalCases: number;
@@ -18,6 +18,8 @@ interface ScoutReportInput {
   agencyIntel: AgencyContext | null;
   /** 已知的競爭對手名單（如有） */
   competitors: string[];
+  /** 評選委員名單（如有） */
+  committee?: EvaluationCommitteeMember[];
 }
 
 /**
@@ -75,6 +77,20 @@ export function generateScoutPrompt(input: ScoutReportInput): string {
     known.push(`已知可能競爭對手：${input.competitors.slice(0, 5).join("、")}`);
   }
 
+  if (input.committee && input.committee.length > 0) {
+    const external = input.committee.filter((m) => m.status === "外聘委員");
+    const internal = input.committee.filter((m) => m.status !== "外聘委員");
+    known.push(`評選委員人數：${input.committee.length} 位（外聘 ${external.length} / 機關 ${internal.length}）`);
+    if (external.length > 0) {
+      const names = external.slice(0, 5).map((m) => {
+        const exp = m.experience ? `（${m.experience}）` : "";
+        return `${m.name}${exp}`;
+      });
+      const suffix = external.length > 5 ? `等 ${external.length} 位` : "";
+      known.push(`外聘委員：${names.join("、")}${suffix}`);
+    }
+  }
+
   sections.push("");
   sections.push("## 已知資訊");
   sections.push(known.join("\n"));
@@ -90,19 +106,36 @@ export function generateScoutPrompt(input: ScoutReportInput): string {
     `3. **甲方偏好**：${input.agency}過去類似案件的執行廠商風格（偏好在地/全國、大公司/小團隊、學術/業界）`,
   ];
 
+  // 評委情報（有評委名單時加入）
+  let queryNum = 4;
+  if (input.committee && input.committee.length > 0) {
+    const externalNames = input.committee
+      .filter((m) => m.status === "外聘委員")
+      .map((m) => m.name)
+      .slice(0, 5);
+    if (externalNames.length > 0) {
+      queries.push(
+        `${queryNum}. **評委背景**：${externalNames.join("、")}這幾位外聘委員的學經歷、研究領域、近年公開演講或著作。特別留意他們偏好的提案風格或價值觀`,
+      );
+      queryNum++;
+    }
+  }
+
   if (input.competitors.length > 0) {
     queries.push(
-      `4. **競爭對手情報**：${input.competitors.slice(0, 3).join("、")}這幾家公司的近況（最近有沒有類似案子、公司規模、專長）`,
+      `${queryNum}. **競爭對手情報**：${input.competitors.slice(0, 3).join("、")}這幾家公司的近況（最近有沒有類似案子、公司規模、專長）`,
     );
+    queryNum++;
     queries.push(
-      `5. **勝算評估**：根據以上資訊，我方投標的優勢和劣勢分析，以及建議的切入角度`,
+      `${queryNum}. **勝算評估**：根據以上資訊，我方投標的優勢和劣勢分析，以及建議的切入角度`,
     );
   } else {
     queries.push(
-      `4. **潛在對手**：這類案子通常會有哪些類型的廠商來投？有沒有已知的強勢競爭者？`,
+      `${queryNum}. **潛在對手**：這類案子通常會有哪些類型的廠商來投？有沒有已知的強勢競爭者？`,
     );
+    queryNum++;
     queries.push(
-      `5. **勝算評估**：根據以上資訊，投標的機會和風險評估，以及建議的切入角度`,
+      `${queryNum}. **勝算評估**：根據以上資訊，投標的機會和風險評估，以及建議的切入角度`,
     );
   }
 
@@ -130,6 +163,7 @@ export function buildScoutInput(params: {
   summary: TenderSummary | null;
   agencyIntel: AgencyContext | null;
   competitorNames: string[];
+  committee?: EvaluationCommitteeMember[];
 }): ScoutReportInput {
   return {
     title: params.title,
@@ -138,5 +172,6 @@ export function buildScoutInput(params: {
     summary: params.summary,
     agencyIntel: params.agencyIntel,
     competitors: params.competitorNames,
+    committee: params.committee,
   };
 }
