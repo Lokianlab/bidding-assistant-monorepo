@@ -210,8 +210,14 @@ export function attachPostsToThreads(
   }
 
   // 每個 thread 內的帖子排序：純按時間升序（最早的在最上面）
+  // 使用逐字元比較（不依賴 localeCompare），確保跨語系環境下排序穩定
   for (const thread of threadMap.values()) {
-    thread.posts.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    thread.posts.sort((a, b) => {
+      if (a.timestamp < b.timestamp) return -1;
+      if (a.timestamp > b.timestamp) return 1;
+      // 時間戳相同時，按機器碼排序確保穩定性
+      return a.machineCode < b.machineCode ? -1 : a.machineCode > b.machineCode ? 1 : 0;
+    });
   }
 
   return Array.from(threadMap.values());
@@ -232,8 +238,8 @@ export function sortThreads(threads: ForumThread[]): ForumThread[] {
     const bPri = b.priority ? PRIORITY_SORT_ORDER[b.priority] : 99;
     if (aPri !== bPri) return aPri - bPri;
 
-    // 最後按日期倒序
-    return b.lastUpdate.localeCompare(a.lastUpdate);
+    // 最後按日期倒序（逐字元比較，確保跨語系一致）
+    return b.lastUpdate < a.lastUpdate ? -1 : b.lastUpdate > a.lastUpdate ? 1 : 0;
   });
 }
 
