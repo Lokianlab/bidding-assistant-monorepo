@@ -241,6 +241,20 @@ export const CARD_REGISTRY: CardDefinition[] = [
     },
   },
 
+  {
+    type: "chart-decision-distribution",
+    name: "決策分布",
+    description: "各決策優先序（最優先/次要/觀望等）的標案件數",
+    icon: "🎲",
+    category: "chart",
+    allowedSizes: ["medium", "large", "wide"],
+    defaultSize: "medium",
+    defaultConfig: {
+      title: "決策分布",
+      period: "all",
+    },
+  },
+
   // ── Trend cards ────────────────────────────────────────────
   {
     type: "chart-rolling-winrate",

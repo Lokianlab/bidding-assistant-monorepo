@@ -326,6 +326,42 @@ export function CardRenderer({ type, config, metrics, size, trendAnalysis }: Car
       );
     }
 
+    case "chart-decision-distribution": {
+      const decisionData = metrics.decisionDistribution;
+      return (
+        <div className="w-full" style={{ minHeight: chartHeight }}>
+          {decisionData.length === 0 ? (
+            <div className="h-full flex items-center justify-center text-sm text-muted-foreground" style={{ minHeight: chartHeight }}>
+              尚無決策分布資料
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={chartHeight}>
+              <PieChart>
+                <Pie
+                  data={decisionData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius="45%"
+                  outerRadius="75%"
+                  paddingAngle={2}
+                  label={({ name, value }) => `${name} ${value}`}
+                  labelLine={{ strokeWidth: 1 }}
+                >
+                  {decisionData.map((_, i) => (
+                    <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />
+                  ))}
+                </Pie>
+                <RTooltip content={<ChartTooltip />} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      );
+    }
+
     case "chart-budget-status": {
       const budgetData = metrics.budgetByStatus;
       return (
