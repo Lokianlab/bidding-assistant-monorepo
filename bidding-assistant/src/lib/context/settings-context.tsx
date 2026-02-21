@@ -21,6 +21,14 @@ function deepMerge<T>(defaults: T, overrides: any): T {
       result[key] = oVal;
     }
   }
+  // Preserve extra keys from overrides (optional fields like featureToggles, fieldMapping)
+  if (overrides && typeof overrides === "object") {
+    for (const key of Object.keys(overrides)) {
+      if (!(key in result)) {
+        result[key] = overrides[key];
+      }
+    }
+  }
   return result as T;
 }
 
