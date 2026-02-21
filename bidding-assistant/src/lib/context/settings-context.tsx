@@ -7,12 +7,29 @@ import { logger } from "@/lib/logger";
 
 const STORAGE_KEY = "bidding-assistant-settings";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function deepMerge<T>(defaults: T, overrides: any): T {
+  if (!defaults || typeof defaults !== "object" || Array.isArray(defaults)) return overrides ?? defaults;
+  const result = { ...defaults } as Record<string, unknown>;
+  for (const key of Object.keys(defaults as Record<string, unknown>)) {
+    const dVal = (defaults as Record<string, unknown>)[key];
+    const oVal = overrides?.[key];
+    if (oVal === undefined) continue;
+    if (dVal && typeof dVal === "object" && !Array.isArray(dVal) && oVal && typeof oVal === "object" && !Array.isArray(oVal)) {
+      result[key] = deepMerge(dVal, oVal);
+    } else {
+      result[key] = oVal;
+    }
+  }
+  return result as T;
+}
+
 function loadSettings(): AppSettings {
   if (typeof window === "undefined") return DEFAULT_SETTINGS;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    return deepMerge(DEFAULT_SETTINGS, JSON.parse(raw));
   } catch {
     return DEFAULT_SETTINGS;
   }

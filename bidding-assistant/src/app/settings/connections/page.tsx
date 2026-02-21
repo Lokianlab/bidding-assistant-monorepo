@@ -12,9 +12,13 @@ import { toast } from "sonner";
 
 export default function ConnectionsPage() {
   const { settings, hydrated, updateSection } = useSettings();
-  const [notion, setNotion] = useState(settings.connections.notion);
-  const [drive, setDrive] = useState(settings.connections.googleDrive);
-  const [smugmug, setSmugmug] = useState(settings.connections.smugmug);
+  const conn = settings.connections ?? {};
+  const defaultConn = { token: "", databaseId: "" };
+  const defaultDrive = { refreshToken: "", sharedDriveFolderId: "" };
+  const defaultSmugmug = { apiKey: "", apiSecret: "", accessToken: "", tokenSecret: "" };
+  const [notion, setNotion] = useState(conn.notion ?? defaultConn);
+  const [drive, setDrive] = useState(conn.googleDrive ?? defaultDrive);
+  const [smugmug, setSmugmug] = useState(conn.smugmug ?? defaultSmugmug);
   const [testing, setTesting] = useState(false);
   const [debugInfo, setDebugInfo] = useState<{
     dbTitle?: string;
@@ -26,9 +30,10 @@ export default function ConnectionsPage() {
   // hydration 完成後，用 localStorage 的值更新 local state
   useEffect(() => {
     if (hydrated) {
-      setNotion(settings.connections.notion);
-      setDrive(settings.connections.googleDrive);
-      setSmugmug(settings.connections.smugmug);
+      const c = settings.connections ?? {};
+      setNotion(c.notion ?? defaultConn);
+      setDrive(c.googleDrive ?? defaultDrive);
+      setSmugmug(c.smugmug ?? defaultSmugmug);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
@@ -376,9 +381,10 @@ export default function ConnectionsPage() {
 
         <div className="flex justify-end gap-3">
           <Button variant="outline" onClick={() => {
-            setNotion(settings.connections.notion);
-            setDrive(settings.connections.googleDrive);
-            setSmugmug(settings.connections.smugmug);
+            const c = settings.connections ?? {};
+            setNotion(c.notion ?? defaultConn);
+            setDrive(c.googleDrive ?? defaultDrive);
+            setSmugmug(c.smugmug ?? defaultSmugmug);
             setTestResult(null);
             setSmugmugResult(null);
           }}>
