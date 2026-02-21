@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-0215|ITEJ
+SNAPSHOT|20260221-1521|ITEJ
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -10,6 +10,7 @@ SNAPSHOT|20260221-0215|ITEJ
 [x] infra-dev-map|全專案開發地圖 + /地圖指令 + CLAUDE.md 更新|@op:20260220-ITEJ#1100
 [x] infra-hooks|簡化 pre-compact hook（砍快照提醒）|小結 ITEJ-0003
 [x] feat-kb-skill-fix|/kb 精靈 00C/00D 錨點+最後更新欄位修正|小結 ITEJ-0004
+[v] infra-claude-md-modular|CLAUDE.md 拆分|JDNE 已完成（記錄格式搬到 rules/，主檔精簡到 208 行），待用戶驗收
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決
-[x] infra-claude-md-modular|CLAUDE.md 拆分|JDNE 已完成（記錄格式搬到 rules/，主檔精簡到 208 行），待用戶驗收
 [?] plan-notion-mcp-status|Notion MCP 定位|JDNE 說暫緩，CLAUDE.md 寫待建，不一致
+[ ] plan-devplan-push|消化暫存區推進開發計畫|6 條任務線完成，剩 5 個待決碎片
