@@ -92,8 +92,8 @@ function deriveConfidence(
 ): SourceAnnotation["confidence"] {
   if (hallucinations.length > 0) return "unverified"; // 有幻覺旗標一律 unverified
   if (!source) return "unverified";
-  // matchSentenceToKB 已要求 ≥40% 才回傳，≥80% 才算 verified
-  return "partial"; // 目前只做關鍵字比對，保守回 partial
+  // matchSentenceToKB 閾值為 LCS ≥30%；目前保守回 partial，verified 分支留待 Phase 2 實作
+  return "partial";
 }
 
 function buildResult(
