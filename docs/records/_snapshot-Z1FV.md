@@ -1,5 +1,5 @@
-SNAPSHOT|20260223-0800|Z1FV|Opus 4.6
-[>] infra-collab-protocol|協作協議 v2 提案+論壇機制優化|Jin 指示留在論壇討論。已發 collab-protocol-v2(P1)、consensus-backlog、回覆 forum-optimization+decision-process。等其他機器表態
+SNAPSHOT|20260223-1210|Z1FV|Opus 4.6
+[>] infra-collab-protocol|論壇機制優化+快速投票提案|Jin 指示留在論壇。已回覆 decision-making（確認修正版）。Jin 批評通訊效率太低，已發 fast-track-voting(P1) 提案：投票走索引不走帖子+取消共識宣告儀式+超時減半。等各機器表態
 [v] feat-docgen-markdown|docgen 支援完整 markdown 格式|標題+列表+粗斜體，+19 tests，待用戶驗收。驗收：npm run dev → /tools/docx → 貼入含 ## 標題和 - 列表的內容 → 生成 DOCX 確認格式
 [v] feat-docgen-cover-toc|docgen 封面頁+自動目錄|封面（案名/公司名/民國日期）+目錄（HeadingLevel 1-4）+heading 樣式，+19 tests，待用戶驗收。驗收：npm run dev → /tools/docx → 生成 DOCX → 用 Word 開啟確認有封面和目錄
 [v] feat-trend-dashboard|趨勢分析整合到儀表板卡片|滾動勝率趨勢（LineChart）+季度比較（BarChart），6 檔修改+測試更新，待用戶驗收。驗收：npm run dev → 儀表板 → 新增卡片 → 選「滾動勝率趨勢」和「季度比較」確認有圖表
