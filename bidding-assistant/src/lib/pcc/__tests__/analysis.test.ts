@@ -1,6 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { analyzeSelf } from "../analysis";
-import type { PCCRecord } from "../types";
+import { describe, it, expect, vi } from "vitest";
+import { analyzeSelf, fetchAllPages } from "../analysis";
+import type { PCCRecord, PCCSearchResponse } from "../types";
+import * as api from "../api";
 
 // Helper: 建立測試用 PCCRecord
 function makeRecord(overrides: {
@@ -215,5 +216,125 @@ describe("analyzeSelf", () => {
     expect(result.competitors[0].encounters).toBe(5);
     expect(result.competitors[1].name).toBe("偶爾對手");
     expect(result.competitors[1].encounters).toBe(3);
+  });
+});
+
+// ====== fetchAllPages 測試 ======
+
+function makeSimpleRecord(title: string): PCCRecord {
+  return {
+    date: 20260101,
+    filename: "test",
+    brief: { type: "決標公告", title },
+    job_number: "001",
+    unit_id: "1.1.1",
+    unit_name: "測試機關",
+    unit_api_url: "",
+    tender_api_url: "",
+    unit_url: "",
+    url: "",
+  };
+}
+
+function makeSearchResponse(
+  records: PCCRecord[],
+  page: number,
+  totalPages: number,
+): PCCSearchResponse {
+  return {
+    query: "test",
+    page,
+    total_records: totalPages * records.length,
+    total_pages: totalPages,
+    took: 10,
+    records,
+  };
+}
+
+describe("fetchAllPages", () => {
+  it("單頁結果直接回傳", async () => {
+    const record = makeSimpleRecord("標案A");
+    vi.spyOn(api, "pccApiFetch").mockResolvedValueOnce(
+      makeSearchResponse([record], 1, 1),
+    );
+    vi.spyOn(api, "delay").mockResolvedValue(undefined);
+
+    const result = await fetchAllPages("測試公司");
+
+    expect(result).toHaveLength(1);
+    expect(result[0].brief.title).toBe("標案A");
+    expect(api.pccApiFetch).toHaveBeenCalledTimes(1);
+
+    vi.restoreAllMocks();
+  });
+
+  it("多頁結果逐頁載入並合併", async () => {
+    const r1 = makeSimpleRecord("頁1");
+    const r2 = makeSimpleRecord("頁2");
+    const r3 = makeSimpleRecord("頁3");
+
+    const fetchSpy = vi.spyOn(api, "pccApiFetch")
+      .mockResolvedValueOnce(makeSearchResponse([r1], 1, 3))
+      .mockResolvedValueOnce(makeSearchResponse([r2], 2, 3))
+      .mockResolvedValueOnce(makeSearchResponse([r3], 3, 3));
+    vi.spyOn(api, "delay").mockResolvedValue(undefined);
+
+    const result = await fetchAllPages("測試公司");
+
+    expect(result).toHaveLength(3);
+    expect(result.map((r) => r.brief.title)).toEqual(["頁1", "頁2", "頁3"]);
+    expect(fetchSpy).toHaveBeenCalledTimes(3);
+
+    vi.restoreAllMocks();
+  });
+
+  it("呼叫 onProgress 回傳進度", async () => {
+    const r1 = makeSimpleRecord("A");
+    const r2 = makeSimpleRecord("B");
+
+    vi.spyOn(api, "pccApiFetch")
+      .mockResolvedValueOnce(makeSearchResponse([r1], 1, 2))
+      .mockResolvedValueOnce(makeSearchResponse([r2], 2, 2));
+    vi.spyOn(api, "delay").mockResolvedValue(undefined);
+
+    const progress: [number, number][] = [];
+    await fetchAllPages("測試公司", (loaded, total) => {
+      progress.push([loaded, total]);
+    });
+
+    expect(progress).toEqual([[1, 2], [2, 2]]);
+
+    vi.restoreAllMocks();
+  });
+
+  it("最多載入 20 頁", async () => {
+    const record = makeSimpleRecord("資料");
+
+    const fetchSpy = vi.spyOn(api, "pccApiFetch").mockImplementation(
+      async (_action, data) => {
+        const page = (data as { page: number }).page;
+        return makeSearchResponse([record], page, 50);
+      },
+    );
+    vi.spyOn(api, "delay").mockResolvedValue(undefined);
+
+    const result = await fetchAllPages("測試公司");
+
+    expect(result).toHaveLength(20);
+    expect(fetchSpy).toHaveBeenCalledTimes(20);
+
+    vi.restoreAllMocks();
+  });
+
+  it("不帶 onProgress 也不會出錯", async () => {
+    vi.spyOn(api, "pccApiFetch").mockResolvedValueOnce(
+      makeSearchResponse([makeSimpleRecord("X")], 1, 1),
+    );
+    vi.spyOn(api, "delay").mockResolvedValue(undefined);
+
+    const result = await fetchAllPages("測試公司");
+    expect(result).toHaveLength(1);
+
+    vi.restoreAllMocks();
   });
 });
