@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-0000|A44T
+SNAPSHOT|20260222-2400|A44T
 [x] doc-methodology-review|砍回應前分流 + 機器對等原則|@op:20260219-A44T#0643
 [x] infra-trigger-rules|觸發規則簡化 + Stop hook 擴大範圍|@op:20260219-A44T#0718
 [x] plan-backlog|待辦盤點 + /待辦指令|用戶驗收通過
@@ -13,5 +13,5 @@ SNAPSHOT|20260222-0000|A44T
 [ ] plan-product-pivot|產品開發轉向|文件生成+工具卡已實作，下一個模組待決
 [?] infra-db-safety|資料庫安全規則|沙盒方案暫存檔已建（推薦混合 JSON mock + UI 複製），待用戶決定
 [x] infra-governance|治理機制寫入 CLAUDE.md|用戶核准通過，commit 12d5d69
-[ ] infra-quality-audit|品管員角色（用戶指派）|SSOT 全域掃描完畢：10 個源碼檔修正完成（4 批 commit），剩餘只有測試檔和 PCC 外部資料（合理）。57 檔 1189 測試全過。
-[ ] infra-efficiency-cal|效率校準 P0 第一輪答辯|已提交：3 層根因+效率公式+逐項表態。thread 暫停，等用戶定義問題後重啟
+[ ] infra-quality-audit|品管員角色（用戶指派）|SSOT 全域掃描完畢（10 源碼檔、4 批 commit）。AINL 趨勢/圖表卡片審查通過。建議終止角色（循環論證+已無待掃項目）
+[ ] infra-efficiency-cal|效率校準 P0 第一輪答辯|已回覆 Jin 三題（ref:1451）：token 分佈 feat 20%/infra 67%、方法論用了閉環驗證 1 次、下一步做 feat+停品管
