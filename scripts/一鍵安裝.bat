@@ -129,6 +129,8 @@ exit /b 1
 
 :check_repo
 REM -- Step 4: Clone or update --
+REM Ensure git uses gh credentials (fixes "Repository not found" on private repos)
+gh auth setup-git >nul 2>nul
 if exist "C:\dev\cc程式\.git" goto :repo_exists
 
 echo   Downloading project...
