@@ -144,6 +144,62 @@ describe("analyzeMarketTrend", () => {
     expect(result.competitionLevel).toBe("紅海");
   });
 
+  it("一般判斷：近年平均投標 3~4 家", () => {
+    const records = Array.from({ length: 3 }, (_, i) =>
+      mockRecord({
+        date: 20240101 + i * 100,
+        brief: {
+          type: "決標公告",
+          title: "T",
+          companies: {
+            ids: ["1", "2", "3", "4"],
+            names: ["A", "B", "C", "D"],
+            id_key: {},
+            name_key: {},
+          },
+        },
+      }),
+    );
+    const result = analyzeMarketTrend(records, "test");
+    // 平均 4 家投標，3 ≤ 4 < 5 → 一般
+    expect(result.competitionLevel).toBe("一般");
+  });
+
+  it("競爭邊界：平均剛好 3 家判為一般", () => {
+    const records = [
+      mockRecord({
+        date: 20240101,
+        brief: {
+          type: "決標公告",
+          title: "T",
+          companies: { ids: ["1", "2", "3"], names: ["A", "B", "C"], id_key: {}, name_key: {} },
+        },
+      }),
+    ];
+    const result = analyzeMarketTrend(records, "test");
+    expect(result.competitionLevel).toBe("一般");
+  });
+
+  it("競爭邊界：平均剛好 5 家判為紅海", () => {
+    const records = [
+      mockRecord({
+        date: 20240101,
+        brief: {
+          type: "決標公告",
+          title: "T",
+          companies: {
+            ids: ["1", "2", "3", "4", "5"],
+            names: ["A", "B", "C", "D", "E"],
+            id_key: {},
+            name_key: {},
+          },
+        },
+      }),
+    ];
+    const result = analyzeMarketTrend(records, "test");
+    expect(result.competitionLevel).toBe("紅海");
+  });
+
   it("藍海判斷：近年平均投標 < 3 家", () => {
     const records = [
       mockRecord({
