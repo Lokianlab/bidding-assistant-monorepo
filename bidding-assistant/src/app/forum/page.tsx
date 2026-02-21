@@ -71,6 +71,12 @@ export default function ForumPage() {
         updateStatus: "已結案",
       }),
     });
+    // 更新狀態為已結案（git sync 已在 POST 時完成，這裡不重複 push）
+    await fetch("/api/forum", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, status: "已結案" }),
+    });
     refresh();
   };
 
@@ -85,6 +91,12 @@ export default function ForumPage() {
         priority: "P0",
         updateStatus: "進行中",
       }),
+    });
+    // 退回後狀態改回進行中
+    await fetch("/api/forum", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, status: "進行中" }),
     });
     refresh();
   };

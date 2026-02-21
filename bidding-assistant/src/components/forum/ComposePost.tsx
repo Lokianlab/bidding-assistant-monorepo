@@ -35,6 +35,7 @@ export function ComposePost({
   const [priority, setPriority] = useState<Priority>("P0");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [syncStatus, setSyncStatus] = useState<"idle" | "synced" | "failed">("idle");
 
   // 自動從標題生成 thread ID（英文小寫+連字號）
   const handleTitleChange = (title: string) => {
@@ -78,6 +79,9 @@ export function ComposePost({
         const data = await res.json();
         throw new Error(data.error || "發帖失敗");
       }
+
+      const data = await res.json();
+      setSyncStatus(data.synced ? "synced" : "failed");
 
       // 成功，清空表單
       setContent("");
@@ -155,6 +159,14 @@ export function ComposePost({
         <p className="text-sm text-destructive">{error}</p>
       )}
 
+      {/* 同步狀態 */}
+      {syncStatus === "synced" && (
+        <p className="text-xs text-green-700">✓ 已同步到所有機器</p>
+      )}
+      {syncStatus === "failed" && (
+        <p className="text-xs text-orange-600">⚠ 帖子已存檔，但 git 同步失敗——機器需手動 pull</p>
+      )}
+
       {/* 按鈕 */}
       <div className="flex items-center gap-2">
         <Button
@@ -162,7 +174,7 @@ export function ComposePost({
           disabled={submitting || !content.trim() || (isNewThread && !newThreadTitle.trim())}
           className="bg-yellow-500 hover:bg-yellow-600 text-yellow-950"
         >
-          {submitting ? "發送中..." : isNewThread ? "發起話題" : "送出回覆"}
+          {submitting ? "同步中..." : isNewThread ? "發起話題" : "送出回覆"}
         </Button>
         {onCancel && (
           <Button variant="ghost" size="sm" onClick={onCancel}>
