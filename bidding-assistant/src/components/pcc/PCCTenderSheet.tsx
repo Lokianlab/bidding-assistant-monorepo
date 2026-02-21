@@ -19,6 +19,7 @@ import {
 } from "@/lib/pcc/helpers";
 import { useAgencyIntel } from "@/lib/pcc/useAgencyIntel";
 import { generateScoutPrompt, buildScoutInput } from "@/lib/pcc/scout-report";
+import { useSettings } from "@/lib/context/settings-context";
 import type {
   PCCRecord,
   PCCTenderDetail,
@@ -34,6 +35,8 @@ interface PCCTenderSheetProps {
 }
 
 export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany }: PCCTenderSheetProps) {
+  const { settings } = useSettings();
+  const myCompany = settings.company?.brand || "大員洛川";
   const [detail, setDetail] = useState<PCCTenderDetail | null>(null);
   const [summary, setSummary] = useState<TenderSummary | null>(null);
   const [loading, setLoading] = useState(false);
@@ -68,7 +71,7 @@ export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany }: PC
     return () => { cancelled = true; };
   }, [record, open]);
 
-  const agencyIntel = useAgencyIntel(record?.unit_id ?? null, open);
+  const agencyIntel = useAgencyIntel(record?.unit_id ?? null, open, myCompany);
 
   if (!record) return null;
 
