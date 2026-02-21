@@ -12,7 +12,12 @@ import { useSettings } from "@/lib/context/settings-context";
 import type { PCCRecord, PCCSearchMode } from "@/lib/pcc/types";
 import { PCCTenderSheet } from "./PCCTenderSheet";
 
-export function PCCSearchPanel({ onViewCompany }: { onViewCompany?: (name: string) => void } = {}) {
+interface PCCSearchPanelProps {
+  onViewCompany?: (name: string) => void;
+  onViewCommittee?: (unitId: string, unitName: string) => void;
+}
+
+export function PCCSearchPanel({ onViewCompany, onViewCommittee }: PCCSearchPanelProps = {}) {
   const { settings } = useSettings();
   const brandName = settings.company?.brand || "大員洛川";
   const [query, setQuery] = useState("");
@@ -94,6 +99,7 @@ export function PCCSearchPanel({ onViewCompany }: { onViewCompany?: (name: strin
         open={!!selectedRecord}
         onOpenChange={(open) => { if (!open) setSelectedRecord(null); }}
         onViewCompany={onViewCompany ? (name) => { setSelectedRecord(null); onViewCompany(name); } : undefined}
+        onViewCommittee={onViewCommittee ? (unitId, unitName) => { setSelectedRecord(null); onViewCommittee(unitId, unitName); } : undefined}
       />
     </div>
   );
