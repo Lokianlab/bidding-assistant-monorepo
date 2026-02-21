@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-1800|JDNE
+SNAPSHOT|20260222-1930|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -21,5 +21,5 @@ SNAPSHOT|20260222-1800|JDNE
 [v] feat-pcc-web|評委交叉分析 hook + UI + 頁面整合|純函式+hook+UI+跨tab導航，M01 Phase 4 完成，待用戶驗收
 [?] infra-backup-mechanism|備份/回復安全節點|用戶提出，範圍待釐清（git tag？資料庫 snapshot？設定匯出？）
 [?] infra-cross-machine-consult|機器間互相諮詢機制|ITEJ 已建論壇機制（forum/），可能已解決。待用戶驗收論壇後確認
-[v] infra-new-machine-setup|新機器加入流程自動化|安裝腳本+互動 prompt+.mcp.json.example+論壇協調完成，A44T/ITEJ 已回覆，待用戶驗收
-[?] infra-machine-profile|三台機器側寫與協作策略|暫存檔已建（issue 待決），待跨機器討論
+[v] infra-new-machine-setup|新機器加入流程自動化|驗收：在新 Windows 機器跑 bash setup-new-machine.sh → 跟著互動 prompt 走完 8 階段 → 最後看到 8 個 ✓（未實測，首次用新機器時即為實測）
+[?] infra-machine-profile|三台機器側寫與協作策略|暫存檔已建，JDNE+ITEJ 共識方向 1+4 輕量版，等 A44T 回覆
