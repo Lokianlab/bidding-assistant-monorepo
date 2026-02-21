@@ -159,6 +159,16 @@ export const APPROVAL_SUMMARIES: Record<string, { what: string; approve: string;
     approve: "開始設計",
     reject: "目前不需要",
   },
+  "team-optimization-draft": {
+    what: "三件事：A) 精簡規範檔到 200 行（把細節移到子檔案），B) 確認啟動流程先讀快照再開工，C) 暫緩收件匣功能",
+    approve: "A 開始起草精簡版、B 確認現行、C 暫緩",
+    reject: "你有不同想法",
+  },
+  "approval-tracking": {
+    what: "批准後誰負責執行——跟你對話的那台機器就是執行方，沒人對話時由 JDNE 接",
+    approve: "確認這條分工規則",
+    reject: "你想要不同的分工方式",
+  },
 };
 
 /** 討論串排序權重（數字越小越前面） */

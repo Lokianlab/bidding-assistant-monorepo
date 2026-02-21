@@ -29,7 +29,7 @@ export function ForumFilters({
   availableMachines,
 }: ForumFiltersProps) {
   const statuses = Object.keys(THREAD_STATUS_CONFIG) as ThreadStatus[];
-  const postTypes: PostType[] = ["discuss", "reply", "feedback", "score"];
+  const postTypes: PostType[] = ["discuss", "reply", "feedback", "score", "approval"];
 
   const toggle = <T extends string>(
     field: keyof ForumFilterState,

@@ -30,6 +30,20 @@ function MarkdownContent({ children }: { children: string }) {
   return <ReactMarkdown>{children}</ReactMarkdown>;
 }
 
+/** 把 ref 字串格式化成人類可讀：JDNE:20260223-0830 → "JDNE 在 02/23 08:30 的發言" */
+function formatRef(ref: string): string {
+  // 支援多引用，逗號分隔
+  return ref.split(",").map((r) => {
+    const trimmed = r.trim();
+    const colonIdx = trimmed.indexOf(":");
+    if (colonIdx === -1) return trimmed;
+    const code = trimmed.slice(0, colonIdx);
+    const ts = trimmed.slice(colonIdx + 1);
+    const formatted = formatTimestamp(ts);
+    return formatted !== ts ? `${code} 在 ${formatted} 的發言` : `${code}:${ts}`;
+  }).join("、");
+}
+
 export function PostCard({ post, onReply }: PostCardProps) {
   const isUser = post.machineCode === USER_CODE;
   const borderColor = MACHINE_COLORS[post.machineCode] || DEFAULT_MACHINE_COLOR;
@@ -69,7 +83,7 @@ export function PostCard({ post, onReply }: PostCardProps) {
       {/* Ref 引用 */}
       {post.ref && post.ref !== "none" && (
         <div className="text-xs text-muted-foreground mb-2">
-          引用：{post.ref}
+          ↩ 回覆 {formatRef(post.ref)}
         </div>
       )}
 
