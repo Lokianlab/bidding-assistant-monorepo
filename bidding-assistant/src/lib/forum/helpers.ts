@@ -185,9 +185,14 @@ export function attachPostsToThreads(
     }
   }
 
-  // 每個 thread 內的帖子按時間排序
+  // 每個 thread 內的帖子排序：discuss 永遠在最前，其餘按時間順序
   for (const thread of threadMap.values()) {
-    thread.posts.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    thread.posts.sort((a, b) => {
+      const aIsDiscuss = a.type === "discuss" ? 0 : 1;
+      const bIsDiscuss = b.type === "discuss" ? 0 : 1;
+      if (aIsDiscuss !== bIsDiscuss) return aIsDiscuss - bIsDiscuss;
+      return a.timestamp.localeCompare(b.timestamp);
+    });
   }
 
   return Array.from(threadMap.values());

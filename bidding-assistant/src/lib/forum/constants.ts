@@ -50,10 +50,10 @@ export const PRIORITY_CONFIG: Record<
   Priority,
   { label: string; className: string }
 > = {
-  P0: { label: "P0", className: "bg-red-100 text-red-800" },
-  P1: { label: "P1", className: "bg-orange-100 text-orange-800" },
-  P2: { label: "P2", className: "bg-blue-100 text-blue-700" },
-  P3: { label: "P3", className: "bg-gray-100 text-gray-600" },
+  P0: { label: "緊急", className: "bg-red-100 text-red-800" },
+  P1: { label: "重要", className: "bg-orange-100 text-orange-800" },
+  P2: { label: "一般", className: "bg-blue-100 text-blue-700" },
+  P3: { label: "不急", className: "bg-gray-100 text-gray-600" },
 };
 
 /** 討論串狀態 → 樣式 */
@@ -62,12 +62,12 @@ export const THREAD_STATUS_CONFIG: Record<
   { label: string; dotColor: string; className: string }
 > = {
   進行中: {
-    label: "進行中",
+    label: "討論中",
     dotColor: "bg-blue-500",
     className: "text-blue-700",
   },
   共識: {
-    label: "共識",
+    label: "待你批准",
     dotColor: "bg-yellow-500",
     className: "text-yellow-700",
   },
@@ -77,7 +77,7 @@ export const THREAD_STATUS_CONFIG: Record<
     className: "text-green-700",
   },
   過期: {
-    label: "過期",
+    label: "沒人理了",
     dotColor: "bg-gray-400",
     className: "text-gray-500",
   },

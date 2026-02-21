@@ -7,6 +7,7 @@ import { ForumFilters, type ForumFilterState } from "@/components/forum/ForumFil
 import { ThreadList } from "@/components/forum/ThreadList";
 import { ThreadDetail } from "@/components/forum/ThreadDetail";
 import { ComposePost } from "@/components/forum/ComposePost";
+import { PendingApprovals } from "@/components/forum/PendingApprovals";
 import { Button } from "@/components/ui/button";
 import type { ForumThread } from "@/lib/forum/types";
 
@@ -56,6 +57,35 @@ export default function ForumPage() {
 
     return threads;
   }, [data, filters]);
+
+  // 批准/退回：以 Jin 身分發帖
+  const handleApprove = async (threadId: string, message: string) => {
+    await fetch("/api/forum", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: `✅ 批准：${message}`,
+        threadId,
+        type: "reply",
+        priority: "P0",
+      }),
+    });
+    refresh();
+  };
+
+  const handleReject = async (threadId: string, message: string) => {
+    await fetch("/api/forum", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: `❌ 退回：${message}`,
+        threadId,
+        type: "reply",
+        priority: "P0",
+      }),
+    });
+    refresh();
+  };
 
   // 從所有帖子收集活躍機器清單
   const availableMachines = useMemo(() => {
@@ -151,6 +181,14 @@ export default function ForumPage() {
 
       {/* 統計總覽（可摺疊） */}
       {showOverview && <ForumOverview stats={data.stats} />}
+
+      {/* 待批准決策 */}
+      <PendingApprovals
+        threads={data.threads}
+        onApprove={handleApprove}
+        onReject={handleReject}
+        onViewThread={setSelectedThread}
+      />
 
       {/* 篩選器 */}
       <ForumFilters

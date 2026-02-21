@@ -122,7 +122,7 @@ export function ComposePost({
 
       {/* 優先級 */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-muted-foreground">優先級：</span>
+        <span className="text-xs text-muted-foreground">急迫程度：</span>
         {PRIORITIES.map((p) => {
           const config = PRIORITY_CONFIG[p];
           const active = priority === p;
