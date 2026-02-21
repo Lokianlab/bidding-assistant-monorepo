@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-1930|JDNE
+SNAPSHOT|20260221-2000|JDNE
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] plan-migration|operation-log.md 遷移|@op:20260219-JDNE#1830
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
@@ -7,14 +7,14 @@ SNAPSHOT|20260221-1930|JDNE
 [x] cleanup-index|主題索引清理|@op:20260219-JDNE#0930
 [x] infra-snapshot-rules|快照時間完備原則|@op:20260219-JDNE#1237
 [~] plan-discord-bot|Discord Bot 架構|放棄：改為 SaaS 網頁，見 plan-saas-pivot
-[ ] plan-update-devplan|更新 v4.0 開發計畫|暫存區 8 份待推 + 4 份待決，用 /修改計畫 推入
+[ ] plan-update-devplan|更新 v4.0 開發計畫|ITEJ 已推 6 條任務線，暫存區剩 5 份待決
 [v] plan-build-pcc-mcp|建 PCC MCP server|程式碼+安裝+建置完成，待用戶驗收
 [ ] plan-build-notion-mcp|建 Notion MCP server|內建 Notion MCP 夠用，暫緩到多 AI 協作階段
 [?] plan-saas-pivot|SaaS 產品方向|改為自適應網頁 SaaS。知識庫精靈已有 prompt（v2.0），需聊天介面+認證+多租戶
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決，Layer 3 討論中斷
 [v] plan-conclusion-layer|結論層設計|ITEJ 已實作（infra-staging-upgrade），待用戶驗收
 [v] infra-claude-md-modular|CLAUDE.md 拆分|記錄格式搬到 .claude/rules/，CLAUDE.md 479→376 行，待用戶驗收
-[v] infra-methodology-v2|方法論 v2 系統整合|全部落地：CLAUDE.md 精簡 + rules + Skill + 獎懲回饋 + 正負向強化指令 + /順便 溝通通道，待用戶驗收
+[v] infra-methodology-v2|方法論 v2 系統整合|全部落地：CLAUDE.md 精簡 + rules + Skill + 獎懲回饋 + 正負向強化指令 + /順便說一下 溝通通道，待用戶驗收
 [v] method-observation-capture|AI觀察捕捉框架|v2 系統已定義 obs- 前綴約定，待用戶驗收
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建，待推入技術選型文件
 [v] infra-meta-methodology|元方法論框架建構|機器可做的評估全部完成（P1-P5逐檔+系統交叉比對+效度自證），待用戶驗收
