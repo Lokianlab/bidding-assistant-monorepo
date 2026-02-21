@@ -46,7 +46,7 @@ describe("IRON_LAW_LABELS", () => {
   });
 
   it("每個鐵律 flag 對應到 RULE_NAMES 中的值", () => {
-    const ruleValues = new Set(Object.values(RULE_NAMES));
+    const ruleValues = new Set<string>(Object.values(RULE_NAMES));
     Object.values(IRON_LAW_LABELS).forEach((label) => {
       expect(ruleValues.has(label)).toBe(true);
     });
