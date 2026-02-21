@@ -1,4 +1,4 @@
-SNAPSHOT|20260221-2055|ITEJ
+SNAPSHOT|20260222-2010|ITEJ
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -11,7 +11,7 @@ SNAPSHOT|20260221-2055|ITEJ
 [x] infra-hooks|簡化 pre-compact hook（砍快照提醒）|回報 ITEJ-0003
 [x] feat-kb-skill-fix|/kb 精靈 00C/00D 錨點+最後更新欄位修正|回報 ITEJ-0004
 [v] infra-claude-md-modular|CLAUDE.md 拆分|JDNE 已完成（記錄格式搬到 rules/，主檔精簡到 208 行），待用戶驗收
-[v] feat-pcc-web|PCC 情報搜尋接進 Web App|API route + 搜尋面板 + 標案詳情 + 評委 + 得標率 + 競爭分析 + 機關情報 + P偵察 + 市場趨勢+競爭程度邊界+dashboard日期測試修正+金額/ID邊界測試+hook/context測試（三台機器協作），待用戶驗收
+[v] feat-pcc-web|PCC 情報搜尋接進 Web App|API route + 搜尋面板 + 標案詳情 + 評委 + 得標率 + 競爭分析 + 機關情報 + P偵察 + 市場趨勢+邊界測試+hook/context/FeatureGuard測試（42檔882tests），待用戶驗收
 [v] infra-forum|機器論壇 + /質問 指令|forum/ 目錄 + 格式規範 + 5 種貼文類型 + /質問全面校準 + /更新整合，待用戶驗收
 [v] feat-quality-refactor|品質檢查模組重構|邏輯抽到 lib/quality/，鐵律 5 flag 全實作+公司名稱一致性+負數防禦，55 個測試，待用戶驗收
 [v] feat-pricing-refactor|報價計算模組重構|邏輯抽到 lib/pricing/，types + helpers + 28 個測試（含負數防禦），頁面瘦身，待用戶驗收
