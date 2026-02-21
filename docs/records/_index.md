@@ -41,7 +41,7 @@ plan-plugin-inventory|進行中|54 個插件盤點完成（7有用+7以後+40不
 infra-methodology-v2|完成|方法論 v2 全部落地：CLAUDE.md 精簡 + rules 檔 + Skill 系統重構 + 獎懲回饋機制|@op:20260221-JDNE#1300|2026-02-21
 plan-methodology-skills|已被取代|原 4 個 Skill（對焦/拆解/驗證/回顧）降級為內部清單，改建 4 個獎懲 Skill（醜一/很棒/你說呢/有用嗎）|@op:20260221-JDNE#1300|2026-02-21
 infra-meta-methodology|待驗收|元方法論框架：四層架構+效率為終極標準+Thomann七步+V2操作化（12獨立指標），暫存檔待用戶審定|@op:20260221-JDNE#0200|2026-02-21
-infra-claude-md-modular|完成|CLAUDE.md 拆分：記錄格式搬到 .claude/rules/record-formats.md（paths 條件載入），主檔精簡|@op:20260221-JDNE#1100|2026-02-21
+infra-claude-md-modular|待驗收|CLAUDE.md 拆分：記錄格式搬到 .claude/rules/record-formats.md（paths 條件載入），主檔精簡|@op:20260221-JDNE#1100|2026-02-21
 plan-devplan-push|進行中|/修改計畫 批量推進 6 條任務線（04/06/07/09/A02/M07），暫存區 16→5 碎片|@op:20260221-ITEJ#1521|2026-02-21
 feat-pcc-web|待驗收|PCC 情報模組：Phase 1-4 完成 + 四 tab 跨 tab 導航 + 機關情報內嵌 + API 重構 + 快取層|@op:20260221-JDNE#1047|2026-02-22
 infra-sync-optimize|完成|同步機制優化：scoring append-only + /更新輕量化 + 重啟/壓縮流程精簡|@op:20260221-A44T#2100|2026-02-21
