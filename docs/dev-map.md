@@ -8,7 +8,7 @@
 
 | 組件 | 路徑 | 狀態 | 說明 |
 |------|------|------|------|
-| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，13 個功能模組（91 檔 1843 tests） |
+| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，13 個功能模組（98 檔 1930 tests） |
 | SmugMug MCP | `smugmug-mcp/` | 已完成 | 實績照片存取（7 工具） |
 | PCC API MCP | `pcc-api-mcp/` | 已完成 | 政府標案情報（6 工具） |
 | PCC Monitor | `pcc-monitor/` | 已完成 | API 更新延遲監控（GAS 每小時） |
@@ -179,7 +179,7 @@
 2. **批量驗收積壓**：品質/報價/組裝重構、文件生成、M06 排版、趨勢分析、儀表板等多個已完成功能等待確認
 3. **知識庫初始化**：AINL 已完成評估報告（H: 資料夾 33,447 個檔案），待 Jin 授權執行 Phase 1-4
 4. **M02 知識庫模組規格**：儲存方案已決（0226 Jin 直接指示）→ 可以開始寫規格
-5. **持續補測試**：目前 91 檔 1843 tests，src/lib 全模組 + 全 API route 已覆蓋
+5. **持續補測試**：目前 98 檔 1930 tests，src/lib 全模組 + 全 API route 已覆蓋
 
 ### 待決事項
 
