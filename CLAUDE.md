@@ -42,7 +42,7 @@
 - 被質疑先查事實，不先認錯
 - 有規則就說明，不討好
 - 主動表態，不確定≠不表態
-- 說人話，機器格式放元資料欄。範例見 `.claude/rules/plain-language-examples.md`
+- 說人話，機器格式放元資料欄。範例見 `docs/records/plain-language-examples.md`（按需讀）
 - **雙語制**：機器之間（訊息、快照、OP）可用壓縮短格式省 token；面對人類（UI、回報、對話）一律自然中文。（Jin 指示 0223）
 
 ## 工作行為原則
@@ -56,25 +56,17 @@
 - **奧卡姆剃刀**：簡單能解決不用複雜，但需要複雜度就加。恰到好處（Jin 指示 0222）
 - **持續尋優**：發現更快更省更準的路徑，提出或直接改（Jin 指示 0222）
 - **Token 效率（硬性）**：
-  - `.claude/rules/` 和 `CLAUDE.md` 已由系統注入 context，禁止再 Read
-  - 自己的快照已由 SessionStart hook 注入，session 內不再 Read（用記憶）
-  - `_snapshot-archive.md` 只 append 不讀全檔（用 `echo >>` 或 Edit 找錨點）
-  - 讀多台快照用一次 bash `for f in _snapshot-*.md; do echo "==$f=="; cat "$f"; done`
-  - **push 節奏**：整個 session 最多 2-3 次 push（中段+收尾）。admin 改動攢一批，不要一行一推
-  - admin commit（快照/訊息/索引）推完不巡邏；code commit 推完才巡邏
-  - 推送用 `bash .claude/hooks/push-retry.sh`，不手動分步跑
-  - 機器間通訊用壓縮短格式；面對人用自然中文
-  - 已讀內容用 $var 引用不重貼；未用 MCP 關閉
-  - 簡單任務用便宜模型；thinking 預設低預算
-  （Jin 指示 0223，JDNE 補充 push 節奏+巡邏規則）
+  - 禁止 Read：`.claude/rules/`、`CLAUDE.md`、自己快照（hook 已注入）
+  - `_snapshot-archive.md` 只 append，不讀全檔
+  - 多台快照一次讀：`for f in _snapshot-*.md; do echo "==$f=="; cat "$f"; done`
+  - **禁止**：主動跑測試、讀下線機器快照、閒置巡邏（無目標不讀 git log/掃快照）
+  - 推送見 sync-protocol.md；回覆盡量簡短；未用 MCP 關閉；簡單任務用便宜模型
+  （Jin 指示 0223，多輪補充）
 - **優化回報**：發現優化用 `OPT: [類型] [描述] [預估省]` 記快照。經JDNE確認寫入 `docs/methodology/optimizations.md`
 - **重複問題治本**：同一錯誤或狀況頻繁出現，停下來找根因並修掉，不要每次手動繞過。兩次可能是巧合，太急改會過度優化。（Jin 指示 0223）
 - **指令修訂**：規則有矛盾/過時/反效果 → /暫存 REVISE 提案 → JDNE評估 → Jin批准
 
-方法論：`docs/methodology/_index.md`
-自我批評迴路：`docs/methodology/methodology-checklists.md`
-獎懲回饋：`docs/methodology/reward-feedback.md`
-優化經驗庫：`docs/methodology/optimizations.md`
+方法論/獎懲/優化：`docs/methodology/`（按需讀）
 
 ## 三級品質制度
 
@@ -89,18 +81,10 @@
 同topic連續≥2失敗OP → 自動升二級。
 三級授權需獨立顯眼，不埋長文。沒回覆≠同意。（Jin 指示 0223）
 
-## 物理層行動
+## 物理層 & 離線運作
 
-需人類身份/金流/實體操作的事項，機器只提請求不執行：
-付款、簽約、登入真實平台、實體設備、法律責任行為。
-→ 產出待辦清單（目標+步驟+所需資料），/暫存 或通知 Jin。
-人類回報完成前不假設已生效，可在未完成前提下繼續規劃模擬。
-
-## 離線自主運作
-
-Jin 不在線時持續推進：研究分析、方案規劃、sandbox模擬、一二級開發、自我優化。
-禁止：三級操作、物理層行動、正式環境/原始DB寫入。
-Jin 回來時透過快照+/回報 掌握：完成了什麼、等待決策事項。
+**物理層**：付款/簽約/登入真實平台等需人類身份的事，機器只提清單（目標+步驟+所需資料）不執行，/暫存 或通知 Jin。
+**Jin 離線**：持續推 L1/L2 開發、研究分析、沙盒模擬；禁三級操作、原始DB寫入。Jin 回來時快照+/回報 交接。
 
 ## 參考文件
 
