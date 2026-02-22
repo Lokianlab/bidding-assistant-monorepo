@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-0400|ITEJ|opus-4.6
+SNAPSHOT|20260228-2010|ITEJ|opus-4.6
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -30,5 +30,7 @@ SNAPSHOT|20260228-0400|ITEJ|opus-4.6
 [v] plan-m02-kb|M02 知識庫模組規格|v0.1 草案完成（0227 ITEJ），Supabase schema+API routes+6 phase 實作分期+匯入管線+離線策略+跨模組整合，待用戶審閱
 [v] plan-w01-scan|W01 巡標自動化規格|v0.1 草案完成（0227 ITEJ），P0 最高優先，PCC→關鍵字篩選→Notion 建案，5 phase 分期，待用戶審閱
 [v] feat-w01-scan-p1|W01 巡標 Phase 1 完成|關鍵字引擎+掃描API+巡標UI頁面（types+constants+engine+route+useScanResults+TenderCard+ScanDashboard+page，62 tests），Phase 2 需 Notion token/DB ID
+[x] review-a44t-case-work|A44T feat-case-work-page 審查|PASS，752行，SSOT+型別+hydration+跨模組整合全合規
+[v] feat-w01-scan-notion-mapper|W01 Phase 2 準備：notion-mapper|PCC→Notion 欄位映射，11 tests，待 Notion token/DB ID 才能接 Phase 2
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
