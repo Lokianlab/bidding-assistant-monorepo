@@ -232,6 +232,7 @@
 [x] token-efficiency-rules|m2m compressed format,5-rule compliance|confirmed af91343
 [x] admin-pre-verification|pre-verif dry-run,all 4 modules ready|7479993
 [x] review-gap5-ainl|AINL GAP-5 strategy back btn|PASS,no changes needed
+[x] review-gap1-ainl|AINL GAP-1 intelligence→strategy btn|PASS,no changes needed
 
 ---
 
