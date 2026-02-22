@@ -11,6 +11,8 @@ import { useScanResults } from "@/lib/scan/useScanResults";
 import {
   addExclusion,
   getExcludedJobNumbers,
+  addCreatedCase,
+  getCreatedJobNumbers,
 } from "@/lib/scan/exclusion";
 import { TenderCard } from "./TenderCard";
 import { CreateCaseDialog } from "./CreateCaseDialog";
@@ -34,6 +36,7 @@ export function ScanDashboard() {
   const [createdCases, setCreatedCases] = useState<Set<string>>(new Set());
   useEffect(() => {
     setSkipped(new Set(getExcludedJobNumbers()));
+    setCreatedCases(new Set(getCreatedJobNumbers()));
   }, []);
 
   // 按類別分組
@@ -54,8 +57,9 @@ export function ScanDashboard() {
   }, [data, skipped]);
 
   const handleScan = () => {
-    // 新掃描保留持久化的排除記憶（不清空）
+    // 新掃描保留持久化的記憶（不清空）
     setSkipped(new Set(getExcludedJobNumbers()));
+    setCreatedCases(new Set(getCreatedJobNumbers()));
     scan();
   };
 
@@ -71,6 +75,7 @@ export function ScanDashboard() {
 
   const handleCreateSuccess = (pageUrl: string) => {
     if (pendingResult) {
+      addCreatedCase(pendingResult.tender.jobNumber);
       setCreatedCases((prev) => new Set(prev).add(pendingResult.tender.jobNumber));
     }
     setDialogOpen(false);

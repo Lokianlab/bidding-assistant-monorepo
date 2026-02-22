@@ -1,9 +1,10 @@
-// ====== 巡標自動化：排除記憶 ======
-// 用 localStorage 記住「不要」的標案，避免重複出現
+// ====== 巡標自動化：掃描記憶 ======
+// 用 localStorage 記住「不要」和「已建案」的標案
 
 import type { ScanResult } from "./types";
 
 const STORAGE_KEY = "scan-excluded";
+const CREATED_KEY = "scan-created";
 
 function readSet(): Set<string> {
   if (typeof window === "undefined") return new Set();
@@ -64,4 +65,39 @@ export function clearExclusions(): void {
 /** 讀取所有排除的案號（供 UI 顯示） */
 export function getExcludedJobNumbers(): string[] {
   return [...readSet()];
+}
+
+// ── 建案記憶（防重複建案） ──
+
+function readCreatedSet(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem(CREATED_KEY);
+    if (!raw) return new Set();
+    const parsed = JSON.parse(raw) as unknown;
+    return new Set(Array.isArray(parsed) ? (parsed as string[]) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function writeCreatedSet(set: Set<string>): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(CREATED_KEY, JSON.stringify([...set]));
+  } catch {
+    // silent
+  }
+}
+
+/** 標記某案號已建案 */
+export function addCreatedCase(jobNumber: string): void {
+  const set = readCreatedSet();
+  set.add(jobNumber);
+  writeCreatedSet(set);
+}
+
+/** 讀取所有已建案的案號 */
+export function getCreatedJobNumbers(): string[] {
+  return [...readCreatedSet()];
 }

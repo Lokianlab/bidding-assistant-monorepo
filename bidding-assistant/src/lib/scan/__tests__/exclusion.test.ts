@@ -6,6 +6,8 @@ import {
   filterExcluded,
   clearExclusions,
   getExcludedJobNumbers,
+  addCreatedCase,
+  getCreatedJobNumbers,
 } from "../exclusion";
 import type { ScanResult } from "../types";
 
@@ -161,5 +163,40 @@ describe("localStorage 損毀容錯", () => {
     localStorage.setItem("scan-excluded", "not-json");
     addExclusion("J001");
     expect(isExcluded("J001")).toBe(true);
+  });
+});
+
+// ── 建案記憶（addCreatedCase / getCreatedJobNumbers） ──────────
+
+describe("addCreatedCase / getCreatedJobNumbers", () => {
+  it("加入後可讀取", () => {
+    addCreatedCase("J001");
+    expect(getCreatedJobNumbers()).toContain("J001");
+  });
+
+  it("空狀態回傳空陣列", () => {
+    expect(getCreatedJobNumbers()).toEqual([]);
+  });
+
+  it("多個案號不重複", () => {
+    addCreatedCase("J001");
+    addCreatedCase("J001");
+    addCreatedCase("J002");
+    const result = getCreatedJobNumbers();
+    expect(result).toHaveLength(2);
+    expect(result).toContain("J001");
+    expect(result).toContain("J002");
+  });
+
+  it("建案記憶與排除記憶互不影響", () => {
+    addCreatedCase("J001");
+    addExclusion("J002");
+    expect(getCreatedJobNumbers()).toEqual(["J001"]);
+    expect(getExcludedJobNumbers()).toEqual(["J002"]);
+  });
+
+  it("localStorage 損毀時 getCreatedJobNumbers 回傳空陣列", () => {
+    localStorage.setItem("scan-created", "not-json");
+    expect(getCreatedJobNumbers()).toEqual([]);
   });
 });
