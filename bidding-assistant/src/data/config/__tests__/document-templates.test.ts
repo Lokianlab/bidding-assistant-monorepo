@@ -31,7 +31,7 @@ describe("DOCUMENT_TEMPLATES", () => {
   });
 
   it("範本 ID 全部來自 TEMPLATE_IDS 常數", () => {
-    const validIds = new Set(Object.values(TEMPLATE_IDS));
+    const validIds: Set<string> = new Set(Object.values(TEMPLATE_IDS));
     for (const template of DOCUMENT_TEMPLATES) {
       expect(validIds.has(template.id)).toBe(true);
     }

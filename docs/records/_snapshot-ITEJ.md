@@ -1,4 +1,4 @@
-SNAPSHOT|20260224-1600|ITEJ|opus-4.6
+SNAPSHOT|20260224-1905|ITEJ|opus-4.6
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -26,7 +26,7 @@ SNAPSHOT|20260224-1600|ITEJ|opus-4.6
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決
 [?] plan-notion-mcp-status|Notion MCP 定位|JDNE 說暫緩，CLAUDE.md 寫待建，不一致
 [ ] plan-devplan-push|消化暫存區推進開發計畫|6 條任務線完成，剩 6 個待決碎片
-[ ] feat-test-coverage|持續補測試|74檔1467tests，繼續找缺口
+[>] feat-test-coverage|持續補測試|89檔1815tests（本輪+348 tests：API route 全覆蓋+output constants+document-templates+pricing constants+card-layout types），src/lib 全模組已有測試
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m02-kb|M02 知識庫模組規格|待寫（依賴儲存方案決策）
 [ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1

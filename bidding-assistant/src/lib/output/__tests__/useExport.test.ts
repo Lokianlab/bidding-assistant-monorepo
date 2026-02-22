@@ -193,7 +193,7 @@ describe("useExport — downloadBlob()", () => {
   let revokeObjectURLSpy: ReturnType<typeof vi.fn>;
   let appendChildSpy: ReturnType<typeof vi.spyOn>;
   let removeChildSpy: ReturnType<typeof vi.spyOn>;
-  let clickSpy: ReturnType<typeof vi.fn>;
+  let clickSpy: () => void;
 
   beforeEach(() => {
     createObjectURLSpy = vi.fn().mockReturnValue("blob:http://localhost/fake");
@@ -213,8 +213,8 @@ describe("useExport — downloadBlob()", () => {
       return el;
     });
 
-    appendChildSpy = vi.spyOn(document.body, "appendChild").mockImplementation((node) => node);
-    removeChildSpy = vi.spyOn(document.body, "removeChild").mockImplementation((node) => node);
+    appendChildSpy = vi.spyOn(document.body, "appendChild").mockImplementation((node: Node) => node);
+    removeChildSpy = vi.spyOn(document.body, "removeChild").mockImplementation((node: Node) => node);
   });
 
   afterEach(() => {
@@ -265,7 +265,7 @@ describe("useExport — downloadBlob()", () => {
 
     // renderHook 本身也會呼叫 appendChild，只驗證有帶 <a> 元素的呼叫存在
     const anchorCalls = appendChildSpy.mock.calls.filter(
-      ([node]) => (node as HTMLElement).tagName === "A"
+      ([node]: [Node]) => (node as HTMLElement).tagName === "A"
     );
     expect(anchorCalls.length).toBe(1);
     expect(removeChildSpy).toHaveBeenCalledTimes(1);
