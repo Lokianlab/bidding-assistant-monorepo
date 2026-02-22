@@ -20,7 +20,7 @@ SNAPSHOT|20260225-1620|3O5L|Sonnet 4.6
 
 [?] prod-min-demo|最小展示版驗收進度|M03✅(A44T,82T)+M04✅(Z1FV,114T)+PCC✅(ITEJ,1132T) → 三件全等 Jin 驗收；整合報告已發論壇 0230
 
-[>] test-coverage-patrol|持續找測試缺口|76 files 1518 tests；src/lib/ 全覆蓋（useExport 已補），下一目標待掃
+[>] test-coverage-patrol|持續找測試缺口|76 files 1518 tests；src/lib/ 全覆蓋完成（所有 hooks/helpers/configs 均有測試），build 零錯誤
 
 ## 完成項目（近期）
 [x] infra-onboarding|首次啟動 onboarding|完成
