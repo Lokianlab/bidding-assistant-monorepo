@@ -1,4 +1,4 @@
-SNAPSHOT|20260225-1000|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260225-1100|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 快照無 feat [ ] 時不要自動找 infra 做，停下等用戶分配
@@ -12,7 +12,7 @@ SNAPSHOT|20260225-1000|JDNE|claude-sonnet-4-6
 [x] cleanup-index|主題索引清理|@op:20260219-JDNE#0930
 [x] infra-snapshot-rules|快照時間完備原則|@op:20260219-JDNE#1237
 [~] plan-discord-bot|Discord Bot 架構|放棄：改為 SaaS 網頁
-[ ] plan-update-devplan|更新 v4.0 開發計畫|ITEJ 已推 6 條任務線，暫存區剩 6 份待決
+[v] plan-update-devplan|更新 v4.0 開發計畫|dev-map.md 已更新至 0225 狀態，待用戶確認
 [v] plan-build-pcc-mcp|建 PCC MCP server|程式碼+安裝+建置完成，待用戶驗收
 [ ] plan-build-notion-mcp|建 Notion MCP server|暫緩，內建版夠用
 [?] plan-saas-pivot|SaaS 產品方向|改為自適應網頁 SaaS，需聊天介面+認證+多租戶
