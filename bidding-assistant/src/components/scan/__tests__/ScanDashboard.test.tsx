@@ -444,5 +444,47 @@ describe("ScanDashboard — 建案記憶持久化", () => {
     const stored = JSON.parse(localStorage.getItem("scan-created") ?? "[]") as string[];
     expect(stored).toContain("J001");
   });
+
+  it("建案成功後自動導航到案件工作頁", async () => {
+    vi.mocked(useSettings).mockReturnValue({
+      settings: {
+        connections: {
+          notion: { token: "valid-token", databaseId: "valid-db" },
+        },
+      },
+    } as unknown as ReturnType<typeof useSettings>);
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockScanResponse,
+    });
+
+    // notionPageId "abc-123-def" → URL 移除連字號 → "abc123def"
+    mockAccept.mockResolvedValueOnce({
+      notion: { success: true, notionPageId: "abc-123-def", caseUniqueId: "PCC-001" },
+      drive: { success: false, error: "Drive 未設定" },
+      summary: "",
+      intelligence: "",
+    });
+
+    render(<ScanDashboard />);
+    fireEvent.click(screen.getByText("手動掃描"));
+
+    await waitFor(() => {
+      expect(screen.getByText("食農教育推廣計畫")).toBeDefined();
+    });
+
+    fireEvent.click(screen.getAllByText("建案")[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText("建立追蹤案件")).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByText("✅ 建案到 Notion"));
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/case-work?id=abc123def");
+    });
+  });
 });
 
