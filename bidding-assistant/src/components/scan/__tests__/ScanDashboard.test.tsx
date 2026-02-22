@@ -16,6 +16,7 @@ vi.stubGlobal("fetch", mockFetch);
 beforeEach(() => {
   vi.clearAllMocks();
   mockPush.mockReset();
+  localStorage.clear(); // 隔離各測試的排除記憶
 });
 
 const mockScanResponse = {

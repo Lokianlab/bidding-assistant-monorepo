@@ -2,12 +2,16 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useScanResults } from "@/lib/scan/useScanResults";
+import {
+  addExclusion,
+  getExcludedJobNumbers,
+} from "@/lib/scan/exclusion";
 import { TenderCard } from "./TenderCard";
 import type { ScanResult, KeywordCategory } from "@/lib/scan/types";
 
@@ -22,7 +26,11 @@ export function ScanDashboard() {
   const router = useRouter();
   const { data, loading, error, scan } = useScanResults();
   const [activeTab, setActiveTab] = useState<KeywordCategory>("must");
+  // 初始化時從 localStorage 載入排除清單（hydration-safe）
   const [skipped, setSkipped] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    setSkipped(new Set(getExcludedJobNumbers()));
+  }, []);
 
   // 按類別分組
   const grouped = useMemo(() => {
@@ -42,11 +50,13 @@ export function ScanDashboard() {
   }, [data, skipped]);
 
   const handleScan = () => {
-    setSkipped(new Set());
+    // 新掃描保留持久化的排除記憶（不清空）
+    setSkipped(new Set(getExcludedJobNumbers()));
     scan();
   };
 
   const handleSkip = (result: ScanResult) => {
+    addExclusion(result.tender.jobNumber);
     setSkipped((prev) => new Set(prev).add(result.tender.jobNumber));
   };
 
