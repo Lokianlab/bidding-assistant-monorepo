@@ -76,17 +76,17 @@ export async function apiUpdateNotionCase(
 
 /**
  * 呼叫 /api/patrol/drive/create 建立 Drive 資料夾
+ *
+ * OAuth token 和資料夾 ID 由伺服器端從環境變數自動處理，前端只需傳入案件資料。
  */
 export async function apiCreateDriveFolder(
   input: DriveCreateFolderInput,
-  accessToken: string,
-  parentFolderId: string,
 ): Promise<DriveCreateFolderResult> {
   try {
     const res = await fetch('/api/patrol/drive/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ accessToken, parentFolderId, input }),
+      body: JSON.stringify({ input }),
     });
 
     return (await res.json()) as DriveCreateFolderResult;

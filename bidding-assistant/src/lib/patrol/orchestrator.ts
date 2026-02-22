@@ -31,10 +31,6 @@ export interface AcceptConfig {
   notionToken: string;
   /** Notion Database ID（沙盒或正式） */
   notionDatabaseId: string;
-  /** Google Drive OAuth2 access token（選填，缺少時跳過 Drive） */
-  driveAccessToken?: string;
-  /** Google Drive 父資料夾 ID（B. 備標集中區） */
-  driveParentFolderId?: string;
 }
 
 // ============================================================
@@ -138,19 +134,8 @@ export async function orchestrateAccept(
       title: item.title,
     };
 
-    const hasDriveConfig = config.driveAccessToken && config.driveParentFolderId;
-
     const [driveResult, summary, intelligence] = await Promise.all([
-      hasDriveConfig
-        ? apiCreateDriveFolder(
-            driveInput,
-            config.driveAccessToken!,
-            config.driveParentFolderId!,
-          )
-        : Promise.resolve<DriveCreateFolderResult>({
-            success: false,
-            error: 'Drive 尚未設定（缺少 access token 或父資料夾 ID）',
-          }),
+      apiCreateDriveFolder(driveInput),
       generateSummary(item.title),
       generateIntelligenceReport(item.agency),
     ]);

@@ -47,9 +47,7 @@ export function usePatrolOrchestrator(): UsePatrolOrchestratorReturn {
         const config = {
           notionToken: token,
           notionDatabaseId: databaseId,
-          // Drive 目前需要 OAuth access token，尚未整合，暫時略過
-          // driveAccessToken: ...,
-          // driveParentFolderId: settings.connections.googleDrive.sharedDriveFolderId,
+          // Drive OAuth 由伺服器端環境變數自動處理，前端不需傳認證資訊
         };
 
         const acceptResult = await orchestrateAccept(patrolItem, config);

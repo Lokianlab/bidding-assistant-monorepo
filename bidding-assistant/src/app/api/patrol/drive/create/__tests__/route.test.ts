@@ -5,11 +5,11 @@ import { NextRequest } from "next/server";
 import { POST } from "../route";
 
 vi.mock("@/lib/patrol/drive-writer", () => ({
-  createDriveFolder: vi.fn(),
+  createDriveFolderAuto: vi.fn(),
 }));
 
-import { createDriveFolder } from "@/lib/patrol/drive-writer";
-const mockCreate = createDriveFolder as ReturnType<typeof vi.fn>;
+import { createDriveFolderAuto } from "@/lib/patrol/drive-writer";
+const mockCreate = createDriveFolderAuto as ReturnType<typeof vi.fn>;
 
 function makeReq(body: unknown): NextRequest {
   return new NextRequest("http://localhost/api/patrol/drive/create", {
@@ -30,26 +30,8 @@ describe("POST /api/patrol/drive/create", () => {
 
   // ── 輸入驗證 ──
 
-  it("缺少 accessToken → 400", async () => {
-    const res = await POST(makeReq({ parentFolderId: "f1", input: validInput }));
-    expect(res.status).toBe(400);
-    const data = await res.json();
-    expect(data.success).toBe(false);
-    expect(data.error).toMatch(/access token/);
-  });
-
-  it("缺少 parentFolderId → 400", async () => {
-    const res = await POST(makeReq({ accessToken: "tok", input: validInput }));
-    expect(res.status).toBe(400);
-    const data = await res.json();
-    expect(data.success).toBe(false);
-    expect(data.error).toMatch(/父資料夾/);
-  });
-
   it("input 缺少 caseUniqueId → 400", async () => {
     const res = await POST(makeReq({
-      accessToken: "tok",
-      parentFolderId: "f1",
       input: { publishDate: "2026-03-01", title: "標案" },
     }));
     expect(res.status).toBe(400);
@@ -60,8 +42,6 @@ describe("POST /api/patrol/drive/create", () => {
 
   it("input 缺少 title → 400", async () => {
     const res = await POST(makeReq({
-      accessToken: "tok",
-      parentFolderId: "f1",
       input: { caseUniqueId: "123", publishDate: "2026-03-01" },
     }));
     expect(res.status).toBe(400);
@@ -70,23 +50,19 @@ describe("POST /api/patrol/drive/create", () => {
   });
 
   it("input 為 null → 400", async () => {
-    const res = await POST(makeReq({ accessToken: "tok", parentFolderId: "f1", input: null }));
+    const res = await POST(makeReq({ input: null }));
     expect(res.status).toBe(400);
   });
 
   // ── 成功路徑 ──
 
-  it("成功時回傳 createDriveFolder 結果", async () => {
+  it("成功時回傳 createDriveFolderAuto 結果", async () => {
     mockCreate.mockResolvedValue({
       success: true,
       folderId: "drive-folder-id",
       folderUrl: "https://drive.google.com/drive/folders/drive-folder-id",
     });
-    const res = await POST(makeReq({
-      accessToken: "tok",
-      parentFolderId: "f1",
-      input: validInput,
-    }));
+    const res = await POST(makeReq({ input: validInput }));
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.success).toBe(true);
@@ -94,13 +70,15 @@ describe("POST /api/patrol/drive/create", () => {
     expect(data.folderUrl).toContain("drive-folder-id");
   });
 
+  it("只傳 input，不需 accessToken 和 parentFolderId", async () => {
+    mockCreate.mockResolvedValue({ success: true, folderId: "id" });
+    await POST(makeReq({ input: validInput }));
+    expect(mockCreate).toHaveBeenCalledWith(validInput);
+  });
+
   it("lib 回傳 success:false → 400", async () => {
     mockCreate.mockResolvedValue({ success: false, error: "Drive API 錯誤" });
-    const res = await POST(makeReq({
-      accessToken: "tok",
-      parentFolderId: "f1",
-      input: validInput,
-    }));
+    const res = await POST(makeReq({ input: validInput }));
     expect(res.status).toBe(400);
     const data = await res.json();
     expect(data.success).toBe(false);
@@ -110,11 +88,7 @@ describe("POST /api/patrol/drive/create", () => {
 
   it("lib 拋出例外 → 500，回傳錯誤訊息", async () => {
     mockCreate.mockRejectedValue(new Error("OAuth 逾期"));
-    const res = await POST(makeReq({
-      accessToken: "tok",
-      parentFolderId: "f1",
-      input: validInput,
-    }));
+    const res = await POST(makeReq({ input: validInput }));
     expect(res.status).toBe(500);
     const data = await res.json();
     expect(data.success).toBe(false);

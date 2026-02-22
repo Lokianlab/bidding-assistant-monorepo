@@ -166,31 +166,32 @@ describe("apiCreateDriveFolder", () => {
       makeJsonResponse({ success: true, folderId: "folder-abc", folderUrl: "https://drive.google.com/f/abc" }),
     );
 
-    const result = await apiCreateDriveFolder(DRIVE_INPUT, "access-tok", "parent-123");
+    const result = await apiCreateDriveFolder(DRIVE_INPUT);
 
     expect(result.success).toBe(true);
     expect(result.folderId).toBe("folder-abc");
   });
 
-  it("呼叫正確的 API 路徑並帶 accessToken + parentFolderId", async () => {
+  it("呼叫正確的 API 路徑，body 只有 input（不含 accessToken）", async () => {
     mockFetch.mockResolvedValueOnce(makeJsonResponse({ success: true, folderId: "f1" }));
 
-    await apiCreateDriveFolder(DRIVE_INPUT, "my-access-token", "parent-id");
+    await apiCreateDriveFolder(DRIVE_INPUT);
 
     const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
     expect(url).toBe("/api/patrol/drive/create");
     const body = JSON.parse(init.body as string) as {
-      accessToken: string;
-      parentFolderId: string;
+      input: DriveCreateFolderInput;
     };
-    expect(body.accessToken).toBe("my-access-token");
-    expect(body.parentFolderId).toBe("parent-id");
+    expect(body.input).toEqual(DRIVE_INPUT);
+    // 不應該有 accessToken 或 parentFolderId
+    expect((body as Record<string, unknown>).accessToken).toBeUndefined();
+    expect((body as Record<string, unknown>).parentFolderId).toBeUndefined();
   });
 
   it("fetch 拋出例外時回傳失敗結果", async () => {
     mockFetch.mockRejectedValueOnce(new Error("OAuth2 失效"));
 
-    const result = await apiCreateDriveFolder(DRIVE_INPUT, "tok", "parent");
+    const result = await apiCreateDriveFolder(DRIVE_INPUT);
 
     expect(result.success).toBe(false);
     expect(result.error).toBe("OAuth2 失效");

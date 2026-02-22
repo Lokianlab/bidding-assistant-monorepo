@@ -62,12 +62,6 @@ const BASE_CONFIG: AcceptConfig = {
   notionDatabaseId: 'db-123',
 };
 
-const CONFIG_WITH_DRIVE: AcceptConfig = {
-  ...BASE_CONFIG,
-  driveAccessToken: 'drive-tok',
-  driveParentFolderId: 'parent-folder',
-};
-
 // ── 測試主體 ───────────────────────────────────────────────
 
 describe('orchestrator - 編排流程', () => {
@@ -91,7 +85,7 @@ describe('orchestrator - 編排流程', () => {
       });
       mockUpdateNotion.mockResolvedValue({ success: true });
 
-      const result = await orchestrateAccept(PATROL_ITEM, CONFIG_WITH_DRIVE);
+      const result = await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
 
       expect(result.notion.success).toBe(true);
       expect(result.drive.success).toBe(true);
@@ -152,23 +146,7 @@ describe('orchestrator - 編排流程', () => {
       expect(mockCreateDrive).not.toHaveBeenCalled();
     });
 
-    it('無 Drive config 時，Drive 回傳「尚未設定」錯誤，不呼叫 apiCreateDriveFolder', async () => {
-      mockCreateNotion.mockResolvedValue({
-        success: true,
-        notionPageId: 'page-1',
-        caseUniqueId: 'C001',
-      });
-      mockUpdateNotion.mockResolvedValue({ success: true });
-
-      const result = await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
-
-      expect(result.notion.success).toBe(true);
-      expect(result.drive.success).toBe(false);
-      expect(result.drive.error).toMatch(/Drive 尚未設定/);
-      expect(mockCreateDrive).not.toHaveBeenCalled();
-    });
-
-    it('有 Drive config 時呼叫 apiCreateDriveFolder 並回傳結果', async () => {
+    it('Notion 成功後呼叫 apiCreateDriveFolder 並回傳結果', async () => {
       mockCreateNotion.mockResolvedValue({
         success: true,
         notionPageId: 'page-1',
@@ -181,7 +159,7 @@ describe('orchestrator - 編排流程', () => {
       });
       mockUpdateNotion.mockResolvedValue({ success: true });
 
-      const result = await orchestrateAccept(PATROL_ITEM, CONFIG_WITH_DRIVE);
+      const result = await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
 
       expect(mockCreateDrive).toHaveBeenCalledOnce();
       expect(result.drive.success).toBe(true);

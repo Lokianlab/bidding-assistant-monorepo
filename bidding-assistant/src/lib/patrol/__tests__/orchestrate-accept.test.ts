@@ -53,17 +53,9 @@ const sampleItem: PatrolItem = {
   status: 'new',
 };
 
-const fullConfig: AcceptConfig = {
+const testConfig: AcceptConfig = {
   notionToken: 'ntn_test_token',
   notionDatabaseId: 'db_test_id',
-  driveAccessToken: 'ya29.test_drive_token',
-  driveParentFolderId: 'folder_parent_id',
-};
-
-const notionOnlyConfig: AcceptConfig = {
-  notionToken: 'ntn_test_token',
-  notionDatabaseId: 'db_test_id',
-  // 沒有 Drive 設定
 };
 
 // ── 測試 ─────────────────────────────────────────────
@@ -89,7 +81,7 @@ describe('orchestrateAccept — 完整流程', () => {
       folderUrl: 'https://drive.google.com/folder-123',
     });
 
-    const result = await orchestrateAccept(sampleItem, fullConfig);
+    const result = await orchestrateAccept(sampleItem, testConfig);
 
     expect(result.notion.success).toBe(true);
     expect(result.notion.caseUniqueId).toBe('PCC-JOB001');
@@ -106,7 +98,7 @@ describe('orchestrateAccept — 完整流程', () => {
       error: 'Notion API 403 Forbidden',
     });
 
-    const result = await orchestrateAccept(sampleItem, fullConfig);
+    const result = await orchestrateAccept(sampleItem, testConfig);
 
     expect(result.notion.success).toBe(false);
     expect(result.drive.success).toBe(false);
@@ -124,30 +116,12 @@ describe('orchestrateAccept — 完整流程', () => {
       // 缺少 caseUniqueId
     });
 
-    const result = await orchestrateAccept(sampleItem, fullConfig);
+    const result = await orchestrateAccept(sampleItem, testConfig);
 
     expect(result.notion.success).toBe(true); // 原始結果保留
     expect(result.drive.success).toBe(false);
     expect(result.drive.error).toContain('Notion 建檔失敗');
     expect(mockCreateDrive).not.toHaveBeenCalled();
-  });
-
-  it('沒有 Drive 設定時跳過 Drive、其他照做', async () => {
-    mockCreateNotion.mockResolvedValue({
-      success: true,
-      notionPageId: 'page-456',
-      caseUniqueId: 'PCC-JOB001',
-    });
-
-    const result = await orchestrateAccept(sampleItem, notionOnlyConfig);
-
-    expect(result.notion.success).toBe(true);
-    expect(result.drive.success).toBe(false);
-    expect(result.drive.error).toContain('Drive 尚未設定');
-    // Drive 函式不應被呼叫
-    expect(mockCreateDrive).not.toHaveBeenCalled();
-    // 但 Notion update 還是會被呼叫（回寫摘要/情蒐）
-    expect(mockUpdateNotion).toHaveBeenCalled();
   });
 
   it('Drive 失敗時 Notion 仍然成功', async () => {
@@ -161,7 +135,7 @@ describe('orchestrateAccept — 完整流程', () => {
       error: 'Drive API quota exceeded',
     });
 
-    const result = await orchestrateAccept(sampleItem, fullConfig);
+    const result = await orchestrateAccept(sampleItem, testConfig);
 
     expect(result.notion.success).toBe(true);
     expect(result.drive.success).toBe(false);
@@ -173,7 +147,7 @@ describe('orchestrateAccept — 完整流程', () => {
   it('非預期 throw 被外層 catch 捕獲', async () => {
     mockCreateNotion.mockRejectedValue(new Error('Unexpected network failure'));
 
-    const result = await orchestrateAccept(sampleItem, fullConfig);
+    const result = await orchestrateAccept(sampleItem, testConfig);
 
     expect(result.notion.success).toBe(false);
     expect(result.notion.error).toContain('Unexpected network failure');
@@ -214,7 +188,7 @@ describe('orchestrateAccept — Layer A 整合', () => {
       caseUniqueId: 'PCC-JOB002',
     });
 
-    await orchestrateAccept(sampleItem, notionOnlyConfig);
+    await orchestrateAccept(sampleItem, testConfig);
 
     // 應該呼叫 converter
     expect(mockConvert).toHaveBeenCalledWith(detail);
@@ -234,7 +208,7 @@ describe('orchestrateAccept — Layer A 整合', () => {
       caseUniqueId: 'PCC-JOB001',
     });
 
-    await orchestrateAccept(sampleItem, notionOnlyConfig);
+    await orchestrateAccept(sampleItem, testConfig);
 
     // 不應呼叫 converter
     expect(mockConvert).not.toHaveBeenCalled();
@@ -266,21 +240,21 @@ describe('orchestrateAccept — Notion 回寫', () => {
   });
 
   it('Drive 成功時 progressFlags 包含「Drive 資料夾已建」', async () => {
-    await orchestrateAccept(sampleItem, fullConfig);
+    await orchestrateAccept(sampleItem, testConfig);
 
     expect(mockUpdateNotion).toHaveBeenCalledWith(
       expect.objectContaining({
         notionPageId: 'page-wb',
         progressFlags: expect.arrayContaining(['Drive 資料夾已建']),
       }),
-      fullConfig.notionToken,
+      testConfig.notionToken,
     );
   });
 
   it('Drive 失敗時 progressFlags 不含「Drive 資料夾已建」', async () => {
     mockCreateDrive.mockResolvedValue({ success: false, error: 'fail' });
 
-    await orchestrateAccept(sampleItem, fullConfig);
+    await orchestrateAccept(sampleItem, testConfig);
 
     const updateCall = mockUpdateNotion.mock.calls[0];
     const input = updateCall[0];
@@ -288,14 +262,14 @@ describe('orchestrateAccept — Notion 回寫', () => {
   });
 
   it('回寫包含摘要和情蒐', async () => {
-    await orchestrateAccept(sampleItem, fullConfig);
+    await orchestrateAccept(sampleItem, testConfig);
 
     expect(mockUpdateNotion).toHaveBeenCalledWith(
       expect.objectContaining({
         summary: expect.any(String),
         intelligenceReport: expect.any(String),
       }),
-      fullConfig.notionToken,
+      testConfig.notionToken,
     );
   });
 });

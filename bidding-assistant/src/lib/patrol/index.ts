@@ -92,6 +92,7 @@ export {
   DRIVE_PARENT_PATH,
   TEMPLATE_SUBFOLDERS,
   createDriveFolder,
+  createDriveFolderAuto,
 } from './drive-writer';
 
 // 編排 Hook（UI 層使用）
