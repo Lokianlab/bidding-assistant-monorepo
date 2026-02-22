@@ -1,4 +1,4 @@
-SNAPSHOT|20260227-1945|ITEJ|opus-4.6
+SNAPSHOT|20260228-0345|ITEJ|opus-4.6
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -29,5 +29,6 @@ SNAPSHOT|20260227-1945|ITEJ|opus-4.6
 [v] feat-test-coverage|持續補測試|100檔1950tests（本輪+530 tests：API route 全覆蓋+output+document-templates+pricing+card-layout+TS 修正+unused import 清理），src/lib 全模組已有測試，已飽和
 [v] plan-m02-kb|M02 知識庫模組規格|v0.1 草案完成（0227 ITEJ），Supabase schema+API routes+6 phase 實作分期+匯入管線+離線策略+跨模組整合，待用戶審閱
 [v] plan-w01-scan|W01 巡標自動化規格|v0.1 草案完成（0227 ITEJ），P0 最高優先，PCC→關鍵字篩選→Notion 建案，5 phase 分期，待用戶審閱
+[>] feat-w01-scan-p1|W01 巡標 Phase 1 實作|關鍵字引擎完成（types+constants+engine+35tests），接下來做 scan UI 頁面
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
