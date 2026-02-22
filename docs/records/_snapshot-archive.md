@@ -66,6 +66,8 @@
 [x] admin-snapshot-cleanup|快照清理：ITEJ 三項 [] → [?]|plan-devplan-push + plan-m04-quality + plan-m06-output，0304
 [x] reply-budget-365|365 預算分析 JDNE 回覆|行政執行費合規風險 + 365 場槓桿警示，0304
 [x] admin-devmap-3040|dev-map 測試數更新|2949→3040（190 test files），A44T+3O5L 新增，0304
+[x] plan-p0-patrol-coord|P0 行政巡標自動化協調|全鏈路完成：Layer A+B+C+D。Jin 驗收通過（0223）
+[x] product-direction-0222|產品方向重整|Jin 已確認五項決策（三策略+P0-P4+凍結清單）
 
 ---
 
@@ -104,6 +106,9 @@
 
 ## ITEJ
 
+[~] plan-devplan-push|消化暫存區推進開發計畫|擱置：8 個碎片全部凍結，Jin 指示 0223
+[~] plan-m04-quality|M04 品質閘門模組規格|擱置：Z1FV 已實作完成（114 tests），規格草案不再需要
+[~] plan-m06-output|M06 排版輸出模組規格|擱置：Z1FV 已實作完成（Phase 1-3），規格草案不再需要
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -196,6 +201,7 @@
 [x] infra-output-docs-folder|建立輸出文件目錄規則|docs/各種輸出文件/ + CLAUDE.md 規則（Jin 直接指示 0303），commit 09d3b88
 [x] doc-365music-proposal|365音樂振興計畫提案修改建議|基於 AINL 診斷，重算預算（移除周邊商品→再分配，補助比率 48.95%）+ KPI + 國際元素 + 質化效益，存入 docs/各種輸出文件/
 [x] review-a44t-deadline-filter|A44T feat-scan-deadline-filter 審查|PASS：兩階段過濾設計正確，16 tests 全過，保守策略（查不到截標日就保留）合理
+[x] feat-orchestrator-ui-wire|CreateCaseDialog 接入 orchestrateAccept 完整流程|Jin 驗收通過（0223）
 
 ---
 
@@ -222,3 +228,4 @@
 [x] feat-usePatrolOrchestrator|usePatrolOrchestrator hook|包裝 orchestrateAccept，hook 層銜接 UI 與 patrol orchestrator，+8 tests，commit ec4493c
 [x] budget-365-music|365 預算分析跨機器回覆|3O5L 回覆已補入，前三優先序共識確立（收支打平+補助比例、行政執行費、LOI），commit 5d711cb
 [x] test-coverage-patrol|持續找測試缺口|本輪 +12 tests（assembly page），204 files 3152 tests 全過
+[x] prod-min-demo|最小展示版驗收進度|M03✅+M04✅+PCC✅，Jin 驗收通過（0223）

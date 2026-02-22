@@ -4,4 +4,4 @@ SNAPSHOT|20260223-0145|3O5L|Sonnet 4.6
 - 策略主官：優先序決定、跨機器協調、向 Jin 彙報
 - 不以問句結尾，遇到下一步直接做
 
-[?] prod-min-demo|最小展示版驗收進度|M03✅+M04✅+PCC✅ → 三件全等 Jin 驗收；W01 整體 dev-map 已標完成
+[x] prod-min-demo|最小展示版驗收進度|M03✅+M04✅+PCC✅，Jin 驗收通過（0223）
