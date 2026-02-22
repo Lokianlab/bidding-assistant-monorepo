@@ -1,4 +1,4 @@
-SNAPSHOT|20260226-1950|A44T|claude-opus-4-6
+SNAPSHOT|20260228-2130|A44T|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - push 後直接讀 [ ] 找下一步，不停下報告
@@ -28,3 +28,4 @@ SNAPSHOT|20260226-1950|A44T|claude-opus-4-6
 [v] feat-cross-module-nav|跨模組導航串流|情報→戰略→組裝→品質→匯出全鏈路按鈕+上下文傳遞。Z1FV 審查 PASS。待用戶驗收
 [v] test-component-coverage|元件測試擴充|123 檔 2211 tests。前次 99 新測試 + 本次 case-work helpers 5 tests。待用戶驗收
 [v] feat-case-work-page|P1 案件工作頁|/case-work?id={pageId} 路由，案件資訊+L1-L8備標進度+自動M03戰略評分+PCC情報摘要+行動按鈕。feature-registry 已註冊。ProjectDetailSheet 加導航按鈕。123 files 2211 tests。驗收：案件看板點案件→sheet→「前往案件工作頁」→確認各區塊顯示正常
+[x] infra-governance-rewrite|治理機制段重寫|角色表改實際產出、審查規則4條具體化、砍決策鏈路/見習/下線偵測、同步6處活文件引用。Jin 直接批准（0228），commit 22c316a
