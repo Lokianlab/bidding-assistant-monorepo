@@ -17,3 +17,4 @@ JDNE-0004|2026-02-20|插件盤點、方法論v2整合、閉環四層、方法論
 JDNE-0005|2026-02-21|Skill系統v2落地、行為回饋優化、元方法論、/回報指令首用|docs/summaries/2026-02/JDNE/0005.md
 ITEJ-0005|2026-02-21|表態不問規則、暫存區批量消化、PCC情報搜尋Web App、/回報引導語優化|docs/summaries/2026-02/ITEJ/0005.md
 A44T-0004|2026-02-21|同步機制優化、/提議/所以呢/對焦指令、批量驗收8項、行為規範強化、產品轉向|docs/summaries/2026-02/A44T/0004.md
+Z1FV-0001|2026-02-28|元件測試全覆蓋164files-2595tests、EntryEditor修復、Sidebar衝突解決|docs/summaries/2026-02/Z1FV/0001.md
