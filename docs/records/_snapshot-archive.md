@@ -78,6 +78,8 @@
 [x] infra-governance-slim|治理系統精簡（scoring+回報+待辦+修改計畫）|scoring 模式摘要、/回報 簡化、/待辦+/修改計畫 刪除、獎懲指令改行為備註，0304
 [x] feat-scan-deadline|巡標過期過濾改用 detail API 實際截標日|2b972fe
 [x] feat-scan-ux-polish|巡標 UX 三項改善（預算未公告、截標日顯示、spinner）|d4444ef
+[x] feat-scan-detail-perf|巡標 detail API 效能優化：only-must/review 打 detail|b0d5841，三台共識，JDNE 放行
+[x] feat-scan-rules-panel|巡標分類說明面板（14 條規則 + 4 分類）|cb0ff45，Z1FV 審查 PASS 補 3 個 toggle 測試，87a3d16
 
 ---
 
@@ -219,6 +221,7 @@
 ## 3O5L
 
 [x] efficiency-calibration|效率校準|結案：業務基線（business-context）已建立，個別修正靠 scoring 追蹤
+[x] scan-explain-panel|巡標頁加「分類說明」摺疊面板|A44T 代做：cb0ff45，Z1FV 審查 PASS，87a3d16
 [x] role-assignment|工作角色分配|Jin 在 machine-profile 批准六台角色，3O5L = 策略主官
 [x] all-members-upgrade|全員升為正式成員|Jin 直接宣告，CLAUDE.md 已更新，廣播完成
 [x] infra-governance-phase|論壇治理階段|52 個 thread 全部已結案，治理階段告一段落
