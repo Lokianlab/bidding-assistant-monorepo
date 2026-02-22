@@ -26,9 +26,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": {
-          "toolName": ["Bash"]
-        },
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -40,9 +38,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": {
-          "toolName": ["Edit", "Write", "Bash", "NotebookEdit"]
-        },
+        "matcher": "Edit|Write|Bash|NotebookEdit",
         "hooks": [
           {
             "type": "command",
