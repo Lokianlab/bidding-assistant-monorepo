@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { STAGES } from "@/data/config/stages";
 import { KB_LABELS, type KBRequirement } from "@/data/config/kb-matrix";
@@ -40,7 +40,7 @@ import type { FieldMappingKey } from "@/lib/constants/field-mapping";
 import { DEFAULT_SEARCH_KEYWORDS } from "@/lib/scan/constants";
 
 export default function ModulesPage() {
-  const { settings, updateSection, updateSettings } = useSettings();
+  const { settings, hydrated, updateSection, updateSettings } = useSettings();
   const [modules, setModules] = useState(settings.modules);
 
   // 功能開關的 local state
@@ -57,6 +57,17 @@ export default function ModulesPage() {
   const [scanKeywords, setScanKeywords] = useState<string[]>(
     settings.scan?.searchKeywords ?? [...DEFAULT_SEARCH_KEYWORDS],
   );
+
+  // hydration 完成後，用 localStorage 的值更新 local state
+  useEffect(() => {
+    if (hydrated) {
+      setModules(settings.modules);
+      setToggles(settings.featureToggles ?? getDefaultToggles());
+      setFieldMapping(settings.fieldMapping ?? {});
+      setScanKeywords(settings.scan?.searchKeywords ?? [...DEFAULT_SEARCH_KEYWORDS]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
 
   function handleSaveScanKeywords() {
     updateSettings({ scan: { searchKeywords: scanKeywords } });
