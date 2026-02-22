@@ -9,6 +9,10 @@ import type { PCCSearchResponse, PCCRecord } from "@/lib/pcc/types";
 
 const API_BASE = "https://pcc-api.openfun.app/api";
 const MIN_INTERVAL_MS = 300;
+/** 公告超過幾天視為過期（政府標案投標期通常 2-4 週） */
+const MAX_PUBLISH_AGE_DAYS = 30;
+/** 已決標的公告類型（不需要再投） */
+const EXPIRED_BRIEF_TYPES = ["決標公告", "無法決標公告", "撤銷公告"];
 let lastRequestTime = 0;
 
 /** 帶 rate limiting 的 PCC 搜尋 */
@@ -50,6 +54,18 @@ function pccDateToISO(dateNum: number): string {
   return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
 }
 
+/** 判斷 PCC record 是否已過期（已決標 or 公告太久） */
+function isExpired(record: PCCRecord): boolean {
+  // 已決標 / 無法決標 / 撤銷 → 不需要再投
+  if (EXPIRED_BRIEF_TYPES.includes(record.brief.type)) return true;
+
+  // 公告日超過閾值 → 截標日幾乎一定過了
+  const pubDate = new Date(pccDateToISO(record.date));
+  const ageMs = Date.now() - pubDate.getTime();
+  const ageDays = ageMs / (1000 * 60 * 60 * 24);
+  return ageDays > MAX_PUBLISH_AGE_DAYS;
+}
+
 /** 將 PCC record 轉為 ScanTender（brief 層級，預算未知） */
 function toScanTender(record: PCCRecord): ScanTender {
   return {
@@ -73,10 +89,11 @@ export async function POST(req: NextRequest) {
         : DEFAULT_SEARCH_KEYWORDS;
     const maxPagesPerKeyword: number = body.maxPages ?? 1;
 
-    // 逐關鍵字搜尋 + 去重
+    // 逐關鍵字搜尋 + 去重 + 過濾過期
     const seen = new Set<string>();
     const allTenders: ScanTender[] = [];
     const errors: { keyword: string; error: string }[] = [];
+    let filteredCount = 0;
 
     for (const kw of keywords) {
       try {
@@ -85,10 +102,16 @@ export async function POST(req: NextRequest) {
           for (const record of result.records) {
             // 用 job_number + unit_id 去重（同案可能出現在不同關鍵字搜尋）
             const key = `${record.job_number}:${record.unit_id}`;
-            if (!seen.has(key)) {
-              seen.add(key);
-              allTenders.push(toScanTender(record));
+            if (seen.has(key)) continue;
+            seen.add(key);
+
+            // 過濾已決標和公告太久的（截標日幾乎一定過了）
+            if (isExpired(record)) {
+              filteredCount++;
+              continue;
             }
+
+            allTenders.push(toScanTender(record));
           }
           // 不需要翻更多頁
           if (page >= result.total_pages) break;
@@ -112,6 +135,7 @@ export async function POST(req: NextRequest) {
       results: sorted,
       counts,
       totalRaw: allTenders.length,
+      filteredExpired: filteredCount,
       errors: errors.length > 0 ? errors : undefined,
     });
   } catch (err) {
