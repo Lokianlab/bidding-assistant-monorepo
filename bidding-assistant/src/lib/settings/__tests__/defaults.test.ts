@@ -13,6 +13,7 @@ describe("DEFAULT_SETTINGS", () => {
     expect(DEFAULT_SETTINGS).toHaveProperty("modules");
     expect(DEFAULT_SETTINGS).toHaveProperty("workflow");
     expect(DEFAULT_SETTINGS).toHaveProperty("dashboardLayout");
+    expect(DEFAULT_SETTINGS).toHaveProperty("scan");
   });
 
   it("yearlyGoal is defined and is a number", () => {
@@ -257,5 +258,30 @@ describe("DEFAULT_SETTINGS.dashboardLayout", () => {
   it("is defined and not null", () => {
     expect(DEFAULT_SETTINGS.dashboardLayout).toBeDefined();
     expect(DEFAULT_SETTINGS.dashboardLayout).not.toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// scan section
+// ---------------------------------------------------------------------------
+
+describe("DEFAULT_SETTINGS.scan", () => {
+  const scan = DEFAULT_SETTINGS.scan;
+
+  it("has searchKeywords as a non-empty array", () => {
+    expect(Array.isArray(scan?.searchKeywords)).toBe(true);
+    expect(scan?.searchKeywords.length).toBeGreaterThan(0);
+  });
+
+  it("all searchKeywords are non-empty strings", () => {
+    for (const keyword of scan?.searchKeywords ?? []) {
+      expect(typeof keyword).toBe("string");
+      expect(keyword.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("contains expected core keywords from DEFAULT_SEARCH_KEYWORDS", () => {
+    expect(scan?.searchKeywords).toContain("食農教育");
+    expect(scan?.searchKeywords).toContain("藝術");
   });
 });
