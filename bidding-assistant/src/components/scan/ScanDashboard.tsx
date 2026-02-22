@@ -149,7 +149,11 @@ export function ScanDashboard() {
     setDialogOpen(false);
     setPendingResult(null);
     if (pageUrl) {
-      window.open(pageUrl, "_blank", "noopener,noreferrer");
+      // 從 Notion URL 提取 pageId，導航到案件工作頁
+      const pageId = pageUrl.split("/").pop() || "";
+      if (pageId) {
+        router.push(`/case-work?id=${pageId}`);
+      }
     }
   };
 
