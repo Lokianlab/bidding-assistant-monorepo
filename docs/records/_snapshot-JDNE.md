@@ -9,7 +9,6 @@ SNAPSHOT|20260223-0735|JDNE|claude-haiku-4-5-20251001
 [x] infra-context-optimize|protocol優化廣播,context -52%(407行)
 [x] plan-saas-phase1a|Layer3決策(Supabase+OAuth),schema+client初始化,@op:20260223-JDNE-saas-phase1a
 [>] plan-saas-phase1|P1a完(schema+client),P1b/P1c規格+分派(A44T/ITEJ),P1d/e/f規格+分派(Z1FV/3O5L/A44T)
-[x] admin-product-compass-align|五層優先序+七項做歪信號+部署約束納入CLAUDE.md,P0完成,P1/P2待
 [>] infra-db-safety|四層沙盒方案定案,本機+staging+UAT+生產RLS隔離,待環境變數範本+自動化
 [?] infra-backup-mechanism|waiting Jin req
 [?] chat-behavior-note-propagate-claudemd|L3,waiting Jin approve
