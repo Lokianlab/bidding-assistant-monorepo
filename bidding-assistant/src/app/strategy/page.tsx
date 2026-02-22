@@ -8,21 +8,17 @@ import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { FitScoreCard } from "@/components/strategy/FitScoreCard";
 import { useFitScore } from "@/lib/strategy/useFitScore";
 import { useKnowledgeBase } from "@/lib/knowledge-base/useKnowledgeBase";
+import { useSettings } from "@/lib/context/settings-context";
+import { readCachedIntelligence } from "@/lib/strategy/intelligence-bridge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import type { IntelligenceInputs } from "@/lib/strategy/types";
-
-const EMPTY_INTELLIGENCE: IntelligenceInputs = {
-  selfAnalysis: null,
-  marketTrend: null,
-  tenderSummary: null,
-};
 
 export default function StrategyPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { data: kb, hydrated } = useKnowledgeBase();
+  const { settings } = useSettings();
 
   // 表單狀態（從 URL 參數或空值初始化）
   const [caseName, setCaseName] = useState(searchParams.get("caseName") || "");
@@ -50,11 +46,20 @@ export default function StrategyPage() {
     setSubmitted(true);
   };
 
+  // 從 PCC 快取被動讀取已有的情報資料（不發 API 請求）
+  const intelligence = useMemo(
+    () =>
+      hydrated && frozenInput.caseName
+        ? readCachedIntelligence(settings.company?.brand || "", frozenInput.caseName)
+        : { selfAnalysis: null, marketTrend: null, tenderSummary: null },
+    [hydrated, frozenInput.caseName, settings.company?.brand],
+  );
+
   const { fitScore, kbMatch } = useFitScore(
     frozenInput.caseName,
     frozenInput.agency,
     frozenInput.budget,
-    EMPTY_INTELLIGENCE,
+    intelligence,
     kb,
   );
 
@@ -135,6 +140,16 @@ export default function StrategyPage() {
         {!hasKBData && hydrated && (
           <p className="text-xs text-yellow-600">
             ⚠️ 知識庫尚無資料（00A 團隊、00B 實績），評分準確度較低。請先到「知識庫管理」新增資料。
+          </p>
+        )}
+        {submitted && intelligence.selfAnalysis && (
+          <p className="text-xs text-green-600">
+            ✓ 已自動載入情報模組的競爭分析資料，機關熟悉度評分基於歷史投標紀錄
+          </p>
+        )}
+        {submitted && intelligence.marketTrend && (
+          <p className="text-xs text-green-600">
+            ✓ 已自動載入「{intelligence.marketTrend.keyword}」市場趨勢，競爭強度評分基於實際資料
           </p>
         )}
 
