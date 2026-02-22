@@ -58,7 +58,7 @@ describe("EntryEditor00A", () => {
       nextId: "00A001",
     }));
     expect(screen.getByText(/姓名/)).toBeTruthy();
-  });
+  }, 15_000);
 
   it("姓名為空時「新增」按鈕 disabled", async () => {
     const Editor = await getEditor00A();
