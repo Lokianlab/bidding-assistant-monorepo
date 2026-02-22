@@ -29,16 +29,16 @@ SNAPSHOT|20260225-1500|JDNE|claude-sonnet-4-6
 [x] infra-machine-profile|機器角色分配|Jin ✅ 批准，已寫入 docs/machine-roles.md
 [~] infra-forum-upgrade|論壇制度升級|放棄：論壇已廢除，功能過時
 [ ] infra-user-auth|用戶驗證系統|Saint 已核准為 collaborator（Jin 授權），AINL 可設定
-[ ] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE) 已設定
+[x] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE) 已設定
 [v] infra-temp-machine-code|臨時機器碼制度|Jin ✅ 批准，6/6共識+整合報告，待用戶驗收
 [v] infra-efficiency-calibration|效率校準|3O5L 送整合報告建議結案，等 Jin 裁決
 [x] cleanup-dead-code|CardRenderer 死碼清理|已完成
 [v] plan-team-optimization|團隊運作優化方案|共識：三提案都不值得現在投入
 [x] infra-todo-upgrade|/待辦 指令升級|加驗收清單+待核准決策（verification-queue + consensus-backlog 共識落地）
-[v] feat-forum-voting|論壇投票欄功能|8 欄格式 + PATCH API + UI 投票按鈕 + 讀帖指令整合 + 超時規則修正，待用戶驗收
-[v] feat-forum-reply-to|回覆特定帖子功能|PostCard 回覆按鈕 + ComposePost 引用預覽 + API ref 參數，待用戶驗收
+[~] feat-forum-voting|論壇投票欄功能|放棄：論壇 UI 已被 ITEJ 刪除（d60b70b）
+[~] feat-forum-reply-to|回覆特定帖子功能|放棄：論壇 UI 已被 ITEJ 刪除（d60b70b）
 [x] infra-all-members-upgrade|全員升正式成員|Jin 直接指示，CLAUDE.md 已更新
 [x] infra-methodology-ownership|方法論維護分工寫入 _index.md|Jin ✅ 批准 0224，分工表已落地
 [v] infra-task-done-cmd|/完成 指令（三件套）|commit+push+快照+stop hook+CLAUDE.md 例外規則，待用戶確認
-[v] infra-forum-abolish|廢除論壇系統|CLAUDE.md+stop hook+commands（讀帖刪除、去論壇看看改寫）+快照全部清理，待用戶驗收
+[v] infra-forum-abolish|廢除論壇系統|ITEJ 執行（d60b70b）：論壇 UI+指令+規範全刪，CLAUDE.md 改角色分工鏈。JDNE 補快照行為備註清理，待用戶驗收
 [~] forum-patrol|論壇持續巡邏|放棄：論壇已廢除（0225 用戶決策）
