@@ -71,11 +71,11 @@ export function TenderCard({ result, onCreateCase, onSkip, onViewDetail }: Tende
                 建案
               </Button>
             )}
-            {classification.category === "review" && (
+            {onViewDetail && (
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => onViewDetail?.(result)}
+                onClick={() => onViewDetail(result)}
                 className="text-xs"
               >
                 詳情

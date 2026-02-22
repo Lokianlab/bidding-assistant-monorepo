@@ -2,6 +2,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ScanDashboard } from "../ScanDashboard";
 
+// ── Mock next/navigation ────────────────────────────────────
+const mockPush = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 // ── Mock fetch ──────────────────────────────────────────────
 
 const mockFetch = vi.fn();
@@ -9,6 +15,7 @@ vi.stubGlobal("fetch", mockFetch);
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockPush.mockReset();
 });
 
 const mockScanResponse = {
@@ -188,6 +195,25 @@ describe("ScanDashboard", () => {
     await waitFor(() => {
       expect(screen.getByText("掃描失敗")).toBeDefined();
     });
+  });
+
+  it("詳情按鈕導航到情報搜尋頁", async () => {
+    mockScanSuccess();
+    render(<ScanDashboard />);
+
+    fireEvent.click(screen.getByText("手動掃描"));
+
+    await waitFor(() => {
+      expect(screen.getByText("食農教育推廣計畫")).toBeDefined();
+    });
+
+    // 推薦分頁應有詳情按鈕
+    const detailButtons = screen.getAllByText("詳情");
+    fireEvent.click(detailButtons[0]);
+
+    expect(mockPush).toHaveBeenCalledWith(
+      "/intelligence?search=%E9%A3%9F%E8%BE%B2%E6%95%99%E8%82%B2%E6%8E%A8%E5%BB%A3%E8%A8%88%E7%95%AB"
+    );
   });
 
   it("掃描中顯示載入狀態", async () => {

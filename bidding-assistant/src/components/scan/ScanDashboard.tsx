@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,6 +19,7 @@ const TAB_CONFIG: { value: KeywordCategory; label: string; icon: string }[] = [
 ];
 
 export function ScanDashboard() {
+  const router = useRouter();
   const { data, loading, error, scan } = useScanResults();
   const [activeTab, setActiveTab] = useState<KeywordCategory>("must");
   const [skipped, setSkipped] = useState<Set<string>>(new Set());
@@ -51,6 +53,11 @@ export function ScanDashboard() {
   const handleCreateCase = (_result: ScanResult) => {
     // Phase 2: 呼叫 Notion 建案 API
     // 目前僅提示功能尚未啟用
+  };
+
+  const handleViewDetail = (result: ScanResult) => {
+    const title = result.tender.title;
+    router.push(`/intelligence?search=${encodeURIComponent(title)}`);
   };
 
   return (
@@ -128,6 +135,7 @@ export function ScanDashboard() {
                       result={result}
                       onSkip={handleSkip}
                       onCreateCase={value !== "exclude" ? handleCreateCase : undefined}
+                      onViewDetail={handleViewDetail}
                     />
                   ))}
                 </div>

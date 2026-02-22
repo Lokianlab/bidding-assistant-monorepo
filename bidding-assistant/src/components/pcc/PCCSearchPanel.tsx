@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,15 +15,28 @@ import { PCCTenderSheet } from "./PCCTenderSheet";
 interface PCCSearchPanelProps {
   onViewCompany?: (name: string) => void;
   onViewCommittee?: (unitId: string, unitName: string) => void;
+  /** 初始搜尋關鍵字（從 URL 參數帶入時使用） */
+  initialQuery?: string;
+  /** 初始搜尋模式 */
+  initialMode?: PCCSearchMode;
 }
 
-export function PCCSearchPanel({ onViewCompany, onViewCommittee }: PCCSearchPanelProps = {}) {
+export function PCCSearchPanel({ onViewCompany, onViewCommittee, initialQuery, initialMode }: PCCSearchPanelProps = {}) {
   const { settings } = useSettings();
   const brandName = settings.company?.brand || "大員洛川";
-  const [query, setQuery] = useState("");
-  const [mode, setMode] = useState<PCCSearchMode>("title");
+  const [query, setQuery] = useState(initialQuery ?? "");
+  const [mode, setMode] = useState<PCCSearchMode>(initialMode ?? "title");
   const { results, loading, error, search } = usePCCSearch();
   const [selectedRecord, setSelectedRecord] = useState<PCCRecord | null>(null);
+  const [autoSearched, setAutoSearched] = useState(false);
+
+  // 帶 initialQuery 進來時自動搜尋一次
+  useEffect(() => {
+    if (initialQuery && !autoSearched) {
+      setAutoSearched(true);
+      search(initialQuery, initialMode ?? "title");
+    }
+  }, [initialQuery, initialMode, autoSearched, search]);
 
   const handleSearch = useCallback(() => {
     if (query.trim()) {

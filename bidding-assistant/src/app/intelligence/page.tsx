@@ -1,14 +1,20 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { PCCSearchPanel } from "@/components/pcc/PCCSearchPanel";
 import { CompetitorAnalysis } from "@/components/pcc/CompetitorAnalysis";
 import { MarketTrend } from "@/components/pcc/MarketTrend";
 import { CommitteeNetwork } from "@/components/pcc/CommitteeNetwork";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { PCCSearchMode } from "@/lib/pcc/types";
 
 export default function IntelligencePage() {
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get("search") ?? undefined;
+  const initialMode = (searchParams.get("mode") as PCCSearchMode) || undefined;
+
   const [tab, setTab] = useState("search");
   const [targetCompany, setTargetCompany] = useState<string | null>(null);
   const [targetAgency, setTargetAgency] = useState<{ unitId: string; unitName: string } | null>(null);
@@ -49,6 +55,8 @@ export default function IntelligencePage() {
           <PCCSearchPanel
             onViewCompany={handleViewCompany}
             onViewCommittee={handleViewCommittee}
+            initialQuery={initialSearch}
+            initialMode={initialMode}
           />
         </TabsContent>
 
