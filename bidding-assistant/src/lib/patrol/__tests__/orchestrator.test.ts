@@ -100,6 +100,16 @@ describe('orchestrator - 編排流程', () => {
       expect(mockUpdateNotion).toHaveBeenCalledOnce();
     });
 
+    it('validateNotionInput 驗證失敗時提前返回，不建 Notion', async () => {
+      mockValidate.mockReturnValueOnce({ valid: false, missingFields: ['title', 'deadline'] });
+
+      const result = await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
+
+      expect(result.notion.success).toBe(false);
+      expect(result.notion.error).toMatch(/title/);
+      expect(mockCreateNotion).not.toHaveBeenCalled();
+    });
+
     it('Notion 建檔失敗時提前返回，跳過 Drive 和更新', async () => {
       mockCreateNotion.mockResolvedValue({ success: false, error: 'Notion API 錯誤' });
 

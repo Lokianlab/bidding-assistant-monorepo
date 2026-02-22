@@ -16,6 +16,7 @@ import type {
   DriveCreateFolderResult,
   PccTenderDetail,
 } from './types';
+import type { ScanResult } from '../scan/types';
 
 // ============================================================
 // Notion 操作
@@ -106,7 +107,7 @@ export async function apiCreateDriveFolder(
  */
 export async function apiSearchPcc(
   keywords?: string[],
-): Promise<{ results: unknown[]; error?: string }> {
+): Promise<{ results: ScanResult[]; error?: string }> {
   try {
     const res = await fetch('/api/scan', {
       method: 'POST',
@@ -114,10 +115,10 @@ export async function apiSearchPcc(
       body: JSON.stringify(keywords ? { keywords } : {}),
     });
 
-    return (await res.json()) as { results: unknown[]; error?: string };
+    return (await res.json()) as { results: ScanResult[]; error?: string };
   } catch (err: unknown) {
     return {
-      results: [],
+      results: [] as ScanResult[],
       error: err instanceof Error ? err.message : '搜尋 PCC 失敗',
     };
   }
