@@ -5,11 +5,14 @@ import { DEFAULT_SETTINGS } from "@/lib/settings/defaults";
 import { useSettings } from "@/lib/context/settings-context";
 
 // ── Hoisted mocks ─────────────────────────────────────────
-const { mockPush } = vi.hoisted(() => ({ mockPush: vi.fn() }));
+const { mockPush, mockSearchGet } = vi.hoisted(() => ({
+  mockPush: vi.fn(),
+  mockSearchGet: vi.fn(() => null),
+}));
 
 // ── Mock next/navigation ──────────────────────────────────
 vi.mock("next/navigation", () => ({
-  useSearchParams: () => ({ get: () => null }),
+  useSearchParams: () => ({ get: mockSearchGet }),
   useRouter: () => ({ push: mockPush }),
 }));
 
@@ -159,5 +162,41 @@ describe("StrategyPage — 表單互動", () => {
       target: { value: "新案件名稱" },
     });
     expect(screen.queryByTestId("fit-score-card")).toBeNull();
+  });
+});
+
+describe("StrategyPage — 回到案件按鈕", () => {
+  it("無 caseId 時分析後不顯示「← 回到案件」按鈕", () => {
+    render(<StrategyPage />);
+    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
+      target: { value: "食農教育推廣計畫" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
+    expect(screen.queryByRole("button", { name: "← 回到案件" })).toBeNull();
+  });
+
+  it("有 caseId 且分析後顯示「← 回到案件」按鈕", () => {
+    mockSearchGet.mockImplementation((key: string) =>
+      key === "caseId" ? "abc123def" : null,
+    );
+    render(<StrategyPage />);
+    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
+      target: { value: "食農教育推廣計畫" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
+    expect(screen.getByRole("button", { name: "← 回到案件" })).toBeTruthy();
+  });
+
+  it("點「← 回到案件」導航到 /case-work?id=", () => {
+    mockSearchGet.mockImplementation((key: string) =>
+      key === "caseId" ? "abc123def" : null,
+    );
+    render(<StrategyPage />);
+    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
+      target: { value: "食農教育推廣計畫" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
+    fireEvent.click(screen.getByRole("button", { name: "← 回到案件" }));
+    expect(mockPush).toHaveBeenCalledWith("/case-work?id=abc123def");
   });
 });

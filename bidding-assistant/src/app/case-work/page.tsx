@@ -434,6 +434,7 @@ export default function CaseWorkPage() {
                 if (caseName) params.set("caseName", caseName);
                 if (agency) params.set("agency", agency);
                 if (budget) params.set("budget", String(budget));
+                if (pageId) params.set("caseId", pageId);
                 router.push(`/strategy?${params.toString()}`);
               }}
             >

@@ -20,6 +20,9 @@ export default function StrategyPage() {
   const { data: kb, hydrated } = useKnowledgeBase();
   const { settings } = useSettings();
 
+  // 來源案件 ID（從 case-work 進入時帶入，用於「← 回到案件」按鈕）
+  const caseId = searchParams.get("caseId") || "";
+
   // 表單狀態（從 URL 參數或空值初始化）
   const [caseName, setCaseName] = useState(searchParams.get("caseName") || "");
   const [agency, setAgency] = useState(searchParams.get("agency") || "");
@@ -173,22 +176,33 @@ export default function StrategyPage() {
           </h2>
           <FitScoreCard fitScore={fitScore} kbMatch={kbMatch} />
 
-          {/* 跨模組導航：開始撰寫（帶上分析結果供組裝頁參考） */}
-          <Button
-            className="w-full"
-            onClick={() => {
-              const params = new URLSearchParams({ stage: "L1" });
-              if (frozenInput.caseName) params.set("caseName", frozenInput.caseName);
-              if (frozenInput.agency) params.set("agency", frozenInput.agency);
-              if (fitScore) {
-                params.set("verdict", fitScore.verdict);
-                params.set("total", String(fitScore.total));
-              }
-              router.push(`/assembly?${params.toString()}`);
-            }}
-          >
-            開始撰寫（進入提示詞組裝）
-          </Button>
+          {/* 跨模組導航 */}
+          <div className="flex flex-col sm:flex-row gap-2">
+            {caseId && (
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => router.push(`/case-work?id=${caseId}`)}
+              >
+                ← 回到案件
+              </Button>
+            )}
+            <Button
+              className={caseId ? "flex-1" : "w-full"}
+              onClick={() => {
+                const params = new URLSearchParams({ stage: "L1" });
+                if (frozenInput.caseName) params.set("caseName", frozenInput.caseName);
+                if (frozenInput.agency) params.set("agency", frozenInput.agency);
+                if (fitScore) {
+                  params.set("verdict", fitScore.verdict);
+                  params.set("total", String(fitScore.total));
+                }
+                router.push(`/assembly?${params.toString()}`);
+              }}
+            >
+              開始撰寫（進入提示詞組裝）
+            </Button>
+          </div>
         </div>
       )}
 
