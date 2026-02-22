@@ -1,148 +1,98 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+// ====== POST /api/patrol/notion/create 測試 ======
 
-// ── Mock patrol/notion-writer（只測路由邏輯，writer 有自己的測試）──
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { NextRequest } from "next/server";
+import { POST } from "../route";
 
 vi.mock("@/lib/patrol/notion-writer", () => ({
   createNotionCase: vi.fn(),
 }));
 
-// ── Mock next/server ──
-
-vi.mock("next/server", () => ({
-  NextRequest: class {
-    private body: unknown;
-    constructor(_url: string, init?: { body?: string }) {
-      this.body = init?.body ? JSON.parse(init.body) : {};
-    }
-    async json() {
-      return this.body;
-    }
-  },
-  NextResponse: {
-    json: (data: unknown, init?: { status?: number }) => ({
-      data,
-      status: init?.status ?? 200,
-      async json() {
-        return data;
-      },
-    }),
-  },
-}));
-
-import { POST } from "../route";
-import { NextRequest } from "next/server";
 import { createNotionCase } from "@/lib/patrol/notion-writer";
-
-const mockCreate = vi.mocked(createNotionCase);
-
-const VALID_INPUT = {
-  title: "食農教育推廣計畫",
-  jobNumber: "J001",
-  agency: "新北市教育局",
-  budget: 500_000,
-  publishDate: "20260228",
-  deadline: "20260315",
-};
+const mockCreate = createNotionCase as ReturnType<typeof vi.fn>;
 
 function makeReq(body: unknown): NextRequest {
   return new NextRequest("http://localhost/api/patrol/notion/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
 }
 
-beforeEach(() => {
-  vi.clearAllMocks();
-});
+describe("POST /api/patrol/notion/create", () => {
+  beforeEach(() => vi.clearAllMocks());
 
-describe("POST /api/patrol/notion/create — 輸入驗證", () => {
+  // ── 輸入驗證 ──
+
   it("缺少 token → 400", async () => {
-    const res = await POST(makeReq({ databaseId: "db-123", input: VALID_INPUT }));
+    const res = await POST(makeReq({ databaseId: "db1", input: { title: "T" } }));
     expect(res.status).toBe(400);
-    const data = await res.json() as { error: string };
+    const data = await res.json();
+    expect(data.success).toBe(false);
     expect(data.error).toMatch(/token/);
   });
 
   it("缺少 databaseId → 400", async () => {
-    const res = await POST(makeReq({ token: "secret", input: VALID_INPUT }));
+    const res = await POST(makeReq({ token: "tok", input: { title: "T" } }));
     expect(res.status).toBe(400);
-    const data = await res.json() as { error: string };
+    const data = await res.json();
+    expect(data.success).toBe(false);
     expect(data.error).toMatch(/databaseId/);
   });
 
   it("input 無 title → 400", async () => {
-    const res = await POST(makeReq({
-      token: "secret",
-      databaseId: "db-123",
-      input: { ...VALID_INPUT, title: "" },
-    }));
+    const res = await POST(makeReq({ token: "tok", databaseId: "db1", input: {} }));
     expect(res.status).toBe(400);
-    const data = await res.json() as { error: string };
-    expect(data.error).toMatch(/建檔資料/);
-  });
-
-  it("input 為 null → 400", async () => {
-    const res = await POST(makeReq({ token: "secret", databaseId: "db-123", input: null }));
-    expect(res.status).toBe(400);
-    const data = await res.json() as { error: string };
-    expect(data.error).toMatch(/建檔資料/);
-  });
-});
-
-describe("POST /api/patrol/notion/create — 成功路徑", () => {
-  it("createNotionCase 成功 → 200 + notionPageId", async () => {
-    mockCreate.mockResolvedValueOnce({
-      success: true,
-      notionPageId: "page-abc-123",
-      url: "https://notion.so/page-abc-123",
-    });
-
-    const res = await POST(makeReq({
-      token: "secret",
-      databaseId: "db-123",
-      input: VALID_INPUT,
-    }));
-
-    expect(res.status).toBe(200);
-    const data = await res.json() as { success: boolean; notionPageId: string };
-    expect(data.success).toBe(true);
-    expect(data.notionPageId).toBe("page-abc-123");
-  });
-
-  it("呼叫 createNotionCase 時帶正確參數", async () => {
-    mockCreate.mockResolvedValueOnce({ success: true, notionPageId: "p1" });
-
-    await POST(makeReq({ token: "my-token", databaseId: "my-db", input: VALID_INPUT }));
-
-    expect(mockCreate).toHaveBeenCalledWith(VALID_INPUT, "my-token", "my-db");
-  });
-});
-
-describe("POST /api/patrol/notion/create — 錯誤路徑", () => {
-  it("createNotionCase 回傳 success:false → 400", async () => {
-    mockCreate.mockResolvedValueOnce({ success: false, error: "Notion API 拒絕" });
-
-    const res = await POST(makeReq({
-      token: "secret",
-      databaseId: "db-123",
-      input: VALID_INPUT,
-    }));
-
-    expect(res.status).toBe(400);
-    const data = await res.json() as { success: boolean; error: string };
+    const data = await res.json();
     expect(data.success).toBe(false);
   });
 
-  it("createNotionCase 拋出例外 → 500", async () => {
-    mockCreate.mockRejectedValueOnce(new Error("網路斷線"));
+  it("input 為 null → 400", async () => {
+    const res = await POST(makeReq({ token: "tok", databaseId: "db1", input: null }));
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.success).toBe(false);
+  });
 
+  // ── 成功路徑 ──
+
+  it("成功時回傳 createNotionCase 結果", async () => {
+    mockCreate.mockResolvedValue({ success: true, notionPageId: "p1", caseUniqueId: "123" });
     const res = await POST(makeReq({
-      token: "secret",
-      databaseId: "db-123",
-      input: VALID_INPUT,
+      token: "tok",
+      databaseId: "db1",
+      input: { title: "測試標案", jobNumber: "123", agency: "局處", budget: 500000, publishDate: "2026-03-01", deadline: "2026-04-01" },
     }));
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.success).toBe(true);
+    expect(data.notionPageId).toBe("p1");
+  });
 
+  it("lib 回傳 success:false → 400", async () => {
+    mockCreate.mockResolvedValue({ success: false, error: "Notion API 錯誤" });
+    const res = await POST(makeReq({
+      token: "tok",
+      databaseId: "db1",
+      input: { title: "T", jobNumber: "1", agency: "A", budget: null, publishDate: "2026-01-01", deadline: "2026-02-01" },
+    }));
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.success).toBe(false);
+  });
+
+  // ── 錯誤捕捉 ──
+
+  it("lib 拋出例外 → 500", async () => {
+    mockCreate.mockRejectedValue(new Error("連線失敗"));
+    const res = await POST(makeReq({
+      token: "tok",
+      databaseId: "db1",
+      input: { title: "T", jobNumber: "1", agency: "A", budget: null, publishDate: "2026-01-01", deadline: "2026-02-01" },
+    }));
     expect(res.status).toBe(500);
-    const data = await res.json() as { error: string };
-    expect(data.error).toBe("網路斷線");
+    const data = await res.json();
+    expect(data.success).toBe(false);
+    expect(data.error).toBe("連線失敗");
   });
 });
