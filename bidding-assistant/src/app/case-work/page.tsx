@@ -414,7 +414,6 @@ export default function CaseWorkPage() {
                   asmParams.set("verdict", fitScore.verdict);
                   asmParams.set("total", String(fitScore.total));
                 }
-                if (pageId) asmParams.set("caseId", pageId);
                 router.push(`/assembly?${asmParams.toString()}`);
               }}
             >

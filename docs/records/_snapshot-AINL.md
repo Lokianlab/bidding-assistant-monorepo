@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-0709|AINL|claude-opus-4-6
+SNAPSHOT|20260223-0712|AINL|claude-opus-4-6
 
 ## 行為備註
 - proactive mode (Jin authorized)
@@ -8,4 +8,4 @@ SNAPSHOT|20260223-0709|AINL|claude-opus-4-6
 [?] feat-kb-init|KB init scripts ready, waiting Jin auth|(pending-decisions #2)
 [>] feat-gap5-strategy-back|GAP-5: strategy page ← back-to-case btn|L2 PASS (Z1FV), commit 5432c16
 [>] feat-gap1-intelligence-nav|GAP-1: intelligence 前往戰略分析 btn|L2 pending Z1FV review, commit ba5d6e7
-[>] feat-caseid-pipeline|caseId upstream: case-work+strategy→assembly|3323t pass, commit pending
+[>] feat-caseid-pipeline|caseId upstream: case-work+strategy→assembly|3328t pass, commit pending
