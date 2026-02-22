@@ -9,7 +9,7 @@ import { getSupabaseClient } from '@/lib/db/supabase-client';
 import { requireAuth, canDelete } from '@/lib/api/kb-middleware';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export async function GET(
@@ -18,7 +18,7 @@ export async function GET(
 ) {
   try {
     const session = await requireAuth(request);
-    const { id } = params;
+    const { id } = await params;
 
     const supabase = getSupabaseClient();
 
@@ -73,7 +73,7 @@ export async function PATCH(
 ) {
   try {
     const session = await requireAuth(request);
-    const { id } = params;
+    const { id } = await params;
 
     const body = await request.json();
     const { title, content, tags } = body;
@@ -140,7 +140,7 @@ export async function DELETE(
 ) {
   try {
     const session = await requireAuth(request);
-    const { id } = params;
+    const { id } = await params;
 
     const supabase = getSupabaseClient();
 
