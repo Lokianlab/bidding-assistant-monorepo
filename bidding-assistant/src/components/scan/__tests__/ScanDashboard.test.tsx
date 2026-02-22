@@ -318,6 +318,42 @@ describe("ScanDashboard — 自訂關鍵字設定", () => {
   });
 });
 
+// ── 分類說明面板 ───────────────────────────────────────────
+
+describe("ScanDashboard — 分類說明面板", () => {
+  it("初始狀態顯示「分類說明」按鈕", () => {
+    render(<ScanDashboard />);
+    expect(screen.getByRole("button", { name: "分類說明" })).toBeDefined();
+  });
+
+  it("點擊「分類說明」展開規則面板，各分類規則可見", () => {
+    render(<ScanDashboard />);
+    fireEvent.click(screen.getByRole("button", { name: "分類說明" }));
+
+    // 各分類的唯一規則標籤（選不會和 keywords span 文字重複的規則）
+    // must: 純預算規則「100萬以下」，keywords=[] → 沒有 keywords span
+    expect(screen.getByText("100萬以下")).toBeDefined();
+    // review: 「晚會演唱會」label ≠ keywords（晚會/演唱會/音樂會）→ 只有 label span 配對
+    expect(screen.getByText("晚會演唱會")).toBeDefined();
+    // exclude: 「課後服務」label，keywords span 是「課後服務、課後照顧、課後輔導」→ 字串不同，只有 label 配對
+    expect(screen.getByText("課後服務")).toBeDefined();
+    // 優先序說明
+    expect(screen.getByText(/篩選優先序/)).toBeDefined();
+    // 按鈕文字切換
+    expect(screen.getByRole("button", { name: "收起說明" })).toBeDefined();
+  });
+
+  it("再次點擊「收起說明」隱藏規則面板", () => {
+    render(<ScanDashboard />);
+    fireEvent.click(screen.getByRole("button", { name: "分類說明" }));
+    expect(screen.getByText(/篩選優先序/)).toBeDefined();
+
+    fireEvent.click(screen.getByRole("button", { name: "收起說明" }));
+    expect(screen.queryByText(/篩選優先序/)).toBeNull();
+    expect(screen.getByRole("button", { name: "分類說明" })).toBeDefined();
+  });
+});
+
 // ── 建案記憶持久化 ─────────────────────────────────────────
 
 describe("ScanDashboard — 建案記憶持久化", () => {
