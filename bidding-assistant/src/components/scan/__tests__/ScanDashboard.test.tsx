@@ -27,6 +27,18 @@ vi.mock("@/lib/context/settings-context", () => ({
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
+// ── Mock usePatrolOrchestrator ──────────────────────────────
+// CreateCaseDialog 改用 hook 後，建案流程不再直接呼叫 fetch
+const mockAccept = vi.fn();
+vi.mock("@/lib/patrol", () => ({
+  usePatrolOrchestrator: () => ({
+    accepting: false,
+    error: null,
+    accept: mockAccept,
+    reset: vi.fn(),
+  }),
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
   mockPush.mockReset();
@@ -364,6 +376,14 @@ describe("ScanDashboard — 建案記憶持久化", () => {
       json: async () => mockScanResponse,
     });
 
+    // 建案 hook 回傳成功結果（不再走 fetch）
+    mockAccept.mockResolvedValueOnce({
+      notion: { success: true, notionPageId: "abc-123-def", caseUniqueId: "PCC-001" },
+      drive: { success: false, error: "Drive 未設定" },
+      summary: "",
+      intelligence: "",
+    });
+
     render(<ScanDashboard />);
     fireEvent.click(screen.getByText("手動掃描"));
 
@@ -376,12 +396,6 @@ describe("ScanDashboard — 建案記憶持久化", () => {
 
     await waitFor(() => {
       expect(screen.getByText("建立追蹤案件")).toBeDefined();
-    });
-
-    // fetch #2：建案 API 成功
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ url: "https://notion.so/page/123" }),
     });
 
     fireEvent.click(screen.getByText("✅ 建案到 Notion"));

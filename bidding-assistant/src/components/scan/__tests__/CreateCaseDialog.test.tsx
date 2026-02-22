@@ -3,18 +3,27 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { CreateCaseDialog } from "../CreateCaseDialog";
 import type { ScanResult } from "@/lib/scan/types";
 
-// mock settings context（mockUseSettings 允許個別測試覆蓋返回值）
+// mock settings context
 const mockUseSettings = vi.fn();
-
 vi.mock("@/lib/context/settings-context", () => ({
   useSettings: () => mockUseSettings(),
 }));
 
-function makeSettingsWithCredentials() {
+// mock usePatrolOrchestrator
+const mockAccept = vi.fn();
+const mockReset = vi.fn();
+const mockUseOrchestrator = vi.fn();
+vi.mock("@/lib/patrol", () => ({
+  usePatrolOrchestrator: () => mockUseOrchestrator(),
+}));
+
+function makeSettings(withCredentials = true) {
   return {
     settings: {
       connections: {
-        notion: { token: "ntn_test", databaseId: "db-123", lastSync: "" },
+        notion: withCredentials
+          ? { token: "ntn_test", databaseId: "db-123", lastSync: "" }
+          : { token: "", databaseId: "", lastSync: "" },
         googleDrive: { refreshToken: "", sharedDriveFolderId: "" },
         smugmug: { apiKey: "", apiSecret: "", accessToken: "", tokenSecret: "" },
       },
@@ -23,16 +32,13 @@ function makeSettingsWithCredentials() {
   };
 }
 
-function makeSettingsNoCredentials() {
+function makeOrchestrator(overrides: Record<string, unknown> = {}) {
   return {
-    settings: {
-      connections: {
-        notion: { token: "", databaseId: "", lastSync: "" },
-        googleDrive: { refreshToken: "", sharedDriveFolderId: "" },
-        smugmug: { apiKey: "", apiSecret: "", accessToken: "", tokenSecret: "" },
-      },
-    },
-    hydrated: true,
+    accepting: false,
+    error: null as string | null,
+    accept: mockAccept,
+    reset: mockReset,
+    ...overrides,
   };
 }
 
@@ -60,9 +66,8 @@ describe("CreateCaseDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.stubGlobal("fetch", vi.fn());
-    // 預設：有 Notion 憑證
-    mockUseSettings.mockReturnValue(makeSettingsWithCredentials());
+    mockUseSettings.mockReturnValue(makeSettings(true));
+    mockUseOrchestrator.mockReturnValue(makeOrchestrator());
   });
 
   it("result=null 時不渲染", () => {
@@ -122,74 +127,67 @@ describe("CreateCaseDialog", () => {
     expect(btn.disabled).toBe(false);
   });
 
-  it("建案成功 → 呼叫 onSuccess 帶 url", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ pageId: "p-abc", url: "https://notion.so/p-abc" }),
-    }));
+  it("建案成功 → 呼叫 onSuccess 帶 notion url（去掉連字號）", async () => {
+    mockAccept.mockResolvedValueOnce({
+      notion: { success: true, notionPageId: "abc-123-def-456", caseUniqueId: "PCC-001" },
+      drive: { success: false, error: "Drive 未設定" },
+      summary: "",
+      intelligence: "",
+    });
 
     render(
       <CreateCaseDialog result={MOCK_RESULT} open={true} onClose={onClose} onSuccess={onSuccess} />,
     );
-
     fireEvent.click(screen.getByRole("button", { name: /建案到 Notion/ }));
 
     await waitFor(() => {
-      expect(onSuccess).toHaveBeenCalledWith("https://notion.so/p-abc");
+      expect(onSuccess).toHaveBeenCalledWith("https://www.notion.so/abc123def456");
     });
+    expect(mockAccept).toHaveBeenCalledWith(MOCK_RESULT);
   });
 
-  it("建案失敗 → 顯示錯誤訊息，不呼叫 onSuccess", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({ error: "Token 無效" }),
-    }));
+  it("建案失敗（notion.success=false）→ 不呼叫 onSuccess", async () => {
+    mockAccept.mockResolvedValueOnce({
+      notion: { success: false, error: "Token 無效" },
+      drive: { success: false, error: "" },
+      summary: "",
+      intelligence: "",
+    });
 
     render(
       <CreateCaseDialog result={MOCK_RESULT} open={true} onClose={onClose} onSuccess={onSuccess} />,
     );
-
     fireEvent.click(screen.getByRole("button", { name: /建案到 Notion/ }));
 
     await waitFor(() => {
-      expect(screen.getByText("Token 無效")).toBeTruthy();
+      expect(mockAccept).toHaveBeenCalledOnce();
     });
     expect(onSuccess).not.toHaveBeenCalled();
   });
 
-  it("網路例外 → 顯示網路錯誤訊息", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValueOnce(new Error("Failed to fetch")));
+  it("hook.error 有值 → 顯示錯誤訊息", () => {
+    mockUseOrchestrator.mockReturnValue(makeOrchestrator({ error: "Token 無效" }));
 
     render(
       <CreateCaseDialog result={MOCK_RESULT} open={true} onClose={onClose} onSuccess={onSuccess} />,
     );
-
-    fireEvent.click(screen.getByRole("button", { name: /建案到 Notion/ }));
-
-    await waitFor(() => {
-      expect(screen.getByText("網路錯誤，請稍後再試")).toBeTruthy();
-    });
+    expect(screen.getByText("Token 無效")).toBeTruthy();
   });
 
-  it("建案中按鈕文字改為「建案中...」且 disabled", async () => {
-    // fetch 永不 resolve，保持 loading 狀態
-    vi.stubGlobal("fetch", vi.fn().mockReturnValue(new Promise(() => {})));
+  it("accepting=true → 按鈕文字改為「建案中...」且 disabled", () => {
+    mockUseOrchestrator.mockReturnValue(makeOrchestrator({ accepting: true }));
 
     render(
       <CreateCaseDialog result={MOCK_RESULT} open={true} onClose={onClose} onSuccess={onSuccess} />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /建案到 Notion/ }));
-
-    await waitFor(() => {
-      expect(screen.getByText("建案中...")).toBeTruthy();
-    });
+    expect(screen.getByText("建案中...")).toBeTruthy();
     const btn = screen.getByRole("button", { name: "建案中..." }) as HTMLButtonElement;
     expect(btn.disabled).toBe(true);
   });
 
   it("無憑證時「建案到 Notion」按鈕 disabled 且顯示設定提示", () => {
-    mockUseSettings.mockReturnValue(makeSettingsNoCredentials());
+    mockUseSettings.mockReturnValue(makeSettings(false));
 
     render(
       <CreateCaseDialog result={MOCK_RESULT} open={true} onClose={onClose} onSuccess={onSuccess} />,

@@ -3,7 +3,6 @@
 
 "use client";
 
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/lib/context/settings-context";
+import { usePatrolOrchestrator } from "@/lib/patrol";
 import type { ScanResult } from "@/lib/scan/types";
 
 interface CreateCaseDialogProps {
@@ -35,38 +35,23 @@ export function CreateCaseDialog({
   onSuccess,
 }: CreateCaseDialogProps) {
   const { settings } = useSettings();
-  const [creating, setCreating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { accepting, error, accept, reset } = usePatrolOrchestrator();
 
   const { token, databaseId } = settings.connections.notion;
   const hasCredentials = Boolean(token && databaseId);
 
   const handleCreate = async () => {
-    if (!result || !token || !databaseId) return;
-    setCreating(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/notion/create-case", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, databaseId, tender: result.tender }),
-      });
-      const data = (await res.json()) as { url?: string; error?: string };
-      if (!res.ok) {
-        setError(data.error ?? "建案失敗");
-        return;
-      }
-      onSuccess(data.url ?? "");
-    } catch {
-      setError("網路錯誤，請稍後再試");
-    } finally {
-      setCreating(false);
+    if (!result) return;
+    const acceptResult = await accept(result);
+    if (acceptResult?.notion.success && acceptResult.notion.notionPageId) {
+      const url = `https://www.notion.so/${acceptResult.notion.notionPageId.replace(/-/g, "")}`;
+      onSuccess(url);
     }
   };
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open && !creating) {
-      setError(null);
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen && !accepting) {
+      reset();
       onClose();
     }
   };
@@ -122,11 +107,11 @@ export function CreateCaseDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose} disabled={creating}>
+          <Button variant="ghost" onClick={onClose} disabled={accepting}>
             取消
           </Button>
-          <Button onClick={handleCreate} disabled={creating || !hasCredentials}>
-            {creating ? "建案中..." : "✅ 建案到 Notion"}
+          <Button onClick={handleCreate} disabled={accepting || !hasCredentials}>
+            {accepting ? "建案中..." : "✅ 建案到 Notion"}
           </Button>
         </DialogFooter>
       </DialogContent>
