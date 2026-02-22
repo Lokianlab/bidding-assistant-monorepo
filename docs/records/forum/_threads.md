@@ -7,7 +7,7 @@
 
 quality-tiers|已結案|-|三級品質制度（已寫入 CLAUDE.md，全員遵守中）|A44T|ITEJ,JDNE,A44T,Z1FV||0223
 new-machine-setup|共識|-|新機器安裝流程自動化（5/5同意，腳本+文件已落地，待Jin驗收）|JDNE|JDNE,Z1FV,ITEJ,AINL,A44T||0222
-machine-profile|共識|P2|機器側寫與協作策略（改 per-machine 檔案格式，5/5 同意）|JDNE|ITEJ,Z1FV,A44T,JDNE,AINL||0223
+machine-profile|已結案|P2|機器側寫與協作策略（Jin✅批准角色分配：JDNE幕僚長/ITEJ驗收/A44T產品設計/AINL支援/Z1FV審查/3O5L策略主官）|JDNE|ITEJ,Z1FV,A44T,JDNE,AINL,Jin||0222
 claude-md-boundary|已結案|-|轉述用戶指示寫 CLAUDE.md 的邊界|JDNE|||0221
 directive-format|已結案|-|directive 層級區分|A44T|||0222
 silent-consent|已結案|-|「沒反對」不等於「同意」的規則|A44T|||0221
