@@ -35,6 +35,7 @@ import { useFitScore } from "@/lib/strategy/useFitScore";
 import { useKnowledgeBase } from "@/lib/knowledge-base/useKnowledgeBase";
 import { useSettings } from "@/lib/context/settings-context";
 import { readCachedIntelligence } from "@/lib/strategy/intelligence-bridge";
+import type { SelfAnalysis, MarketTrend } from "@/lib/pcc/types";
 import { FitScoreCard } from "@/components/strategy/FitScoreCard";
 import { STAGES } from "@/data/config/stages";
 
@@ -363,18 +364,9 @@ export default function CaseWorkPage() {
             <CardTitle className="text-sm">情報摘要</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <IntelItem
-              label="競爭分析"
-              available={!!intelligence.selfAnalysis}
-            />
-            <IntelItem
-              label="市場趨勢"
-              available={!!intelligence.marketTrend}
-            />
-            <IntelItem
-              label="標案摘要"
-              available={!!intelligence.tenderSummary}
-            />
+            <IntelSelfAnalysis data={intelligence.selfAnalysis} />
+            <Separator />
+            <IntelMarketTrend data={intelligence.marketTrend} />
             <Separator />
             <Button
               variant="outline"
@@ -431,28 +423,105 @@ export default function CaseWorkPage() {
 
 // ── Sub-components ─────────────────────────────────
 
-function IntelItem({
-  label,
-  available,
-}: {
-  label: string;
-  available: boolean;
-}) {
+function IntelSelfAnalysis({ data }: { data: SelfAnalysis | null }) {
+  if (!data) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs font-medium">競爭分析</span>
+          <Badge variant="outline" className="text-gray-400 text-[10px]">
+            尚無
+          </Badge>
+        </div>
+        <p className="text-[10px] text-muted-foreground">
+          尚未執行競爭分析，前往情報搜尋取得資料
+        </p>
+      </div>
+    );
+  }
+
+  const topCompetitors = data.competitors?.slice(0, 3) ?? [];
+
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-xs">{label}</span>
-      {available ? (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs font-medium">競爭分析</span>
         <Badge
           variant="outline"
           className="text-green-600 border-green-300 text-[10px]"
         >
           已有
         </Badge>
-      ) : (
-        <Badge variant="outline" className="text-gray-400 text-[10px]">
-          尚無
+      </div>
+      <div className="space-y-1">
+        <p className="text-[10px] text-muted-foreground">
+          投標勝率：
+          <span className="font-medium text-foreground">
+            {Math.round(data.winRate * 100)}%
+          </span>
+          （{data.wins}/{data.awardRecords} 件）
+        </p>
+        {topCompetitors.length > 0 && (
+          <p className="text-[10px] text-muted-foreground">
+            主要對手：
+            {topCompetitors
+              .map((c) => `${c.name}(${c.encounters}次)`)
+              .join("、")}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function IntelMarketTrend({ data }: { data: MarketTrend | null }) {
+  if (!data) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs font-medium">市場趨勢</span>
+          <Badge variant="outline" className="text-gray-400 text-[10px]">
+            尚無
+          </Badge>
+        </div>
+        <p className="text-[10px] text-muted-foreground">
+          尚未搜尋市場趨勢，前往情報搜尋取得資料
+        </p>
+      </div>
+    );
+  }
+
+  const levelColor =
+    data.competitionLevel === "紅海"
+      ? "text-red-600"
+      : data.competitionLevel === "藍海"
+        ? "text-blue-600"
+        : "text-amber-600";
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs font-medium">市場趨勢</span>
+        <Badge
+          variant="outline"
+          className="text-green-600 border-green-300 text-[10px]"
+        >
+          已有
         </Badge>
-      )}
+      </div>
+      <div className="space-y-1">
+        <p className="text-[10px] text-muted-foreground">
+          「{data.keyword}」：
+          <span className={`font-medium ${levelColor}`}>
+            {data.competitionLevel}
+          </span>
+          ，趨勢{data.trendDirection}
+        </p>
+        <p className="text-[10px] text-muted-foreground">
+          近年案件數：{data.totalRecords} 件
+          （{data.yearRange[0]}–{data.yearRange[1]}）
+        </p>
+      </div>
     </div>
   );
 }
