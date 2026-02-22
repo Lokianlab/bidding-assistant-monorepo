@@ -1,4 +1,4 @@
-SNAPSHOT|20260225-1100|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260225-1200|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 常駐命令：留在論壇持續巡邏，不停不走
@@ -41,4 +41,5 @@ SNAPSHOT|20260225-1100|JDNE|claude-sonnet-4-6
 [v] feat-forum-reply-to|回覆特定帖子功能|PostCard 回覆按鈕 + ComposePost 引用預覽 + API ref 參數，待用戶驗收
 [x] infra-all-members-upgrade|全員升正式成員|Jin 直接指示，CLAUDE.md 已更新
 [x] infra-methodology-ownership|方法論維護分工寫入 _index.md|Jin ✅ 批准 0224，分工表已落地
+[v] infra-task-done-cmd|/完成 指令（三件套）|commit+push+快照+stop hook+CLAUDE.md 例外規則，待用戶確認
 [>] forum-patrol|論壇持續巡邏|Jin 常駐命令。0225 狀態：所有 18 個 thread 已結案，論壇清靜。快照無 feat [] → 等用戶分配。
