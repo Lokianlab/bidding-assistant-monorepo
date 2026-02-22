@@ -115,6 +115,8 @@
 [x] budget-365-music|365 預算分析+預算修正|5 台共識+查法規+修 slide50（自籌 567,600、行政雜支、備註），PPTX 已更新，0304
 [x] fix-ts-page-tests|修正 2 個測試檔 TS 型別錯誤|knowledge-base + quality-gate page.test，tsc 零錯誤，0304
 [x] admin-devmap-3098|dev-map 測試數更新|3040→3098（197 test files），0304
+[x] chat-vitest-mock-reset|vi.clearAllMocks 不清 mockResolvedValueOnce 佇列|A44T 教訓分享，已知，scan route 測試已修正，0223
+[x] infra-module-pipeline-gap|模組串接缺口審計|docs/plans/module-pipeline-gap-audit.md，5 個缺口，0223
 
 ---
 
