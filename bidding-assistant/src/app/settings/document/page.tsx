@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 /** 常用中文字型 */
@@ -98,9 +98,15 @@ function FontSelect({
 }
 
 export default function DocumentSettingsPage() {
-  const { settings, updateSection } = useSettings();
+  const { settings, hydrated, updateSection } = useSettings();
   const [doc, setDoc] = useState(settings.document);
   const [newFontName, setNewFontName] = useState("");
+
+  // hydration 完成後，用 localStorage 的值更新 local state
+  useEffect(() => {
+    if (hydrated) setDoc(settings.document);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
 
   function handleSave() {
     updateSection("document", doc);

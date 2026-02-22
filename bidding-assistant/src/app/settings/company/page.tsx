@@ -7,12 +7,18 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 // Select removed: brand is now a free-text field
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function CompanyPage() {
-  const { settings, updateSection } = useSettings();
+  const { settings, hydrated, updateSection } = useSettings();
   const [company, setCompany] = useState(settings.company);
+
+  // hydration 完成後，用 localStorage 的值更新 local state
+  useEffect(() => {
+    if (hydrated) setCompany(settings.company);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
 
   function handleSave() {
     updateSection("company", company);

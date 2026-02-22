@@ -23,12 +23,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function WorkflowPage() {
-  const { settings, updateSection } = useSettings();
+  const { settings, hydrated, updateSection } = useSettings();
   const [workflow, setWorkflow] = useState(settings.workflow);
+
+  // hydration 完成後，用 localStorage 的值更新 local state
+  useEffect(() => {
+    if (hydrated) setWorkflow(settings.workflow);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
 
   function handleSave() {
     updateSection("workflow", workflow);
