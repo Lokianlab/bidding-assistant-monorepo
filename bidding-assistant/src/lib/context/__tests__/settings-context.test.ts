@@ -110,6 +110,56 @@ describe("SettingsProvider — updateSection", () => {
   });
 });
 
+// ── deep merge behaviour ─────────────────────────────────────
+
+describe("SettingsProvider — deep merge on load", () => {
+  it("填入部分 smugmug 設定，缺少的欄位使用預設值（bug regression: apiKey undefined）", () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        connections: {
+          smugmug: { apiKey: "my-key" },
+        },
+      })
+    );
+    const { result } = renderHook(() => useSettings(), { wrapper });
+    expect(result.current.settings.connections.smugmug.apiKey).toBe("my-key");
+    expect(result.current.settings.connections.smugmug.apiSecret).toBe("");
+    expect(result.current.settings.connections.smugmug.accessToken).toBe("");
+    expect(result.current.settings.connections.smugmug.tokenSecret).toBe("");
+  });
+
+  it("只存了 notion，googleDrive 和 smugmug 整段缺漏時使用預設值", () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        connections: {
+          notion: { token: "my-token", databaseId: "my-db" },
+        },
+      })
+    );
+    const { result } = renderHook(() => useSettings(), { wrapper });
+    expect(result.current.settings.connections.notion.token).toBe("my-token");
+    expect(result.current.settings.connections.googleDrive).toEqual(
+      DEFAULT_SETTINGS.connections.googleDrive
+    );
+    expect(result.current.settings.connections.smugmug).toEqual(
+      DEFAULT_SETTINGS.connections.smugmug
+    );
+  });
+
+  it("淺層欄位覆蓋不影響其他同層欄位", () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ yearlyGoal: 5000000 })
+    );
+    const { result } = renderHook(() => useSettings(), { wrapper });
+    expect(result.current.settings.yearlyGoal).toBe(5000000);
+    expect(result.current.settings.connections).toEqual(DEFAULT_SETTINGS.connections);
+    expect(result.current.settings.company).toEqual(DEFAULT_SETTINGS.company);
+  });
+});
+
 // ── resetSettings ───────────────────────────────────────────
 
 describe("SettingsProvider — resetSettings", () => {
