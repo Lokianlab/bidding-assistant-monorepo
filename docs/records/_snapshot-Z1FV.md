@@ -1,4 +1,4 @@
-SNAPSHOT|20260226-1700|Z1FV|Sonnet 4.6
+SNAPSHOT|20260226-1940|Z1FV|Sonnet 4.6
 [~] infra-forum-patrol|論壇留守巡邏|放棄：論壇已廢除（ITEJ 0224 commit d60b70b），角色分工鏈取代
 [v] feat-m06-output-phase1|M06 排版輸出模組 Phase 1|文件組裝管線+範本系統+DOCX/Markdown 匯出，39 tests，build 通過。驗收：npm run dev → /tools/output → 選範本 → 填章節 → 匯出 DOCX
 [v] feat-m06-output-phase2|M06 排版輸出模組 Phase 2|KB 佔位符注入（{{kb:00A:PM}} 等）+品牌/日期變數替換+KBInsertDialog UI，30 tests，build 通過。驗收：ChapterEditor 中點「插入知識庫」→ 選類別 → 插入佔位符
@@ -14,6 +14,7 @@ SNAPSHOT|20260226-1700|Z1FV|Sonnet 4.6
 [v] infra-forum-replies|論壇 thread 回覆|所有需要 Z1FV 回覆的 thread 已完成，含 proposal-diagnosis-365music（0226）
 [v] infra-review-mechanisms|三系統檢討|分析已交付，待用戶裁決
 [v] infra-business-context|商業基線文件|docs/business-context.md 已建立，Jin 批准
+[x] infra-dev-map-update|全專案開發地圖更新|13模組+82檔1722tests+M06 Phase1-3+知識庫初始化待決 已落地（0226）
 [x] review-3o5l-0222|3O5L 代碼審查（fix-sidebar-link + cleanup-trend-dup）|兩項 PASS，feedback 發論壇 20260222-Z1FV.md
 [x] review-ainl-0222|AINL 代碼審查（feat-test-coverage/trend-analysis/dashboard-charts/scout-committee）|全部 PASS，recentMonths useMemo 小問題已標注
 [x] review-itej-quality|ITEJ feat-quality-refactor 審查|SSOT+鐵律全對，PASS，feedback 已發論壇
