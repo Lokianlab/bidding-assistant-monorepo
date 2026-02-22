@@ -3,6 +3,7 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { usePatrolOrchestrator } from "../usePatrolOrchestrator";
+import type { AcceptResult } from "../types";
 
 // ── Mocks ──
 
@@ -85,7 +86,7 @@ describe("usePatrolOrchestrator", () => {
     mockOrchestrate.mockResolvedValue(successResult);
     const { result } = renderHook(() => usePatrolOrchestrator());
 
-    let returnValue: typeof successResult | null = null;
+    let returnValue: AcceptResult | null = null;
     await act(async () => {
       returnValue = await result.current.accept(fakeScanResult as never);
     });
