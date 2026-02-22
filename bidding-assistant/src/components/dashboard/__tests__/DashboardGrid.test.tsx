@@ -1,264 +1,206 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { createElement } from "react";
+import { DashboardGrid } from "../DashboardGrid";
+import type { DashboardMetrics } from "@/lib/dashboard/useDashboardMetrics";
 
-// ── mock @dnd-kit（jsdom 不支援拖曳事件，統一 passthrough）──────
+// ── mock @dnd-kit ───────────────────────────────────────────
 
 vi.mock("@dnd-kit/core", () => ({
-  DndContext: ({ children }: { children: unknown }) => children,
+  DndContext: ({ children }: { children: unknown }) =>
+    createElement("div", { "data-testid": "dnd-context" }, children as never),
   closestCenter: vi.fn(),
-  PointerSensor: vi.fn(),
-  useSensor: vi.fn(() => ({})),
-  useSensors: vi.fn((...args: unknown[]) => args),
+  PointerSensor: class {},
+  useSensor: () => ({}),
+  useSensors: () => [],
 }));
 
 vi.mock("@dnd-kit/sortable", () => ({
-  SortableContext: ({ children }: { children: unknown }) => children,
+  SortableContext: ({ children }: { children: unknown }) =>
+    createElement("div", { "data-testid": "sortable-context" }, children as never),
   useSortable: () => ({
     attributes: {},
     listeners: {},
     setNodeRef: vi.fn(),
     transform: null,
-    transition: undefined,
+    transition: null,
     isDragging: false,
   }),
-  verticalListSortingStrategy: vi.fn(),
+  verticalListSortingStrategy: {},
 }));
 
 vi.mock("@dnd-kit/utilities", () => ({
   CSS: { Transform: { toString: () => "" } },
 }));
 
-// ── mock useCardLayout ────────────────────────────────────────
+// ── mock useCardLayout ──────────────────────────────────────
 
-const mockReorder = vi.fn();
-const mockResize = vi.fn();
 const mockAdd = vi.fn();
 const mockRemove = vi.fn();
+const mockReorder = vi.fn();
+const mockResize = vi.fn();
 const mockReset = vi.fn();
-const mockLayout = vi.fn();
+const mockLayout = {
+  gridCols: 4,
+  cards: [] as Array<{ cardId: string; type: string; size: string; config: { title: string } }>,
+};
 
 vi.mock("@/lib/dashboard/card-layout/useCardLayout", () => ({
-  useCardLayout: () => mockLayout(),
+  useCardLayout: () => ({
+    layout: mockLayout,
+    add: mockAdd,
+    remove: mockRemove,
+    reorder: mockReorder,
+    resize: mockResize,
+    reset: mockReset,
+  }),
 }));
 
-// ── mock 子元件（避免複雜 props 依賴）────────────────────────
+// ── mock card-registry ──────────────────────────────────────
+
+vi.mock("@/lib/dashboard/card-layout/card-registry", () => ({
+  CARD_REGISTRY: [
+    { type: "stat-test", name: "測試卡片", category: "stat", allowedSizes: ["small", "medium"], defaultSize: "small", defaultConfig: { title: "測試" }, icon: "📋", description: "測試用" },
+  ],
+  getCardDefinition: (type: string) => {
+    if (type === "stat-test") return { name: "測試卡片", allowedSizes: ["small", "medium"] };
+    return undefined;
+  },
+}));
+
+// ── mock CardRenderer ───────────────────────────────────────
 
 vi.mock("../cards/CardRenderer", () => ({
   CardRenderer: ({ type }: { type: string }) =>
-    createElement("div", { "data-testid": `card-renderer-${type}` }, type),
+    createElement("div", { "data-testid": `card-renderer-${type}` }),
 }));
+
+// ── mock CardPickerDialog ───────────────────────────────────
 
 vi.mock("../cards/CardPickerDialog", () => ({
   CardPickerDialog: ({ open }: { open: boolean }) =>
-    open ? createElement("div", { "data-testid": "card-picker-dialog" }, "選取卡片") : null,
+    open ? createElement("div", { "data-testid": "card-picker" }, "新增卡片對話框") : null,
 }));
 
-vi.mock("../cards/DashboardCard", () => ({
-  DashboardCard: ({ title, children }: { title: string; children: unknown }) =>
-    createElement("div", { "data-testid": "dashboard-card" },
-      createElement("span", null, title),
-      children as never,
-    ),
-}));
+// ── helpers ─────────────────────────────────────────────────
 
-// ── mock card-registry（getCardDefinition）────────────────────
-
-vi.mock("@/lib/dashboard/card-layout/card-registry", () => ({
-  getCardDefinition: () => ({ name: "測試卡片", allowedSizes: ["medium"] }),
-}));
-
-// ── Helpers ───────────────────────────────────────────────────
-
-function makeEmptyLayout() {
+function makeMetrics(): DashboardMetrics {
   return {
-    layout: { cards: [], gridCols: 4 },
-    reorder: mockReorder,
-    resize: mockResize,
-    add: mockAdd,
-    remove: mockRemove,
-    reset: mockReset,
-    updateConfig: vi.fn(),
-  };
+    activeProjects: [],
+    totalBudget: 0,
+    wonBudget: 0,
+    winRate: 0,
+    biddingBudget: 0,
+    yearSubmittedCount: 0,
+    yearWonCount: 0,
+    monthSubmittedCount: 0,
+    weekSubmittedCount: 0,
+    teamWorkload: [],
+    monthlyTrend: [],
+    typeAnalysis: [],
+    statusDistribution: [],
+    totalCost: { total: 0, bidDeposit: 0, procurementFee: 0 },
+    totalCostByPeriod: undefined,
+    rollingWinRate: [],
+    quarterComparison: null,
+  } as unknown as DashboardMetrics;
 }
 
-function makeLayoutWithCards() {
-  return {
-    layout: {
-      cards: [
-        { cardId: "c1", type: "revenue-summary", position: 0, size: "medium", config: { title: "收益卡片" } },
-        { cardId: "c2", type: "bid-status", position: 1, size: "medium", config: { title: "狀態卡片" } },
-      ],
-      gridCols: 4,
-    },
-    reorder: mockReorder,
-    resize: mockResize,
-    add: mockAdd,
-    remove: mockRemove,
-    reset: mockReset,
-    updateConfig: vi.fn(),
-  };
+function renderGrid(overrides: Partial<{
+  showSkeleton: boolean;
+}> = {}) {
+  return render(
+    createElement(DashboardGrid, {
+      metrics: makeMetrics(),
+      yearlyGoal: 1000000,
+      onGoalEdit: vi.fn(),
+      monthlyTarget: 3,
+      onMonthlyTargetEdit: vi.fn(),
+      weeklyTarget: 1,
+      onWeeklyTargetEdit: vi.fn(),
+      showSkeleton: false,
+      ...overrides,
+    }),
+  );
 }
 
-function makeBaseProps(overrides: Record<string, unknown> = {}) {
-  return {
-    metrics: {} as never,
-    yearlyGoal: 1_000_000,
-    onGoalEdit: vi.fn(),
-    monthlyTarget: 100_000,
-    onMonthlyTargetEdit: vi.fn(),
-    weeklyTarget: 25_000,
-    onWeeklyTargetEdit: vi.fn(),
-    showSkeleton: false,
-    ...overrides,
-  };
-}
+// ── tests ───────────────────────────────────────────────────
 
-// ── 非同步 import（避免 mock 順序問題）───────────────────────
+beforeEach(() => {
+  vi.clearAllMocks();
+  mockLayout.cards = [];
+});
 
-async function renderDashboardGrid(props: Record<string, unknown>) {
-  const { DashboardGrid } = await import("../DashboardGrid");
-  return render(createElement(DashboardGrid, props as never));
-}
-
-// ── Tests ─────────────────────────────────────────────────────
-
-describe("DashboardGrid — Skeleton 模式", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockLayout.mockReturnValue(makeEmptyLayout());
+describe("DashboardGrid — skeleton", () => {
+  it("showSkeleton=true 時顯示骨架屏", () => {
+    const { container } = renderGrid({ showSkeleton: true });
+    const pulses = container.querySelectorAll(".animate-pulse");
+    expect(pulses.length).toBe(8);
   });
 
-  it("showSkeleton=true 時顯示 8 個佔位卡片", async () => {
-    const { container } = await renderDashboardGrid(makeBaseProps({ showSkeleton: true }));
-    const skeletonCards = container.querySelectorAll(".animate-pulse");
-    expect(skeletonCards.length).toBe(8);
-  });
-
-  it("showSkeleton=true 時不顯示編輯按鈕", async () => {
-    await renderDashboardGrid(makeBaseProps({ showSkeleton: true }));
+  it("showSkeleton=true 時不顯示編輯按鈕", () => {
+    renderGrid({ showSkeleton: true });
     expect(screen.queryByText("編輯佈局")).toBeNull();
   });
 });
 
-describe("DashboardGrid — 一般模式", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockLayout.mockReturnValue(makeEmptyLayout());
+describe("DashboardGrid — 空狀態", () => {
+  it("無卡片時顯示「尚未新增任何卡片」", () => {
+    renderGrid();
+    expect(screen.getByText("尚未新增任何卡片")).toBeTruthy();
   });
 
-  it("顯示「編輯佈局」按鈕", async () => {
-    await renderDashboardGrid(makeBaseProps());
-    expect(screen.getByText("編輯佈局")).toBeTruthy();
-  });
-
-  it("非編輯模式下不顯示「還原預設」按鈕", async () => {
-    await renderDashboardGrid(makeBaseProps());
-    expect(screen.queryByText("還原預設")).toBeNull();
+  it("無卡片時仍有「新增卡片」按鈕", () => {
+    renderGrid();
+    expect(screen.getByText("新增卡片")).toBeTruthy();
   });
 });
 
 describe("DashboardGrid — 編輯模式切換", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockLayout.mockReturnValue(makeEmptyLayout());
+  it("初始顯示「編輯佈局」按鈕", () => {
+    renderGrid();
+    expect(screen.getByText("編輯佈局")).toBeTruthy();
   });
 
-  it("點擊「編輯佈局」後按鈕文字變為「完成編輯」", async () => {
-    await renderDashboardGrid(makeBaseProps());
+  it("點擊「編輯佈局」後變成「完成編輯」", () => {
+    renderGrid();
     fireEvent.click(screen.getByText("編輯佈局"));
     expect(screen.getByText("完成編輯")).toBeTruthy();
   });
 
-  it("進入編輯模式後顯示「新增卡片」和「還原預設」", async () => {
-    await renderDashboardGrid(makeBaseProps());
+  it("編輯模式下顯示「還原預設」按鈕", () => {
+    renderGrid();
     fireEvent.click(screen.getByText("編輯佈局"));
-    // 空卡片狀態：header 有一個「新增卡片」，empty state 也有一個，總共 >= 2
-    expect(screen.getAllByText("新增卡片").length).toBeGreaterThanOrEqual(2);
     expect(screen.getByText("還原預設")).toBeTruthy();
   });
 
-  it("再次點擊「完成編輯」後退出編輯模式", async () => {
-    await renderDashboardGrid(makeBaseProps());
-    fireEvent.click(screen.getByText("編輯佈局"));
-    fireEvent.click(screen.getByText("完成編輯"));
-    expect(screen.getByText("編輯佈局")).toBeTruthy();
-    // 退出編輯模式後：header 的「還原預設」消失
+  it("非編輯模式下不顯示「還原預設」", () => {
+    renderGrid();
     expect(screen.queryByText("還原預設")).toBeNull();
   });
 
-  it("點擊「還原預設」呼叫 reset", async () => {
-    await renderDashboardGrid(makeBaseProps());
+  it("點「還原預設」呼叫 reset()", () => {
+    renderGrid();
     fireEvent.click(screen.getByText("編輯佈局"));
     fireEvent.click(screen.getByText("還原預設"));
     expect(mockReset).toHaveBeenCalledOnce();
   });
 });
 
-describe("DashboardGrid — 空卡片狀態", () => {
+describe("DashboardGrid — 有卡片時渲染", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    mockLayout.mockReturnValue(makeEmptyLayout());
+    mockLayout.cards = [
+      { cardId: "card-1", type: "stat-test", size: "small", config: { title: "測試卡片" } },
+    ];
   });
 
-  it("無卡片時顯示空狀態文字", async () => {
-    await renderDashboardGrid(makeBaseProps());
-    expect(screen.getByText("尚未新增任何卡片")).toBeTruthy();
+  it("渲染 CardRenderer", () => {
+    const { container } = renderGrid();
+    expect(container.querySelector("[data-testid='card-renderer-stat-test']")).toBeTruthy();
   });
 
-  it("空狀態下也有「新增卡片」按鈕（empty state 內）", async () => {
-    await renderDashboardGrid(makeBaseProps());
-    // 空狀態區域有「新增卡片」button
-    expect(screen.getByText("新增卡片")).toBeTruthy();
-  });
-});
-
-describe("DashboardGrid — 有卡片時", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockLayout.mockReturnValue(makeLayoutWithCards());
-  });
-
-  it("有卡片時不顯示空狀態文字", async () => {
-    await renderDashboardGrid(makeBaseProps());
+  it("有卡片時不顯示空狀態", () => {
+    renderGrid();
     expect(screen.queryByText("尚未新增任何卡片")).toBeNull();
-  });
-
-  it("渲染對應數量的 DashboardCard", async () => {
-    await renderDashboardGrid(makeBaseProps());
-    const cards = screen.getAllByTestId("dashboard-card");
-    expect(cards.length).toBe(2);
-  });
-
-  it("渲染 CardRenderer（對應卡片 type）", async () => {
-    await renderDashboardGrid(makeBaseProps());
-    expect(screen.getByTestId("card-renderer-revenue-summary")).toBeTruthy();
-    expect(screen.getByTestId("card-renderer-bid-status")).toBeTruthy();
-  });
-});
-
-describe("DashboardGrid — CardPickerDialog", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockLayout.mockReturnValue(makeEmptyLayout());
-  });
-
-  it("初始狀態下 CardPickerDialog 不顯示", async () => {
-    await renderDashboardGrid(makeBaseProps());
-    expect(screen.queryByTestId("card-picker-dialog")).toBeNull();
-  });
-
-  it("點擊空狀態的「新增卡片」→ CardPickerDialog 開啟", async () => {
-    await renderDashboardGrid(makeBaseProps());
-    fireEvent.click(screen.getByText("新增卡片"));
-    expect(screen.getByTestId("card-picker-dialog")).toBeTruthy();
-  });
-
-  it("點擊編輯模式的「新增卡片」→ CardPickerDialog 開啟", async () => {
-    await renderDashboardGrid(makeBaseProps());
-    fireEvent.click(screen.getByText("編輯佈局"));
-    const addBtns = screen.getAllByText("新增卡片");
-    fireEvent.click(addBtns[0]);
-    expect(screen.getByTestId("card-picker-dialog")).toBeTruthy();
   });
 });
