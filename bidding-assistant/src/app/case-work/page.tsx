@@ -405,14 +405,7 @@ export default function CaseWorkPage() {
               onClick={() => {
                 const firstIncomplete = progress?.stages.find(s => s.status !== "completed");
                 const stage = firstIncomplete?.stageId ?? "L1";
-                const params = new URLSearchParams({ stage });
-                if (caseName) params.set("caseName", caseName);
-                if (agency) params.set("agency", agency);
-                if (fitScore) {
-                  params.set("verdict", fitScore.verdict);
-                  params.set("total", String(fitScore.total));
-                }
-                router.push(`/assembly?${params.toString()}`);
+                router.push(`/assembly?stage=${stage}`);
               }}
             >
               {progressPercent === 0 ? "開始撰寫" : progressPercent < 100 ? "繼續撰寫" : "檢視內容"}

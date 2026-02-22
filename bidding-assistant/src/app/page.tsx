@@ -755,8 +755,8 @@ export default function DashboardPage() {
         onClose={() => setDetailPage(null)}
       />
 
-      {/* ====== schema 偵測（Debug） ====== */}
-      {connected && (statusOptions.length > 0 || decisionOptions.length > 0) && (
+      {/* ====== schema 偵測（僅開發模式） ====== */}
+      {process.env.NODE_ENV === "development" && connected && (statusOptions.length > 0 || decisionOptions.length > 0) && (
         <details className="mt-4 text-xs text-muted-foreground">
           <summary className="cursor-pointer hover:text-foreground">偵測到的欄位選項</summary>
           <div className="mt-2 p-3 bg-muted rounded-lg space-y-1">
