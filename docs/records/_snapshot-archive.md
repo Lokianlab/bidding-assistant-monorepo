@@ -281,6 +281,14 @@
 
 [x] feat-gap3-quality-gate-context|GAP-3：品質閘門加案件上下文|?caseId/?caseName+回到案件按鈕+4 tests，3314 tests（3O5L 0223）
 
+<<<<<<< HEAD
 ## AINL (20260223-0716 archival)
 [x] feat-gap5-strategy-back|GAP-5: strategy ← back-to-case btn|L2 PASS (Z1FV), commit 5432c16
 [x] feat-caseid-pipeline|caseId upstream: case-work+strategy→assembly|3328t pass, commit 9415db5
+=======
+## A44T — 20260223
+
+[x] feat-gap1-gap5|GAP-1+5 navigation fixes|b0c8baa
+[x] infra-orch-stub|patrol orchestrator stubs wired|buildSummary+buildIntelligenceReport
+[x] infra-orch-spec|proposal pipeline spec|docs/plans/proposal-pipeline-orchestrator-spec.md
+[x] broadcast-autonomous-expansion|可逆操作全部自主授權|已落地 CLAUDE.md 075f4c8，JDNE 0650 要求歸檔
