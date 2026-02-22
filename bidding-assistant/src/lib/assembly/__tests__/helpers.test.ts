@@ -79,6 +79,7 @@ describe("assembly/helpers", () => {
 
     it("應該回傳 FileListItem 陣列", () => {
       const mockRule: StageKBRule = {
+        stageId: "L1",
         alwaysLoad: [],
         stageFile: "stage-file",
         extraSpecs: [],
@@ -98,12 +99,12 @@ describe("assembly/helpers", () => {
   describe("computeActiveFiles", () => {
     const mockFileList: FileListItem[] = [
       {
-        file: { id: "f1", label: "File 1", path: "/f1" },
+        file: { id: "f1", label: "File 1", filename: "/f1", category: "system", categoryLabel: "系統" },
         reason: "自動",
         auto: true,
       },
       {
-        file: { id: "f2", label: "File 2", path: "/f2" },
+        file: { id: "f2", label: "File 2", filename: "/f2", category: "system", categoryLabel: "系統" },
         reason: "選擇性",
         ref: "optional",
         auto: false,
@@ -136,7 +137,7 @@ describe("assembly/helpers", () => {
     it("應該合併多個檔案的內容", () => {
       const files: FileListItem[] = [
         {
-          file: { id: "f1", label: "File 1", path: "/f1" },
+          file: { id: "f1", label: "File 1", filename: "/f1", category: "system", categoryLabel: "系統" },
           reason: "test",
           auto: true,
         },
@@ -144,7 +145,7 @@ describe("assembly/helpers", () => {
 
       const contents = { f1: "Content 1" };
       const result = assembleContent(files, contents);
-      
+
       expect(result).toContain("Content 1");
       expect(result).toContain("File 1");
       expect(result).toContain("=".repeat(60));
@@ -153,12 +154,12 @@ describe("assembly/helpers", () => {
     it("應該忽略缺少內容的檔案", () => {
       const files: FileListItem[] = [
         {
-          file: { id: "f1", label: "File 1", path: "/f1" },
+          file: { id: "f1", label: "File 1", filename: "/f1", category: "system", categoryLabel: "系統" },
           reason: "test",
           auto: true,
         },
         {
-          file: { id: "f2", label: "File 2", path: "/f2" },
+          file: { id: "f2", label: "File 2", filename: "/f2", category: "system", categoryLabel: "系統" },
           reason: "test",
           auto: true,
         },

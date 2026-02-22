@@ -76,7 +76,7 @@ describe("ChartsSection — 有資料", () => {
   it("有 monthlyTrend 時渲染折線圖", () => {
     const { container } = render(
       createElement(ChartsSection, {
-        monthlyTrend: [{ month: "2025-01", 投標件數: 3, 得標件數: 1 }],
+        monthlyTrend: [{ month: "2025-01", fullKey: "2025-01", 投標件數: 3, 得標件數: 1 }],
         typeAnalysis: [],
         teamWorkload: [],
       })
@@ -88,7 +88,7 @@ describe("ChartsSection — 有資料", () => {
     const { container } = render(
       createElement(ChartsSection, {
         monthlyTrend: [],
-        typeAnalysis: [{ name: "展覽策展", 件數: 5 }],
+        typeAnalysis: [{ name: "展覽策展", 件數: 5, 預算: 0 }],
         teamWorkload: [],
       })
     );

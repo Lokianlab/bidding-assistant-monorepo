@@ -44,6 +44,7 @@ const testFile = {
   label: "系統角色定義",
   filename: "system/role.md",
   category: "system" as const,
+  categoryLabel: "系統",
 };
 
 async function getToolFileDialog() {

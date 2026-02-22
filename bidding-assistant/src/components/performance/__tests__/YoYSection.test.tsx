@@ -32,7 +32,7 @@ function makeYoYData(overrides?: Partial<YoYSummary>): YoYSummary {
     baseYear: 2024,
     compareYear: 2025,
     data: [
-      { period: "1月", baseSubmitted: 3, baseWon: 1, compareSubmitted: 5, compareWon: 2 },
+      { period: "1月", periodNum: 1, baseSubmitted: 3, baseWon: 1, baseWonBudget: 0, compareSubmitted: 5, compareWon: 2, compareWonBudget: 0 },
     ],
     baseTotals: { submitted: 10, won: 4, wonBudget: 2000000 },
     compareTotals: { submitted: 8, won: 3, wonBudget: 1500000 },

@@ -52,7 +52,7 @@ async function getEditor00E() {
 describe("EntryEditor00A", () => {
   it("渲染「姓名 *」欄位", async () => {
     const Editor = await getEditor00A();
-    render(createElement(Editor as React.ComponentType<object>, {
+    render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel: vi.fn(),
       nextId: "00A001",
@@ -62,7 +62,7 @@ describe("EntryEditor00A", () => {
 
   it("姓名為空時「新增」按鈕 disabled", async () => {
     const Editor = await getEditor00A();
-    const { container } = render(createElement(Editor as React.ComponentType<object>, {
+    const { container } = render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel: vi.fn(),
       nextId: "00A001",
@@ -76,7 +76,7 @@ describe("EntryEditor00A", () => {
   it("點擊「取消」呼叫 onCancel", async () => {
     const Editor = await getEditor00A();
     const onCancel = vi.fn();
-    const { container } = render(createElement(Editor as React.ComponentType<object>, {
+    const { container } = render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel,
       nextId: "00A001",
@@ -90,7 +90,7 @@ describe("EntryEditor00A", () => {
 
   it("有 initial 時顯示「更新」按鈕", async () => {
     const Editor = await getEditor00A();
-    render(createElement(Editor as React.ComponentType<object>, {
+    render(createElement(Editor as React.ComponentType<any>, {
       initial: {
         id: "00A001",
         name: "王小明",
@@ -118,7 +118,7 @@ describe("EntryEditor00A", () => {
 describe("EntryEditor00B", () => {
   it("渲染「案名 *」欄位", async () => {
     const Editor = await getEditor00B();
-    render(createElement(Editor as React.ComponentType<object>, {
+    render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel: vi.fn(),
       nextId: "00B001",
@@ -128,7 +128,7 @@ describe("EntryEditor00B", () => {
 
   it("案名為空時「新增」按鈕 disabled", async () => {
     const Editor = await getEditor00B();
-    const { container } = render(createElement(Editor as React.ComponentType<object>, {
+    const { container } = render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel: vi.fn(),
       nextId: "00B001",
@@ -142,7 +142,7 @@ describe("EntryEditor00B", () => {
   it("點擊「取消」呼叫 onCancel", async () => {
     const Editor = await getEditor00B();
     const onCancel = vi.fn();
-    const { container } = render(createElement(Editor as React.ComponentType<object>, {
+    const { container } = render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel,
       nextId: "00B001",
@@ -160,7 +160,7 @@ describe("EntryEditor00B", () => {
 describe("EntryEditor00C", () => {
   it("渲染「範本名稱 *」欄位", async () => {
     const Editor = await getEditor00C();
-    render(createElement(Editor as React.ComponentType<object>, {
+    render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel: vi.fn(),
       nextId: "00C001",
@@ -170,7 +170,7 @@ describe("EntryEditor00C", () => {
 
   it("範本名稱為空時「新增」按鈕 disabled", async () => {
     const Editor = await getEditor00C();
-    const { container } = render(createElement(Editor as React.ComponentType<object>, {
+    const { container } = render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel: vi.fn(),
       nextId: "00C001",
@@ -184,7 +184,7 @@ describe("EntryEditor00C", () => {
   it("點擊「取消」呼叫 onCancel", async () => {
     const Editor = await getEditor00C();
     const onCancel = vi.fn();
-    const { container } = render(createElement(Editor as React.ComponentType<object>, {
+    const { container } = render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel,
       nextId: "00C001",
@@ -202,7 +202,7 @@ describe("EntryEditor00C", () => {
 describe("EntryEditor00D", () => {
   it("渲染「風險名稱 *」欄位", async () => {
     const Editor = await getEditor00D();
-    render(createElement(Editor as React.ComponentType<object>, {
+    render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel: vi.fn(),
       nextId: "00D001",
@@ -212,7 +212,7 @@ describe("EntryEditor00D", () => {
 
   it("風險名稱為空時「新增」按鈕 disabled", async () => {
     const Editor = await getEditor00D();
-    const { container } = render(createElement(Editor as React.ComponentType<object>, {
+    const { container } = render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel: vi.fn(),
       nextId: "00D001",
@@ -226,7 +226,7 @@ describe("EntryEditor00D", () => {
   it("點擊「取消」呼叫 onCancel", async () => {
     const Editor = await getEditor00D();
     const onCancel = vi.fn();
-    const { container } = render(createElement(Editor as React.ComponentType<object>, {
+    const { container } = render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel,
       nextId: "00D001",
@@ -244,7 +244,7 @@ describe("EntryEditor00D", () => {
 describe("EntryEditor00E", () => {
   it("渲染「案名 *」欄位", async () => {
     const Editor = await getEditor00E();
-    render(createElement(Editor as React.ComponentType<object>, {
+    render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel: vi.fn(),
       nextId: "00E001",
@@ -254,7 +254,7 @@ describe("EntryEditor00E", () => {
 
   it("案名為空時「新增」按鈕 disabled", async () => {
     const Editor = await getEditor00E();
-    const { container } = render(createElement(Editor as React.ComponentType<object>, {
+    const { container } = render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel: vi.fn(),
       nextId: "00E001",
@@ -268,7 +268,7 @@ describe("EntryEditor00E", () => {
   it("點擊「取消」呼叫 onCancel", async () => {
     const Editor = await getEditor00E();
     const onCancel = vi.fn();
-    const { container } = render(createElement(Editor as React.ComponentType<object>, {
+    const { container } = render(createElement(Editor as React.ComponentType<any>, {
       onSave: vi.fn(),
       onCancel,
       nextId: "00E001",

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { createElement } from "react";
+import React, { createElement } from "react";
 import { DashboardCard } from "../cards/DashboardCard";
 
 // ── Tests ────────────────────────────────────────────────
@@ -14,6 +14,7 @@ describe("DashboardCard", () => {
     isEditing: false,
     onResize: vi.fn(),
     onRemove: vi.fn(),
+    children: null as React.ReactNode,
   };
 
   it("顯示卡片標題", () => {
