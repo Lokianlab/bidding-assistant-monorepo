@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ScanDashboard } from "../ScanDashboard";
+import { useSettings } from "@/lib/context/settings-context";
 
 // ── Mock next/navigation ────────────────────────────────────
 const mockPush = vi.fn();
@@ -9,14 +10,16 @@ vi.mock("next/navigation", () => ({
 }));
 
 // ── Mock settings-context ────────────────────────────────────
-vi.mock("@/lib/context/settings-context", () => ({
-  useSettings: () => ({
-    settings: {
-      connections: {
-        notion: { token: "", databaseId: "" },
-      },
+// 使用 vi.fn() 讓特定測試可以透過 vi.mocked(useSettings).mockReturnValue 覆寫
+const defaultSettings = {
+  settings: {
+    connections: {
+      notion: { token: "", databaseId: "" },
     },
-  }),
+  },
+};
+vi.mock("@/lib/context/settings-context", () => ({
+  useSettings: vi.fn(() => defaultSettings),
 }));
 
 // ── Mock fetch ──────────────────────────────────────────────
@@ -27,7 +30,9 @@ vi.stubGlobal("fetch", mockFetch);
 beforeEach(() => {
   vi.clearAllMocks();
   mockPush.mockReset();
-  localStorage.clear(); // 隔離各測試的排除記憶
+  // 明確重設 useSettings 回預設（clearAllMocks 不清 implementation）
+  vi.mocked(useSettings).mockImplementation(() => defaultSettings);
+  localStorage.clear(); // 隔離各測試的排除記憶與建案記憶
 });
 
 const mockScanResponse = {
@@ -270,5 +275,95 @@ describe("ScanDashboard", () => {
     await waitFor(() => {
       expect(screen.getByText("建立追蹤案件")).toBeDefined();
     });
+  });
+});
+
+// ── 建案記憶持久化 ─────────────────────────────────────────
+
+describe("ScanDashboard — 建案記憶持久化", () => {
+  it("初始化時從 localStorage 載入已建案記憶，顯示已建案數量", async () => {
+    // 掛載前預置持久化記憶（J001 = 食農教育推廣計畫）
+    localStorage.setItem("scan-created", JSON.stringify(["J001"]));
+
+    mockScanSuccess();
+    render(<ScanDashboard />);
+    fireEvent.click(screen.getByText("手動掃描"));
+
+    await waitFor(() => {
+      expect(screen.getByText("食農教育推廣計畫")).toBeDefined();
+    });
+
+    // 統計列應顯示「已建案 1 筆」
+    expect(screen.getByText(/已建案 1 筆/)).toBeDefined();
+  });
+
+  it("手動掃描後重新載入持久化記憶", async () => {
+    // 第一次掃描：localStorage 為空，不顯示已建案
+    mockScanSuccess();
+    render(<ScanDashboard />);
+    fireEvent.click(screen.getByText("手動掃描"));
+
+    await waitFor(() => {
+      expect(screen.getByText("食農教育推廣計畫")).toBeDefined();
+    });
+    expect(screen.queryByText(/已建案/)).toBeNull();
+
+    // 模擬外部途徑建案後寫入 localStorage
+    localStorage.setItem("scan-created", JSON.stringify(["J001"]));
+
+    // 第二次掃描：handleScan 會重新從 localStorage 讀取
+    mockScanSuccess();
+    fireEvent.click(screen.getByText("手動掃描"));
+
+    await waitFor(() => {
+      expect(screen.getByText(/已建案 1 筆/)).toBeDefined();
+    });
+  });
+
+  it("建案成功後顯示已建案數量並寫入 localStorage", async () => {
+    // 提供有效憑證讓 CreateCaseDialog 的建案按鈕可點擊
+    vi.mocked(useSettings).mockReturnValue({
+      settings: {
+        connections: {
+          notion: { token: "valid-token", databaseId: "valid-db" },
+        },
+      },
+    } as ReturnType<typeof useSettings>);
+
+    // fetch #1：掃描
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockScanResponse,
+    });
+
+    render(<ScanDashboard />);
+    fireEvent.click(screen.getByText("手動掃描"));
+
+    await waitFor(() => {
+      expect(screen.getByText("食農教育推廣計畫")).toBeDefined();
+    });
+
+    // 點擊推薦分頁的第一個「建案」按鈕
+    fireEvent.click(screen.getAllByText("建案")[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText("建立追蹤案件")).toBeDefined();
+    });
+
+    // fetch #2：建案 API 成功
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ url: "https://notion.so/page/123" }),
+    });
+
+    fireEvent.click(screen.getByText("✅ 建案到 Notion"));
+
+    await waitFor(() => {
+      expect(screen.getByText(/已建案 1 筆/)).toBeDefined();
+    });
+
+    // 確認已持久化到 localStorage
+    const stored = JSON.parse(localStorage.getItem("scan-created") ?? "[]") as string[];
+    expect(stored).toContain("J001");
   });
 });
