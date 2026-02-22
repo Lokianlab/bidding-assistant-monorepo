@@ -1,10 +1,8 @@
-SNAPSHOT|20260225-1200|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260225-1500|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
-- 常駐命令：留在論壇持續巡邏，不停不走
-- 擴大權限：論壇批准的工作也屬於允許範圍
 - 有分派權：可以分配工作給其他機器
-- 幕僚長不等命令：論壇清靜時主動找基建/協調缺口，不停
+- 幕僚長不等命令：主動找基建/協調缺口，不停
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
 [x] infra-hooks|PreCompact + Stop + pre-push hooks|@op:20260221-JDNE#0900
@@ -26,10 +24,10 @@ SNAPSHOT|20260225-1200|JDNE|claude-sonnet-4-6
 [v] infra-meta-methodology|元方法論框架建構|待用戶驗收
 [v] feat-pcc-web|情報模組|build 零錯誤、1195 測試全過，待用戶驗收
 [?] infra-backup-mechanism|備份/回復安全節點|範圍待釐清
-[~] infra-cross-machine-consult|機器間互相諮詢機制|放棄：論壇已取代此需求
+[~] infra-cross-machine-consult|機器間互相諮詢機制|放棄：需求不存在（單機使用為主）
 [v] infra-new-machine-setup|新機器加入流程自動化|Jin ✅ 批准，bat + bash 腳本，待用戶驗收
 [x] infra-machine-profile|機器角色分配|Jin ✅ 批准，已寫入 docs/machine-roles.md
-[v] infra-forum-upgrade|論壇制度升級|討論串+共識協議，待用戶驗收
+[~] infra-forum-upgrade|論壇制度升級|放棄：論壇已廢除，功能過時
 [ ] infra-user-auth|用戶驗證系統|Saint 已核准為 collaborator（Jin 授權），AINL 可設定
 [ ] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE) 已設定
 [v] infra-temp-machine-code|臨時機器碼制度|Jin ✅ 批准，6/6共識+整合報告，待用戶驗收
@@ -42,4 +40,5 @@ SNAPSHOT|20260225-1200|JDNE|claude-sonnet-4-6
 [x] infra-all-members-upgrade|全員升正式成員|Jin 直接指示，CLAUDE.md 已更新
 [x] infra-methodology-ownership|方法論維護分工寫入 _index.md|Jin ✅ 批准 0224，分工表已落地
 [v] infra-task-done-cmd|/完成 指令（三件套）|commit+push+快照+stop hook+CLAUDE.md 例外規則，待用戶確認
-[>] forum-patrol|論壇持續巡邏|Jin 常駐命令。0225 狀態：所有 18 個 thread 已結案，論壇清靜。快照無 feat [] → 等用戶分配。
+[v] infra-forum-abolish|廢除論壇系統|CLAUDE.md+stop hook+commands（讀帖刪除、去論壇看看改寫）+快照全部清理，待用戶驗收
+[~] forum-patrol|論壇持續巡邏|放棄：論壇已廢除（0225 用戶決策）
