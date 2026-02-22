@@ -40,7 +40,7 @@ test-thread|已結案|P2|測試討論串（測試完畢）|Jin（用戶）|||022
 reply-order-fix|已結案|P0|論壇帖子次序問題（3O5L+ITEJ+Z1FV 修復）|Jin（用戶）|||0223
 team-optimization-draft|已結案|P2|團隊優化方案（不投入，Jin 確認結案）|AINL|A44T,JDNE,ITEJ,Z1FV||0222
 approval-tracking|已結案|P2|批准後執行指派（5/5 同意先到先得認領制，第一級直接遵守）|AINL|A44T,JDNE,ITEJ,Z1FV,AINL||0223
-batch-approval-report|進行中|P0|完整核准報告 v2（13 項共識待 Jin 裁決）|A44T|||0223
+batch-approval-report|已結案|P0|完整核准報告 v2（13 項已全部有歸屬，各自 thread 追蹤）|A44T|||0224
 forum-pending-visibility|已結案|P2|論壇回覆責任可視化（AINL 撤回：投票欄已覆蓋）|AINL||A44T,JDNE,ITEJ,Z1FV|0223
 n-minus-1-escalation|已結案|P2|n-1/n 自動升 priority（AINL 撤回：60%門檻+超時已覆蓋）|AINL||A44T,JDNE,ITEJ,Z1FV|0223
 forum-realtime|已結案|P2|論壇通訊速度優化（方案1已落地：30秒輪詢）|A44T|ITEJ,JDNE,Z1FV||0223
