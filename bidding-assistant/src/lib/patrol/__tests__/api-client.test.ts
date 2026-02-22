@@ -243,8 +243,9 @@ describe("apiSearchPcc", () => {
 // ── apiFetchTenderDetail ──────────────────────────────────────
 
 describe("apiFetchTenderDetail", () => {
-  it("目前永遠回傳 null（Layer A API 尚未實作）", async () => {
+  it("目前永遠回傳 null（Layer A API 尚未實作），不呼叫 fetch", async () => {
     const result = await apiFetchTenderDetail("unit-001", "J001");
     expect(result).toBeNull();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 });

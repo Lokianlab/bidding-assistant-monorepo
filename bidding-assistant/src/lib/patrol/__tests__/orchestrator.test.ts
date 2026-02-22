@@ -2,12 +2,20 @@
  * Layer C 編排流程測試
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   validateOrchestrationResult,
   getProgressFromResult,
+  orchestrateAccept,
 } from '../orchestrator';
-import { AcceptResult } from '../types';
+import type { AcceptResult, PatrolItem } from '../types';
+import * as apiClient from '../api-client';
+
+vi.mock('../api-client');
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe('orchestrator - 編排流程', () => {
   describe('validateOrchestrationResult', () => {
@@ -184,5 +192,126 @@ describe('orchestrator - 編排流程', () => {
         expect(progress.message.length).toBeGreaterThan(0);
       }
     });
+  });
+});
+
+// ── orchestrateAccept ─────────────────────────────────────────
+
+describe('orchestrateAccept', () => {
+  const mockItem: PatrolItem = {
+    id: 'unit-001-J001',
+    title: '食農教育推廣計畫',
+    budget: 1000000,
+    agency: '教育局',
+    deadline: '20260315',
+    publishDate: '20260228',
+    jobNumber: 'J001',
+    unitId: 'unit-001',
+    url: 'https://pcc.g0v.ronny.tw/tender/J001',
+    category: 'definite',
+    status: 'new',
+  };
+
+  const mockConfig = {
+    notionToken: 'notion-token',
+    notionDatabaseId: 'db-id',
+    driveAccessToken: 'drive-token',
+    driveParentFolderId: 'parent-id',
+  };
+
+  it('完整成功流程：Notion + Drive 均建立，回寫摘要/情蒐', async () => {
+    vi.mocked(apiClient.apiFetchTenderDetail).mockResolvedValue(null);
+    vi.mocked(apiClient.apiCreateNotionCase).mockResolvedValue({
+      success: true,
+      notionPageId: 'page-1',
+      caseUniqueId: 'case-1',
+    });
+    vi.mocked(apiClient.apiCreateDriveFolder).mockResolvedValue({
+      success: true,
+      folderId: 'folder-1',
+      folderUrl: 'https://drive.google.com/drive/folders/folder-1',
+    });
+    vi.mocked(apiClient.apiUpdateNotionCase).mockResolvedValue({ success: true });
+
+    const result = await orchestrateAccept(mockItem, mockConfig);
+
+    expect(result.notion.success).toBe(true);
+    expect(result.drive.success).toBe(true);
+    // generateSummary 和 generateIntelligenceReport 回傳佔位字串
+    expect(result.summary).toBeTruthy();
+    expect(result.intelligence).toBeTruthy();
+    // 應回寫摘要/情蒐到 Notion
+    expect(apiClient.apiUpdateNotionCase).toHaveBeenCalledOnce();
+  });
+
+  it('Notion 建檔失敗時提早返回，Drive 不執行', async () => {
+    vi.mocked(apiClient.apiFetchTenderDetail).mockResolvedValue(null);
+    vi.mocked(apiClient.apiCreateNotionCase).mockResolvedValue({
+      success: false,
+      error: 'Notion API 錯誤',
+    });
+
+    const result = await orchestrateAccept(mockItem, mockConfig);
+
+    expect(result.notion.success).toBe(false);
+    expect(result.drive.success).toBe(false);
+    expect(result.drive.error).toContain('Notion 建檔失敗');
+    expect(apiClient.apiCreateDriveFolder).not.toHaveBeenCalled();
+    expect(apiClient.apiUpdateNotionCase).not.toHaveBeenCalled();
+  });
+
+  it('沒有 Drive 設定時跳過 Drive，Notion 仍建立', async () => {
+    vi.mocked(apiClient.apiFetchTenderDetail).mockResolvedValue(null);
+    vi.mocked(apiClient.apiCreateNotionCase).mockResolvedValue({
+      success: true,
+      notionPageId: 'page-1',
+      caseUniqueId: 'case-1',
+    });
+    vi.mocked(apiClient.apiUpdateNotionCase).mockResolvedValue({ success: true });
+
+    const configWithoutDrive = {
+      notionToken: 'notion-token',
+      notionDatabaseId: 'db-id',
+    };
+
+    const result = await orchestrateAccept(mockItem, configWithoutDrive);
+
+    expect(result.notion.success).toBe(true);
+    expect(result.drive.success).toBe(false);
+    expect(result.drive.error).toContain('Drive 尚未設定');
+    expect(apiClient.apiCreateDriveFolder).not.toHaveBeenCalled();
+  });
+
+  it('api-client 拋出例外時整體回傳錯誤', async () => {
+    vi.mocked(apiClient.apiFetchTenderDetail).mockRejectedValue(new Error('網路中斷'));
+
+    const result = await orchestrateAccept(mockItem, mockConfig);
+
+    expect(result.notion.success).toBe(false);
+    expect(result.drive.success).toBe(false);
+    expect(result.notion.error).toContain('網路中斷');
+  });
+
+  it('apiFetchTenderDetail 回傳 null 時用 PatrolItem 資料組裝 Notion 輸入', async () => {
+    vi.mocked(apiClient.apiFetchTenderDetail).mockResolvedValue(null);
+    vi.mocked(apiClient.apiCreateNotionCase).mockResolvedValue({
+      success: true,
+      notionPageId: 'page-1',
+      caseUniqueId: 'case-1',
+    });
+    vi.mocked(apiClient.apiCreateDriveFolder).mockResolvedValue({ success: true, folderId: 'f1' });
+    vi.mocked(apiClient.apiUpdateNotionCase).mockResolvedValue({ success: true });
+
+    await orchestrateAccept(mockItem, mockConfig);
+
+    expect(apiClient.apiCreateNotionCase).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: mockItem.title,
+        jobNumber: mockItem.jobNumber,
+        agency: mockItem.agency,
+      }),
+      mockConfig.notionToken,
+      mockConfig.notionDatabaseId,
+    );
   });
 });
