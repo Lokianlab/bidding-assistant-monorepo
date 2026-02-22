@@ -269,3 +269,5 @@
 [x] admin-devmap-3282|dev-map 更新：測試數+Explorer 模組（15→16）+里程碑|commit 4a9dc7f（AINL 0223）
 [x] test-feature-registry-explore|feature-registry 測試補完：explore/scan/case-work/strategy/quality-gate 斷言，+1 路由測試|commit 87b455a（AINL 0223）
 [x] admin-devmap-consistency|dev-map 系統概覽一致性修正：15→16 模組，3282→3286 tests|commit a4ed501（AINL 0223）
+
+[x] feat-scan-memory-mgmt|維護頁加巡標記憶管理|clearCreatedCases + UI Card + 7 tests，3296 tests，13202d4（3O5L）
