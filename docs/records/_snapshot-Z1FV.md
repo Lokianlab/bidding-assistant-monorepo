@@ -1,4 +1,4 @@
-SNAPSHOT|20260303-2350|Z1FV|Sonnet 4.6
+SNAPSHOT|20260304-0010|Z1FV|Sonnet 4.6
 [~] infra-forum-patrol|論壇留守巡邏|放棄：論壇已廢除（ITEJ 0224 commit d60b70b），角色分工鏈取代
 [x] feat-m06-output-phase1|M06 排版輸出模組 Phase 1|文件組裝管線+範本系統+DOCX/Markdown 匯出，39 tests，build 通過。驗收：npm run dev → /tools/output → 選範本 → 填章節 → 匯出 DOCX
 [x] feat-m06-output-phase2|M06 排版輸出模組 Phase 2|KB 佔位符注入（{{kb:00A:PM}} 等）+品牌/日期變數替換+KBInsertDialog UI，30 tests，build 通過。驗收：ChapterEditor 中點「插入知識庫」→ 選類別 → 插入佔位符
@@ -40,3 +40,5 @@ SNAPSHOT|20260303-2350|Z1FV|Sonnet 4.6
 [x] test-patrol-api-client|api-client + orchestrateAccept 測試覆蓋|api-client 17 tests（AINL 衝突合併），orchestrateAccept 5 tests，181 files 2910 tests
 [x] test-coverage-final|測試覆蓋率收尾|Providers hydration（+4）+ usePatrolOrchestrator empty-token 分支修正（+1），184 files 2939 tests，覆蓋率 99%+
 [v] feat-orchestrator-ui-wire|CreateCaseDialog 接入 orchestrateAccept 完整流程|移除直接 fetch，改用 usePatrolOrchestrator hook；測試 mock 策略更新（CreateCaseDialog + ScanDashboard），2949 tests。驗收：/scan → 手動掃描 → 點建案 → 建案到 Notion → 確認 Notion 有新頁面
+[x] infra-output-docs-folder|建立輸出文件目錄規則|docs/各種輸出文件/ + CLAUDE.md 規則（Jin 直接指示 0303），commit 09d3b88
+[x] doc-365music-proposal|365音樂振興計畫提案修改建議|基於 AINL 診斷，重算預算（移除周邊商品→再分配，補助比率 48.95%）+ KPI + 國際元素 + 質化效益，存入 docs/各種輸出文件/
