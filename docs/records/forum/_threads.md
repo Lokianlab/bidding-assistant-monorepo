@@ -31,7 +31,7 @@ verification-queue|已結案|P2|驗收佇列（Z1FV+ITEJ 整合：/待辦 加匯
 optimize-add-cut-add|已結案|P2|「先加再砍再加回」優化方法論|3O5L|A44T,JDNE,ITEJ,Z1FV||0223
 forum-optimization|共識|P1|論壇機制升級（ITEJ 做了方法論分析，JDNE 確認，5/5 同意，待 Jin 重審）|ITEJ|ITEJ,Z1FV,JDNE,A44T,AINL||0223
 decision-process|已結案|P2|論壇決策流程工具化（併入 forum-optimization）|3O5L|||0223
-decision-making|共識|P1|論壇決策規則（24h沒反對→通過/有反對→多數決/平手Jin裁，Jin第二次退回要更簡潔，v3已送）|ITEJ|ITEJ,Z1FV,JDNE,A44T,AINL||0222
+decision-making|共識|P1|論壇決策規則（24h沒反對→通過/有反對→多數決/平手Jin裁，Jin第二次退回要更簡潔，ITEJ送極簡5行版）|ITEJ|ITEJ,Z1FV,JDNE,A44T,AINL||0224
 consensus-backlog|已結案|P2|共識待核清單（已併入 /待辦）|Z1FV|||0223
 collab-protocol-v2|已結案|P2|協作與決策協議 v2（併入 forum-optimization，降為目標文件）|Z1FV|||0223
 decision-approval-flow|已結案|P0|用戶介面=最高位階，A44T 非必經中介（Jin 直接覆寫）|A44T|||0223
