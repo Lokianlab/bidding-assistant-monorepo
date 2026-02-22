@@ -93,6 +93,31 @@ export type ExportResult =
   | { format: "markdown"; text: string; filename: string }
   | { format: "print"; html: string };
 
+// ── KB 佔位符型別（Phase 2）────────────────────────────────────
+
+import type { KBId } from "@/lib/knowledge-base/types";
+
+export type KBPlaceholderType = "kb" | "brand" | "project" | "date";
+
+export interface KBPlaceholder {
+  raw: string;                // 原始佔位符文字，如 {{kb:00A:PM}}
+  type: KBPlaceholderType;
+  category?: KBId;            // 知識庫類別（type="kb" 時有效）
+  selector: string;           // 篩選條件（角色、關鍵字等）
+  limit?: number;             // 數量限制（如 {{kb:00B:recent:3}} 中的 3）
+}
+
+export interface KBValidationResult {
+  valid: boolean;
+  unresolved: KBPlaceholder[]; // 找不到對應資料的佔位符
+}
+
+export interface BrandVars {
+  companyName?: string;
+  companyTaxId?: string;
+  projectName?: string;
+}
+
 // ── 文件工作台狀態 ────────────────────────────────────────────
 
 export interface WorkbenchChapter extends ChapterSource {

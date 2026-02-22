@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { KBInsertDialog } from "./KBInsertDialog";
 import type { WorkbenchChapter } from "@/lib/output/types";
 
 interface ChapterEditorProps {
@@ -64,12 +65,21 @@ export function ChapterEditor({
         <p className="text-xs text-muted-foreground px-1">{guideText}</p>
       )}
 
-      <Textarea
-        value={chapter.content}
-        onChange={handleContentChange}
-        placeholder="貼入或輸入 Markdown 內容..."
-        className="min-h-[200px] font-mono text-sm resize-y"
-      />
+      <div className="relative">
+        <Textarea
+          value={chapter.content}
+          onChange={handleContentChange}
+          placeholder="貼入或輸入 Markdown 內容..."
+          className="min-h-[200px] font-mono text-sm resize-y"
+        />
+        <div className="absolute bottom-2 right-2">
+          <KBInsertDialog
+            onInsert={(placeholder) => {
+              onUpdate(chapter.id, { content: chapter.content + placeholder });
+            }}
+          />
+        </div>
+      </div>
 
       <div className={`text-xs flex items-center gap-2 ${charCountColor}`}>
         <span>{charCount.toLocaleString()} 字</span>
