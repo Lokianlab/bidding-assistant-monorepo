@@ -471,7 +471,7 @@ describe('updateNotionCase', () => {
 
     // 第二次呼叫應該是 PATCH blocks
     const blockCall = mockFetch.mock.calls.find(
-      (call: [string, unknown]) => typeof call[0] === 'string' && call[0].includes('/children'),
+      (call) => typeof call[0] === 'string' && call[0].includes('/children'),
     );
     expect(blockCall).toBeDefined();
   });
