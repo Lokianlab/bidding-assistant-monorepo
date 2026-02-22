@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-1620|3O5L|Sonnet 4.6
+SNAPSHOT|20260225-1620|3O5L|Sonnet 4.6
 
 ## 行為備註
 - 策略主官：優先序決定、跨機器協調、向 Jin 彙報
@@ -12,14 +12,15 @@ SNAPSHOT|20260222-1620|3O5L|Sonnet 4.6
 [x] infra-governance-phase|論壇治理階段|52 個 thread 全部 已結案，治理階段告一段落
 [x] infra-dev-map-update|dev-map.md 更新|M03/M04/PCC 加入里程碑，當前階段/優先序同步修正（含 JDNE 0225 版本衝突解決）
 [x] test-useforum|useForum hook 補測試|已被 ITEJ 刪除（論壇廢除 0224），測試隨模組一起刪除
-[x] test-use-document-assembly|useDocumentAssembly hook 補測試|32 tests 全過（初始×6、setTemplateId×4、setProjectName×2、updateChapter×4、addChapter×4、removeChapter×2、moveChapter×5、assemble×5），75 files 1499 tests
+[x] test-use-document-assembly|useDocumentAssembly hook 補測試|32 tests 全過，Z1FV 審查 PASS，76 files 1518 tests
+[x] test-use-export|useExport hook 補測試|19 tests 全過（doExport 成功×4、失敗×5、downloadBlob DOM×4、FORMAT_LABELS×4），commit 908c724
 
 [v] fix-sidebar-link|Sidebar Link href undefined bug|驗收：npm run dev → 不再報 Link href undefined 錯誤
 [v] cleanup-trend-dup|移除重複趨勢計算|驗收：npm run dev → 儀表板趨勢圖表仍正常顯示
 
 [?] prod-min-demo|最小展示版驗收進度|M03✅(A44T,82T)+M04✅(Z1FV,114T)+PCC✅(ITEJ,1132T) → 三件全等 Jin 驗收；整合報告已發論壇 0230
 
-[>] test-coverage-patrol|持續找測試缺口|75 files 1499 tests；下一目標：useExport 或 dashboard hooks
+[>] test-coverage-patrol|持續找測試缺口|76 files 1518 tests；src/lib/ 全覆蓋（useExport 已補），下一目標待掃
 
 ## 完成項目（近期）
 [x] infra-onboarding|首次啟動 onboarding|完成
