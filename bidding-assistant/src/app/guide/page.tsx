@@ -154,8 +154,118 @@ export default function GuidePage() {
           </Tip>
         </Section>
 
-        {/* 4. 工具箱 */}
-        <Section icon="🧰" title="工具箱（知識庫、報價驗算、品質檢查）">
+        {/* 4. 案件看板 & 案件工作頁 */}
+        <Section icon="📌" title="案件看板 & 案件工作頁">
+          <p>
+            <strong className="text-foreground">案件看板：</strong>
+            從 Notion 載入的案件以看板形式呈現，可按進程狀態分欄檢視。點擊任一案件可查看詳細資訊和快速操作按鈕。
+          </p>
+          <p>
+            <strong className="text-foreground">案件工作頁：</strong>
+            單一案件的全視角頁面。一頁看完案件資訊、L1-L8 備標進度、自動計算的五維適配度評分、PCC 情報摘要。
+          </p>
+          <p>
+            <strong className="text-foreground">操作流程：</strong>
+          </p>
+          <ol className="list-decimal pl-5 space-y-1">
+            <li>從案件看板點擊案件 → 側邊詳情面板</li>
+            <li>點「前往案件工作頁」進入完整工作頁</li>
+            <li>更新各階段進度（點擊進度條旁的狀態按鈕）</li>
+            <li>從工作頁可直接跳到戰略分析、情報搜尋、提示詞組裝</li>
+          </ol>
+          <Tip>
+            案件工作頁的戰略分析會自動計算，不需要另外輸入案件資訊。
+          </Tip>
+        </Section>
+
+        {/* 5. 戰略分析 */}
+        <Section icon="🎯" title="戰略分析">
+          <p>
+            <strong className="text-foreground">用途：</strong>
+            五維適配度評分（領域、機關、競爭、規模、團隊），幫助決定一個標案值不值得投。
+          </p>
+          <p>
+            <strong className="text-foreground">操作方式：</strong>
+          </p>
+          <ol className="list-decimal pl-5 space-y-1">
+            <li>輸入案件名稱（必填）、機關名稱、預算金額</li>
+            <li>點「開始分析」</li>
+            <li>查看五維雷達圖和總分（0-100 分）</li>
+            <li>根據評分建議決定是否投標</li>
+            <li>確定投標後點「開始撰寫」進入提示詞組裝</li>
+          </ol>
+          <Tip>
+            從案件工作頁進入戰略分析時，案件資訊會自動帶入，不需要手動輸入。如果知識庫有團隊和實績資料，評分會更準確。
+          </Tip>
+        </Section>
+
+        {/* 6. 情報搜尋 */}
+        <Section icon="🔍" title="情報搜尋（PCC 公開資料）">
+          <p>
+            <strong className="text-foreground">用途：</strong>
+            查詢政府標案公開資料，了解競爭對手和市場情況。
+          </p>
+          <p>
+            <strong className="text-foreground">四大功能：</strong>
+          </p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>案件搜尋</strong>：用關鍵字搜尋 PCC 標案，查看公告內容和決標結果</li>
+            <li><strong>競爭分析</strong>：輸入對手公司名稱，查看其歷年得標紀錄</li>
+            <li><strong>市場趨勢</strong>：搜尋特定領域的標案數量和預算趨勢</li>
+            <li><strong>評委名單</strong>：查看特定機關的採購評選委員會名單</li>
+          </ul>
+          <Tip>
+            從案件工作頁或巡標頁面點「詳情」，會自動帶入案件名稱到搜尋欄。
+          </Tip>
+        </Section>
+
+        {/* 7. 品質閘門 */}
+        <Section icon="🛡️" title="品質閘門">
+          <p>
+            <strong className="text-foreground">用途：</strong>
+            四道品質檢查，在提交建議書前確保內容品質。
+          </p>
+          <p>
+            <strong className="text-foreground">四道閘門：</strong>
+          </p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>文字品質</strong>：禁用詞、模糊量化詞、用語一致性</li>
+            <li><strong>事實查核</strong>：數字一致性、日期正確性</li>
+            <li><strong>需求對照</strong>：是否回應了招標文件的評分項目</li>
+            <li><strong>實務檢驗</strong>：履約實績是否充足、團隊資格是否符合</li>
+          </ul>
+          <p>
+            <strong className="text-foreground">操作方式：</strong>
+            將建議書段落貼入文字框，點「開始檢查」。系統會產出四道閘門的詳細報告，標出需要修改的地方。
+          </p>
+          <Tip>
+            品質檢查通過後，可直接點「匯出文件」進入文件生成頁面。
+          </Tip>
+        </Section>
+
+        {/* 8. 巡標自動化 */}
+        <Section icon="📡" title="巡標自動化">
+          <p>
+            <strong className="text-foreground">用途：</strong>
+            自動掃描 PCC 最新公告，按關鍵字分類後呈現，幫助快速篩選值得投標的案件。
+          </p>
+          <p>
+            <strong className="text-foreground">操作方式：</strong>
+          </p>
+          <ol className="list-decimal pl-5 space-y-1">
+            <li>點「手動掃描」開始搜尋</li>
+            <li>系統用預設關鍵字搜尋 PCC，自動分為「推薦」「需要看」「其他」三類</li>
+            <li>在「推薦」分頁找到感興趣的案件</li>
+            <li>點「建案」一鍵建入 Notion 資料庫</li>
+            <li>不感興趣的點「跳過」，之後不會再出現</li>
+          </ol>
+          <Tip>
+            建案後會在 Notion 自動建立頁面。下次回到案件看板時就能看到新案件。
+          </Tip>
+        </Section>
+
+        {/* 9. 工具箱（知識庫、報價驗算、品質檢查） */}
+        <Section icon="🧰" title="工具箱（知識庫、報價驗算）">
           <p>
             <strong className="text-foreground">知識庫管理：</strong>
             管理公司的標案知識文件（公司簡介、實績、團隊資料等），這些文件會在提示詞組裝時自動帶入。
@@ -163,10 +273,6 @@ export default function GuidePage() {
           <p>
             <strong className="text-foreground">報價驗算：</strong>
             輸入工作項目和費率，自動計算含稅報價。使用設定中的營業稅率和管理費費率參數。
-          </p>
-          <p>
-            <strong className="text-foreground">品質檢查：</strong>
-            對文件內容進行品質檢查，包括禁用詞偵測、用語修正建議、數字一致性驗證等。
           </p>
           <Tip>
             可在「設定 → 功能模組管理」中開關各工具，關閉後不會出現在側欄。
