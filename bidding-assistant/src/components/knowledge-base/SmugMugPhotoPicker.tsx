@@ -190,6 +190,7 @@ export function SmugMugPhotoPicker({ selected, onChange, albumKey, onAlbumKeyCha
           {selected.map((photo) => (
             <div key={photo.imageKey} className="relative group">
               {photo.thumbnailUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- SmugMug CDN 域名動態，無法用 next/image remotePatterns 覆蓋
                 <img
                   src={photo.thumbnailUrl}
                   alt={photo.title}
@@ -275,6 +276,7 @@ export function SmugMugPhotoPicker({ selected, onChange, albumKey, onAlbumKeyCha
                       title={img.title || img.fileName}
                     >
                       {img.thumbnailUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element -- SmugMug CDN 域名動態，無法用 next/image remotePatterns 覆蓋
                         <img
                           src={img.thumbnailUrl}
                           alt={img.title || img.fileName}
