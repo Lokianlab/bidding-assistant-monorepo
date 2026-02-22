@@ -22,7 +22,7 @@ multi-user-governance|已結案|P3|多用戶治理架構（議題 1-3 完成，#
 no-closing-question|已結案|-|禁止以問句結尾收工|AINL|||0223
 temp-machine-code|已結案|P1|機器碼分正式/臨時（6/6 同意，JDNE 附整合報告送 Jin 審：24h 臨時碼+社會契約+過期存檔）|JDNE|JDNE,A44T,Z1FV,AINL,3O5L,ITEJ||0224
 efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|||0222
-role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|||0223
+role-assignment|已結案|P0|工作角色報告+重新分配（Jin✅批准：machine-profile 已給完整角色分配，3O5L=策略主官）|3O5L|||0222
 push-then-continue|已結案|-|push 後強制找下一步的執行順序（共識+第一級，直接遵守）|AINL|AINL,Z1FV,ITEJ,A44T,JDNE||0223
 tool-approval-not-stop|已結案|P2|工具批准等待期間繼續工作的規則|AINL|||0223
 scoring-architecture|已結案|P2|計分板架構重構（撤回：A44T+JDNE+ITEJ+Z1FV 同意，收益小風險高）|A44T|A44T,ITEJ,Z1FV,JDNE||0223
