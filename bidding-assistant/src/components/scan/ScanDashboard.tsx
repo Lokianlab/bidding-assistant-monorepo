@@ -156,6 +156,7 @@ export function ScanDashboard() {
       {/* 載入中 */}
       {loading && (
         <div className="text-center py-16 text-muted-foreground">
+          <div className="inline-block h-8 w-8 mb-4 animate-spin rounded-full border-4 border-muted border-t-primary" />
           <p className="text-lg mb-2">正在搜尋 PCC 公告...</p>
           <p className="text-sm">搜尋多個關鍵字需要一些時間，請稍候</p>
         </div>

@@ -41,7 +41,11 @@ export function TenderCard({ result, onCreateCase, onSkip, onViewDetail, createS
                 {config.label}
               </Badge>
               {classification.matchedLabel && classification.category !== "other" && (
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-muted-foreground" title={
+                  classification.matchedKeywords.length > 0
+                    ? `匹配：${classification.matchedKeywords.join("、")}`
+                    : undefined
+                }>
                   {classification.matchedLabel}
                 </span>
               )}
@@ -51,11 +55,12 @@ export function TenderCard({ result, onCreateCase, onSkip, onViewDetail, createS
             </h3>
             <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
               {tender.unit && <span>{tender.unit}</span>}
-              {tender.budget > 0 && (
-                <span>{formatBudget(tender.budget)}</span>
+              <span>{tender.budget > 0 ? formatBudget(tender.budget) : "預算未公告"}</span>
+              {tender.deadline && (
+                <span>截止 {tender.deadline}</span>
               )}
               {tender.publishDate && (
-                <span>{formatDate(tender.publishDate)}</span>
+                <span>公告 {formatDate(tender.publishDate)}</span>
               )}
               {tender.category && (
                 <span>{tender.category}</span>

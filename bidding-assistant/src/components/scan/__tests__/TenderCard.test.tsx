@@ -84,15 +84,14 @@ describe("TenderCard", () => {
     expect(screen.getByText("50萬")).toBeDefined();
   });
 
-  it("不顯示預算（當預算 = 0）", () => {
+  it("預算 = 0 時顯示「預算未公告」", () => {
     render(<TenderCard result={makeResult({ budget: 0 })} />);
-    expect(screen.queryByText("0元")).toBeNull();
-    expect(screen.queryByText("0萬")).toBeNull();
+    expect(screen.getByText("預算未公告")).toBeDefined();
   });
 
-  it("日期格式轉換（20260228 → 2026/02/28）", () => {
+  it("日期格式轉換（20260228 → 公告 2026/02/28）", () => {
     render(<TenderCard result={makeResult({ publishDate: "20260228" })} />);
-    expect(screen.getByText("2026/02/28")).toBeDefined();
+    expect(screen.getByText("公告 2026/02/28")).toBeDefined();
   });
 
   it("顯示匹配標籤", () => {
