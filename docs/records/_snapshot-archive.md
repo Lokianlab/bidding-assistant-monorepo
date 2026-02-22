@@ -80,6 +80,7 @@
 [x] product-direction-0222|產品方向重整|Jin 已確認五項決策（三策略+P0-P4+凍結清單）
 [x] feat-explorer-phase1|Explorer 情報探索 Phase 1 完成|/explore 頁面+三實體鑽探+麵包屑+43 新測試，01b9ceb，build+3277 tests 全過
 [x] infra-team-agent-v1|團隊 Agent 基建 v1|team-context.md + task-spec-template.md + backlog.md + session-start/stop-patterns 修改，da62093
+[x] broadcast-autonomous-expansion|授權擴大落地|Jin 指示 0223，CLAUDE.md 075f4c8，全員確認
 
 ---
 
