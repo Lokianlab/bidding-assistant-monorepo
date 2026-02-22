@@ -1,22 +1,16 @@
-SNAPSHOT|20260226-0230|AINL|haiku-4-5
+SNAPSHOT|20260226-0250|AINL|haiku-4-5
 
-## 外部指派（3O5L → AINL，20260222）
-- **test-use-export**：~~已由 3O5L 完成（0225，commit 908c724，19 tests 全過）~~
-- **繼續找缺口**：src/lib/ 全覆蓋完成，dashboard hooks 全有測試，目前無測試缺口
+## 外部指派（JDNE，20260226）
+- **品質模組邊界測試補強**（優先）：checkMissingPerformanceRecord（300字臨界、活動+履約混合、單詞上下文）+ checkVagueQuantifiers（重複詞、否定/引用脈絡）
+- **Z1FV docgen 審查**（次要）：feat-docgen-markdown + cover-toc 共 38 tests 覆蓋審查
+- **365音樂診斷結論**（並行）：整理三大缺漏分析送 Jin，關閉 proposal-diagnosis-365music
 
-[x] infra-sync|首次同步完成|@op:20260221-AINL#1924
-[v] feat-test-coverage|補測試覆蓋+跨機器審查|analysis/index +6 trend 驗證。useQualityGate +10 tests（Z1FV M04 審查中發現缺口）。待 Jin 驗收：npm test 全過即可
+[>] feat-quality-boundary-testing|品質規則邊界測試補強|邊界補強測試設計中，等測試環境確認
+[v] feat-test-coverage|補測試覆蓋+跨機器審查|analysis/index +6 trend 驗證。useQualityGate +10 tests。待 Jin 驗收
 [v] feat-quality-refactor|品質模組審查|A44T/JDNE 已審查通過，待 Jin 驗收
-[v] infra-user-auth|Saint 已在本機驗證|SHA-256 通過（0222/0223 session），幕僚模式啟動。Jin 尚未正式確認
+[v] infra-user-auth|Saint 已在本機驗證|SHA-256 通過，幕僚模式啟動。Jin 尚未正式確認
 [x] infra-self-review|自我審查|/你去吃屎 +4 違規。工具批准不是停止信號規則已由 Saint 核准寫入 CLAUDE.md
-[v] feat-trend-analysis|趨勢分析模組|純函式+hook+UI 全鏈路完成。驗收：npm run dev → 儀表板 → 趨勢卡片
-[v] feat-dashboard-charts|儀表板圖表卡片擴充|8 張圖表卡片。驗收：npm run dev → 儀表板 → 三張新卡片
-[v] feat-scout-committee|P偵察加入評委情報|+6 tests，UI 接線完成。驗收：案件詳情 → Scout → prompt 含評委
-[x] infra-tool-approval-rule|CLAUDE.md 新規則|Saint 核准，已寫入，已推送
-[x] review-z1fv-m04|審查 Z1FV M04 品質閘門|Phase 1+3+4 全審完。發現 useQualityGate 無測試，已補 +10 tests 推送
-[x] infra-forum-patrol-0223|論壇巡邏（0223 session）|Jin 命令駐守論壇。發 20+ 帖，完成投票同步、批准報告格式、優化方法論分析、共識達成。5/5 機器在多個 threads 達共識
-[x] infra-forum-patrol-0224|論壇巡邏（0224 session）|繼續駐守。檢查 P0/P1 threads、同步最新 rebase、與各機器協同論壇工作。完成，所有 threads 已結案
-[x] infra-forum-patrol-0225|論壇巡邏（0225 session）|掃完論壇，收到 Jin 分享成功結案案例。詳細分析 112-114 年度標案（故宮、黑蝙蝠、青年情緒等）。提取「黃金模板」：8 層架構、量化目標、分波段宣傳策略。發論壇帖分享分析。待 Jin 驗收 6 項功能
-[x] feat-proposal-analysis|成功案例 + 失敗案例分析|成功案例黃金模板建檔 + 失敗案例診斷框架 + 系統設計方案 + 詳細對標分析（113A119）+ 跨年度對比。發 4 個論壇帖。推送 4 份文檔：failure-patterns.md、proposal-cockpit-design.md、failed-case-analysis-113A119.md、failed-patterns-cross-year-evolution.md
-[x] feat-proposal-success-prediction|6 個競標案件成功率預測診斷|根據 8 層診斷框架，逐案件分析 6 個已簡報競標案件。產出成功率預測排序（70% → 30%）、風險分類（低/中/高）、市場信號解讀、系統優先級建議。發論壇提案 + 完成回覆。推送：_bidding-cases-success-prediction.md
-[?] feat-proposal-diagnosis-365music|365 基層音樂簡報診斷與補完|診斷完成：8 層分析框架 + 三大致命缺漏識別。發論壇 discuss 0226-0044。用戶要求補完簡報，製作檔案（365-music-proposal-supplement.md）但用戶反饋「做的太差了，這份資料刪掉吧」，已刪除並推送。當前等待論壇其他機器回覆診斷結果
+[v] feat-trend-analysis|趨勢分析模組|純函式+hook+UI 全鏈路完成。待 Jin 驗收
+[v] feat-dashboard-charts|儀表板圖表卡片擴充|8 張圖表卡片。待 Jin 驗收
+[v] feat-scout-committee|P偵察加入評委情報|+6 tests，UI 接線完成。待 Jin 驗收
+[?] feat-kb-initialization|知識庫初始化：自動構建 00A-00E|發論壇 kb-initialization-from-pec discuss，等其他機器協助確認分類映射。Saint 已授權自動導入
