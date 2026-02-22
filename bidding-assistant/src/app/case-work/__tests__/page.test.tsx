@@ -1,19 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import CaseWorkPage from "../page";
 import { DEFAULT_SETTINGS } from "@/lib/settings/defaults";
 import { useSettings } from "@/lib/context/settings-context";
 import { loadCaseById } from "@/lib/case-work/helpers";
 
 // ── Hoisted mocks ─────────────────────────────────────────
-const { mockSearchGet } = vi.hoisted(() => ({
+const { mockSearchGet, mockPush } = vi.hoisted(() => ({
   mockSearchGet: vi.fn(() => null),
+  mockPush: vi.fn(),
 }));
 
 // ── Mock next/navigation ──────────────────────────────────
 vi.mock("next/navigation", () => ({
   useSearchParams: () => ({ get: mockSearchGet }),
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: mockPush }),
 }));
 
 // ── Mock useSettings ──────────────────────────────────────
@@ -164,5 +165,16 @@ describe("CaseWorkPage — 有 pageId 且找到案件", () => {
     await vi.waitFor(() => {
       expect(screen.getByRole("button", { name: "開始撰寫" })).toBeTruthy();
     });
+  });
+
+  it("點「開始撰寫」帶 caseId=pageId 到 assembly", async () => {
+    render(<CaseWorkPage />);
+    const btn = await vi.waitFor(() =>
+      screen.getByRole("button", { name: "開始撰寫" }),
+    );
+    fireEvent.click(btn);
+    expect(mockPush).toHaveBeenCalledWith(
+      expect.stringContaining("caseId=abc123def"),
+    );
   });
 });
