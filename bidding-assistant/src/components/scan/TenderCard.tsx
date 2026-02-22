@@ -17,14 +17,17 @@ const CATEGORY_CONFIG: Record<KeywordCategory, {
   other: { label: "其他", badgeClass: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200" },
 };
 
+export type CreateStatus = "idle" | "creating" | "done" | "error";
+
 interface TenderCardProps {
   result: ScanResult;
   onCreateCase?: (result: ScanResult) => void;
   onSkip?: (result: ScanResult) => void;
   onViewDetail?: (result: ScanResult) => void;
+  createStatus?: CreateStatus;
 }
 
-export function TenderCard({ result, onCreateCase, onSkip, onViewDetail }: TenderCardProps) {
+export function TenderCard({ result, onCreateCase, onSkip, onViewDetail, createStatus = "idle" }: TenderCardProps) {
   const { tender, classification } = result;
   const config = CATEGORY_CONFIG[classification.category];
 
@@ -63,12 +66,26 @@ export function TenderCard({ result, onCreateCase, onSkip, onViewDetail }: Tende
             {classification.category !== "exclude" && (
               <Button
                 size="sm"
-                variant={classification.category === "must" ? "default" : "outline"}
-                onClick={() => onCreateCase?.(result)}
-                disabled={!onCreateCase}
+                variant={
+                  createStatus === "done"
+                    ? "secondary"
+                    : createStatus === "error"
+                      ? "destructive"
+                      : classification.category === "must"
+                        ? "default"
+                        : "outline"
+                }
+                onClick={() => createStatus === "idle" && onCreateCase?.(result)}
+                disabled={!onCreateCase || createStatus === "creating" || createStatus === "done"}
                 className="text-xs"
               >
-                建案
+                {createStatus === "creating"
+                  ? "建案中..."
+                  : createStatus === "done"
+                    ? "已建案"
+                    : createStatus === "error"
+                      ? "重試"
+                      : "建案"}
               </Button>
             )}
             {onViewDetail && (
