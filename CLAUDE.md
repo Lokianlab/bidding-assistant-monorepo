@@ -102,16 +102,7 @@ Jin 不在線時持續推進：研究分析、方案規劃、sandbox模擬、一
 禁止：三級操作、物理層行動、正式環境/原始DB寫入。
 Jin 回來時透過快照+/回報 掌握：完成了什麼、等待決策事項。
 
-## 詳細規範（.claude/rules/ 下由系統自動載入）
+## 參考文件
 
-- 專案結構與技術棧：`.claude/rules/project-context.md`
-- 同步規範：`.claude/rules/sync-protocol.md`
-- 記錄層規範：`.claude/rules/record-layer.md`
-- 治理機制與機器分工：`.claude/rules/governance.md`
-- 記錄格式：`.claude/rules/record-formats.md`
-- 說人話範例：`.claude/rules/plain-language-examples.md`
-- 商業脈絡：`.claude/rules/business-context.md`
-- **產品羅盤（最高層級）**：`docs/product-compass-v0.6.md`
-- 開發路線：`docs/dev-map.md`
-- 除錯經驗：`docs/debugging.md`
-- 環境設定：`docs/dev-environment.md`
+`.claude/rules/` 下的規範由系統自動載入，不需手動讀取。
+其他按需讀取：`docs/product-compass-v0.6.md`（最高層級）、`docs/dev-map.md`、`docs/debugging.md`、`docs/dev-environment.md`。
