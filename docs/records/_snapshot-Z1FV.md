@@ -1,4 +1,4 @@
-SNAPSHOT|20260226-2000|Z1FV|Sonnet 4.6
+SNAPSHOT|20260226-2115|Z1FV|Sonnet 4.6
 [~] infra-forum-patrol|論壇留守巡邏|放棄：論壇已廢除（ITEJ 0224 commit d60b70b），角色分工鏈取代
 [v] feat-m06-output-phase1|M06 排版輸出模組 Phase 1|文件組裝管線+範本系統+DOCX/Markdown 匯出，39 tests，build 通過。驗收：npm run dev → /tools/output → 選範本 → 填章節 → 匯出 DOCX
 [v] feat-m06-output-phase2|M06 排版輸出模組 Phase 2|KB 佔位符注入（{{kb:00A:PM}} 等）+品牌/日期變數替換+KBInsertDialog UI，30 tests，build 通過。驗收：ChapterEditor 中點「插入知識庫」→ 選類別 → 插入佔位符
@@ -17,6 +17,7 @@ SNAPSHOT|20260226-2000|Z1FV|Sonnet 4.6
 [v] test-quality-gate-components|M04 品質閘門 UI 元件測試|5 個元件測試檔（GateSummary+IssueList+FactCheckPanel+FeasibilityPanel+RequirementMatrixPanel），75 tests，閾值邊界+gate2 null+fallback+STATUS_ICON三態+覆蓋來源邏輯，全過（100 檔 1950 tests）
 [v] test-output-components|M06 輸出元件測試|ChapterList（13）+KBInsertDialog（12）：Dialog開啟/品牌選項/佔位符/onInsert/類別切換，全過（101 檔 1962 tests）
 [v] test-viz-components|儀表板視覺化元件測試全覆蓋|8個viz全部補齊：NumberViz+GaugeViz+RingViz+MiniTableViz+HeatmapViz+BarViz+LineViz+StackedBarViz，共73 tests。recharts用vi.mock策略，SVG屬性/inline-style/class驗證，116 files 2122 tests
+[v] test-dashboard-perf-components|dashboard+performance 元件測試補完|YearSelector(7)+CaseCard(11)+KpiSummary(7)+WriterRankingTable(11)+StatusInsights(13)+CaseDetailTable(11)+PeriodStatusTable(11)+PerformanceCharts(15)+YoYSection(9)，共95 tests，128 files 2266 tests
 [x] infra-dev-map-update|全專案開發地圖更新|13模組+82檔1722tests+M06 Phase1-3+知識庫初始化待決 已落地（0226）
 [x] review-3o5l-0222|3O5L 代碼審查（fix-sidebar-link + cleanup-trend-dup）|兩項 PASS，feedback 發論壇 20260222-Z1FV.md
 [x] review-ainl-0222|AINL 代碼審查（feat-test-coverage/trend-analysis/dashboard-charts/scout-committee）|全部 PASS，recentMonths useMemo 小問題已標注
