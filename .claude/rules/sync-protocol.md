@@ -4,7 +4,7 @@ Monorepo 透過 GitHub 同步。遠端：`https://github.com/Lokianlab/bidding-a
 
 ## 基本節奏
 
-- 推之前先拉：`git fetch origin && git rebase origin/main` → `git add` → `git commit -m "中文摘要"` → `git push origin main`
+- 推送用 `bash .claude/hooks/push-retry.sh`（自動 fetch+rebase+push，失敗重試 3 次）。有 rebase conflict 才手動處理。
 - 每完成一個工作單元就推一次，不累積。一次 push 包含代碼 + 快照（例外時加 OP）。
 - **推完就巡邏**：每次 `git push` 後立刻 `git fetch origin && git rebase origin/main` 一次，然後快速掃其他機器快照有無需要協調的事項。有就處理，沒有就繼續下一步工作。
 - 長時間討論產生重要決策 → 主動暫停，先推結論再繼續。

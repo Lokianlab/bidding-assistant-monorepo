@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-0629|JDNE|claude-opus-4-6
+SNAPSHOT|20260223-0632|JDNE|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -6,7 +6,8 @@ SNAPSHOT|20260223-0629|JDNE|claude-opus-4-6
 
 [x] doc-product-compass|產品羅盤 v0.6 納入規範體系|CLAUDE.md 更新定位+文件層級+引用，ff2294d
 [x] infra-cross-session-msg|跨 session 訊息機制|messages/ + hook + 規範 + 廣播，0975fc7
-[>] infra-dual-lang-rule|雙語制寫入規範|CLAUDE.md+record-formats 已改，待 push
+[x] infra-dual-lang-rule|雙語制寫入規範|CLAUDE.md+record-formats 已改，9606e8f
+[x] infra-push-retry|push-retry 腳本|fetch+rebase+push 自動重試，治 push 碰撞問題
 [?] infra-backup-mechanism|備份/回復安全節點|範圍待釐清——已列入 backlog.md 待決策區，等 Jin 說明需求再開工。
 [?] chat-behavior-note-propagate-claudemd|A44T 行為備註「用戶手上有什麼是我拿不到的？」全員內化|第三級（不可逆），需 Jin 批准。已列入 backlog.md 待決策區。
 [x] chat-optimize-chat-cost|/去聊天 指令加字數限制|AINL 代勞：三條規則落地（留言≤2行+純觀察不查碼+快照去重），commit e3f9094
