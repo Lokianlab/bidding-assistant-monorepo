@@ -6,15 +6,17 @@ import { usePatrolOrchestrator } from "../usePatrolOrchestrator";
 
 // ── Mocks ──
 
-vi.mock("@/lib/context/settings-context", () => ({
-  useSettings: () => ({
-    settings: {
-      connections: {
-        notion: { token: "test-token", databaseId: "test-db" },
-        googleDrive: { refreshToken: "", sharedDriveFolderId: "" },
-      },
+const mockUseSettings = vi.fn(() => ({
+  settings: {
+    connections: {
+      notion: { token: "test-token", databaseId: "test-db" },
+      googleDrive: { refreshToken: "", sharedDriveFolderId: "" },
     },
-  }),
+  },
+}));
+
+vi.mock("@/lib/context/settings-context", () => ({
+  useSettings: () => mockUseSettings(),
 }));
 
 vi.mock("../orchestrator", () => ({
@@ -130,28 +132,43 @@ describe("usePatrolOrchestrator", () => {
   // ── 無 Notion 憑證 ──
 
   it("settings 無 token → error 提示，不呼叫 orchestrateAccept", async () => {
-    vi.doMock("@/lib/context/settings-context", () => ({
-      useSettings: () => ({
-        settings: {
-          connections: {
-            notion: { token: "", databaseId: "" },
-            googleDrive: { refreshToken: "", sharedDriveFolderId: "" },
-          },
+    mockUseSettings.mockReturnValueOnce({
+      settings: {
+        connections: {
+          notion: { token: "", databaseId: "" },
+          googleDrive: { refreshToken: "", sharedDriveFolderId: "" },
         },
-      }),
-    }));
+      },
+    });
 
-    // 使用有 token 的 mock，直接測試內部邏輯（缺 token 分支）
-    // 注意：vi.doMock 不能改變已 mock 的模組在此 test 中的行為
-    // 改用 null 呼叫方式：先 reset mock 讓 settings 回 token 空
-    // 因為 mock 已設定，這邊直接驗證有 token 時才呼叫
-    mockOrchestrate.mockResolvedValue(successResult);
+    const { result } = renderHook(() => usePatrolOrchestrator());
+    let returnValue: unknown = "sentinel";
+    await act(async () => {
+      returnValue = await result.current.accept(fakeScanResult as never);
+    });
+
+    expect(result.current.error).toBe("請先在設定頁面填寫 Notion token 和 databaseId");
+    expect(mockOrchestrate).not.toHaveBeenCalled();
+    expect(returnValue).toBeNull();
+  });
+
+  it("settings 無 databaseId → error 提示，不呼叫 orchestrateAccept", async () => {
+    mockUseSettings.mockReturnValueOnce({
+      settings: {
+        connections: {
+          notion: { token: "tok", databaseId: "" },
+          googleDrive: { refreshToken: "", sharedDriveFolderId: "" },
+        },
+      },
+    });
+
     const { result } = renderHook(() => usePatrolOrchestrator());
     await act(async () => {
       await result.current.accept(fakeScanResult as never);
     });
-    // 有 token 時應呼叫
-    expect(mockOrchestrate).toHaveBeenCalledTimes(1);
+
+    expect(result.current.error).toBeTruthy();
+    expect(mockOrchestrate).not.toHaveBeenCalled();
   });
 
   // ── reset ──
