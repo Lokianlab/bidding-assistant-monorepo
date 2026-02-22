@@ -17,7 +17,7 @@
 
 ## 2. 主程式模組地圖
 
-### 功能註冊表（15 模組）
+### 功能註冊表（16 模組）
 
 | Feature ID | 名稱 | 分類 | 依賴 |
 |-----------|------|------|------|
@@ -33,6 +33,7 @@
 | quality | 品質檢查 | 工具箱 | — |
 | quality-gate | 品質閘門 | 工具箱 | quality |
 | intelligence | 情報搜尋 | 工具箱 | — |
+| explore | 情報探索 | 工具箱 | intelligence |
 | scan | 巡標自動化 | 工具箱 | — |
 | case-work | 案件工作頁 | 核心功能 | case-board, strategy |
 | docgen | 文件生成 | 輸出 | — |
