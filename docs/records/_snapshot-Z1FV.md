@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2050|Z1FV|Sonnet 4.6
+SNAPSHOT|20260228-2115|Z1FV|Sonnet 4.6
 [~] infra-forum-patrol|論壇留守巡邏|放棄：論壇已廢除（ITEJ 0224 commit d60b70b），角色分工鏈取代
 [x] feat-m06-output-phase1|M06 排版輸出模組 Phase 1|文件組裝管線+範本系統+DOCX/Markdown 匯出，39 tests，build 通過。驗收：npm run dev → /tools/output → 選範本 → 填章節 → 匯出 DOCX
 [x] feat-m06-output-phase2|M06 排版輸出模組 Phase 2|KB 佔位符注入（{{kb:00A:PM}} 等）+品牌/日期變數替換+KBInsertDialog UI，30 tests，build 通過。驗收：ChapterEditor 中點「插入知識庫」→ 選類別 → 插入佔位符
@@ -33,4 +33,4 @@ SNAPSHOT|20260228-2050|Z1FV|Sonnet 4.6
 [x] review-ainl-useDocumentAssembly|AINL useDocumentAssembly.test.ts 審查|32 tests，邊界覆蓋完整，PASS
 [x] review-a44t-quickstart|A44T feat-dashboard-quickstart 審查|QuickStart.tsx，hydration-safe，auto-hide，PASS
 [x] review-3o5l-useExport|3O5L useExport.test.ts 審查|19 tests，DOM 側效+async 狀態+先失敗再成功，PASS
-[x] feat-scan-layer-b|P0 巡標 Layer B：建案 API + 測試|/api/scan/accept route（10 tests），與 3O5L CreateCaseDialog 合併，172 files 2738 tests，commit 22033b0
+[x] feat-scan-layer-b|P0 巡標 Layer B：建案 API + 測試|/api/scan/accept route（10 tests）+ ScanDashboard 使用 CreateCaseDialog（Jin revert 決定 Dialog 方案），172 files 2739 tests
