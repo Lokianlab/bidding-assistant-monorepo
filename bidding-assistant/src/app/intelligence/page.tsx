@@ -37,7 +37,7 @@ export default function IntelligencePage() {
       {/* Header */}
       <div className="flex items-center gap-3">
         <MobileMenuButton />
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold">情報搜尋</h1>
           <p className="text-muted-foreground text-sm mt-1">
             查詢政府標案公開資料：案件搜尋、廠商投標紀錄、評委名單、決標金額
@@ -48,7 +48,6 @@ export default function IntelligencePage() {
           <Button
             variant="outline"
             size="sm"
-            className="ml-auto"
             onClick={() => {
               const params = new URLSearchParams({ caseName: initialSearch });
               if (caseId) params.set("caseId", caseId);

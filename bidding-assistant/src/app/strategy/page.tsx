@@ -85,8 +85,19 @@ export default function StrategyPage() {
       {/* Header */}
       <div className="flex items-center gap-3">
         <MobileMenuButton />
-        <div>
-          <h1 className="text-2xl font-bold">戰略分析</h1>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold">戰略分析</h1>
+            {caseId && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push(`/case-work?id=${caseId}`)}
+              >
+                ← 回到案件
+              </Button>
+            )}
+          </div>
           <p className="text-muted-foreground text-sm mt-1">
             五維適配度評分，協助決策是否投標
           </p>
@@ -178,17 +189,8 @@ export default function StrategyPage() {
 
           {/* 跨模組導航 */}
           <div className="flex flex-col sm:flex-row gap-2">
-            {caseId && (
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => router.push(`/case-work?id=${caseId}`)}
-              >
-                ← 回到案件
-              </Button>
-            )}
             <Button
-              className={caseId ? "flex-1" : "w-full"}
+              className="w-full"
               onClick={() => {
                 const params = new URLSearchParams({ stage: "L1" });
                 if (frozenInput.caseName) params.set("caseName", frozenInput.caseName);
