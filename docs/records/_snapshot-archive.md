@@ -159,6 +159,7 @@
 [x] chat-scan-detail-perf|巡標 detail API 效能優化方向|四台共識 option(2)：only-must/review 打 detail，A44T 實作，0223
 [x] infra-stop-report-rule|移除強制 /回報 規則|CLAUDE.md 改為「只在用戶問或第三級確認時報，要完整、說人話」，Jin 直接指示 0223
 [x] doc-feature-log-decision|功能日誌刪除|與 dev-map+archive+git log 重疊，JDNE Level 1 決策刪除，0223
+[x] feat-explorer-component-tests|Explorer 三元件測試補強（CompanyView/AgencyView/TenderView）|adb70bf，53 測試全過
 
 ---
 

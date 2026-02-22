@@ -82,3 +82,4 @@ feat-w01-scan-p2|完成|W01 P0 全鏈路完成：Layer A+B+C+D 全通，AINL Lay
 infra-operating-constraints|完成|Agent 運作約束 v1.0（46 條）+ 優化記錄檔，與 CLAUDE.md 互補|@op:20260223-JIVK#0401|2026-02-23
 infra-claude-md-split|完成|CLAUDE.md 拆分（247→96 行）：4 個 rules 檔 + currentDate 時間戳規則 + 檔案整理|@op:20260223-JIVK#0417|2026-02-23
 infra-report-nowait|完成|「報告不需要等」寫入 AI 行為規範：記錄完就做下一件事，不等人類回應|@op:20260223-JIVK#0427|2026-02-23
+feat-explorer-phase1|完成|Explorer 情報探索：/explore 頁面支援搜尋→案件→廠商→機關無限鑽探，43 新測試|commit 01b9ceb|2026-02-23
