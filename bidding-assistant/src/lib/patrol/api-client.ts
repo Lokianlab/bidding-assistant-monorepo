@@ -124,16 +124,60 @@ export async function apiSearchPcc(
 }
 
 /**
- * 從 PatrolItem 的 URL 抓取完整公告
- * 目前 Layer A 尚未提供獨立的 tender detail API，
- * 使用 PCC MCP Server 或直接從搜尋結果取得。
- * 這裡提供一個佔位實作，串接時由 Layer A 的實際 API 替換。
+ * 從 /api/pcc 抓取完整公告詳情（Layer A → Layer C 串接）
+ *
+ * 呼叫既有的 /api/pcc?action=getTenderDetail，將 PCC 動態 key-value
+ * 欄位解析為 PccTenderDetail。欄位名稱以中文後綴匹配（同 pcc/helpers.ts）。
+ * 任何錯誤（網路、格式、API 錯誤）都回傳 null，orchestrator 自動用 PatrolItem fallback。
  */
 export async function apiFetchTenderDetail(
-  _unitId: string,
-  _jobNumber: string,
+  unitId: string,
+  jobNumber: string,
 ): Promise<PccTenderDetail | null> {
-  // TODO: 串接 Layer A 的 tender detail API
-  // 目前回傳 null，orchestrator 會用 PatrolItem 已有的資料建檔
-  return null;
+  try {
+    const res = await fetch('/api/pcc', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'getTenderDetail', data: { unitId, jobNumber } }),
+    });
+
+    if (!res.ok) return null;
+
+    const raw = await res.json() as { detail?: Record<string, unknown>; error?: string };
+    if (!raw.detail || raw.error) return null;
+
+    const d = raw.detail;
+
+    // 以 key 後綴匹配取值（PCC API key 有前綴但後綴固定）
+    const getValue = (suffix: string): string | null => {
+      for (const [key, val] of Object.entries(d)) {
+        if (key.endsWith(suffix) && typeof val === 'string') return val;
+      }
+      return null;
+    };
+
+    // 解析金額字串 "318,600元" → number
+    const parseAmt = (str: string | null): number | null => {
+      if (!str) return null;
+      const num = Number(str.replace(/[,，元\s]/g, ''));
+      return isNaN(num) ? null : num;
+    };
+
+    return {
+      title: getValue(':標案名稱') ?? getValue(':案名') ?? '',
+      budget: parseAmt(getValue(':預算金額')),
+      agency: getValue(':機關名稱') ?? '',
+      deadline: getValue(':截止投標日期') ?? '',
+      publishDate: getValue(':公告日期') ?? '',
+      jobNumber,
+      unitId,
+      url: '', // URL 已在 PatrolItem 中，詳情 API 不提供
+      awardType: getValue(':決標方式'),
+      category: getValue(':採購類別'),
+      contractPeriod: getValue(':履約期限'),
+      description: getValue(':工作說明') ?? getValue(':採購說明'),
+    };
+  } catch {
+    return null;
+  }
 }

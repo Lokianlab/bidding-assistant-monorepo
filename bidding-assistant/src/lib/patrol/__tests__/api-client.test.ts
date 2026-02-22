@@ -242,10 +242,81 @@ describe("apiSearchPcc", () => {
 
 // ── apiFetchTenderDetail ──────────────────────────────────────
 
+const mockTenderDetail = {
+  detail: {
+    "標案名稱:標案名稱": "食農教育推廣活動",
+    "機關名稱:機關名稱": "新北市教育局",
+    "預算金額:預算金額": "500,000元",
+    "截止投標日期:截止投標日期": "2026-04-01",
+    "公告日期:公告日期": "2026-03-01",
+    "決標方式:決標方式": "最有利標",
+    "採購類別:採購類別": "服務採購",
+    "履約期限:履約期限": "3個月",
+    "工作說明:工作說明": "辦理食農教育推廣活動",
+  },
+};
+
 describe("apiFetchTenderDetail", () => {
-  it("目前永遠回傳 null（Layer A API 尚未實作），不呼叫 fetch", async () => {
+  it("成功回應 → 解析 PccTenderDetail 欄位", async () => {
+    mockFetch.mockResolvedValueOnce(makeJsonResponse(mockTenderDetail));
+    const result = await apiFetchTenderDetail("unit-001", "J001");
+
+    expect(result).not.toBeNull();
+    expect(result?.title).toBe("食農教育推廣活動");
+    expect(result?.agency).toBe("新北市教育局");
+    expect(result?.budget).toBe(500000);
+    expect(result?.deadline).toBe("2026-04-01");
+    expect(result?.publishDate).toBe("2026-03-01");
+    expect(result?.awardType).toBe("最有利標");
+    expect(result?.category).toBe("服務採購");
+    expect(result?.contractPeriod).toBe("3個月");
+    expect(result?.description).toBe("辦理食農教育推廣活動");
+    expect(result?.jobNumber).toBe("J001");
+    expect(result?.unitId).toBe("unit-001");
+  });
+
+  it("呼叫 /api/pcc 帶 getTenderDetail action 和正確參數", async () => {
+    mockFetch.mockResolvedValueOnce(makeJsonResponse(mockTenderDetail));
+    await apiFetchTenderDetail("unit-001", "J001");
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/api/pcc",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ action: "getTenderDetail", data: { unitId: "unit-001", jobNumber: "J001" } }),
+      }),
+    );
+  });
+
+  it("HTTP 非 ok → 回傳 null", async () => {
+    mockFetch.mockResolvedValueOnce(makeJsonResponse({}, false));
     const result = await apiFetchTenderDetail("unit-001", "J001");
     expect(result).toBeNull();
-    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it("回應有 error 欄位 → 回傳 null", async () => {
+    mockFetch.mockResolvedValueOnce(makeJsonResponse({ error: "API 錯誤" }));
+    const result = await apiFetchTenderDetail("unit-001", "J001");
+    expect(result).toBeNull();
+  });
+
+  it("回應缺少 detail 欄位 → 回傳 null", async () => {
+    mockFetch.mockResolvedValueOnce(makeJsonResponse({ query: "test" }));
+    const result = await apiFetchTenderDetail("unit-001", "J001");
+    expect(result).toBeNull();
+  });
+
+  it("fetch 拋出例外 → 回傳 null", async () => {
+    mockFetch.mockRejectedValueOnce(new Error("網路錯誤"));
+    const result = await apiFetchTenderDetail("unit-001", "J001");
+    expect(result).toBeNull();
+  });
+
+  it("無法解析的預算字串 → budget 為 null", async () => {
+    mockFetch.mockResolvedValueOnce(makeJsonResponse({
+      detail: { "預算金額:預算金額": "不計" },
+    }));
+    const result = await apiFetchTenderDetail("unit-001", "J001");
+    expect(result?.budget).toBeNull();
   });
 });
