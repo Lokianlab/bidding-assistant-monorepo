@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2230|Z1FV|Sonnet 4.6
+SNAPSHOT|20260228-2305|Z1FV|Sonnet 4.6
 [~] infra-forum-patrol|論壇留守巡邏|放棄：論壇已廢除（ITEJ 0224 commit d60b70b），角色分工鏈取代
 [x] feat-m06-output-phase1|M06 排版輸出模組 Phase 1|文件組裝管線+範本系統+DOCX/Markdown 匯出，39 tests，build 通過。驗收：npm run dev → /tools/output → 選範本 → 填章節 → 匯出 DOCX
 [x] feat-m06-output-phase2|M06 排版輸出模組 Phase 2|KB 佔位符注入（{{kb:00A:PM}} 等）+品牌/日期變數替換+KBInsertDialog UI，30 tests，build 通過。驗收：ChapterEditor 中點「插入知識庫」→ 選類別 → 插入佔位符
@@ -36,3 +36,5 @@ SNAPSHOT|20260228-2230|Z1FV|Sonnet 4.6
 [x] feat-scan-layer-b|P0 巡標 Layer B：建案 API + 測試|/api/scan/accept route（10 tests）+ ScanDashboard 使用 CreateCaseDialog，172 files 2739 tests
 [x] test-dashboard-grid|DashboardGrid 測試補完|@dnd-kit mock 策略，16 tests，173 files 2759 tests（0228）
 [x] fix-eslint-60to2|ESLint 60→2 warnings 清理|_前綴慣例+setState規則+未用import/變數，0 errors，174 files 2763 tests
+[x] test-scan-dashboard-persistence|ScanDashboard 建案記憶持久化測試|+4 tests（localStorage init/refresh/dialog success + 自訂關鍵字），177 files 2866 tests
+[x] test-patrol-api-client|api-client + orchestrateAccept 測試覆蓋|api-client 17 tests（AINL 衝突合併），orchestrateAccept 5 tests，181 files 2910 tests
