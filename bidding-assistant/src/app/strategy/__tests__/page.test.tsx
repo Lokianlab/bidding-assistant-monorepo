@@ -189,4 +189,18 @@ describe("StrategyPage — 回到案件導覽", () => {
     fireEvent.click(screen.getByRole("button", { name: "← 回到案件" }));
     expect(mockPush).toHaveBeenCalledWith("/case-work?id=page-abc");
   });
+
+  it("點「開始撰寫」時帶 caseId 到 /assembly", () => {
+    mockGet.mockImplementation((key: string) =>
+      key === "caseId" ? "page-abc" : null,
+    );
+    render(<StrategyPage />);
+    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
+      target: { value: "食農教育推廣計畫" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
+    fireEvent.click(screen.getByRole("button", { name: "開始撰寫（進入提示詞組裝）" }));
+    expect(mockPush.mock.calls[0][0]).toContain("/assembly");
+    expect(mockPush.mock.calls[0][0]).toContain("caseId=page-abc");
+  });
 });

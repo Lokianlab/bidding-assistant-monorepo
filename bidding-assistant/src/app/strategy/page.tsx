@@ -199,6 +199,7 @@ export default function StrategyPage() {
                   params.set("verdict", fitScore.verdict);
                   params.set("total", String(fitScore.total));
                 }
+                if (caseId) params.set("caseId", caseId);
                 router.push(`/assembly?${params.toString()}`);
               }}
             >
