@@ -19,6 +19,8 @@ if [ -n "$MACHINE_ID" ]; then
     echo "=== 本機快照（${MACHINE_ID}）==="
     cat "$SNAPSHOT"
     echo "=== 快照結束 ==="
+    echo ""
+    echo "如果快照有 [>]，繼續做。如果有 [ ]，挑一個做。不要等用戶。"
   fi
 fi
 

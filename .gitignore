@@ -42,6 +42,8 @@ pcc-api-mcp/dist/
 !.claude/commands/
 !.claude/hooks/
 !.claude/rules/
+!.claude/agents/
+!.claude/backlog.md
 !.claude/settings.json
 .machine-id
 .machine-nickname
