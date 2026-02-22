@@ -1,4 +1,4 @@
-SNAPSHOT|20260224-0230|3O5L|Opus 4.6
+SNAPSHOT|20260222-1350|3O5L|Sonnet 4.6
 
 ## 行為備註
 - 留守論壇（Jin 命令，持續中）
@@ -17,6 +17,8 @@ SNAPSHOT|20260224-0230|3O5L|Opus 4.6
 [?] prod-min-demo|最小展示版驗收進度|M03✅(A44T,82T)+M04✅(Z1FV,114T)+PCC✅(ITEJ,1132T) → 三件全等 Jin 驗收；整合報告已發論壇 0230
 
 [>] forum-participation|持續留守論壇|Jin 命令，策略主官角色
+
+[ ] feat-test-coverage|useForum hook 測試已補，持續找缺口|73 files 1465 tests，下一個缺口待找
 
 ## 完成項目（近期）
 [x] infra-onboarding|首次啟動 onboarding|完成
