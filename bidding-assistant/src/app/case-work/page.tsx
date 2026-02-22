@@ -374,11 +374,11 @@ export default function CaseWorkPage() {
               className="w-full text-xs"
               onClick={() => {
                 const params = new URLSearchParams();
-                if (caseName) params.set("q", caseName);
+                if (caseName) params.set("search", caseName);
                 router.push(`/intelligence?${params.toString()}`);
               }}
             >
-              前往情報搜尋
+              搜尋更多情報
             </Button>
           </CardContent>
         </Card>
