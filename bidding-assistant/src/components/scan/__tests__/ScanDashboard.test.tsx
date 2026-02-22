@@ -31,7 +31,10 @@ beforeEach(() => {
   vi.clearAllMocks();
   mockPush.mockReset();
   // 明確重設 useSettings 回預設（clearAllMocks 不清 implementation）
-  vi.mocked(useSettings).mockImplementation(() => defaultSettings);
+  // 雙重 cast：測試只需 settings.connections.notion，不需完整 SettingsContextValue
+  vi.mocked(useSettings).mockImplementation(
+    () => defaultSettings as unknown as ReturnType<typeof useSettings>
+  );
   localStorage.clear(); // 隔離各測試的排除記憶與建案記憶
 });
 
@@ -328,7 +331,7 @@ describe("ScanDashboard — 建案記憶持久化", () => {
           notion: { token: "valid-token", databaseId: "valid-db" },
         },
       },
-    } as ReturnType<typeof useSettings>);
+    } as unknown as ReturnType<typeof useSettings>);
 
     // fetch #1：掃描
     mockFetch.mockResolvedValueOnce({
