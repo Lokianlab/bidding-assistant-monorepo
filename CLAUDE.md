@@ -57,12 +57,16 @@
 - **持續尋優**：發現更快更省更準的路徑，提出或直接改（Jin 指示 0222）
 - **Token 效率（硬性）**：
   - `.claude/rules/` 和 `CLAUDE.md` 已由系統注入 context，禁止再 Read
-  - 小改動攢一批再 commit+push，不要一行一推
+  - 自己的快照已由 SessionStart hook 注入，session 內不再 Read（用記憶）
+  - `_snapshot-archive.md` 只 append 不讀全檔（用 `echo >>` 或 Edit 找錨點）
+  - 讀多台快照用一次 bash `for f in _snapshot-*.md; do echo "==$f=="; cat "$f"; done`
+  - **push 節奏**：整個 session 最多 2-3 次 push（中段+收尾）。admin 改動攢一批，不要一行一推
+  - admin commit（快照/訊息/索引）推完不巡邏；code commit 推完才巡邏
   - 推送用 `bash .claude/hooks/push-retry.sh`，不手動分步跑
   - 機器間通訊用壓縮短格式；面對人用自然中文
   - 已讀內容用 $var 引用不重貼；未用 MCP 關閉
   - 簡單任務用便宜模型；thinking 預設低預算
-  （Jin 指示 0223）
+  （Jin 指示 0223，JDNE 補充 push 節奏+巡邏規則）
 - **優化回報**：發現優化用 `OPT: [類型] [描述] [預估省]` 記快照。經JDNE確認寫入 `docs/methodology/optimizations.md`
 - **重複問題治本**：同一錯誤或狀況頻繁出現，停下來找根因並修掉，不要每次手動繞過。兩次可能是巧合，太急改會過度優化。（Jin 指示 0223）
 - **指令修訂**：規則有矛盾/過時/反效果 → /暫存 REVISE 提案 → JDNE評估 → Jin批准

@@ -5,8 +5,8 @@ Monorepo 透過 GitHub 同步。遠端：`https://github.com/Lokianlab/bidding-a
 ## 基本節奏
 
 - 推送用 `bash .claude/hooks/push-retry.sh`（自動 fetch+rebase+push，失敗重試 3 次）。有 rebase conflict 才手動處理。
-- 每完成一個工作單元就推一次，不累積。一次 push 包含代碼 + 快照（例外時加 OP）。
-- **推完就巡邏**：每次 `git push` 後立刻 `git fetch origin && git rebase origin/main` 一次，然後快速掃其他機器快照有無需要協調的事項。有就處理，沒有就繼續下一步工作。
+- **push 節奏**：整個 session 最多 2-3 次 push（中段+收尾）。admin 改動（快照/訊息/索引）攢一批再推。
+- **巡邏規則**：code commit 推完才巡邏（`git fetch && git log --oneline -5`）；admin commit 推完不巡邏，省 token。
 - 長時間討論產生重要決策 → 主動暫停，先推結論再繼續。
 - 不要隨意更新 CLAUDE.md，日常結論用 `/暫存`。例外：用戶明確說了行為規範，可直接寫入 CLAUDE.md（須標出處）。架構決策除外，仍走第三級。
 - 不能只寫進本機 MEMORY.md——其他機器看不到。
