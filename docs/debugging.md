@@ -84,6 +84,61 @@
 
 在用戶裁決前，不應單方面修改任何一個模組。
 
+## 6. Vitest Mock 三個陷阱
+
+多台機器在補 page-level 測試時踩到，整理如下。（來源：3O5L/A44T/AINL 效率討論 0223）
+
+### 陷阱一：Mock 工廠函式每次回傳新物件 → useEffect 無限重渲染 → OOM
+
+```ts
+// 危險：每次 render 都是新物件，React 認為 dependency 改變
+vi.mock("@/lib/useData", () => ({
+  useData: () => ({ items: [] }),  // 新物件
+}));
+
+// 安全：抽出常數，保持物件同一個引用
+const MOCK_ITEMS: Item[] = [];
+vi.mock("@/lib/useData", () => ({
+  useData: () => ({ items: MOCK_ITEMS }),
+}));
+```
+
+**根因**：`useEffect` 依賴陣列用 `Object.is` 比較，新物件 = 永遠不等 → 無限 re-render → OOM 崩潰。
+
+### 陷阱二：靜態 import 含 recharts 的元件 → ESM 錯誤
+
+即使元件被條件渲染（`{showChart && <Chart />}`），只要在測試環境靜態 import 就會觸發 recharts 的 ESM 問題。
+
+**解法**：在測試檔頂部 mock 掉含圖表的元件：
+
+```ts
+vi.mock("@/components/charts/SomeChart", () => ({
+  SomeChart: () => <div data-testid="mock-chart" />,
+}));
+```
+
+**根因**：recharts 的 ESM 模組在 vitest 的 jsdom 環境下無法正常解析，即使不執行也會在 import 階段出錯。
+
+### 陷阱三：Mock 預設值踩在業務邊界上
+
+```ts
+// 危險：budget "1,000,000元" 恰好命中分類門檻 budgetMax: 1_000_000
+const mockDetailSuccess = (override = {}) => ({
+  budget: "1,000,000元",  // 邊界值，默默觸發 must 分類
+  ...override,
+});
+
+// 安全：預設值遠離業務邊界
+const mockDetailSuccess = (override = {}) => ({
+  budget: "50,000,000元",  // 遠超門檻，分類行為明確
+  ...override,
+});
+```
+
+**根因**：Mock 的預設值在業務邊界上，測試結果依賴具體數字而非邏輯，難以發現、難以維護。
+
+**原則**：Mock 預設值選「離業務邊界遠的安全值」，邊界條件測試才明確設定邊界值。
+
 ## 5. Claude Desktop App 大檔問題
 
 Session 檔案超過 10MB 時，Claude Desktop App 會出現 "Failed to load session" 錯誤，無法載入對話。這是 Desktop App 的已知限制，與 Claude Code CLI 無關。
