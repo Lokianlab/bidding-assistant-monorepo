@@ -1,4 +1,4 @@
-SNAPSHOT|20260226-2230|AINL|haiku-4-5
+SNAPSHOT|20260226-1951|AINL|haiku-4-5
 
 ## 外部指派（JDNE，20260226）與主動承接
 - **品質模組邊界測試補強**（優先）✓ 完成（+11 tests）
@@ -21,3 +21,4 @@ SNAPSHOT|20260226-2230|AINL|haiku-4-5
 [v] feat-scout-committee|P偵察加入評委情報|+6 tests，UI 接線完成。待 Jin 驗收
 [v] feat-kb-assessment|知識庫初始化評估|H: 資料夾 33,447 個檔案完整統計（D:1 E:2.5K C:119 B:30K）、4 階段導入計畫、去重策略、關鍵擋點明列。待 Jin 授權確認後執行 Phase 1-4
 [v] infra-kb-dedup-strategy|B 資料夾去重策略詳化|掃描實際檔案（18,732 Word 檔），去重方案三層（Layer 1 檔名標記 7%、Layer 2 案件編號 ~15%、Layer 3 內容雜湊可選），完整 JavaScript 導入腳本框架 + 授權清單。報告已存檔 docs/records/KB-deduplication-strategy.md，待 Jin 授權後執行
+[v] feat-test-assembly-helpers|assembly/helpers 測試覆蓋補強|19 個測試覆蓋 6 個 pure functions（estimateTokens、formatKB、buildFilename、computeFileList、computeActiveFiles、assembleContent），所有邊界情況和正常路徑完整。npm test + npm run build 均通過
