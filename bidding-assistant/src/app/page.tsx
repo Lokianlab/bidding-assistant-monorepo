@@ -18,6 +18,7 @@ import { FIELDS_DASHBOARD, FIELDS_DASHBOARD_KPI } from "@/lib/constants/notion-f
 import { StatsGrid } from "@/components/dashboard/StatsGrid";
 import { ChartsSection } from "@/components/dashboard/ChartsSection";
 import { DashboardGrid } from "@/components/dashboard/DashboardGrid";
+import { QuickStart } from "@/components/dashboard/QuickStart";
 import { SearchBar, useDebouncedValue } from "@/components/dashboard/SearchBar";
 import { ProjectDetailSheet } from "@/components/dashboard/ProjectDetailSheet";
 import { useDashboardMetrics } from "@/lib/dashboard/useDashboardMetrics";
@@ -517,6 +518,9 @@ export default function DashboardPage() {
         />
       ) : (
         <>
+          {/* ====== 快速開始引導（KB 未填滿時顯示） ====== */}
+          <QuickStart />
+
           {/* ====== 統計卡片（8 張） ====== */}
           <StatsGrid
             projectCount={pages.length}

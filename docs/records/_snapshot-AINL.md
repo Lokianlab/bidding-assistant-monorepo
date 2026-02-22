@@ -1,4 +1,8 @@
 SNAPSHOT|20260225-1600|AINL|haiku-4-5
+
+## 外部指派（3O5L → AINL，20260222）
+- **test-use-export**：~~已由 3O5L 完成（0225，commit 908c724，19 tests 全過）~~
+- **繼續找缺口**：src/lib/ 全覆蓋完成，dashboard hooks 全有測試，目前無測試缺口
 [x] infra-sync|首次同步完成|@op:20260221-AINL#1924
 [v] feat-test-coverage|補測試覆蓋+跨機器審查|analysis/index +6 trend 驗證。useQualityGate +10 tests（Z1FV M04 審查中發現缺口）。待 Jin 驗收：npm test 全過即可
 [v] feat-quality-refactor|品質模組審查|A44T/JDNE 已審查通過，待 Jin 驗收
