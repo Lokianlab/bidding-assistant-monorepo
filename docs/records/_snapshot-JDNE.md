@@ -1,4 +1,4 @@
-SNAPSHOT|20260303-2340|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260303-2345|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -61,3 +61,4 @@ SNAPSHOT|20260303-2340|JDNE|claude-sonnet-4-6
 [x] admin-devmap-testcount|dev-map 測試數更新|2927→2945（184 test files），完成 0303
 [x] feat-tender-detail|apiFetchTenderDetail 串接 /api/pcc|替換 null 佔位實作→實際 fetch+欄位解析，+7 tests，2945 total
 [x] fix-patrol-review-a44t|A44T 審查4項修正落地|validateNotionInput接線+ScanResult型別+測試mock補強+新驗收測試，2949 total，0303
+[x] admin-devmap-2949|dev-map 測試數更新|2945→2949，0303
