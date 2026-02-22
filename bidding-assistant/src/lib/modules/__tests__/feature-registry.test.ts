@@ -95,6 +95,11 @@ describe("FEATURE_REGISTRY", () => {
     expect(ids).toContain("case-board");
     expect(ids).toContain("prompt-library");
     expect(ids).toContain("intelligence");
+    expect(ids).toContain("explore");
+    expect(ids).toContain("scan");
+    expect(ids).toContain("case-work");
+    expect(ids).toContain("strategy");
+    expect(ids).toContain("quality-gate");
   });
 });
 
@@ -185,6 +190,12 @@ describe("getFeatureByRoute()", () => {
     const feature = getFeatureByRoute("/prompt-library");
     expect(feature).toBeDefined();
     expect(feature!.id).toBe("prompt-library");
+  });
+
+  it("returns the explore feature for /explore", () => {
+    const feature = getFeatureByRoute("/explore");
+    expect(feature).toBeDefined();
+    expect(feature!.id).toBe("explore");
   });
 
   it("returns undefined for unregistered routes", () => {
