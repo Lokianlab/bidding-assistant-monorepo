@@ -133,6 +133,16 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
     dependencies: ["quality"],
   },
   {
+    id: "scan",
+    name: "巡標自動化",
+    description: "每日自動掃描 PCC 公告，關鍵字篩選分類，一鍵建入 Notion 追蹤",
+    icon: "📡",
+    routes: ["/scan"],
+    section: "tools",
+    defaultEnabled: true,
+    dependencies: [],
+  },
+  {
     id: "strategy",
     name: "戰略分析",
     description: "投標適配度評分：五維分析（領域、機關、競爭、規模、團隊），幫助決策是否投標",
