@@ -1,4 +1,5 @@
 import { generateDocx } from "@/lib/docgen/generate-docx";
+import { generatePrintHtml } from "./print-export";
 import type { ExportOptions, ExportResult } from "./types";
 
 // ── 匯出分發器 ────────────────────────────────────────────────
@@ -13,8 +14,7 @@ export async function exportDocument(options: ExportOptions): Promise<ExportResu
     case "markdown":
       return exportMarkdown(options);
     case "print":
-      // Phase 3 實作，目前回傳空 HTML
-      return { format: "print", html: "" };
+      return generatePrintHtml(options);
     default:
       throw new Error(`不支援的匯出格式：${options.format}`);
   }

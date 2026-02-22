@@ -28,7 +28,7 @@ export function ExportPanel({ isExporting, errorMessage, onExport }: ExportPanel
       <div>
         <Label className="text-sm font-medium mb-2 block">匯出格式</Label>
         <div className="space-y-1.5">
-          {(["docx", "markdown"] as ExportFormat[]).map((f) => (
+          {(["docx", "markdown", "print"] as ExportFormat[]).map((f) => (
             <div key={f} className="flex items-center space-x-2">
               <input
                 type="radio"

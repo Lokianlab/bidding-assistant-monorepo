@@ -4,12 +4,13 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { AlertTriangle } from "lucide-react";
 
 import { TemplateSelector } from "./TemplateSelector";
 import { ChapterList } from "./ChapterList";
 import { ChapterEditor } from "./ChapterEditor";
 import { ExportPanel } from "./ExportPanel";
+import { AssemblyWarnings } from "./AssemblyWarnings";
+import { DocumentPreview } from "./DocumentPreview";
 
 import { useDocumentAssembly } from "@/lib/output/useDocumentAssembly";
 import { useExport } from "@/lib/output/useExport";
@@ -37,6 +38,7 @@ export function DocumentWorkbench() {
   const [selectedChapterId, setSelectedChapterId] = useState<string | null>(
     chapters[0]?.id ?? null
   );
+  const [printHtml, setPrintHtml] = useState<string | null>(null);
 
   const currentTemplate = getTemplateById(templateId);
   const selectedChapter = chapters.find((c) => c.id === selectedChapterId) ?? null;
@@ -83,6 +85,8 @@ export function DocumentWorkbench() {
     } else if (result.format === "markdown") {
       const blob = new Blob([result.text], { type: "text/markdown;charset=utf-8" });
       downloadBlob(blob, result.filename);
+    } else if (result.format === "print") {
+      setPrintHtml(result.html);
     }
   };
 
@@ -151,13 +155,8 @@ export function DocumentWorkbench() {
         </div>
 
         {warnings.length > 0 && (
-          <div className="border-t p-3 space-y-1.5 max-h-32 overflow-y-auto">
-            {warnings.map((w, i) => (
-              <div key={i} className="flex items-start gap-2 rounded-md border px-3 py-1.5 text-xs text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/30">
-                <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-                <span>{w.message}</span>
-              </div>
-            ))}
+          <div className="border-t p-3 max-h-32 overflow-y-auto">
+            <AssemblyWarnings warnings={warnings} />
           </div>
         )}
       </div>
@@ -171,6 +170,16 @@ export function DocumentWorkbench() {
           onExport={handleExport}
         />
       </div>
+
+      {/* 列印預覽對話框 */}
+      {printHtml !== null && (
+        <DocumentPreview
+          html={printHtml}
+          projectName={projectName || "未命名案件"}
+          open={printHtml !== null}
+          onClose={() => setPrintHtml(null)}
+        />
+      )}
     </div>
   );
 }
