@@ -47,6 +47,7 @@ export function usePatrolOrchestrator(): UsePatrolOrchestratorReturn {
         const config = {
           notionToken: token,
           notionDatabaseId: databaseId,
+          companyBrand: settings.company?.brand ?? '',
           // Drive OAuth 由伺服器端環境變數自動處理，前端不需傳認證資訊
         };
 

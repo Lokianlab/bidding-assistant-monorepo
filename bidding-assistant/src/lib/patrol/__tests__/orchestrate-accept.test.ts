@@ -273,3 +273,49 @@ describe('orchestrateAccept — Notion 回寫', () => {
     );
   });
 });
+
+describe('orchestrateAccept — 摘要/情蒐內容格式', () => {
+  beforeEach(() => {
+    mockCreateNotion.mockResolvedValue({
+      success: true,
+      notionPageId: 'page-fmt',
+      caseUniqueId: 'PCC-JOB001',
+    });
+    mockCreateDrive.mockResolvedValue({ success: true, folderId: 'folder-fmt' });
+  });
+
+  it('摘要包含標案名稱、機關、截標日和預算', async () => {
+    const result = await orchestrateAccept(sampleItem, testConfig);
+
+    expect(result.summary).toContain('食農教育推廣計畫');
+    expect(result.summary).toContain('教育局');
+    expect(result.summary).toContain('50 萬');   // budget = 500,000 → "50 萬"
+  });
+
+  it('無情報快取時情蒐提示查詢', async () => {
+    const result = await orchestrateAccept(sampleItem, testConfig);
+
+    // jsdom localStorage 預設空，快取未命中
+    expect(result.intelligence).toContain('情報快取');
+    expect(result.intelligence).toContain('教育局');
+  });
+
+  it('預算為 null 時摘要顯示「未公告」', async () => {
+    const noBudgetItem: PatrolItem = { ...sampleItem, budget: null };
+    const result = await orchestrateAccept(noBudgetItem, testConfig);
+
+    expect(result.summary).toContain('未公告');
+  });
+
+  it('傳入 companyBrand 不影響無快取情況', async () => {
+    const configWithBrand: AcceptConfig = {
+      ...testConfig,
+      companyBrand: '大員洛川',
+    };
+    const result = await orchestrateAccept(sampleItem, configWithBrand);
+
+    // 仍然是未命中狀態（jsdom localStorage 空）
+    expect(result.intelligence).toBeTruthy();
+    expect(result.summary).toBeTruthy();
+  });
+});

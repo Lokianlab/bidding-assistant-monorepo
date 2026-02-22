@@ -20,6 +20,8 @@ import {
   apiCreateDriveFolder,
   apiFetchTenderDetail,
 } from './api-client';
+import { readCachedIntelligence } from '@/lib/strategy/intelligence-bridge';
+import { formatBudget } from '@/lib/strategy/helpers';
 
 // ============================================================
 // 認證參數（UI 從 settings 傳入）
@@ -31,28 +33,51 @@ export interface AcceptConfig {
   notionToken: string;
   /** Notion Database ID（沙盒或正式） */
   notionDatabaseId: string;
+  /** 公司品牌名稱（用於情報快取查詢，可選） */
+  companyBrand?: string;
 }
 
 // ============================================================
-// 摘要/情蒐（待串接現有模組）
+// 摘要/情蒐（串接現有模組）
 // ============================================================
 
 /**
- * 摘要產出（串接現有分析模組）
- * 目前回傳佔位文字，串接時替換為實際分析
+ * 摘要產出：格式化 PCC 公告基本資訊
+ * 截標日、預算由 detail API 已取得，直接格式化
  */
-async function generateSummary(_title: string): Promise<string> {
-  // TODO: 串接現有分析模組（如 M03 適配度分析、M04 品質檢查等）
-  return '[摘要功能開發中]';
+function buildSummary(item: PatrolItem): string {
+  const deadline = item.deadline
+    ? new Date(item.deadline).toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' })
+    : '未公告';
+  const budget = item.budget ? formatBudget(item.budget) : '未公告';
+  return `【PCC 公告摘要】\n標案：${item.title}\n機關：${item.agency}\n截標日：${deadline}\n預算：${budget}`;
 }
 
 /**
- * 情蒐產出（串接現有機關情報模組）
- * 目前回傳佔位文字，串接時替換為實際情蒐
+ * 情蒐產出：從 localStorage 快取讀取已有情報
+ * 快取命中 → 格式化輸出；快取未命中 → 提示查詢
  */
-async function generateIntelligenceReport(_agency: string): Promise<string> {
-  // TODO: 串接現有的機關情報、競爭分析等模組
-  return '[情蒐功能開發中]';
+function buildIntelligenceReport(item: PatrolItem, companyBrand: string): string {
+  const intel = readCachedIntelligence(companyBrand, item.title);
+
+  const lines: string[] = ['【情報快取】'];
+
+  if (intel.marketTrend) {
+    const t = intel.marketTrend;
+    lines.push(`市場趨勢：${t.keyword} 類案件共 ${t.totalRecords} 筆，競爭${t.competitionLevel}，趨勢${t.trendDirection}`);
+  }
+
+  if (intel.selfAnalysis) {
+    const s = intel.selfAnalysis;
+    lines.push(`競爭分析：${s.wins} 筆得標，歷史得標率 ${Math.round(s.winRate * 100)}%`);
+  }
+
+  if (lines.length === 1) {
+    // 無快取資料
+    lines.push(`尚無 ${item.agency} 情報，可至情報搜尋頁查詢。`);
+  }
+
+  return lines.join('\n');
 }
 
 // ============================================================
@@ -136,8 +161,8 @@ export async function orchestrateAccept(
 
     const [driveResult, summary, intelligence] = await Promise.all([
       apiCreateDriveFolder(driveInput),
-      generateSummary(item.title),
-      generateIntelligenceReport(item.agency),
+      Promise.resolve(buildSummary(item)),
+      Promise.resolve(buildIntelligenceReport(item, config.companyBrand ?? '')),
     ]);
 
     // Step 6: 回寫摘要/情蒐到 Notion
