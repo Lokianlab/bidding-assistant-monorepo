@@ -160,6 +160,7 @@
 - [x] W01 Phase 2 建案 API（Z1FV）：/api/scan/accept + TenderCard 建案狀態 + 排除記憶模組（JDNE）
 - [x] W01 patrol 分類引擎（AINL Layer C）：classifier + converter + exclusion + orchestrator，94 tests
 - [x] W01 全鏈路完成（0228）：CreateCaseDialog + /api/notion/create-case + 排除記憶持久化 + 防重複建案，Layer A+B+C+D 全通，2921 tests
+- [x] Explorer 情報探索 Phase 1（JDNE 0223）：可鑽探搜尋，SearchView → TenderView → AgencyView/CompanyView，7 元件 + hook，全頁面覆蓋
 
 ### 當前階段
 
@@ -178,7 +179,7 @@
 2. **已完成功能使用**：品質/報價/組裝重構、文件生成、M06 排版、趨勢分析、儀表板等多個功能可隨時使用，有問題開 issue
 3. **知識庫初始化**：AINL 已完成評估報告（H: 資料夾 33,447 個檔案），待 Jin 授權執行 Phase 1-4
 4. **M02 知識庫模組規格**：v0.1 草案完成（0227 ITEJ），待用戶審閱後開發機器可接手 Phase 1
-5. **持續補測試**：206 檔 3171 tests，src/lib 全模組 + 全 API route + 元件層全覆蓋
+5. **持續補測試**：215 檔 3282 tests，src/lib 全模組 + 全 API route + 元件層全覆蓋 + 全頁面覆蓋
 
 ### 待決事項
 
