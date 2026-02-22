@@ -23,6 +23,7 @@ vi.mock('../api-client', () => ({
 
 vi.mock('../converter', () => ({
   convertToNotionInput: vi.fn(),
+  validateNotionInput: vi.fn().mockReturnValue({ valid: true, missingFields: [] }),
 }));
 
 import {
@@ -31,13 +32,14 @@ import {
   apiCreateDriveFolder,
   apiFetchTenderDetail,
 } from '../api-client';
-import { convertToNotionInput } from '../converter';
+import { convertToNotionInput, validateNotionInput } from '../converter';
 
 const mockCreateNotion = apiCreateNotionCase as ReturnType<typeof vi.fn>;
 const mockUpdateNotion = apiUpdateNotionCase as ReturnType<typeof vi.fn>;
 const mockCreateDrive = apiCreateDriveFolder as ReturnType<typeof vi.fn>;
 const mockFetchDetail = apiFetchTenderDetail as ReturnType<typeof vi.fn>;
 const mockConvert = convertToNotionInput as ReturnType<typeof vi.fn>;
+const mockValidate = validateNotionInput as ReturnType<typeof vi.fn>;
 
 // ── 共用測試資料 ───────────────────────────────────────────
 
@@ -123,6 +125,21 @@ describe('orchestrator - 編排流程', () => {
       expect(result.drive.error).toMatch(/Notion 建檔失敗/); // 但 orchestrator 視為中止
       expect(mockCreateDrive).not.toHaveBeenCalled();
       expect(mockUpdateNotion).not.toHaveBeenCalled();
+    });
+
+    it('輸入驗證失敗時（缺必填欄位），提前返回不呼叫 API', async () => {
+      mockValidate.mockReturnValueOnce({
+        valid: false,
+        missingFields: ['title', 'jobNumber'],
+      });
+
+      const result = await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
+
+      expect(result.notion.success).toBe(false);
+      expect(result.notion.error).toMatch(/缺少必填欄位/);
+      expect(result.notion.error).toMatch(/title/);
+      expect(mockCreateNotion).not.toHaveBeenCalled();
+      expect(mockCreateDrive).not.toHaveBeenCalled();
     });
 
     it('無 Drive config 時，Drive 回傳「尚未設定」錯誤，不呼叫 apiCreateDriveFolder', async () => {

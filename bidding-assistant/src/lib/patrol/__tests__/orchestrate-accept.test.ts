@@ -20,6 +20,7 @@ vi.mock('../api-client', () => ({
 // Mock converter
 vi.mock('../converter', () => ({
   convertToNotionInput: vi.fn(),
+  validateNotionInput: vi.fn().mockReturnValue({ valid: true, missingFields: [] }),
 }));
 
 import {

@@ -13,7 +13,7 @@ import type {
   DriveCreateFolderInput,
   DriveCreateFolderResult,
 } from './types';
-import { convertToNotionInput } from './converter';
+import { convertToNotionInput, validateNotionInput } from './converter';
 import {
   apiCreateNotionCase,
   apiUpdateNotionCase,
@@ -101,6 +101,17 @@ export async function orchestrateAccept(
         budget: item.budget,
         publishDate: item.publishDate,
         deadline: item.deadline,
+      };
+    }
+
+    // Step 2.5: 驗證轉換結果
+    const validation = validateNotionInput(notionInput);
+    if (!validation.valid) {
+      return {
+        notion: { success: false, error: `缺少必填欄位：${validation.missingFields.join('、')}` },
+        drive: { success: false, error: '輸入驗證失敗，中止流程' },
+        summary: '',
+        intelligence: '',
       };
     }
 
