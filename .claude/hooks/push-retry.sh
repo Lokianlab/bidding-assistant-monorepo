@@ -9,7 +9,7 @@ MAX=3
 for i in $(seq 1 $MAX); do
   git fetch origin 2>/dev/null
   git rebase origin/main 2>/dev/null || { echo "rebase conflict, manual fix needed" >&2; exit 1; }
-  if git push origin main 2>/dev/null; then
+  if git push origin main; then
     exit 0
   fi
   [ $i -lt $MAX ] && sleep 1
