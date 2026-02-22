@@ -1,0 +1,92 @@
+/**
+ * Supabase 客戶端初始化
+ *
+ * 用途：
+ * - 知識庫（00A-00E）的資料庫連接
+ * - 多租戶資料隔離
+ * - Google OAuth 認證
+ *
+ * 使用方式：
+ * ```ts
+ * import { supabase } from '@/lib/db/supabase-client';
+ *
+ * // 查詢知識庫
+ * const { data, error } = await supabase
+ *   .from('kb_items')
+ *   .select('*')
+ *   .eq('tenant_id', tenantId);
+ * ```
+ */
+
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
+let supabaseClient: SupabaseClient | null = null;
+
+/**
+ * 取得 Supabase 客戶端（單例模式）
+ */
+export function getSupabaseClient(): SupabaseClient {
+  if (supabaseClient) {
+    return supabaseClient;
+  }
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !anonKey) {
+    throw new Error(
+      'Missing Supabase environment variables. ' +
+      'Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
+    );
+  }
+
+  supabaseClient = createClient(url, anonKey, {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+    },
+  });
+
+  return supabaseClient;
+}
+
+/**
+ * 簡寫：預設導出
+ */
+export const supabase = getSupabaseClient();
+
+/**
+ * 取得服務器端客戶端（用於 API routes）
+ * 注意：只在服務器端使用，不要洩漏 SERVICE_ROLE_KEY
+ */
+export function getSupabaseServerClient(): SupabaseClient {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !serviceRoleKey) {
+    throw new Error(
+      'Missing Supabase server environment variables. ' +
+      'Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY'
+    );
+  }
+
+  return createClient(url, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
+
+/**
+ * 取得當前租戶 ID
+ * 這是臨時實現，實際應從認證 session 推導
+ */
+export function getTenantId(): string {
+  const tenantId = process.env.NEXT_PUBLIC_TENANT_ID;
+  if (!tenantId) {
+    throw new Error('NEXT_PUBLIC_TENANT_ID not set');
+  }
+  return tenantId;
+}
