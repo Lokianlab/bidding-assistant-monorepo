@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2130|A44T|claude-opus-4-6
+SNAPSHOT|20260228-2025|A44T|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - push 後直接讀 [ ] 找下一步，不停下報告
@@ -25,7 +25,7 @@ SNAPSHOT|20260228-2130|A44T|claude-opus-4-6
 [v] feat-m03-strategy|M03 戰略分析引擎|Phase 1+2+PCC橋接：5維評分引擎（82 tests）+ intelligence-bridge + FitScoreRadar + FitScoreCard（15 tests）+ /strategy 頁面。Z1FV 審查 PASS。待用戶驗收。新方向下嵌入 P1 案件工作頁
 [~] infra-scoring-arch|計分板架構重構|放棄：方向轉向產品優先，計分板重構不再需要
 [v] infra-stop-hook|hook 架構泛化重構：5 hooks（SessionStart/PreCompact/PreToolUse/PostToolUse/Stop）+ 2 conf（stop-patterns/dangerous-commands）+ CLAUDE.md 更新|驗收：看 .claude/settings.json 確認 5 個 hook 註冊、看 .claude/hooks/ 目錄確認 5 個 .sh + 2 個 .conf
-[v] feat-cross-module-nav|跨模組導航串流|情報→戰略→組裝→品質→匯出全鏈路按鈕+上下文傳遞。Z1FV 審查 PASS。待用戶驗收
-[v] test-component-coverage|元件測試擴充|123 檔 2211 tests。前次 99 新測試 + 本次 case-work helpers 5 tests。待用戶驗收
-[v] feat-case-work-page|P1 案件工作頁|/case-work?id={pageId} 路由，案件資訊+L1-L8備標進度+自動M03戰略評分+PCC情報摘要+行動按鈕。feature-registry 已註冊。ProjectDetailSheet 加導航按鈕。123 files 2211 tests。驗收：案件看板點案件→sheet→「前往案件工作頁」→確認各區塊顯示正常
+[v] feat-cross-module-nav|跨模組導航串流|情報→戰略→組裝→品質→匯出全鏈路按鈕+上下文傳遞+scan→intelligence URL 參數串流。Z1FV 審查 PASS。待用戶驗收
+[v] test-component-coverage|元件測試擴充|151 檔 2487 tests（+Sidebar 16 tests +ScanDashboard 導航 1 test）。待用戶驗收
+[v] feat-case-work-page|P1 案件工作頁|/case-work?id={pageId} 路由，案件資訊+L1-L8備標進度+自動M03戰略評分+PCC情報摘要+行動按鈕。ITEJ 審查 PASS。驗收：案件看板點案件→sheet→「前往案件工作頁」→確認各區塊顯示正常
 [x] infra-governance-rewrite|治理機制段重寫|角色表改實際產出、審查規則4條具體化、砍決策鏈路/見習/下線偵測、同步6處活文件引用。Jin 直接批准（0228），commit 22c316a
