@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2050|3O5L|Sonnet 4.6
+SNAPSHOT|20260301-2250|3O5L|Sonnet 4.6
 
 ## 行為備註
 - 策略主官：優先序決定、跨機器協調、向 Jin 彙報
@@ -16,22 +16,10 @@ SNAPSHOT|20260228-2050|3O5L|Sonnet 4.6
 [x] test-use-export|useExport hook 補測試|19 tests 全過（doExport 成功×4、失敗×5、downloadBlob DOM×4、FORMAT_LABELS×4），commit 908c724
 [x] fix-sidebar-link|Sidebar Link href undefined bug|Jin 驗收通過（0226 rebase 後確認）
 [x] cleanup-trend-dup|移除重複趨勢計算|Jin 驗收通過（0226）
-[x] test-coverage-patrol|持續找測試缺口|現已飽和：166 files 2616 tests（含本輪 W01 Phase 2 +20 tests）
+[x] test-coverage-patrol|持續找測試缺口|現飽和，AINL 接手補充（177 files 2865 tests）
 
-[x] feat-w01-scan-p2|W01 巡標 Phase 2：建案 API + Dialog|POST /api/notion/create-case + CreateCaseDialog + ScanDashboard 接線，+20 tests（166 files 2616 tests 全過）。驗收：/scan → 掃描 → 點「建案」→ 確認 → Notion 新增頁面
+[x] feat-w01-scan-p2|W01 巡標 Phase 2：建案 API + Dialog|POST /api/notion/create-case + CreateCaseDialog + ScanDashboard 接線，+20 tests，驗收：/scan → 掃描 → 點「建案」→ 確認 → Notion 新增頁面
+[x] feat-w01-scan-p3|W01 巡標 Phase 3：關鍵字設定管理|ScanSettings type + defaults + KeywordManager 元件 + modules設定頁tab + ScanDashboard 接線，+11 tests，177 files 2865 tests 全過，commit cbcdc98
 
-[?] prod-min-demo|最小展示版驗收進度|M03✅(A44T,82T)+M04✅(Z1FV,114T)+PCC✅(ITEJ,1132T) → 三件全等 Jin 驗收；整合報告已發論壇 0230
+[?] prod-min-demo|最小展示版驗收進度|M03✅+M04✅+PCC✅ → 三件全等 Jin 驗收；W01 整體 dev-map 已標完成
 
-## 完成項目（近期）
-[x] infra-onboarding|首次啟動 onboarding|完成
-[x] fix-ssr-500|全站 500 錯誤修復（radix-ui SSR 崩潰）|commit eaacf2e
-[x] fix-post-ordering|帖子排序亂序修復|commit 82e5006
-[x] feat-batch-reject|批量退回按鈕|Jin 要求
-[x] feat-sort-toggle|帖子排序切換|修復 Jin「找不到報告」問題
-[x] feat-approval-type|[申請審核]標籤 + parser 修復|Jin 要求
-[x] feat-reply-to-post|回覆特定帖子|Jin 要求
-[x] feat-ref-format|ref 引用人類可讀格式|JDNE:0223-0830 → 「JDNE 在 02/23 08:30 的發言」
-[x] fix-redundant-patch|移除冗餘 PATCH|省一半 API 呼叫
-[x] feat-approval-filter|篩選器加 approval 類型|Jin 可篩選申請審核帖子
-[x] forum-optimize-add-cut-add|先加再砍再加回方法論|論壇共識通過
-[x] forum-rebase-standard|rebase 標準化|全員執行
