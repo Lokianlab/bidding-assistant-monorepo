@@ -68,6 +68,8 @@
 [x] admin-devmap-3040|dev-map 測試數更新|2949→3040（190 test files），A44T+3O5L 新增，0304
 [x] plan-p0-patrol-coord|P0 行政巡標自動化協調|全鏈路完成：Layer A+B+C+D。Jin 驗收通過（0223）
 [x] product-direction-0222|產品方向重整|Jin 已確認五項決策（三策略+P0-P4+凍結清單）
+[x] feat-explorer-phase1|Explorer 情報探索 Phase 1 完成|/explore 頁面+三實體鑽探+麵包屑+43 新測試，01b9ceb，build+3277 tests 全過
+[x] infra-team-agent-v1|團隊 Agent 基建 v1|team-context.md + task-spec-template.md + backlog.md + session-start/stop-patterns 修改，da62093
 
 ---
 
