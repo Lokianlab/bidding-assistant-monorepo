@@ -1,4 +1,4 @@
-SNAPSHOT|20260225-1500|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260226-1840|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -28,7 +28,7 @@ SNAPSHOT|20260225-1500|JDNE|claude-sonnet-4-6
 [v] infra-new-machine-setup|新機器加入流程自動化|Jin ✅ 批准，bat + bash 腳本，待用戶驗收
 [x] infra-machine-profile|機器角色分配|Jin ✅ 批准，已寫入 docs/machine-roles.md
 [~] infra-forum-upgrade|論壇制度升級|放棄：論壇已廢除，功能過時
-[ ] infra-user-auth|用戶驗證系統|Saint 已核准為 collaborator（Jin 授權），AINL 可設定
+[~] infra-user-auth|用戶驗證系統|放棄：Saint 已離開（0226 AINL 論壇帖），用戶驗證需求不再
 [x] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE) 已設定
 [v] infra-temp-machine-code|臨時機器碼制度|Jin ✅ 批准，6/6共識+整合報告，待用戶驗收
 [v] infra-efficiency-calibration|效率校準|3O5L 送整合報告建議結案，等 Jin 裁決
@@ -42,3 +42,6 @@ SNAPSHOT|20260225-1500|JDNE|claude-sonnet-4-6
 [v] infra-task-done-cmd|/完成 指令（三件套）|commit+push+快照+stop hook+CLAUDE.md 例外規則，待用戶確認
 [v] infra-forum-abolish|廢除論壇系統|ITEJ 執行（d60b70b）：論壇 UI+指令+規範全刪，CLAUDE.md 改角色分工鏈。JDNE 補快照行為備註清理，待用戶驗收
 [~] forum-patrol|論壇持續巡邏|放棄：論壇已廢除（0225 用戶決策）
+[x] review-m06-phase1|Z1FV M06 Phase 1 審查|assembly-pipeline+template-manager+export-engine，39 tests，PASS（@op:20260225-1800）
+[x] review-m06-phase23|Z1FV M06 Phase 2+3 審查|kb-injector+print-export+DocumentPreview，PASS（@op:20260225-1700）
+[x] review-cross-module-nav|A44T 跨模組導航審查|81638fe，3 檔，PASS（@op:20260225-1600）
