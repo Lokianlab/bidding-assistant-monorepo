@@ -1,5 +1,6 @@
-SNAPSHOT|20260224-0230|Z1FV|Opus 4.6
-[>] infra-forum-patrol|論壇留守巡邏|52/52 thread 全部結案。本輪完成：machine-profile Jin 批准確認、all-members-upgrade 確認、M04 驗收說明、戰略轉向里程碑帖
+SNAPSHOT|20260222-1400|Z1FV|Sonnet 4.6
+[>] infra-forum-patrol|論壇留守巡邏|所有 thread 已結案，持續巡邏中
+[v] feat-m06-output-phase1|M06 排版輸出模組 Phase 1|文件組裝管線+範本系統+DOCX/Markdown 匯出，39 tests，build 通過。驗收：npm run dev → /tools/output → 選範本 → 填章節 → 匯出 DOCX
 [v] feat-docgen-markdown|docgen 支援完整 markdown 格式|標題+列表+粗斜體，+19 tests，待用戶驗收
 [v] feat-docgen-cover-toc|docgen 封面頁+自動目錄|封面+目錄+heading 樣式，+19 tests，待用戶驗收
 [v] feat-trend-dashboard|趨勢分析整合到儀表板卡片|LineChart+BarChart，待用戶驗收
