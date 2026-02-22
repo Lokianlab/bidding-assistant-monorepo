@@ -6,11 +6,12 @@ import type { KBEntry, KBSourceRef } from "./types";
 /**
  * 將文字切割成句子陣列。
  * 按中文句尾標點（。！？）和英文句點切割。
+ * 英文句點後面接數字時不拆（避免 99.9% 被切斷）。
  */
 export function splitIntoSentences(text: string): string[] {
   if (!text.trim()) return [];
   const parts = text
-    .split(/(?<=[。！？.!?])\s*/)
+    .split(/(?<=[。！？!?])\s*|(?<=\.)(?!\d)\s*/)
     .map((s) => s.trim())
     .filter((s) => s.length > 0);
   return parts;

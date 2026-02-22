@@ -27,6 +27,18 @@ describe("splitIntoSentences 邊界", () => {
     expect(result[0]).toBe("第一句。");
     expect(result[1]).toBe("第二句。");
   });
+
+  it("數字中的小數點不切割（99.9%）", () => {
+    const result = splitIntoSentences("服務滿意度高達99.9%，為業界領導品牌。");
+    expect(result).toHaveLength(1);
+    expect(result[0]).toContain("99.9%");
+  });
+
+  it("英文句點後接數字不切割（版本號 v2.0）", () => {
+    const result = splitIntoSentences("系統升級至v2.0版本。功能更完善。");
+    expect(result).toHaveLength(2);
+    expect(result[0]).toContain("v2.0");
+  });
 });
 
 // ── extractKeywords 邊界 ─────────────────────────────────────

@@ -100,7 +100,7 @@ describe("FactCheckPanel — CONFIDENCE_STYLE", () => {
     expect(screen.getByText(/\[部分驗證\]/)).toBeTruthy();
   });
 
-  it("unverified annotation 顯示 ❌ 和「無來源」標籤", () => {
+  it("unverified annotation 顯示 ❌ 和「無依據」標籤", () => {
     render(
       createElement(FactCheckPanel, {
         result: makeResult({
@@ -109,7 +109,7 @@ describe("FactCheckPanel — CONFIDENCE_STYLE", () => {
       })
     );
     expect(screen.getByText(/❌/)).toBeTruthy();
-    expect(screen.getByText(/\[無來源\]/)).toBeTruthy();
+    expect(screen.getByText(/\[無依據\]/)).toBeTruthy();
   });
 });
 

@@ -10,7 +10,7 @@ interface FactCheckPanelProps {
 const CONFIDENCE_STYLE: Record<string, { icon: string; label: string; className: string }> = {
   verified: { icon: "✅", label: "已驗證", className: "text-green-700 dark:text-green-400" },
   partial: { icon: "⚠️", label: "部分驗證", className: "text-yellow-700 dark:text-yellow-400" },
-  unverified: { icon: "❌", label: "無來源", className: "text-red-700 dark:text-red-400" },
+  unverified: { icon: "❌", label: "無依據", className: "text-red-700 dark:text-red-400" },
 };
 
 export function FactCheckPanel({ result }: FactCheckPanelProps) {
