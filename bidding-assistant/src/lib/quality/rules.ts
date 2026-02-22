@@ -22,6 +22,8 @@ export function runChecks(text: string, config: QualityConfig): CheckResult[] {
     ...checkSentenceLength(text),
     ...checkDuplicateSentences(text),
     ...checkRiskyPromises(text),
+    ...checkMissingPerformanceRecord(text),
+    ...checkVagueQuantifiers(text),
   ];
 }
 
@@ -306,6 +308,63 @@ export function checkRiskyPromises(text: string): CheckResult[] {
       results.push({
         type: "warning",
         rule: RULE_NAMES.RISKY_PROMISE,
+        message: `「${word}」${reason}`,
+        position: `位置 ${match.index}`,
+      });
+    }
+  }
+  return results;
+}
+
+/**
+ * 履約實績缺失偵測：
+ * 提案書中有活動/計畫內容，但未提及過往履約實績，
+ * 是評審委員最常拒標的原因（AINL 失敗模式分析 Layer 7）。
+ *
+ * 觸發條件：文件 > 300 字、包含活動/計畫關鍵詞、且無任何履約實績說明
+ */
+export function checkMissingPerformanceRecord(text: string): CheckResult[] {
+  if (text.length < 300) return [];
+
+  const hasActivityContent = /活動|計畫|辦理|講座|工作坊|研習|展覽/.test(text);
+  if (!hasActivityContent) return [];
+
+  const hasPerformanceRecord =
+    /履約實績|過往案例|曾辦理|曾承辦|曾執行|以往承辦|過去承辦|承辦過/.test(text);
+  if (hasPerformanceRecord) return [];
+
+  return [
+    {
+      type: "warning",
+      rule: RULE_NAMES.MISSING_PERFORMANCE_RECORD,
+      message:
+        "文件中未提及過往履約實績（相似案例或曾辦理的類似活動）；這是評審委員的重要審查項目，建議在團隊介紹章節補充",
+    },
+  ];
+}
+
+/**
+ * 模糊量化詞偵測：
+ * 提案書中使用「若干」「廣大民眾」等模糊量化詞，
+ * 應改為具體數字（AINL 失敗模式分析 Layer 4）。
+ */
+export function checkVagueQuantifiers(text: string): CheckResult[] {
+  const results: CheckResult[] = [];
+  const vagueTerms = [
+    { word: "若干", reason: "應具體說明數量（如場次數、人數）" },
+    { word: "廣大民眾", reason: "建議說明預計參與人數（如「500 人」）" },
+    { word: "各界人士", reason: "建議說明目標對象和預計人數" },
+    { word: "屆時再定", reason: "計畫書應有具體規劃，不應留待後定" },
+    { word: "待確認", reason: "投標前應完成確認，避免讓評審委員質疑執行能力" },
+  ];
+
+  for (const { word, reason } of vagueTerms) {
+    const regex = new RegExp(escapeRegex(word), "g");
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      results.push({
+        type: "warning",
+        rule: RULE_NAMES.VAGUE_QUANTIFIERS,
         message: `「${word}」${reason}`,
         position: `位置 ${match.index}`,
       });

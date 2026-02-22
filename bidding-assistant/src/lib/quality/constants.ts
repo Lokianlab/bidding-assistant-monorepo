@@ -13,6 +13,8 @@ export const RULE_NAMES = {
   SENTENCE_LENGTH: "句子過長",
   DUPLICATE: "重複內容",
   RISKY_PROMISE: "承諾風險",
+  MISSING_PERFORMANCE_RECORD: "履約實績缺失",
+  VAGUE_QUANTIFIERS: "模糊量化",
 } as const;
 
 /** 鐵律 flag key → 顯示標籤（SSOT：page.tsx 的鐵律清單從這裡讀） */

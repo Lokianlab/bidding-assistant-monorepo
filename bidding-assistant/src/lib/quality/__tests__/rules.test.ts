@@ -10,6 +10,8 @@ import {
   checkSentenceLength,
   checkDuplicateSentences,
   checkRiskyPromises,
+  checkMissingPerformanceRecord,
+  checkVagueQuantifiers,
 } from "../rules";
 import { calculateScore } from "../score";
 import type { QualityConfig } from "../types";
@@ -388,6 +390,113 @@ describe("checkRiskyPromises", () => {
     const results = checkRiskyPromises("百分之百達成目標");
     expect(results).toHaveLength(1);
     expect(results[0].message).toContain("不切實際");
+  });
+});
+
+describe("checkMissingPerformanceRecord", () => {
+  // 每段 45 字，repeat(10) = 450 字，確保超過 300 字門檻
+  const longProposalBase = "本計畫將辦理一系列文化活動，包含講座、展覽及工作坊等，預計推動相關工作坊計畫推廣文化活動。";
+
+  it("文件有活動但無履約實績 → 觸發警告", () => {
+    const text = longProposalBase.repeat(10); // ~450 字，超過 300 字門檻
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(1);
+    expect(results[0].rule).toBe("履約實績缺失");
+    expect(results[0].type).toBe("warning");
+    expect(results[0].message).toContain("履約實績");
+  });
+
+  it("文件包含「曾辦理」→ 不觸發", () => {
+    const text = longProposalBase.repeat(10) + "本團隊曾辦理多項類似計畫。";
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(0);
+  });
+
+  it("文件包含「履約實績」→ 不觸發", () => {
+    const text = longProposalBase.repeat(10) + "本公司具備豐富的履約實績。";
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(0);
+  });
+
+  it("文件包含「過往案例」→ 不觸發", () => {
+    const text = longProposalBase.repeat(10) + "以下列出過往案例供參考。";
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(0);
+  });
+
+  it("短文件（< 300 字）不觸發", () => {
+    const results = checkMissingPerformanceRecord("舉辦活動。");
+    expect(results).toHaveLength(0);
+  });
+
+  it("無活動關鍵詞的文件不觸發", () => {
+    // 假設是純技術說明文件，沒有 活動/計畫/辦理 等詞
+    const text = "系統架構採用微服務設計，資料庫使用 PostgreSQL。".repeat(15);
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(0);
+  });
+
+  it("包含「承辦過」→ 不觸發", () => {
+    const text = longProposalBase.repeat(10) + "本公司承辦過類似規模的文化推廣案。";
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(0);
+  });
+});
+
+describe("checkVagueQuantifiers", () => {
+  it("偵測「若干」→ 觸發警告", () => {
+    const results = checkVagueQuantifiers("本計畫將舉辦若干場次的活動");
+    expect(results).toHaveLength(1);
+    expect(results[0].rule).toBe("模糊量化");
+    expect(results[0].type).toBe("warning");
+    expect(results[0].message).toContain("若干");
+    expect(results[0].message).toContain("數量");
+  });
+
+  it("偵測「廣大民眾」→ 觸發警告", () => {
+    const results = checkVagueQuantifiers("本活動面向廣大民眾推廣");
+    expect(results).toHaveLength(1);
+    expect(results[0].message).toContain("廣大民眾");
+  });
+
+  it("偵測「各界人士」→ 觸發警告", () => {
+    const results = checkVagueQuantifiers("邀請各界人士共同參與");
+    expect(results).toHaveLength(1);
+    expect(results[0].message).toContain("各界人士");
+  });
+
+  it("偵測「屆時再定」→ 觸發警告", () => {
+    const results = checkVagueQuantifiers("活動場地屆時再定");
+    expect(results).toHaveLength(1);
+    expect(results[0].message).toContain("屆時再定");
+  });
+
+  it("偵測「待確認」→ 觸發警告", () => {
+    const results = checkVagueQuantifiers("講師人選待確認");
+    expect(results).toHaveLength(1);
+    expect(results[0].message).toContain("待確認");
+  });
+
+  it("同一用語出現兩次，各自回報", () => {
+    const results = checkVagueQuantifiers("第一場若干人，第二場若干人");
+    expect(results).toHaveLength(2);
+  });
+
+  it("多種模糊詞各自偵測", () => {
+    const results = checkVagueQuantifiers("若干場次邀請廣大民眾，細節待確認");
+    expect(results).toHaveLength(3);
+    const rules = results.map((r) => r.rule);
+    expect(rules.every((r) => r === "模糊量化")).toBe(true);
+  });
+
+  it("不含模糊量化詞的文字不觸發", () => {
+    const results = checkVagueQuantifiers("本計畫預計辦理 3 場講座，每場 100 人，共計 300 人次");
+    expect(results).toHaveLength(0);
+  });
+
+  it("回傳 position 欄位", () => {
+    const results = checkVagueQuantifiers("若干場次");
+    expect(results[0].position).toContain("位置");
   });
 });
 
