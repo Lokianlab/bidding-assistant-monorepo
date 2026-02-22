@@ -23,7 +23,7 @@ cc程式/                      ← 專案根目錄（每台機器各自 clone，
 - Node.js v22 + npm 10 + Git 2.53 + GitHub CLI
 - Next.js 16.1.6 + React 19 + TypeScript 5 + Tailwind CSS 4 + Turbopack
 - UI: shadcn/radix-ui (new-york style)，圖表: recharts
-- 資料: Notion API，設定: localStorage
+- 資料: Notion API（現有標案追蹤）+ Supabase（KB 知識庫 + SaaS 多租戶認證，M02 起用），設定: localStorage
 - 測試: Vitest 4 + Testing Library
 - Dev port: 3000（Next.js 預設）
 
