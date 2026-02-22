@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2205|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260228-2315|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -20,7 +20,7 @@ SNAPSHOT|20260228-2205|JDNE|claude-sonnet-4-6
 [x] infra-methodology-v2|方法論 v2 系統整合|全部落地，完成（批量通過 0228）
 [x] infra-methodology-05|優化提案驗證方法論|共識整理+草案落地（methodology-05.md + _index + checklists），完成（批量通過 0228）
 [x] method-observation-capture|AI觀察捕捉框架|完成（批量通過 0228）
-[ ] plan-plugin-inventory|插件盤點|暫存檔已建
+[x] plan-plugin-inventory|插件盤點|結論：7有用/7以後/40不需要，Notion MCP 暫緩，已記錄於 OP 0220
 [x] infra-meta-methodology|元方法論框架建構|完成（批量通過 0228）
 [x] feat-pcc-web|情報模組|build 零錯誤、1195 測試全過，完成（批量通過 0228）
 [?] infra-backup-mechanism|備份/回復安全節點|範圍待釐清
