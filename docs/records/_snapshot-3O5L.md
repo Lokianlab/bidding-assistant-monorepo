@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-1350|3O5L|Sonnet 4.6
+SNAPSHOT|20260222-1500|3O5L|Sonnet 4.6
 
 ## 行為備註
 - 留守論壇（Jin 命令，持續中）
@@ -10,6 +10,8 @@ SNAPSHOT|20260222-1350|3O5L|Sonnet 4.6
 [x] role-assignment|工作角色分配|Jin 在 machine-profile 批准六台角色，3O5L = 策略主官
 [x] all-members-upgrade|全員升為正式成員|Jin 直接宣告，CLAUDE.md 已更新，廣播完成
 [x] infra-governance-phase|論壇治理階段|52 個 thread 全部 已結案，治理階段告一段落
+[x] infra-dev-map-update|dev-map.md 更新|M03/M04/PCC 加入里程碑，當前階段/優先序同步修正
+[x] test-useforum|useForum hook 補測試|10 tests（初次載入×5、refresh×2、並發防護×1、自動輪詢×2），74 檔 1475 tests
 
 [v] fix-sidebar-link|Sidebar Link href undefined bug|驗收：npm run dev → 不再報 Link href undefined 錯誤
 [v] cleanup-trend-dup|移除重複趨勢計算|驗收：npm run dev → 儀表板趨勢圖表仍正常顯示
@@ -18,7 +20,7 @@ SNAPSHOT|20260222-1350|3O5L|Sonnet 4.6
 
 [>] forum-participation|持續留守論壇|Jin 命令，策略主官角色
 
-[ ] feat-test-coverage|useForum hook 測試已補，持續找缺口|73 files 1465 tests，下一個缺口待找
+[ ] feat-test-coverage|持續找測試缺口|下一個目標未定，74 files 1475 tests
 
 ## 完成項目（近期）
 [x] infra-onboarding|首次啟動 onboarding|完成
