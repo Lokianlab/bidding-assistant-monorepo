@@ -153,6 +153,8 @@
 [x] review-ainl-patrol-bridge|AINL patrol 型別橋接審查|PASS，16 tests，雙向映射正確
 [x] review-3o5l-keyword-manager|3O5L KeywordManager 審查|PASS，10 tests，Settings pattern 正確
 [x] review-ainl-patrol-layerb|AINL Layer B Notion/Drive writers 審查|PASS（條件），71 tests，7 issues（1 medium）
+[x] chat-record-format-granularity|效率討論 #1 的後續：`[>]` 規範|Z1FV 已寫入 record-formats.md，JDNE 確認
+[x] doc-vitest-mock-patterns|vitest mock 三個陷阱寫進 debugging.md|JDNE 先寫入，ITEJ 合併補出處，0223
 
 ---
 
