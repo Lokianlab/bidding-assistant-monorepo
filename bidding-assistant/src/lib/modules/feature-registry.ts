@@ -162,6 +162,16 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
     defaultEnabled: true,
     dependencies: ["intelligence", "knowledge-base"],
   },
+  {
+    id: "explore",
+    name: "情報探索",
+    description: "搜尋標案、點進詳情、再鑽進廠商或機關，無限探索關聯情報",
+    icon: "🔭",
+    routes: ["/explore"],
+    section: "tools",
+    defaultEnabled: true,
+    dependencies: ["intelligence"],
+  },
 ];
 
 /** 從 settings 的 featureToggles 取得最終的啟用狀態 */
