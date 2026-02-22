@@ -25,6 +25,17 @@ vi.mock("@/lib/context/settings-context", () => ({
 // ── Mock sonner ───────────────────────────────────────────
 vi.mock("sonner", () => ({ toast: { success: mockToastSuccess, error: vi.fn() } }));
 
+// ── Mock Select（KB matrix 有大量 Select，jsdom 裡不確定性高）──
+vi.mock("@/components/ui/select", () => ({
+  Select: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SelectTrigger: ({ children }: { children: React.ReactNode }) => <button type="button">{children}</button>,
+  SelectValue: () => null,
+  SelectContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SelectItem: ({ value, children }: { value: string; children: React.ReactNode }) => (
+    <div data-value={value}>{children}</div>
+  ),
+}));
+
 // ── Mock Tabs（讓所有 TabsContent 永遠渲染，可測各 tab 內容）──
 vi.mock("@/components/ui/tabs", () => ({
   Tabs: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,

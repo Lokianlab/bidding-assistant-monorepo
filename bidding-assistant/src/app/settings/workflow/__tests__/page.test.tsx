@@ -3,6 +3,15 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import WorkflowPage from "../page";
 import { DEFAULT_SETTINGS } from "@/lib/settings/defaults";
 import { useSettings } from "@/lib/context/settings-context";
+import React from "react";
+
+// Accordion 在 jsdom 內部有 async effect，mock 避免不確定性
+vi.mock("@/components/ui/accordion", () => ({
+  Accordion: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  AccordionItem: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  AccordionTrigger: ({ children }: { children: React.ReactNode }) => <button>{children}</button>,
+  AccordionContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
 
 // ── Hoisted mocks（在 vi.mock 工廠提升前初始化）─────────────
 const { mockUpdateSection, mockToastSuccess } = vi.hoisted(() => ({

@@ -1,8 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import GuidePage from "../page";
+import React from "react";
 
-// guide/page.tsx 是靜態 Accordion 頁面，無依賴需 mock
+// Accordion 在 jsdom 內部有 async effect，mock 避免不確定性
+vi.mock("@/components/ui/accordion", () => ({
+  Accordion: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  AccordionItem: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  AccordionTrigger: ({ children }: { children: React.ReactNode }) => <button>{children}</button>,
+  AccordionContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
 
 describe("GuidePage — 渲染", () => {
   it("顯示頁面標題「系統操作指南」", () => {
