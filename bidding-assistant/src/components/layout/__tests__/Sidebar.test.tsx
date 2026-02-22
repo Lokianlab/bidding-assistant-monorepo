@@ -36,8 +36,7 @@ async function renderSidebar() {
   const mod = await import("../Sidebar");
   const { Sidebar, SidebarProvider } = mod;
   return render(
-    createElement(SidebarProvider, {},
-      createElement(Sidebar, {})
+    createElement(SidebarProvider, { children: createElement(Sidebar) },
     )
   );
 }
@@ -84,8 +83,7 @@ describe("SidebarProvider", () => {
     const { SidebarProvider, MobileMenuButton } = mod;
     // 確認 MobileMenuButton 可以 render 且點擊不報錯
     const { container } = render(
-      createElement(SidebarProvider, {},
-        createElement(MobileMenuButton, {})
+      createElement(SidebarProvider, { children: createElement(MobileMenuButton) },
       )
     );
     const btn = container.querySelector("button")!;

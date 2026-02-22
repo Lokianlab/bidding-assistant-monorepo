@@ -31,7 +31,7 @@ const MOCK_RESULT: ScanResult = {
   classification: {
     category: "must",
     matchedKeywords: ["食農", "教育"],
-    score: 2,
+    matchedLabel: "食農教育",
   },
 };
 
