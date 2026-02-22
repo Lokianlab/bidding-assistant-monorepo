@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { MobileMenuButton } from "@/components/layout/Sidebar";
+import { Button } from "@/components/ui/button";
 import { PCCSearchPanel } from "@/components/pcc/PCCSearchPanel";
 import { CompetitorAnalysis } from "@/components/pcc/CompetitorAnalysis";
 import { MarketTrend } from "@/components/pcc/MarketTrend";
@@ -12,8 +13,10 @@ import type { PCCSearchMode } from "@/lib/pcc/types";
 
 export default function IntelligencePage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const initialSearch = searchParams.get("search") ?? undefined;
   const initialMode = (searchParams.get("mode") as PCCSearchMode) || undefined;
+  const caseId = searchParams.get("caseId") || "";
 
   const [tab, setTab] = useState("search");
   const [targetCompany, setTargetCompany] = useState<string | null>(null);
@@ -40,6 +43,21 @@ export default function IntelligencePage() {
             查詢政府標案公開資料：案件搜尋、廠商投標紀錄、評委名單、決標金額
           </p>
         </div>
+        {/* 跨模組導航：從案件頁進入時顯示「前往戰略分析」按鈕 */}
+        {initialSearch && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-auto"
+            onClick={() => {
+              const params = new URLSearchParams({ caseName: initialSearch });
+              if (caseId) params.set("caseId", caseId);
+              router.push(`/strategy?${params.toString()}`);
+            }}
+          >
+            前往戰略分析 →
+          </Button>
+        )}
       </div>
 
       {/* 主要功能 Tab */}

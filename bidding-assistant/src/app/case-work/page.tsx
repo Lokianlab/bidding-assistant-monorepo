@@ -375,6 +375,7 @@ export default function CaseWorkPage() {
               onClick={() => {
                 const params = new URLSearchParams();
                 if (caseName) params.set("search", caseName);
+                if (pageId) params.set("caseId", pageId);
                 router.push(`/intelligence?${params.toString()}`);
               }}
             >

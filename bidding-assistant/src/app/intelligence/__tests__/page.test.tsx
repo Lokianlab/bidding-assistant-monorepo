@@ -1,10 +1,17 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
 import IntelligencePage from "../page";
+
+// ── Hoisted mocks ─────────────────────────────────────────
+const { mockPush, mockSearchGet } = vi.hoisted(() => ({
+  mockPush: vi.fn(),
+  mockSearchGet: vi.fn(() => null),
+}));
 
 // ── Mock next/navigation ──────────────────────────────────
 vi.mock("next/navigation", () => ({
-  useSearchParams: () => ({ get: () => null }),
+  useSearchParams: () => ({ get: mockSearchGet }),
+  useRouter: () => ({ push: mockPush }),
 }));
 
 // ── Mock Radix UI Tabs（避免 lazy render 問題）────────────
@@ -50,6 +57,11 @@ vi.mock("@/components/pcc/CommitteeNetwork", () => ({
   ),
 }));
 
+beforeEach(() => {
+  vi.clearAllMocks();
+  mockSearchGet.mockReturnValue(null);
+});
+
 // ── Tests ─────────────────────────────────────────────────
 
 describe("IntelligencePage — 渲染", () => {
@@ -94,5 +106,43 @@ describe("IntelligencePage — 渲染", () => {
   it("渲染 MobileMenuButton", () => {
     render(<IntelligencePage />);
     expect(screen.getByTestId("mobile-menu-btn")).toBeTruthy();
+  });
+});
+
+describe("IntelligencePage — 前往戰略分析按鈕", () => {
+  it("無 search 參數時不顯示「前往戰略分析」按鈕", () => {
+    render(<IntelligencePage />);
+    expect(screen.queryByRole("button", { name: "前往戰略分析 →" })).toBeNull();
+  });
+
+  it("有 search 參數時顯示「前往戰略分析 →」按鈕", () => {
+    mockSearchGet.mockImplementation((key: string) =>
+      key === "search" ? "食農教育推廣計畫" : null,
+    );
+    render(<IntelligencePage />);
+    expect(screen.getByRole("button", { name: "前往戰略分析 →" })).toBeTruthy();
+  });
+
+  it("點「前往戰略分析 →」導航到 /strategy?caseName=...", () => {
+    mockSearchGet.mockImplementation((key: string) =>
+      key === "search" ? "食農教育推廣計畫" : null,
+    );
+    render(<IntelligencePage />);
+    fireEvent.click(screen.getByRole("button", { name: "前往戰略分析 →" }));
+    expect(mockPush).toHaveBeenCalledWith(
+      expect.stringContaining("/strategy"),
+    );
+    expect(mockPush.mock.calls[0][0]).toContain("caseName=");
+  });
+
+  it("有 caseId 時點按鈕帶 caseId 到 strategy", () => {
+    mockSearchGet.mockImplementation((key: string) => {
+      if (key === "search") return "食農教育推廣計畫";
+      if (key === "caseId") return "abc123def";
+      return null;
+    });
+    render(<IntelligencePage />);
+    fireEvent.click(screen.getByRole("button", { name: "前往戰略分析 →" }));
+    expect(mockPush.mock.calls[0][0]).toContain("caseId=abc123def");
   });
 });
