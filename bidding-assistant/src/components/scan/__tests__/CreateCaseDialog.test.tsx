@@ -3,9 +3,15 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { CreateCaseDialog } from "../CreateCaseDialog";
 import type { ScanResult } from "@/lib/scan/types";
 
-// mock settings context（有 Notion 憑證）
+// mock settings context（mockUseSettings 允許個別測試覆蓋返回值）
+const mockUseSettings = vi.fn();
+
 vi.mock("@/lib/context/settings-context", () => ({
-  useSettings: () => ({
+  useSettings: () => mockUseSettings(),
+}));
+
+function makeSettingsWithCredentials() {
+  return {
     settings: {
       connections: {
         notion: { token: "ntn_test", databaseId: "db-123", lastSync: "" },
@@ -14,8 +20,21 @@ vi.mock("@/lib/context/settings-context", () => ({
       },
     },
     hydrated: true,
-  }),
-}));
+  };
+}
+
+function makeSettingsNoCredentials() {
+  return {
+    settings: {
+      connections: {
+        notion: { token: "", databaseId: "", lastSync: "" },
+        googleDrive: { refreshToken: "", sharedDriveFolderId: "" },
+        smugmug: { apiKey: "", apiSecret: "", accessToken: "", tokenSecret: "" },
+      },
+    },
+    hydrated: true,
+  };
+}
 
 const MOCK_RESULT: ScanResult = {
   tender: {
@@ -42,6 +61,8 @@ describe("CreateCaseDialog", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal("fetch", vi.fn());
+    // 預設：有 Notion 憑證
+    mockUseSettings.mockReturnValue(makeSettingsWithCredentials());
   });
 
   it("result=null 時不渲染", () => {
@@ -165,5 +186,17 @@ describe("CreateCaseDialog", () => {
     });
     const btn = screen.getByRole("button", { name: "建案中..." }) as HTMLButtonElement;
     expect(btn.disabled).toBe(true);
+  });
+
+  it("無憑證時「建案到 Notion」按鈕 disabled 且顯示設定提示", () => {
+    mockUseSettings.mockReturnValue(makeSettingsNoCredentials());
+
+    render(
+      <CreateCaseDialog result={MOCK_RESULT} open={true} onClose={onClose} onSuccess={onSuccess} />,
+    );
+
+    const btn = screen.getByRole("button", { name: /建案到 Notion/ }) as HTMLButtonElement;
+    expect(btn.disabled).toBe(true);
+    expect(screen.getByText(/請先至設定頁面填入 Notion Token/)).toBeTruthy();
   });
 });
