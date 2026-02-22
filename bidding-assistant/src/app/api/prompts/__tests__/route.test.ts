@@ -96,7 +96,7 @@ describe("GET /api/prompts — successful read", () => {
     const req = new NextRequest(
       "http://localhost:3000/api/prompts?file=00-1_系統核心_v2.0.md",
     );
-    const res = await GET(req);
+    await GET(req);
     // NextResponse constructor returns object with data field
     expect(mockReadFileSync).toHaveBeenCalledTimes(1);
     // Verify the file path includes "prompts" directory

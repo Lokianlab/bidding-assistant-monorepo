@@ -6,7 +6,6 @@ import type { MonthlyMetrics, RollingMetrics, PeriodComparison } from "./analysi
 import {
   computeMonthlyMetrics,
   computeRollingMetrics,
-  comparePeriods,
   compareQuarters,
   getRecentMonths,
 } from "./analysis/trend";

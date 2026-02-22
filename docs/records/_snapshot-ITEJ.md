@@ -23,10 +23,10 @@ SNAPSHOT|20260224-1905|ITEJ|opus-4.6
 [v] feat-quality-refactor|品質檢查模組重構|邏輯抽到 lib/quality/，鐵律 5 flag 全實作+公司名稱一致性+負數防禦+SSOT 修正（13 規則名稱統一到 constants.ts），55+13 SSOT 修正，待用戶驗收
 [v] feat-pricing-refactor|報價計算模組重構|邏輯抽到 lib/pricing/，types + helpers + 28 個測試（含負數防禦），頁面瘦身，待用戶驗收
 [v] feat-assembly-refactor|提案組裝引擎重構|邏輯抽到 lib/assembly/（estimateTokens+formatKB+buildFilename+computeFileList+computeActiveFiles+assembleContent），31 個測試，頁面瘦身，待用戶驗收
-[?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決
-[?] plan-notion-mcp-status|Notion MCP 定位|JDNE 說暫緩，CLAUDE.md 寫待建，不一致
+[x] plan-saas-storage|知識庫儲存方案|已決（0226 Jin 直接指示）：Notion（標案追蹤）+ Supabase（KB + SaaS 認證）+ Web App
+[x] plan-notion-mcp-status|Notion MCP 定位|已解決：暫緩（內建版夠用），dev-map 已一致
 [ ] plan-devplan-push|消化暫存區推進開發計畫|6 條任務線完成，剩 6 個待決碎片
-[>] feat-test-coverage|持續補測試|89檔1815tests（本輪+348 tests：API route 全覆蓋+output constants+document-templates+pricing constants+card-layout types），src/lib 全模組已有測試
+[>] feat-test-coverage|持續補測試|91檔1843tests（本輪+376 tests：API route 全覆蓋+output constants+document-templates+pricing constants+card-layout types+TS 錯誤修正 3 處），src/lib 全模組已有測試
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
-[ ] plan-m02-kb|M02 知識庫模組規格|待寫（依賴儲存方案決策）
+[ ] plan-m02-kb|M02 知識庫模組規格|儲存方案已決，可開始寫規格
 [ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1

@@ -10,7 +10,7 @@ vi.stubGlobal("fetch", mockFetch);
 vi.mock("next/server", () => ({
   NextRequest: class {
     private body: unknown;
-    constructor(url: string, init?: { method?: string; body?: string }) {
+    constructor(_url: string, init?: { method?: string; body?: string }) {
       this.body = init?.body ? JSON.parse(init.body) : {};
     }
     async json() {

@@ -15,7 +15,6 @@ import {
   LevelFormat,
   HeadingLevel,
   TableOfContents,
-  SectionType,
   convertMillimetersToTwip,
 } from "docx";
 import type { DocumentSettings, CompanySettings } from "@/lib/settings/types";

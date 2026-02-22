@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { exportDocument } from "../export-engine";
 import type { ExportOptions } from "../types";
 import type { DocumentSettings } from "@/lib/settings/types";

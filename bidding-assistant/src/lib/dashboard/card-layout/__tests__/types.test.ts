@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { CARD_SIZE_MAP } from "../types";
 import type {
   CardSizePreset,
-  CardSize,
   VisualizationType,
   MetricKey,
   MetricDataType,

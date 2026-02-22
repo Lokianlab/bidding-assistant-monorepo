@@ -4,7 +4,7 @@ import {
   checkBudget,
   checkCommonSense,
 } from "../feasibility";
-import type { CostItem, FeasibilityContext } from "../types";
+import type { CostItem } from "../types";
 
 // ── checkBudget ─────────────────────────────────────────
 
