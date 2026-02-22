@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2330|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260228-2345|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -54,3 +54,4 @@ SNAPSHOT|20260228-2330|JDNE|claude-sonnet-4-6
 [x] arch-decision-notion-supabase|架構決策備忘：Notion+Supabase+Web App|Jin 直接指示 0226
 [v] plan-p0-patrol-coord|P0 行政巡標自動化協調|全鏈路完成：Layer A+B+C+D。A44T 建案記憶+對話框，AINL Layer C 94 tests，JDNE 排除記憶+接線，待 Jin 驗收
 [x] feat-scan-exclusion|巡標排除記憶模組|exclusion.ts + 18 tests + ScanDashboard 接線，已完成
+[x] test-patrol-api-routes|patrol API route 測試補強|/api/patrol/notion/create + update + /api/patrol/drive/create，+24 tests，2878 total
