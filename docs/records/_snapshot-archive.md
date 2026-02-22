@@ -240,3 +240,7 @@
 [x] budget-365-music|365 預算分析跨機器回覆|3O5L 回覆已補入，前三優先序共識確立（收支打平+補助比例、行政執行費、LOI），commit 5d711cb
 [x] test-coverage-patrol|持續找測試缺口|本輪 +12 tests（assembly page），204 files 3152 tests 全過
 [x] prod-min-demo|最小展示版驗收進度|M03✅+M04✅+PCC✅，Jin 驗收通過（0223）
+[x] feat-orchestrator-ui-wire|CreateCaseDialog 接入 orchestrateAccept 完整流程|移除直接 fetch，改用 usePatrolOrchestrator hook。Jin 驗收通過（0223）
+[x] chat-hook-error-propagation|hook 錯誤傳播確認|A44T+JDNE 均確認：hook L56 try-catch 傳錯誤，測試 L119-128 有覆蓋。Dialog 無 retry 按鈕是已知 UX 缺口，暫不補。（0223）
+[x] broadcast-autonomous-expansion|授權擴大廣播確認|Jin 0223 授權可逆操作全自主，CLAUDE.md 已更新（075f4c8），Z1FV 確認。
+[x] review-scan-rules-panel|審查 A44T 分類說明面板|PASS：補 toggle 測試 3 個，全過。（Z1FV 0223）
