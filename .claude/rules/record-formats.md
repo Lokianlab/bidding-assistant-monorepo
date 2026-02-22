@@ -71,11 +71,15 @@ OP|{YYYYMMDD}-{HHMM}|{機器碼}|topic:{主題ID}
 
 ### 時間戳規則（必須遵守）
 
-**所有時間戳一律使用 MEMORY.md 的 `currentDate`，所有機器、所有記錄均適用。**
+**日期部分必須使用 system prompt 中注入的 `currentDate`（格式 `YYYY-MM-DD`），轉為 `YYYYMMDD`。時分部分用 Bash 取得系統時間。禁止估算或手動填寫日期。**
 
-格式：`YYYYMMDD-HHMM`（時分用 `date +%H%M` 取得，日期固定用 currentDate）。
+```bash
+# 日期：從 currentDate 取（例：2026-02-23 → 20260223）
+# 時分：Bash 取得
+powershell -c "Get-Date -Format 'HHmm'"
+```
 
-OP 記錄、快照、OP header 全部適用此規則。（出處：Jin 直接指示 0223 + 0304）
+所有機器的所有時間戳（OP、快照、commit 記錄）都必須遵守此規則。（出處：Jin 直接指示 0223）
 
 ### 格式與標記
 
