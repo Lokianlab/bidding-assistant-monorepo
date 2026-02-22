@@ -2,12 +2,13 @@
  * Layer B 測試：Google Drive 資料夾建立
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   formatDriveFolderName,
   DRIVE_PARENT_PATH,
   TEMPLATE_SUBFOLDERS,
   createDriveFolder,
+  createDriveFolderAuto,
 } from '../drive-writer';
 import type { DriveCreateFolderInput } from '../types';
 
@@ -267,7 +268,7 @@ describe('createDriveFolder', () => {
     await createDriveFolder(baseInput, 'my-token', 'parent-id');
 
     expect(mockFetch.mock.calls[0][0]).toBe(
-      'https://www.googleapis.com/drive/v3/files',
+      'https://www.googleapis.com/drive/v3/files?supportsAllDrives=true',
     );
     expect(mockFetch.mock.calls[0][1].headers.Authorization).toBe(
       'Bearer my-token',
@@ -285,5 +286,94 @@ describe('createDriveFolder', () => {
 
     const body = JSON.parse(mockFetch.mock.calls[0][1].body as string);
     expect(body.mimeType).toBe('application/vnd.google-apps.folder');
+  });
+});
+
+// ============================================================
+// createDriveFolderAuto（自動取 token 版）
+// ============================================================
+
+describe('createDriveFolderAuto', () => {
+  const originalEnv = process.env;
+  const baseInput: DriveCreateFolderInput = {
+    caseUniqueId: 'PCC-001',
+    publishDate: '2026-02-22',
+    title: '食農教育推廣計畫',
+  };
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    process.env = {
+      ...originalEnv,
+      GOOGLE_CLIENT_ID: 'test-client-id',
+      GOOGLE_CLIENT_SECRET: 'test-client-secret',
+      GOOGLE_REFRESH_TOKEN: 'test-refresh-token',
+      GOOGLE_SHARED_DRIVE_FOLDER_ID: 'test-parent-folder-id',
+    };
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+  });
+
+  it('缺少 GOOGLE_SHARED_DRIVE_FOLDER_ID 時回傳失敗', async () => {
+    delete process.env.GOOGLE_SHARED_DRIVE_FOLDER_ID;
+    const result = await createDriveFolderAuto(baseInput);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('GOOGLE_SHARED_DRIVE_FOLDER_ID');
+  });
+
+  it('OAuth 取 token 失敗時回傳失敗', async () => {
+    // mock google-auth 的 fetch（token endpoint 回傳錯誤）
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: () =>
+          Promise.resolve({
+            error: 'invalid_grant',
+            error_description: 'Token expired',
+          }),
+      }),
+    );
+
+    const result = await createDriveFolderAuto(baseInput);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('Token expired');
+  });
+
+  it('全部成功時回傳 folderId', async () => {
+    let callCount = 0;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) {
+          // 第一次：OAuth token endpoint
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                access_token: 'auto-token',
+                expires_in: 3600,
+              }),
+          });
+        }
+        // 後續：Drive API 建資料夾
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: callCount === 2 ? 'auto-main-id' : `sub-${callCount}`,
+              name: 'folder',
+            }),
+        });
+      }),
+    );
+
+    const result = await createDriveFolderAuto(baseInput);
+    expect(result.success).toBe(true);
+    expect(result.folderId).toBe('auto-main-id');
+    expect(result.folderUrl).toContain('auto-main-id');
   });
 });
