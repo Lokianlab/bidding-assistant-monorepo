@@ -1,6 +1,6 @@
 # 全專案開發地圖
 
-> 最後更新：2026-02-28 04:00（UTC+8）｜更新者：ITEJ
+> 最後更新：2026-02-28 20:10（UTC+8）｜更新者：ITEJ
 
 ## 1. 系統概覽
 
@@ -8,7 +8,7 @@
 
 | 組件 | 路徑 | 狀態 | 說明 |
 |------|------|------|------|
-| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，15 個功能模組（132 檔 2297 tests） |
+| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，15 個功能模組（140 檔 2368 tests） |
 | SmugMug MCP | `smugmug-mcp/` | 已完成 | 實績照片存取（7 工具） |
 | PCC API MCP | `pcc-api-mcp/` | 已完成 | 政府標案情報（6 工具） |
 | PCC Monitor | `pcc-monitor/` | 已完成 | API 更新延遲監控（GAS 每小時） |
@@ -34,14 +34,14 @@
 | quality-gate | 品質閘門 | 工具箱 | quality |
 | intelligence | 情報搜尋 | 工具箱 | — |
 | scan | 巡標自動化 | 工具箱 | — |
-| case-work | 案件工作頁 | 核心功能 | intelligence, knowledge-base |
+| case-work | 案件工作頁 | 核心功能 | case-board, strategy |
 | docgen | 文件生成 | 輸出 | — |
 
 ### 已規劃但未進入功能註冊表的模組
 
 | 規劃文件 | 名稱 | 狀態 | 依賴 |
 |---------|------|------|------|
-| W01（v0.1 草案） | 行政巡標自動化 | **P0 Phase 1 完成**：關鍵字引擎+掃描API+UI（62 tests）。Phase 2 待 Notion token | PCC API（已有）+ Notion 寫入（待建） |
+| W01（v0.1 草案） | 行政巡標自動化 | **P0 Phase 1 完成**：關鍵字引擎+掃描API+UI（62 tests）+ notion-mapper（11 tests）。Phase 2 待 Notion token/DB ID | PCC API（已有）+ Notion 寫入（待建） |
 | M02（v0.1 草案） | 知識庫模組 | 草案完成 | Supabase schema + API routes + 6 phase 分期 + 匯入管線，待用戶審閱 |
 | M06（v0.1 草案） | 排版輸出 | Phase 1-3 已實作，整合進 docgen 路由 | 現有 docgen |
 
@@ -165,6 +165,8 @@
 - [x] M04 品質閘門 Phase 1-4（四道閘門 + 驗收報告，114 tests）
 - [x] PCC 情報整合進 Web App（搜尋 + 詳情 + 競爭分析等，1132 tests）
 - [x] M06 排版輸出模組 Phase 1-3（文件組裝管線 + 範本系統 + KB 佔位符注入 + 列印/PDF，96 tests）
+- [x] 案件工作頁（A44T）：案件資訊 + L1-L8 備標進度 + 自動 M03 評分 + PCC 情報摘要，ITEJ 審查 PASS
+- [x] W01 巡標自動化 Phase 1（ITEJ）：關鍵字引擎 + 掃描 API + 巡標 UI + notion-mapper，73 tests
 
 ### 當前階段
 
@@ -183,7 +185,7 @@
 2. **批量驗收積壓**：品質/報價/組裝重構、文件生成、M06 排版、趨勢分析、儀表板等多個已完成功能等待確認
 3. **知識庫初始化**：AINL 已完成評估報告（H: 資料夾 33,447 個檔案），待 Jin 授權執行 Phase 1-4
 4. **M02 知識庫模組規格**：v0.1 草案完成（0227 ITEJ），待用戶審閱後開發機器可接手 Phase 1
-5. **持續補測試**：100 檔 1950 tests，src/lib 全模組 + 全 API route 已覆蓋（已飽和）
+5. **持續補測試**：140 檔 2368 tests，src/lib 全模組 + 全 API route 已覆蓋
 
 ### 待決事項
 
