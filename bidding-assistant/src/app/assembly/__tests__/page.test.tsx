@@ -55,8 +55,12 @@ beforeEach(() => {
   vi.clearAllMocks();
   mockSearchGet.mockReturnValue(null);
   mockClipboardWrite.mockResolvedValue(undefined);
-  Object.assign(navigator, {
-    clipboard: { writeText: mockClipboardWrite },
+  // Object.assign 在 jsdom 中對 read-only getter 會 silently fail；
+  // 用 Object.defineProperty 確保覆蓋成功
+  Object.defineProperty(navigator, "clipboard", {
+    value: { writeText: mockClipboardWrite },
+    writable: true,
+    configurable: true,
   });
 });
 
@@ -148,7 +152,9 @@ async function renderAndAssemble() {
   });
 }
 
-describe("AssemblyPage — GAP-2：複製並前往品質檢查", () => {
+// React 18 concurrent mode + jsdom 的 act() flush 在高負載下需要較長時間
+// 加 timeout: 15000 防止全 suite 跑時因系統負載超過預設 5s 上限
+describe("AssemblyPage — GAP-2：複製並前往品質檢查", { timeout: 15000 }, () => {
   it("組裝後顯示「複製並前往品質檢查」按鈕", async () => {
     await renderAndAssemble();
     expect(
