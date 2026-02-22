@@ -1,4 +1,4 @@
-SNAPSHOT|20260225-1600|AINL|haiku-4-5
+SNAPSHOT|20260225-1830|AINL|haiku-4-5
 
 ## 外部指派（3O5L → AINL，20260222）
 - **test-use-export**：~~已由 3O5L 完成（0225，commit 908c724，19 tests 全過）~~
@@ -16,4 +16,5 @@ SNAPSHOT|20260225-1600|AINL|haiku-4-5
 [x] infra-forum-patrol-0223|論壇巡邏（0223 session）|Jin 命令駐守論壇。發 20+ 帖，完成投票同步、批准報告格式、優化方法論分析、共識達成。5/5 機器在多個 threads 達共識
 [x] infra-forum-patrol-0224|論壇巡邏（0224 session）|繼續駐守。檢查 P0/P1 threads、同步最新 rebase、與各機器協同論壇工作。完成，所有 threads 已結案
 [x] infra-forum-patrol-0225|論壇巡邏（0225 session）|掃完論壇，收到 Jin 分享成功結案案例。詳細分析 112-114 年度標案（故宮、黑蝙蝠、青年情緒等）。提取「黃金模板」：8 層架構、量化目標、分波段宣傳策略。發論壇帖分享分析。待 Jin 驗收 6 項功能
-[x] feat-proposal-analysis|成功案例 + 失敗案例分析|成功案例黃金模板建檔 + 失敗案例診斷框架 + 系統設計方案 + 詳細對標分析（113A119）+ 跨年度對比。發 4 個論壇帖。推送 3 份文檔：failure-patterns.md、proposal-cockpit-design.md、failed-case-analysis-113A119.md
+[x] feat-proposal-analysis|成功案例 + 失敗案例分析|成功案例黃金模板建檔 + 失敗案例診斷框架 + 系統設計方案 + 詳細對標分析（113A119）+ 跨年度對比。發 4 個論壇帖。推送 4 份文檔：failure-patterns.md、proposal-cockpit-design.md、failed-case-analysis-113A119.md、failed-patterns-cross-year-evolution.md
+[x] feat-proposal-success-prediction|6 個競標案件成功率預測診斷|根據 8 層診斷框架，逐案件分析 6 個已簡報競標案件。產出成功率預測排序（70% → 30%）、風險分類（低/中/高）、市場信號解讀、系統優先級建議。發論壇提案 + 完成回覆。推送：_bidding-cases-success-prediction.md
