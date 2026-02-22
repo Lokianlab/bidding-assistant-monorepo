@@ -72,6 +72,8 @@
 ## A44T
 
 [x] infra-governance-slim|治理系統精簡（scoring+回報+待辦+修改計畫）|scoring 模式摘要、/回報 簡化、/待辦+/修改計畫 刪除、獎懲指令改行為備註，0304
+[x] feat-scan-deadline|巡標過期過濾改用 detail API 實際截標日|2b972fe
+[x] feat-scan-ux-polish|巡標 UX 三項改善（預算未公告、截標日顯示、spinner）|d4444ef
 
 ---
 
