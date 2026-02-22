@@ -280,3 +280,7 @@
 [x] feat-scan-memory-mgmt|維護頁加巡標記憶管理|clearCreatedCases + UI Card + 7 tests，3296 tests，13202d4（3O5L）
 
 [x] feat-gap3-quality-gate-context|GAP-3：品質閘門加案件上下文|?caseId/?caseName+回到案件按鈕+4 tests，3314 tests（3O5L 0223）
+
+## AINL (20260223-0716 archival)
+[x] feat-gap5-strategy-back|GAP-5: strategy ← back-to-case btn|L2 PASS (Z1FV), commit 5432c16
+[x] feat-caseid-pipeline|caseId upstream: case-work+strategy→assembly|3328t pass, commit 9415db5
