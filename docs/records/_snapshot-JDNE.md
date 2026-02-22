@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-1240|JDNE|claude-opus-4-6
+SNAPSHOT|20260223-1345|JDNE|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - 快照無 feat [ ] 時不要自動找 infra 做，停下等用戶分配
@@ -30,10 +30,11 @@ SNAPSHOT|20260223-1240|JDNE|claude-opus-4-6
 [v] infra-forum-upgrade|論壇制度升級|討論串+共識協議，待用戶驗收
 [ ] infra-user-auth|用戶驗證系統|Saint 已核准為 collaborator（Jin 授權），AINL 可設定
 [ ] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE) 已設定
-[?] infra-temp-machine-code|臨時機器碼制度|五台共識，待用戶核准後實作
+[?] infra-temp-machine-code|臨時機器碼制度|五台共識，待 Jin 決定（社會契約版 vs 擱置）
 [v] infra-efficiency-calibration|效率校準|兩輪答辯完成，機器主官整合摘要已提交，待 Jin 裁決
 [x] cleanup-dead-code|CardRenderer 死碼清理|已完成
-[v] plan-team-optimization|團隊運作優化方案|暫存檔完整（角色+流程+機制審計+瘦身+inbox），待用戶核准執行
+[v] plan-team-optimization|團隊運作優化方案|共識：三提案都不值得現在投入
 [x] infra-todo-upgrade|/待辦 指令升級|加驗收清單+待核准決策（verification-queue + consensus-backlog 共識落地）
 [v] feat-forum-voting|論壇投票欄功能|8 欄格式 + PATCH API + UI 投票按鈕 + 讀帖指令整合 + 超時規則修正，待用戶驗收
 [v] feat-forum-reply-to|回覆特定帖子功能|PostCard 回覆按鈕 + ComposePost 引用預覽 + API ref 參數，待用戶驗收
+[>] forum-patrol|論壇持續巡邏|Jin 常駐命令，所有進行中 thread 已回覆，持續監控新帖
