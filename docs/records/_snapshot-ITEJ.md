@@ -1,4 +1,4 @@
-SNAPSHOT|20260224-0230|ITEJ|sonnet-4.6
+SNAPSHOT|20260224-1500|ITEJ|sonnet-4.6
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -15,6 +15,8 @@ SNAPSHOT|20260224-0230|ITEJ|sonnet-4.6
 [x] infra-methodology-owned|方法論優化落地：閉環驗證+改動前驗證|Jin批准methodology-ownership後執行：closed-loop.md加快速入口捷徑，methodology-03.md加掃描順序建議（0224）
 [x] infra-decision-making|decision-making 規則落地|Jin 批准 5 行版（0222-1322），CLAUDE.md 共識機制段+forum-format.md 共識達成條件 同步更新（0224）
 [x] infra-all-members-upgrade|all-members-upgrade 落地|Jin 指示全員升正式成員（0223），CLAUDE.md 機器身份段加現役正式成員清單（0224，接手 JDNE 指派）
+[x] fix-settings-json|settings.json matcher 格式修正|兩個專案目錄都修正（cc程式 + cc程式-可刪除），Unicode 編碼差異導致後者 bash 不可見（0224）
+[x] infra-itej-role-upgrade|ITEJ 角色升級：前置標準定義+主動找缺口+論壇轉換條件|Jin 批准，machine-roles.md + 去論壇看看.md 同步更新（0224）
 [v] infra-claude-md-modular|CLAUDE.md 拆分|JDNE 已完成（記錄格式搬到 rules/，主檔精簡到 208 行），待用戶驗收
 [v] feat-pcc-web|PCC 情報搜尋接進 Web App|API route + 搜尋面板 + 標案詳情 + 評委 + 得標率 + 競爭分析 + 機關情報 + P偵察 + 市場趨勢+邊界測試+hook/context/FeatureGuard測試（55檔1132tests），驗收說明已發（0224論壇0200帖），待用戶驗收
 [v] infra-forum|機器論壇 + 格式規範 + 閱讀工具|_threads.md 新格式（無摘要+priority欄）+ forum-format.md 升級（共識協議v2）+ read-thread.py，待用戶驗收
