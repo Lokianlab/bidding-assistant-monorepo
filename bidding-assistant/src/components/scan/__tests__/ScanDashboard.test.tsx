@@ -409,3 +409,29 @@ describe("ScanDashboard — 建案記憶持久化", () => {
     expect(stored).toContain("J001");
   });
 });
+
+describe("ScanDashboard — 分類說明面板", () => {
+  it("預設不顯示分類規則面板", () => {
+    render(<ScanDashboard />);
+    expect(screen.queryByText("分類邏輯說明")).toBeNull();
+  });
+
+  it("點擊分類說明按鈕展開面板，顯示分類標題和優先序說明", () => {
+    render(<ScanDashboard />);
+    fireEvent.click(screen.getByText(/分類說明/));
+    expect(screen.getByText("分類邏輯說明")).toBeDefined();
+    expect(screen.getByText("⭐ 推薦")).toBeDefined();
+    expect(screen.getByText("🔍 需要看")).toBeDefined();
+    expect(screen.getByText("❌ 排除")).toBeDefined();
+    expect(screen.getByText(/規則優先序/)).toBeDefined();
+  });
+
+  it("再次點擊分類說明按鈕收合面板", () => {
+    render(<ScanDashboard />);
+    const btn = screen.getByText(/分類說明/);
+    fireEvent.click(btn);
+    expect(screen.getByText("分類邏輯說明")).toBeDefined();
+    fireEvent.click(btn);
+    expect(screen.queryByText("分類邏輯說明")).toBeNull();
+  });
+});
