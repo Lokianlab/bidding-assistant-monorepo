@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -59,7 +60,17 @@ export default function QualityGatePage() {
       </div>
 
       {/* 報告 */}
-      {report && <QualityGateDashboard report={report} />}
+      {report && (
+        <>
+          <QualityGateDashboard report={report} />
+          {/* 跨模組導航：品質通過後匯出文件 */}
+          <div className="flex justify-end">
+            <Button asChild>
+              <Link href="/tools/output">匯出文件（進入文件生成）</Link>
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
