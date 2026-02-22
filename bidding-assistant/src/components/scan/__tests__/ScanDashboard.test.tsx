@@ -251,4 +251,24 @@ describe("ScanDashboard", () => {
       expect(screen.getByText("食農教育推廣計畫")).toBeDefined();
     });
   });
+
+  it("點建案按鈕開啟 CreateCaseDialog", async () => {
+    mockScanSuccess();
+    render(<ScanDashboard />);
+
+    fireEvent.click(screen.getByText("手動掃描"));
+
+    await waitFor(() => {
+      expect(screen.getByText("食農教育推廣計畫")).toBeDefined();
+    });
+
+    // 推薦分頁中找到建案按鈕並點擊
+    const createButtons = screen.getAllByText("建案");
+    fireEvent.click(createButtons[0]);
+
+    // Dialog 應該開啟
+    await waitFor(() => {
+      expect(screen.getByText("建立追蹤案件")).toBeDefined();
+    });
+  });
 });
