@@ -70,7 +70,7 @@ export default function ModulesPage() {
   }, [hydrated]);
 
   function handleSaveScanKeywords() {
-    updateSettings({ scan: { searchKeywords: scanKeywords } });
+    updateSettings({ scan: { ...settings.scan, searchKeywords: scanKeywords } });
     toast.success("巡標關鍵字已儲存");
   }
 
