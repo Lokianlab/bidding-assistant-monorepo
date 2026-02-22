@@ -35,7 +35,9 @@ import {
 } from "@/lib/modules/feature-registry";
 import { FeatureToggleCard } from "@/components/settings/FeatureToggleCard";
 import { FieldMappingEditor } from "@/components/settings/FieldMappingEditor";
+import { KeywordManager } from "@/components/scan/KeywordManager";
 import type { FieldMappingKey } from "@/lib/constants/field-mapping";
+import { DEFAULT_SEARCH_KEYWORDS } from "@/lib/scan/constants";
 
 export default function ModulesPage() {
   const { settings, updateSection, updateSettings } = useSettings();
@@ -50,6 +52,16 @@ export default function ModulesPage() {
   const [fieldMapping, setFieldMapping] = useState<Partial<Record<FieldMappingKey, string>>>(
     settings.fieldMapping ?? {},
   );
+
+  // 巡標關鍵字的 local state
+  const [scanKeywords, setScanKeywords] = useState<string[]>(
+    settings.scan?.searchKeywords ?? [...DEFAULT_SEARCH_KEYWORDS],
+  );
+
+  function handleSaveScanKeywords() {
+    updateSettings({ scan: { searchKeywords: scanKeywords } });
+    toast.success("巡標關鍵字已儲存");
+  }
 
   function handleSaveModules() {
     updateSection("modules", modules);
@@ -91,6 +103,7 @@ export default function ModulesPage() {
           <TabsTrigger value="kb-matrix">知識庫矩陣</TabsTrigger>
           <TabsTrigger value="quality">品質規則</TabsTrigger>
           <TabsTrigger value="pricing">報價參數</TabsTrigger>
+          <TabsTrigger value="scan-keywords">巡標關鍵字</TabsTrigger>
         </TabsList>
 
         {/* ====== 功能開關 ====== */}
@@ -486,6 +499,34 @@ export default function ModulesPage() {
               取消
             </Button>
             <Button onClick={handleSaveModules}>儲存模組參數</Button>
+          </div>
+        </TabsContent>
+        {/* ====== 巡標關鍵字 ====== */}
+        <TabsContent value="scan-keywords" className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">
+                PCC 搜尋關鍵字
+                <Badge variant="secondary" className="ml-2">
+                  {scanKeywords.length} 個
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <KeywordManager keywords={scanKeywords} onChange={setScanKeywords} />
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() =>
+                setScanKeywords(settings.scan?.searchKeywords ?? [...DEFAULT_SEARCH_KEYWORDS])
+              }
+            >
+              取消
+            </Button>
+            <Button onClick={handleSaveScanKeywords}>儲存關鍵字</Button>
           </div>
         </TabsContent>
       </Tabs>

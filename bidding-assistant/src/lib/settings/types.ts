@@ -110,6 +110,11 @@ export interface WorkflowSettings {
   customViews: ViewConfig[];
 }
 
+export interface ScanSettings {
+  /** 搜尋 PCC 用的關鍵字清單（決定抓哪些公告） */
+  searchKeywords: string[];
+}
+
 export interface AppSettings {
   document: DocumentSettings;
   connections: ConnectionSettings;
@@ -134,6 +139,8 @@ export interface AppSettings {
   qualityGate?: QualityGateSettings;
   /** 文件工作台設定 */
   output?: OutputSettings;
+  /** 巡標設定 */
+  scan?: ScanSettings;
 }
 
 export interface RecentExport {

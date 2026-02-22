@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSettings } from "@/lib/context/settings-context";
 import { useScanResults } from "@/lib/scan/useScanResults";
 import {
   addExclusion,
@@ -27,6 +28,7 @@ const TAB_CONFIG: { value: KeywordCategory; label: string; icon: string }[] = [
 
 export function ScanDashboard() {
   const router = useRouter();
+  const { settings } = useSettings();
   const { data, loading, error, scan } = useScanResults();
   const [activeTab, setActiveTab] = useState<KeywordCategory>("must");
   // 初始化時從 localStorage 載入排除清單（hydration-safe）
@@ -60,7 +62,7 @@ export function ScanDashboard() {
     // 新掃描保留持久化的記憶（不清空）
     setSkipped(new Set(getExcludedJobNumbers()));
     setCreatedCases(new Set(getCreatedJobNumbers()));
-    scan();
+    scan(settings.scan?.searchKeywords);
   };
 
   const handleSkip = (result: ScanResult) => {

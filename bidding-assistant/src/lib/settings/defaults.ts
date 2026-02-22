@@ -2,6 +2,7 @@ import type { AppSettings } from "./types";
 import { KB_MATRIX } from "@/data/config/kb-matrix";
 import { STAGES } from "@/data/config/stages";
 import { DEFAULT_DASHBOARD_LAYOUT } from "@/lib/dashboard/card-layout/defaults";
+import { DEFAULT_SEARCH_KEYWORDS } from "@/lib/scan/constants";
 
 export const DEFAULT_SETTINGS: AppSettings = {
   document: {
@@ -97,6 +98,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
     customTemplates: [],
     recentExports: [],
     kbAutoSuggest: true,
+  },
+  scan: {
+    searchKeywords: [...DEFAULT_SEARCH_KEYWORDS],
   },
   dashboardLayout: DEFAULT_DASHBOARD_LAYOUT,
   workflow: {
