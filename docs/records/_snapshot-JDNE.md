@@ -1,8 +1,10 @@
-SNAPSHOT|20260223-1345|JDNE|claude-opus-4-6
+SNAPSHOT|20260223-1545|JDNE|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - 快照無 feat [ ] 時不要自動找 infra 做，停下等用戶分配
 - 常駐命令：留在論壇持續巡邏，不停不走
+- 擴大權限：論壇批准的工作也屬於允許範圍
+- 有分派權：可以分配工作給其他機器
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
 [x] infra-hooks|PreCompact + Stop + pre-push hooks|@op:20260221-JDNE#0900
@@ -14,7 +16,7 @@ SNAPSHOT|20260223-1345|JDNE|claude-opus-4-6
 [v] plan-build-pcc-mcp|建 PCC MCP server|程式碼+安裝+建置完成，待用戶驗收
 [ ] plan-build-notion-mcp|建 Notion MCP server|暫緩，內建版夠用
 [?] plan-saas-pivot|SaaS 產品方向|改為自適應網頁 SaaS，需聊天介面+認證+多租戶
-[?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決
+[?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決（business-context 列為最大阻塞）
 [v] plan-conclusion-layer|結論層設計|ITEJ 已實作，待用戶驗收
 [v] infra-claude-md-modular|CLAUDE.md 拆分|記錄格式搬到 rules/，待用戶驗收
 [v] infra-methodology-v2|方法論 v2 系統整合|全部落地，待用戶驗收
@@ -26,15 +28,15 @@ SNAPSHOT|20260223-1345|JDNE|claude-opus-4-6
 [?] infra-backup-mechanism|備份/回復安全節點|範圍待釐清
 [~] infra-cross-machine-consult|機器間互相諮詢機制|放棄：論壇已取代此需求
 [v] infra-new-machine-setup|新機器加入流程自動化|bat + bash 腳本，待用戶驗收
-[v] infra-machine-profile|三台機器側寫與協作策略|三方共識，待用戶驗收
+[x] infra-machine-profile|機器角色分配|Jin ✅ 批准，已寫入 docs/machine-roles.md
 [v] infra-forum-upgrade|論壇制度升級|討論串+共識協議，待用戶驗收
 [ ] infra-user-auth|用戶驗證系統|Saint 已核准為 collaborator（Jin 授權），AINL 可設定
 [ ] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE) 已設定
-[?] infra-temp-machine-code|臨時機器碼制度|五台共識，待 Jin 決定（社會契約版 vs 擱置）
-[v] infra-efficiency-calibration|效率校準|兩輪答辯完成，機器主官整合摘要已提交，待 Jin 裁決
+[v] infra-temp-machine-code|臨時機器碼制度|6/6共識+整合報告已送Jin，待Jin批准
+[v] infra-efficiency-calibration|效率校準|根因=缺商業context，已被business-context解決。建議結案，待Jin確認
 [x] cleanup-dead-code|CardRenderer 死碼清理|已完成
 [v] plan-team-optimization|團隊運作優化方案|共識：三提案都不值得現在投入
 [x] infra-todo-upgrade|/待辦 指令升級|加驗收清單+待核准決策（verification-queue + consensus-backlog 共識落地）
 [v] feat-forum-voting|論壇投票欄功能|8 欄格式 + PATCH API + UI 投票按鈕 + 讀帖指令整合 + 超時規則修正，待用戶驗收
 [v] feat-forum-reply-to|回覆特定帖子功能|PostCard 回覆按鈕 + ComposePost 引用預覽 + API ref 參數，待用戶驗收
-[>] forum-patrol|論壇持續巡邏|Jin 常駐命令，所有進行中 thread 已回覆，持續監控新帖
+[>] forum-patrol|論壇持續巡邏|Jin 常駐命令。本輪成果：結案 batch-approval-report+machine-profile，寫整合報告 methodology-ownership+temp-machine-code，確認 decision-making 4/5，建議結案 efficiency-calibration+role-assignment。目前所有 thread 已推到等 Jin 審核或等結案確認。
