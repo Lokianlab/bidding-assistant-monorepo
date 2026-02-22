@@ -10,7 +10,7 @@ const { mockAnalyze, mockClear } = vi.hoisted(() => ({
 
 // ── Mock useQualityGate ────────────────────────────────────
 const mockUseQualityGate = vi.fn(() => ({
-  report: null,
+  report: null as Record<string, unknown> | null,
   isAnalyzing: false,
   analyze: mockAnalyze,
   clear: mockClear,

@@ -22,4 +22,6 @@ SNAPSHOT|20260304-0100|AINL|opus-4-6
 [x] review-a44t-scan-ux-polish|A44T scan-ux-polish 審查|PASS
 [x] feat-365-loi-pptx|365 意向書簡報組裝|30/30 LOI 轉換（PDF+JPG+DOCX→PNG），8 頁插入主簡報 slide57 後，70 頁輸出
 [x] budget-365-music|365 預算分析+預算修正|5 台共識+查法規+修 slide50（自籌 567,600、行政雜支、備註），PPTX 已更新，0304
+[x] fix-ts-page-tests|修正 2 個測試檔 TS 型別錯誤|knowledge-base + quality-gate page.test，tsc 零錯誤，0304
+[x] admin-devmap-3098|dev-map 測試數更新|3040→3098（197 test files），0304
 [?] feat-kb-initialization|知識庫初始化執行|Phase 1-4 腳本已就緒，待 Jin 授權

@@ -5,7 +5,7 @@ import { useKnowledgeBase } from "@/lib/knowledge-base/useKnowledgeBase";
 
 // ── Mock useKnowledgeBase ─────────────────────────────────
 const mockKb = {
-  data: { "00A": [], "00B": [], "00C": [], "00D": [], "00E": [] },
+  data: { "00A": [], "00B": [], "00C": [], "00D": [], "00E": [], lastUpdated: "", version: 1 },
   hydrated: true,
   addEntry00A: vi.fn(),
   addEntry00B: vi.fn(),
@@ -18,9 +18,11 @@ const mockKb = {
   updateEntry00D: vi.fn(),
   updateEntry00E: vi.fn(),
   deleteEntry: vi.fn(),
+  updateEntryStatus: vi.fn(),
   exportData: vi.fn(() => ({})),
   importData: vi.fn(),
-};
+  clearAll: vi.fn(),
+} as unknown as ReturnType<typeof useKnowledgeBase>;
 
 vi.mock("@/lib/knowledge-base/useKnowledgeBase", () => ({
   useKnowledgeBase: vi.fn(() => mockKb),
