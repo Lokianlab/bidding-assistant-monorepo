@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2145|A44T|claude-opus-4-6
+SNAPSHOT|20260301-2230|A44T|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - push 後直接讀 [ ] 找下一步，不停下報告
@@ -13,19 +13,20 @@ SNAPSHOT|20260228-2145|A44T|claude-opus-4-6
 [x] infra-cli-install|Gemini CLI + Codex CLI 全裝齊|小結 A44T-0002
 [x] infra-tool-check|工具檢查加入重啟流程|commit ed59c54→1c814af
 [x] infra-sync-optimize|同步機制優化：scoring append-only + /更新輕量化 + 重啟/壓縮流程精簡|commit 552aec7
-[x] feat-pcc-web|情報模組：搜尋+詳情+機關情報+競爭分析+市場趨勢+P偵察+公司設定+全模組快取+工具卡互動（markdown 渲染+大綱導覽+原始碼切換）|品管通過（168 test），完成（批量通過 0228：2487 tests + build 通過）
-[x] infra-quality-tiers|三級品質制度+跨機器互評機制|品管通過，完成（批量通過 0228：2487 tests + build 通過）
-[x] infra-new-machine-setup|安裝流程防呆改造：.bat 啟動器+腳本移除 set -e+npm 重試+指南簡易版|品管通過，完成（批量通過 0228：2487 tests + build 通過）
-[x] feat-docx-gen|文件生成：章節→DOCX 下載 + markdown 表格支援（pipe table → DOCX Table）|品管通過（20 test），完成（批量通過 0228：2487 tests + build 通過）
-[x] plan-product-pivot|產品開發轉向|跨模組導航+儀表板 QuickStart+PCC 情報橋接+跨頁上下文傳遞。Z1FV 審查 PASS。完成（批量通過 0228：2487 tests + build 通過）
-[?] infra-db-safety|資料庫安全規則|沙盒方案暫存檔已建（推薦混合 JSON mock + UI 複製），待用戶決定
-[x] infra-governance|治理機制寫入 CLAUDE.md|用戶核准通過，commit 12d5d69
-[~] infra-quality-audit|品管員角色（用戶指派）|放棄：方向轉向產品優先，品管角色不再需要
-[~] infra-efficiency-cal|效率校準|放棄：方向已轉，效率議題過時
-[x] feat-m03-strategy|M03 戰略分析引擎|Phase 1+2+PCC橋接：5維評分引擎（82 tests）+ intelligence-bridge + FitScoreRadar + FitScoreCard（15 tests）+ /strategy 頁面。Z1FV 審查 PASS。完成（批量通過 0228：2487 tests + build 通過）。新方向下嵌入 P1 案件工作頁
-[~] infra-scoring-arch|計分板架構重構|放棄：方向轉向產品優先，計分板重構不再需要
-[x] infra-stop-hook|hook 架構泛化重構：5 hooks（SessionStart/PreCompact/PreToolUse/PostToolUse/Stop）+ 2 conf（stop-patterns/dangerous-commands）+ CLAUDE.md 更新|驗收：看 .claude/settings.json 確認 5 個 hook 註冊、看 .claude/hooks/ 目錄確認 5 個 .sh + 2 個 .conf
-[x] feat-cross-module-nav|跨模組導航串流|情報→戰略→組裝→品質→匯出全鏈路按鈕+上下文傳遞+scan→intelligence URL 參數串流。Z1FV 審查 PASS。完成（批量通過 0228：2487 tests + build 通過）
-[x] test-component-coverage|元件測試擴充|151 檔 2487 tests（+Sidebar 16 tests +ScanDashboard 導航 1 test）。完成（批量通過 0228：2487 tests + build 通過）
-[x] feat-case-work-page|P1 案件工作頁|/case-work?id={pageId} 路由，案件資訊+L1-L8備標進度+自動M03戰略評分+PCC情報摘要+行動按鈕。ITEJ 審查 PASS。驗收：案件看板點案件→sheet→「前往案件工作頁」→確認各區塊顯示正常
-[x] infra-governance-rewrite|治理機制段重寫|角色表改實際產出、審查規則4條具體化、砍決策鏈路/見習/下線偵測、同步6處活文件引用。Jin 直接批准（0228），commit 22c316a
+[x] feat-pcc-web|情報模組完整實作|品管通過，完成
+[x] infra-quality-tiers|三級品質制度+跨機器互評機制|品管通過，完成
+[x] infra-new-machine-setup|安裝流程防呆改造|品管通過，完成
+[x] feat-docx-gen|文件生成：DOCX 下載 + markdown 表格|品管通過，完成
+[x] plan-product-pivot|產品開發轉向|Z1FV 審查 PASS，完成
+[?] infra-db-safety|資料庫安全規則|沙盒方案暫存檔已建，待用戶決定
+[x] infra-governance|治理機制寫入 CLAUDE.md|用戶核准通過
+[~] infra-quality-audit|品管員角色|放棄：方向轉向產品優先
+[~] infra-efficiency-cal|效率校準|放棄：方向已轉
+[x] feat-m03-strategy|M03 戰略分析引擎|Z1FV 審查 PASS，完成。嵌入案件工作頁
+[~] infra-scoring-arch|計分板架構重構|放棄：方向轉向產品優先
+[x] infra-stop-hook|hook 架構泛化重構|5 hooks + 2 conf，完成
+[x] feat-cross-module-nav|跨模組導航串流|Z1FV 審查 PASS，完成
+[x] test-component-coverage|元件測試擴充|完成
+[x] feat-case-work-page|P1 案件工作頁|ITEJ 審查 PASS，完成
+[x] infra-governance-rewrite|治理機制段重寫|Jin 批准，完成
+[x] feat-scan-ux-polish|巡標 UX 修正（0301）|createStatus 按鈕防重複+建案記憶持久化+死代碼清理+demo 品質修正（+5 tests），commits 926ac5e→f3af0df
