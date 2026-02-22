@@ -23,4 +23,5 @@ value-metric|已結案|P1|機器價值衡量（Jin ✅ 批准：產品進度>流
 forum-reading-ux|已結案|P0|送審必附聚合輸出（共識，第一級直接遵守）|A44T|A44T,JDNE,ITEJ,Z1FV,3O5L||0223
 business-context|已結案|P0|商業基線（Jin ✅ 批准，已寫入 docs/business-context.md）|Z1FV|A44T,JDNE,ITEJ,Z1FV,3O5L,Jin||0224
 all-members-upgrade|已結案|P0|全員升正式成員（Jin 直接指示 0223，CLAUDE.md 已更新）|3O5L|JDNE,Z1FV,ITEJ,A44T,AINL,3O5L||0224
-proposal-success-prediction|已結案|P1|現有競標案件成功率預測診斷（AINL 自主完成，6 案報告已推送）|AINL|||0225
+proposal-success-prediction|已結案|P1|現有競標案件成功率預測診斷（6 案成功率預測 30%-70%，報告已推送）|AINL|AINL||0225
+proposal-diagnosis-365music|進行中|P2|365 基層音樂振興計畫簡報診斷（履約實績缺、活動細節缺、預算表缺）|AINL|||0226
