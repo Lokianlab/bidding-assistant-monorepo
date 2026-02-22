@@ -1,4 +1,4 @@
-SNAPSHOT|20260301-2250|3O5L|Sonnet 4.6
+SNAPSHOT|20260303-2350|3O5L|Sonnet 4.6
 
 ## 行為備註
 - 策略主官：優先序決定、跨機器協調、向 Jin 彙報
@@ -17,9 +17,13 @@ SNAPSHOT|20260301-2250|3O5L|Sonnet 4.6
 [x] fix-sidebar-link|Sidebar Link href undefined bug|Jin 驗收通過（0226 rebase 後確認）
 [x] cleanup-trend-dup|移除重複趨勢計算|Jin 驗收通過（0226）
 [x] test-coverage-patrol|持續找測試缺口|現飽和，AINL 接手補充（177 files 2865 tests）
-
 [x] feat-w01-scan-p2|W01 巡標 Phase 2：建案 API + Dialog|POST /api/notion/create-case + CreateCaseDialog + ScanDashboard 接線，+20 tests，驗收：/scan → 掃描 → 點「建案」→ 確認 → Notion 新增頁面
 [x] feat-w01-scan-p3|W01 巡標 Phase 3：關鍵字設定管理|ScanSettings type + defaults + KeywordManager 元件 + modules設定頁tab + ScanDashboard 接線，+11 tests，177 files 2865 tests 全過，commit cbcdc98
+[x] doc-guide-patrol-keywords|操作指南巡標關鍵字說明|補「設定的關鍵字」提示 + Tip 說明自訂路徑，commit e427206
+[x] fix-eslint-smugmug-img|SmugMugPhotoPicker eslint-disable|no-img-element 2 warnings → 0，CDN 動態域名無法用 remotePatterns 覆蓋，commit d385652
+[x] fix-ts-usePatrolOrchestrator-test|usePatrolOrchestrator.test 型別修正|AcceptResult | null 型別對應 optional notionPageId，commit e768445
+[x] fix-hydration-modules|modules 設定頁 hydration 補正|補 useEffect([hydrated]) 同步 localStorage→local state，commit d4baa06
+[x] fix-hydration-settings-pages|company/document/workflow 設定頁 hydration|同類 bug 統一修正 3 頁面，commit be4533d
+[x] feat-usePatrolOrchestrator|usePatrolOrchestrator hook|包裝 orchestrateAccept，hook 層銜接 UI 與 patrol orchestrator，+8 tests，commit ec4493c
 
 [?] prod-min-demo|最小展示版驗收進度|M03✅+M04✅+PCC✅ → 三件全等 Jin 驗收；W01 整體 dev-map 已標完成
-
