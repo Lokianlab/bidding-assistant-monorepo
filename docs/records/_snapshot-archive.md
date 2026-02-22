@@ -229,6 +229,9 @@
 [x] doc-365music-proposal|365音樂振興計畫提案修改建議|基於 AINL 診斷，重算預算（移除周邊商品→再分配，補助比率 48.95%）+ KPI + 國際元素 + 質化效益，存入 docs/各種輸出文件/
 [x] review-a44t-deadline-filter|A44T feat-scan-deadline-filter 審查|PASS：兩階段過濾設計正確，16 tests 全過，保守策略（查不到截標日就保留）合理
 [x] feat-orchestrator-ui-wire|CreateCaseDialog 接入 orchestrateAccept 完整流程|Jin 驗收通過（0223）
+[x] token-efficiency-rules|m2m compressed format,5-rule compliance|confirmed af91343
+[x] admin-pre-verification|pre-verif dry-run,all 4 modules ready|7479993
+[x] review-gap5-ainl|AINL GAP-5 strategy back btn|PASS,no changes needed
 
 ---
 
