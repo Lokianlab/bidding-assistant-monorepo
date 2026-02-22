@@ -1,4 +1,4 @@
-SNAPSHOT|20260224-1700|JDNE|claude-opus-4-6
+SNAPSHOT|20260225-1000|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 快照無 feat [ ] 時不要自動找 infra 做，停下等用戶分配
@@ -40,4 +40,5 @@ SNAPSHOT|20260224-1700|JDNE|claude-opus-4-6
 [v] feat-forum-voting|論壇投票欄功能|8 欄格式 + PATCH API + UI 投票按鈕 + 讀帖指令整合 + 超時規則修正，待用戶驗收
 [v] feat-forum-reply-to|回覆特定帖子功能|PostCard 回覆按鈕 + ComposePost 引用預覽 + API ref 參數，待用戶驗收
 [x] infra-all-members-upgrade|全員升正式成員|Jin 直接指示，CLAUDE.md 已更新
-[>] forum-patrol|論壇持續巡邏|Jin 常駐命令。本輪成果：清理論壇（52→1 thread 進行中），執行 all-members-upgrade（CLAUDE.md 已更新），結案 batch-approval-report+machine-profile+rebase-standard+forum-optimization+all-members-upgrade。僅剩 efficiency-calibration 等 Jin。
+[x] infra-methodology-ownership|方法論維護分工寫入 _index.md|Jin ✅ 批准 0224，分工表已落地
+[>] forum-patrol|論壇持續巡邏|Jin 常駐命令。0225 狀態：所有 18 個 thread 已結案，論壇清靜。快照無 feat [] → 等用戶分配。
