@@ -441,6 +441,28 @@ describe("checkMissingPerformanceRecord", () => {
     const results = checkMissingPerformanceRecord(text);
     expect(results).toHaveLength(0);
   });
+
+  it("精確 299 字含活動關鍵詞 → 不觸發（低於門檻）", () => {
+    // "辦理" = 2 字，前補 297 個 a 湊滿 299 字
+    const text = "a".repeat(297) + "辦理";
+    expect(text.length).toBe(299);
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(0);
+  });
+
+  it("精確 300 字含活動關鍵詞、無履約實績 → 觸發", () => {
+    // "辦理" = 2 字，前補 298 個 a 湊滿 300 字
+    const text = "a".repeat(298) + "辦理";
+    expect(text.length).toBe(300);
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(1);
+  });
+
+  it("有活動關鍵詞（辦理）且同時有履約實績關鍵詞 → 不觸發", () => {
+    const text = longProposalBase.repeat(10) + "本公司曾執行多項類似計畫。";
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(0);
+  });
 });
 
 describe("checkVagueQuantifiers", () => {
@@ -497,6 +519,13 @@ describe("checkVagueQuantifiers", () => {
   it("回傳 position 欄位", () => {
     const results = checkVagueQuantifiers("若干場次");
     expect(results[0].position).toContain("位置");
+  });
+
+  it("否定語境中出現模糊詞仍觸發（已知限制：規則不分析語義脈絡）", () => {
+    // "我們不使用若干" — 規則無法識別否定語境，會誤報
+    // 此測試記錄現有行為，提醒後續改進可加 NLP 脈絡分析
+    const results = checkVagueQuantifiers("本計畫明確拒絕使用若干這種模糊描述");
+    expect(results).toHaveLength(1);
   });
 });
 
