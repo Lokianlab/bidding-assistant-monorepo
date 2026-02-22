@@ -1,4 +1,4 @@
-SNAPSHOT|20260302-0030|ITEJ|opus-4.6
+SNAPSHOT|20260302-0100|ITEJ|opus-4.6
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -26,7 +26,7 @@ SNAPSHOT|20260302-0030|ITEJ|opus-4.6
 [x] plan-saas-storage|知識庫儲存方案|已決：Notion+Supabase+Web App（0226）
 [x] plan-notion-mcp-status|Notion MCP 定位|暫緩（內建版夠用）
 [ ] plan-devplan-push|消化暫存區推進開發計畫|6 條任務線完成，剩 6 個待決碎片
-[x] feat-test-coverage|持續補測試|177檔 2865 tests，CardPickerDialog+DashboardGrid+lint cleanup
+[x] feat-test-coverage|持續補測試|182檔 2921 tests，CardPickerDialog+DashboardGrid+orchestrateAccept+lint cleanup
 [x] plan-m02-kb|M02 知識庫模組規格|v0.1 草案完成（0227），待用戶審閱
 [x] plan-w01-scan|W01 巡標自動化規格|v0.1 草案完成（0227）
 [x] feat-w01-scan-p1|W01 巡標 Phase 1|關鍵字引擎+掃描API+巡標UI+notion-mapper，73 tests

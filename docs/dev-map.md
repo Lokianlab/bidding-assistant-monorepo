@@ -1,6 +1,6 @@
 # 全專案開發地圖
 
-> 最後更新：2026-02-28 21:10（UTC+8）｜更新者：ITEJ
+> 最後更新：2026-03-02 00:58（UTC+8）｜更新者：ITEJ
 
 ## 1. 系統概覽
 
@@ -8,7 +8,7 @@
 
 | 組件 | 路徑 | 狀態 | 說明 |
 |------|------|------|------|
-| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，15 個功能模組（174 檔 2763 tests） |
+| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，15 個功能模組（182 檔 2921 tests） |
 | SmugMug MCP | `smugmug-mcp/` | 已完成 | 實績照片存取（7 工具） |
 | PCC API MCP | `pcc-api-mcp/` | 已完成 | 政府標案情報（6 工具） |
 | PCC Monitor | `pcc-monitor/` | 已完成 | API 更新延遲監控（GAS 每小時） |
@@ -168,7 +168,7 @@
 - [x] W01 巡標自動化 Phase 1（ITEJ）：關鍵字引擎 + 掃描 API + 巡標 UI + notion-mapper，73 tests
 - [x] W01 Phase 2 建案 API（Z1FV）：/api/scan/accept + TenderCard 建案狀態 + 排除記憶模組（JDNE）
 - [x] W01 patrol 分類引擎（AINL Layer C）：classifier + converter + exclusion + orchestrator，94 tests
-- [x] W01 全鏈路完成（0228）：CreateCaseDialog + /api/notion/create-case + 排除記憶持久化 + 防重複建案，Layer A+B+C+D 全通，2777 tests
+- [x] W01 全鏈路完成（0228）：CreateCaseDialog + /api/notion/create-case + 排除記憶持久化 + 防重複建案，Layer A+B+C+D 全通，2921 tests
 
 ### 當前階段
 
@@ -187,7 +187,7 @@
 2. **已完成功能使用**：品質/報價/組裝重構、文件生成、M06 排版、趨勢分析、儀表板等多個功能可隨時使用，有問題開 issue
 3. **知識庫初始化**：AINL 已完成評估報告（H: 資料夾 33,447 個檔案），待 Jin 授權執行 Phase 1-4
 4. **M02 知識庫模組規格**：v0.1 草案完成（0227 ITEJ），待用戶審閱後開發機器可接手 Phase 1
-5. **持續補測試**：174 檔 2777 tests，src/lib 全模組 + 全 API route + 元件層已大致覆蓋
+5. **持續補測試**：182 檔 2921 tests，src/lib 全模組 + 全 API route + 元件層已大致覆蓋
 
 ### 待決事項
 
