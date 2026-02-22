@@ -9,9 +9,12 @@ import { PccTenderDetail, NotionCaseCreateInput } from './types';
 
 /**
  * PCC 標案類型 → Notion 選項對照表
- * PCC 有自己的分類體系，需要對應到 Notion 的 multi_select 選項
+ *
+ * PCC 有自己的分類體系，需要對應到 Notion 備標評估文件庫的 multi_select 選項。
+ * 來源：Notion 備標評估文件庫的「標案類型」欄位現有選項。
+ * 未來可從 /settings/patrol 頁面設定，或從 Notion database schema 自動讀取。
  */
-const PCC_CATEGORY_MAPPING: Record<string, string | undefined> = {
+export const PCC_CATEGORY_MAPPING: Record<string, string | undefined> = {
   // 工程
   建築工程: 'engineering',
   土木工程: 'engineering',
@@ -36,8 +39,11 @@ const PCC_CATEGORY_MAPPING: Record<string, string | undefined> = {
 
 /**
  * PCC 決標方式 → Notion 選項對照表
+ *
+ * 來源：Notion 備標評估文件庫的「評審方式」欄位現有選項。
+ * 未來可從 /settings/patrol 頁面設定。
  */
-const AWARD_TYPE_MAPPING: Record<string, string | undefined> = {
+export const AWARD_TYPE_MAPPING: Record<string, string | undefined> = {
   '最有利標': 'most_advantageous',
   '最低標': 'lowest_price',
   '定價': 'fixed_price',

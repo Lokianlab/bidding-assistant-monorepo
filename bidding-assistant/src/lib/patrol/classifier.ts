@@ -3,6 +3,8 @@
  *
  * 根據關鍵字和預算條件，將公告分為四類
  * 純函式，可獨立測試
+ *
+ * 分類規則衍生自 scan/constants 的 DEFAULT_KEYWORD_RULES（SSOT）
  */
 
 import {
@@ -11,41 +13,47 @@ import {
   PatrolCategory,
   ClassificationRule,
 } from './types';
+import { DEFAULT_KEYWORD_RULES } from '@/lib/scan/constants';
+import { keywordCategoryToPatrol } from './bridge';
 
 /**
- * 預設分類規則
- * 格式：按優先順序檢查，第一個匹配的就是分類結果
+ * 從 W01 scan 的 KeywordRule[] 轉換為 P0 patrol 的 ClassificationRule[]
+ *
+ * W01 每條規則有 label（一個分類 label 可能多條規則），
+ * patrol 按 category 合併關鍵字為一條規則
  */
-export const DEFAULT_CLASSIFICATION_RULES: ClassificationRule[] = [
-  {
-    category: 'definite',
-    keywords: [
-      '食農教育',
-      '藝術',
-      '服務採購',
-      '影片製作',
-      '行銷計畫',
-      '春聯',
-    ],
-    budgetMax: 1_000_000, // 100萬以下
-  },
-  {
-    category: 'needs_review',
-    keywords: [
-      '主燈設計',
-      '燈節',
-      '藝術節',
-      '舞台',
-      '布置',
-      '晚會',
-      '演唱會',
-    ],
-  },
-  {
-    category: 'skip',
-    keywords: ['課後服務'],
-  },
-];
+function deriveClassificationRules(): ClassificationRule[] {
+  const categoryMap = new Map<PatrolCategory, { keywords: string[]; budgetMax?: number }>();
+
+  for (const rule of DEFAULT_KEYWORD_RULES) {
+    const patrolCategory = keywordCategoryToPatrol(rule.category);
+    const existing = categoryMap.get(patrolCategory);
+
+    if (existing) {
+      existing.keywords.push(...rule.keywords);
+      if (rule.budgetMax !== undefined) {
+        existing.budgetMax = rule.budgetMax;
+      }
+    } else {
+      categoryMap.set(patrolCategory, {
+        keywords: [...rule.keywords],
+        budgetMax: rule.budgetMax,
+      });
+    }
+  }
+
+  return Array.from(categoryMap.entries()).map(([category, { keywords, budgetMax }]) => ({
+    category,
+    keywords,
+    budgetMax,
+  }));
+}
+
+/**
+ * 預設分類規則（衍生自 scan/constants DEFAULT_KEYWORD_RULES）
+ * 來源：Jin 0222 定義的四類關鍵字
+ */
+export const DEFAULT_CLASSIFICATION_RULES: ClassificationRule[] = deriveClassificationRules();
 
 /**
  * 判斷公告標題是否包含關鍵字
