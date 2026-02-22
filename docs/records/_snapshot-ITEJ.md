@@ -1,4 +1,4 @@
-SNAPSHOT|20260224-1500|ITEJ|sonnet-4.6
+SNAPSHOT|20260224-1600|ITEJ|opus-4.6
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -19,14 +19,14 @@ SNAPSHOT|20260224-1500|ITEJ|sonnet-4.6
 [x] infra-itej-role-upgrade|ITEJ 角色升級：前置標準定義+主動找缺口+論壇轉換條件|Jin 批准，machine-roles.md + 去論壇看看.md 同步更新（0224）
 [v] infra-claude-md-modular|CLAUDE.md 拆分|JDNE 已完成（記錄格式搬到 rules/，主檔精簡到 208 行），待用戶驗收
 [v] feat-pcc-web|PCC 情報搜尋接進 Web App|API route + 搜尋面板 + 標案詳情 + 評委 + 得標率 + 競爭分析 + 機關情報 + P偵察 + 市場趨勢+邊界測試+hook/context/FeatureGuard測試（55檔1132tests），驗收說明已發（0224論壇0200帖），待用戶驗收
-[v] infra-forum|機器論壇 + 格式規範 + 閱讀工具|_threads.md 新格式（無摘要+priority欄）+ forum-format.md 升級（共識協議v2）+ read-thread.py，待用戶驗收
+[~] infra-forum|機器論壇|廢除：Jin 決定改為角色分工鏈（0224），41檔 -4212行，CLAUDE.md 治理段全面改寫
 [v] feat-quality-refactor|品質檢查模組重構|邏輯抽到 lib/quality/，鐵律 5 flag 全實作+公司名稱一致性+負數防禦+SSOT 修正（13 規則名稱統一到 constants.ts），55+13 SSOT 修正，待用戶驗收
 [v] feat-pricing-refactor|報價計算模組重構|邏輯抽到 lib/pricing/，types + helpers + 28 個測試（含負數防禦），頁面瘦身，待用戶驗收
 [v] feat-assembly-refactor|提案組裝引擎重構|邏輯抽到 lib/assembly/（estimateTokens+formatKB+buildFilename+computeFileList+computeActiveFiles+assembleContent），31 個測試，頁面瘦身，待用戶驗收
 [?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決
 [?] plan-notion-mcp-status|Notion MCP 定位|JDNE 說暫緩，CLAUDE.md 寫待建，不一致
 [ ] plan-devplan-push|消化暫存區推進開發計畫|6 條任務線完成，剩 6 個待決碎片
-[ ] feat-test-coverage|持續補測試|67檔1355tests，useFitScore +2（自訂權重+memoization），繼續找缺口
+[ ] feat-test-coverage|持續補測試|74檔1467tests，繼續找缺口
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m02-kb|M02 知識庫模組規格|待寫（依賴儲存方案決策）
 [ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1

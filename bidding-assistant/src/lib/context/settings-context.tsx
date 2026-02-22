@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import type { AppSettings } from "@/lib/settings/types";
 import { DEFAULT_SETTINGS } from "@/lib/settings/defaults";
 import { logger } from "@/lib/logger";
@@ -59,8 +59,15 @@ interface SettingsContextValue {
 const SettingsContext = createContext<SettingsContextValue | null>(null);
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
-  const [hydrated] = useState(() => typeof window !== "undefined");
+  const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Hydration-safe: 先用預設值渲染（server/client 一致），mount 後才從 localStorage 載入
+  useEffect(() => {
+    const loaded = loadSettings();
+    setSettings(loaded);
+    setHydrated(true);
+  }, []);
 
   const updateSettings = useCallback((patch: Partial<AppSettings>) => {
     setSettings((prev) => {

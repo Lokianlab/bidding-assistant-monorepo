@@ -49,15 +49,16 @@ const SidebarContext = createContext<SidebarContextValue>({
 export const useSidebar = () => useContext(SidebarContext);
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
-  const [collapsed, setCollapsed] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return localStorage.getItem("sidebar-collapsed") === "true";
-    } catch {
-      return false;
-    }
-  });
+  const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Hydration-safe: mount 後才從 localStorage 讀取
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("sidebar-collapsed");
+      if (saved === "true") setCollapsed(true);
+    } catch {}
+  }, []);
 
   useEffect(() => {
     try {
