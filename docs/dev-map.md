@@ -1,6 +1,6 @@
 # 全專案開發地圖
 
-> 最後更新：2026-03-02 23:01（UTC+8）｜更新者：JDNE
+> 最後更新：2026-03-03 23:10（UTC+8）｜更新者：JDNE
 
 ## 1. 系統概覽
 
@@ -8,7 +8,7 @@
 
 | 組件 | 路徑 | 狀態 | 說明 |
 |------|------|------|------|
-| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，15 個功能模組（182 檔 2927 tests） |
+| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，15 個功能模組（184 檔 2938 tests） |
 | SmugMug MCP | `smugmug-mcp/` | 已完成 | 實績照片存取（7 工具） |
 | PCC API MCP | `pcc-api-mcp/` | 已完成 | 政府標案情報（6 工具） |
 | PCC Monitor | `pcc-monitor/` | 已完成 | API 更新延遲監控（GAS 每小時） |

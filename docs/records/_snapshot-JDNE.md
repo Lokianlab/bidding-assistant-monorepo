@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2301|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260303-2311|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -58,3 +58,4 @@ SNAPSHOT|20260228-2301|JDNE|claude-sonnet-4-6
 [x] test-patrol-api-client|patrol api-client 測試補強|17 tests 覆蓋所有 fetch wrapper（成功/例外），2907 total
 [x] test-orchestrate-accept|orchestrateAccept 編排流程測試|7 tests 覆蓋：Notion短路/Drive有無/converter路徑/例外捕捉，2912 total
 [x] test-settings-scan|settings/defaults.test scan 區塊|+3 tests 覆蓋 searchKeywords 存在/型別/預設值，2927 total
+[x] admin-devmap-testcount|dev-map 測試數更新|2927→2938（184 test files），完成 0303
