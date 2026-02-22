@@ -1,6 +1,6 @@
 # 全專案開發地圖
 
-> 最後更新：2026-02-27 19:50（UTC+8）｜更新者：ITEJ
+> 最後更新：2026-02-28 04:00（UTC+8）｜更新者：ITEJ
 
 ## 1. 系統概覽
 
@@ -8,7 +8,7 @@
 
 | 組件 | 路徑 | 狀態 | 說明 |
 |------|------|------|------|
-| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，13 個功能模組（100 檔 1950 tests） |
+| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，15 個功能模組（132 檔 2297 tests） |
 | SmugMug MCP | `smugmug-mcp/` | 已完成 | 實績照片存取（7 工具） |
 | PCC API MCP | `pcc-api-mcp/` | 已完成 | 政府標案情報（6 工具） |
 | PCC Monitor | `pcc-monitor/` | 已完成 | API 更新延遲監控（GAS 每小時） |
@@ -17,7 +17,7 @@
 
 ## 2. 主程式模組地圖
 
-### 功能註冊表（13 模組）
+### 功能註冊表（15 模組）
 
 | Feature ID | 名稱 | 分類 | 依賴 |
 |-----------|------|------|------|
@@ -33,13 +33,15 @@
 | quality | 品質檢查 | 工具箱 | — |
 | quality-gate | 品質閘門 | 工具箱 | quality |
 | intelligence | 情報搜尋 | 工具箱 | — |
+| scan | 巡標自動化 | 工具箱 | — |
+| case-work | 案件工作頁 | 核心功能 | intelligence, knowledge-base |
 | docgen | 文件生成 | 輸出 | — |
 
 ### 已規劃但未進入功能註冊表的模組
 
 | 規劃文件 | 名稱 | 狀態 | 依賴 |
 |---------|------|------|------|
-| W01（v0.1 草案） | 行政巡標自動化 | **P0 最高優先**，草案完成 | PCC API（已有）+ Notion 寫入（待建） |
+| W01（v0.1 草案） | 行政巡標自動化 | **P0 Phase 1 完成**：關鍵字引擎+掃描API+UI（62 tests）。Phase 2 待 Notion token | PCC API（已有）+ Notion 寫入（待建） |
 | M02（v0.1 草案） | 知識庫模組 | 草案完成 | Supabase schema + API routes + 6 phase 分期 + 匯入管線，待用戶審閱 |
 | M06（v0.1 草案） | 排版輸出 | Phase 1-3 已實作，整合進 docgen 路由 | 現有 docgen |
 
