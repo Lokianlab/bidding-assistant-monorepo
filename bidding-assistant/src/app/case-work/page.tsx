@@ -384,37 +384,66 @@ export default function CaseWorkPage() {
         </Card>
       </div>
 
-      {/* ── 行動 ── */}
+      {/* ── 下一步行動 ── */}
       <Card>
-        <CardContent className="pt-4 flex flex-col sm:flex-row gap-2">
-          <Button
-            className="flex-1"
-            onClick={() => {
-              const params = new URLSearchParams({ stage: "L1" });
-              if (caseName) params.set("caseName", caseName);
-              if (agency) params.set("agency", agency);
-              if (fitScore) {
-                params.set("verdict", fitScore.verdict);
-                params.set("total", String(fitScore.total));
-              }
-              router.push(`/assembly?${params.toString()}`);
-            }}
-          >
-            開始撰寫（進入提示詞組裝）
-          </Button>
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={() => {
-              const params = new URLSearchParams();
-              if (caseName) params.set("caseName", caseName);
-              if (agency) params.set("agency", agency);
-              if (budget) params.set("budget", String(budget));
-              router.push(`/strategy?${params.toString()}`);
-            }}
-          >
-            詳細戰略分析
-          </Button>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">下一步</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            {progressPercent === 0
+              ? "尚未開始備標。建議先確認戰略分析結果，再進入撰寫。"
+              : progressPercent < 50
+                ? `備標進度 ${progressPercent}%，繼續推進各階段工作。`
+                : progressPercent < 100
+                  ? `即將完成（${progressPercent}%），建議執行品質檢查確認沒有遺漏。`
+                  : "備標完成，可以匯出最終文件。"}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button
+              className="flex-1"
+              onClick={() => {
+                const firstIncomplete = progress?.stages.find(s => s.status !== "completed");
+                const stage = firstIncomplete?.stageId ?? "L1";
+                const params = new URLSearchParams({ stage });
+                if (caseName) params.set("caseName", caseName);
+                if (agency) params.set("agency", agency);
+                if (fitScore) {
+                  params.set("verdict", fitScore.verdict);
+                  params.set("total", String(fitScore.total));
+                }
+                router.push(`/assembly?${params.toString()}`);
+              }}
+            >
+              {progressPercent === 0 ? "開始撰寫" : progressPercent < 100 ? "繼續撰寫" : "檢視內容"}
+            </Button>
+            {progressPercent >= 30 && (
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  const params = new URLSearchParams();
+                  if (caseName) params.set("caseName", caseName);
+                  router.push(`/tools/quality-gate?${params.toString()}`);
+                }}
+              >
+                品質檢查
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => {
+                const params = new URLSearchParams();
+                if (caseName) params.set("caseName", caseName);
+                if (agency) params.set("agency", agency);
+                if (budget) params.set("budget", String(budget));
+                router.push(`/strategy?${params.toString()}`);
+              }}
+            >
+              戰略分析
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
