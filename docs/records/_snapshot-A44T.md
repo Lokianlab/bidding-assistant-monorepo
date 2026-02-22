@@ -32,3 +32,4 @@ SNAPSHOT|20260303-2345|A44T|claude-opus-4-6
 [x] feat-scan-ux-polish|巡標 UX 修正（0301）|createStatus 按鈕防重複+建案記憶持久化+死代碼清理+demo 品質修正（+5 tests），commits 926ac5e→f3af0df
 [x] feat-demo-quality|驗收前品質修正（0301）|assembly 上下文條修復+品質閘門描述修正+操作指南補齊 6 功能，commits 268935e→332ca98
 [x] review-patrol-module|P0 巡標模組整體審查|PASS，4 建議（1 medium：validateNotionInput 未調用），無阻塞問題
+[x] fix-patrol-review-issues|審查修正|budget ?? null + notionPageId guard + validateNotionInput 調用，+4 tests，2948 total
