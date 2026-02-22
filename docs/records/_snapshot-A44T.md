@@ -1,4 +1,4 @@
-SNAPSHOT|20260303-2345|A44T|claude-opus-4-6
+SNAPSHOT|20260304-0010|A44T|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - push 後直接讀 [ ] 找下一步，不停下報告
@@ -33,3 +33,6 @@ SNAPSHOT|20260303-2345|A44T|claude-opus-4-6
 [x] feat-demo-quality|驗收前品質修正（0301）|assembly 上下文條修復+品質閘門描述修正+操作指南補齊 6 功能，commits 268935e→332ca98
 [x] review-patrol-module|P0 巡標模組整體審查|PASS，4 建議（1 medium：validateNotionInput 未調用），無阻塞問題
 [x] fix-patrol-review-issues|審查修正|budget ?? null + notionPageId guard + validateNotionInput 調用，+4 tests，2948 total
+[x] fix-ssot-tender-detail|apiFetchTenderDetail SSOT 重構|匯入 pcc/helpers 的 parseAmount+findDetailValue 取代重複 inline 函式，-14 行
+[x] fix-parseamount-empty|parseAmount 空字串 bug 修正|"元"/"   元" 原回傳 0 改為 null（JS Number("") 陷阱），+4 邊界測試，3010 total
+[x] sweep-pre-demo|驗收前品質掃瞄|M03+M04+PCC 三模組全 CLEAN，功能註冊+import+UI 中文+設定預設值全確認
