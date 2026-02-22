@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-1700|A44T|claude-opus-4-6
+SNAPSHOT|20260226-1920|A44T|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - push 後直接讀 [ ] 找下一步，不停下報告
@@ -17,12 +17,13 @@ SNAPSHOT|20260222-1700|A44T|claude-opus-4-6
 [v] infra-quality-tiers|三級品質制度+跨機器互評機制|品管通過，待用戶驗收
 [v] infra-new-machine-setup|安裝流程防呆改造：.bat 啟動器+腳本移除 set -e+npm 重試+指南簡易版|品管通過，待用戶驗收
 [v] feat-docx-gen|文件生成：章節→DOCX 下載 + markdown 表格支援（pipe table → DOCX Table）|品管通過（20 test），待用戶驗收
-[>] plan-product-pivot|產品開發轉向|已完成：跨模組導航（情報→戰略→組裝→品質→匯出）。下一步：儀表板快速開始引導
+[v] plan-product-pivot|產品開發轉向|跨模組導航+儀表板 QuickStart+PCC 情報橋接+跨頁上下文傳遞。Z1FV 審查 PASS。待用戶驗收
 [?] infra-db-safety|資料庫安全規則|沙盒方案暫存檔已建（推薦混合 JSON mock + UI 複製），待用戶決定
 [x] infra-governance|治理機制寫入 CLAUDE.md|用戶核准通過，commit 12d5d69
 [ ] infra-quality-audit|品管員角色（用戶指派）|SSOT 全域掃描完畢（10 源碼檔、4 批 commit）。AINL 趨勢/圖表卡片審查通過。建議終止角色
 [ ] infra-efficiency-cal|效率校準 P0 第一輪答辯|已回覆 Jin 三題（ref:1451）：token 分佈 feat 20%/infra 67%、方法論用了閉環驗證 1 次、下一步做 feat+停品管
-[v] feat-m03-strategy|M03 戰略分析引擎|Phase 1+2 完成：5維評分引擎（82 tests）+ Hook + FitScoreRadar + FitScoreCard + /strategy 頁面。待用戶驗收
+[v] feat-m03-strategy|M03 戰略分析引擎|Phase 1+2+PCC橋接：5維評分引擎（82 tests）+ intelligence-bridge + FitScoreRadar + FitScoreCard（15 tests）+ /strategy 頁面。Z1FV 審查 PASS。待用戶驗收
 [ ] infra-scoring-arch|計分板架構重構|論壇 discuss 已發（thread:scoring-architecture），等共識+用戶核准
 [v] infra-stop-hook|hook 架構泛化重構：5 hooks（SessionStart/PreCompact/PreToolUse/PostToolUse/Stop）+ 2 conf（stop-patterns/dangerous-commands）+ CLAUDE.md 更新|驗收：看 .claude/settings.json 確認 5 個 hook 註冊、看 .claude/hooks/ 目錄確認 5 個 .sh + 2 個 .conf
-[v] feat-cross-module-nav|跨模組導航串流|情報→戰略→組裝→品質→匯出全鏈路按鈕。commit 81638fe, d710294。待用戶驗收
+[v] feat-cross-module-nav|跨模組導航串流|情報→戰略→組裝→品質→匯出全鏈路按鈕+上下文傳遞。Z1FV 審查 PASS。待用戶驗收
+[v] test-component-coverage|元件測試擴充|QuickStart 10 + FitScoreCard 15 + ChapterEditor 16 + ExportPanel 10 + TemplateSelector 5 + QualityGateDashboard 9 = 65 新元件測試。待用戶驗收
