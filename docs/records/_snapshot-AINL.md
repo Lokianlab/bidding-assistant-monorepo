@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2250|AINL|opus-4-6
+SNAPSHOT|20260228-2345|AINL|opus-4-6
 
 ## 外部指派（JDNE，20260226）與主動承接
 - **品質模組邊界測試補強**（優先）✓ 完成（+11 tests）
@@ -25,4 +25,5 @@ SNAPSHOT|20260228-2250|AINL|opus-4-6
 [x] infra-kb-import-scripts|KB初始化自動化腳本|Phase 1-2 去重腳本完成（phase1-dedup.js、phase2-dedup.js）+ EXECUTION-PLAN.md。包含試運行、備份、驗證、回滾機制。待 Jin 授權後可直接執行
 [x] plan-p0-patrol-c|P0 巡標 Layer C 業務邏輯層|5 模組（classifier+converter+exclusion+orchestrator+bridge）+ barrel export，110 tests，W01 scan 橋接完成。169 files 2705 tests 全過
 [x] feat-p0-patrol-b|P0 巡標 Layer B 外部寫入層|notion-writer（建檔+回寫）+ drive-writer（資料夾命名+建立）+ api-client + 3 API routes + orchestrator 串接。187 patrol tests，176 files 2854 tests 全過
+[x] review-a44t-scan-ux-polish|A44T scan-ux-polish 審查|PASS，6 commits：建案記憶持久化+死碼清理+dev-only schema+URL清理，182 files 2924 tests
 [?] feat-kb-initialization|知識庫初始化執行|Phase 1-4 腳本已就緒，待 Jin 授權
