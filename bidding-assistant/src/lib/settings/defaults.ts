@@ -92,6 +92,12 @@ export const DEFAULT_SETTINGS: AppSettings = {
     overallPassThreshold: 70,
     overallRiskThreshold: 50,
   },
+  output: {
+    defaultTemplate: "proposal-standard",
+    customTemplates: [],
+    recentExports: [],
+    kbAutoSuggest: true,
+  },
   dashboardLayout: DEFAULT_DASHBOARD_LAYOUT,
   workflow: {
     stages: STAGES.map((s) => ({

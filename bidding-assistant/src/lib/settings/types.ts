@@ -132,6 +132,23 @@ export interface AppSettings {
   strategy?: StrategySettings;
   /** 品質閘門設定 */
   qualityGate?: QualityGateSettings;
+  /** 文件工作台設定 */
+  output?: OutputSettings;
+}
+
+export interface RecentExport {
+  projectName: string;
+  template: string;
+  format: "docx" | "markdown" | "print";
+  exportedAt: string;
+  chapterCount: number;
+}
+
+export interface OutputSettings {
+  defaultTemplate: string;
+  customTemplates: unknown[]; // DocumentTemplate[] — 避免循環 import，UI 層自行 cast
+  recentExports: RecentExport[];
+  kbAutoSuggest: boolean;
 }
 
 export interface QualityGateSettings {

@@ -78,9 +78,9 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
   {
     id: "docgen",
     name: "文件生成",
-    description: "自動產生 Word 文件（建議書、簡報等）",
+    description: "建議書排版與匯出（Word / Markdown / 列印）",
     icon: "📄",
-    routes: ["/tools/docx"],
+    routes: ["/tools/docx", "/tools/output"],
     section: "output",
     defaultEnabled: true,
   },
