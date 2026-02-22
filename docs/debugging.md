@@ -60,6 +60,30 @@
 - 測試全過就交付，沒確認功能實際行為符合預期（第二層缺失）
 - 改了一處文件，沒 grep 全 codebase 找其他副本（閉環斷裂）
 
-## 4. Claude Desktop App 大檔問題
+## 4. DocumentSettings.margins 單位不一致（已知問題，待用戶裁決）
+
+**現象（0226 JDNE 審查發現）：**
+
+`src/lib/settings/types.ts` 的 `DocumentSettings.margins` 沒有明確標注單位，導致兩個模組各自假設：
+- `src/lib/docgen/generate-docx.ts`：把 margins 當 **cm**，乘 10 轉 mm 後再轉 twip（`margins.top * 10` → `convertMillimetersToTwip`）
+- `src/lib/output/print-export.ts`：把 margins 當 **mm**，直接注入 CSS（`${margins.top}mm`）
+
+**影響：**
+
+`DEFAULT_SETTINGS.document.page.margins = { top: 1, bottom: 1, left: 1, right: 1 }`
+- DOCX 輸出：1cm = 10mm 邊距（合理）
+- HTML 列印：1mm 邊距（極小，幾乎無邊距）
+
+兩個模組的測試資料也不同（generate-docx.test.ts 用 `{top:1,...}`，print-export.test.ts 用 `{top:25,...}`），各自測試通過但行為不同。
+
+**待裁決：**
+
+修法方向需要確認 UI 設定頁面顯示的單位標籤：
+- 若 UI 顯示「cm」→ `print-export.ts` 需要改為 `${margins.top * 10}mm` 或 `${margins.top}cm`
+- 若 UI 顯示「mm」→ `generate-docx.ts` 需要移除 `* 10`，並更新 `DEFAULT_SETTINGS` 為合理 mm 值（如 25/25/30/30）
+
+在用戶裁決前，不應單方面修改任何一個模組。
+
+## 5. Claude Desktop App 大檔問題
 
 Session 檔案超過 10MB 時，Claude Desktop App 會出現 "Failed to load session" 錯誤，無法載入對話。這是 Desktop App 的已知限制，與 Claude Code CLI 無關。
