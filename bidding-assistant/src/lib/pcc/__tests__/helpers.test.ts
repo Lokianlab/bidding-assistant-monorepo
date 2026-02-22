@@ -120,6 +120,18 @@ describe("parseAmount", () => {
   it("parses zero", () => {
     expect(parseAmount("0元")).toBe(0);
   });
+
+  it("只有單位符號時回傳 null（不是 0）", () => {
+    expect(parseAmount("元")).toBeNull();
+  });
+
+  it("只有空白和單位時回傳 null", () => {
+    expect(parseAmount("   元")).toBeNull();
+  });
+
+  it("全形逗號加空白時正確解析", () => {
+    expect(parseAmount(" 1，500，000 元 ")).toBe(1500000);
+  });
 });
 
 // ---- formatAmount ----

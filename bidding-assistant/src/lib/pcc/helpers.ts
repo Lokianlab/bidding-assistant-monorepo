@@ -65,6 +65,7 @@ export function isWinner(record: PCCRecord, companyName: string): boolean {
 export function parseAmount(amountStr: string | undefined | null): number | null {
   if (!amountStr) return null;
   const cleaned = amountStr.replace(/[,，元\s]/g, "");
+  if (!cleaned) return null; // "元" or "   元" → 清理後空字串，不是 0
   const num = Number(cleaned);
   return isNaN(num) ? null : num;
 }

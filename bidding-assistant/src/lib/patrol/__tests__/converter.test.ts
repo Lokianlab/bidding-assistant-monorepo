@@ -295,5 +295,22 @@ describe('converter - 欄位轉換', () => {
 
       expect(result.missingFields).not.toContain('budget');
     });
+
+    it('空白字串應視為缺少（trim 後為空）', () => {
+      const input = {
+        title: '   ',
+        jobNumber: '\t\n',
+        agency: '有效機關',
+        budget: null,
+        publishDate: '2026-02-22',
+        deadline: '2026-03-22T17:00:00Z',
+      };
+      const result = validateNotionInput(input);
+
+      expect(result.valid).toBe(false);
+      expect(result.missingFields).toContain('title');
+      expect(result.missingFields).toContain('jobNumber');
+      expect(result.missingFields).not.toContain('agency');
+    });
   });
 });
