@@ -1,4 +1,4 @@
-SNAPSHOT|20260301-2230|A44T|claude-opus-4-6
+SNAPSHOT|20260301-2330|A44T|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - push 後直接讀 [ ] 找下一步，不停下報告
@@ -30,3 +30,4 @@ SNAPSHOT|20260301-2230|A44T|claude-opus-4-6
 [x] feat-case-work-page|P1 案件工作頁|ITEJ 審查 PASS，完成
 [x] infra-governance-rewrite|治理機制段重寫|Jin 批准，完成
 [x] feat-scan-ux-polish|巡標 UX 修正（0301）|createStatus 按鈕防重複+建案記憶持久化+死代碼清理+demo 品質修正（+5 tests），commits 926ac5e→f3af0df
+[x] feat-demo-quality|驗收前品質修正（0301）|assembly 上下文條修復+品質閘門描述修正+操作指南補齊 6 功能，commits 268935e→332ca98
