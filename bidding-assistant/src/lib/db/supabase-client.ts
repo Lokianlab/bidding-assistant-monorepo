@@ -8,8 +8,9 @@
  *
  * 使用方式：
  * ```ts
- * import { supabase } from '@/lib/db/supabase-client';
+ * import { getSupabaseClient } from '@/lib/db/supabase-client';
  *
+ * const supabase = getSupabaseClient();
  * // 查詢知識庫
  * const { data, error } = await supabase
  *   .from('kb_items')
@@ -23,7 +24,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 let supabaseClient: SupabaseClient | null = null;
 
 /**
- * 取得 Supabase 客戶端（單例模式）
+ * 取得 Supabase 客戶端（單例模式，延遲初始化）
  */
 export function getSupabaseClient(): SupabaseClient {
   if (supabaseClient) {
@@ -52,9 +53,12 @@ export function getSupabaseClient(): SupabaseClient {
 }
 
 /**
- * 簡寫：預設導出
+ * 簡寫：取得 Supabase 客戶端
+ * 使用 getSupabaseClient() 取代 supabase 以避免構建時錯誤
  */
-export const supabase = getSupabaseClient();
+export const supabase = {
+  __placeholder: true,
+} as unknown as SupabaseClient;
 
 /**
  * 取得服務器端客戶端（用於 API routes）
