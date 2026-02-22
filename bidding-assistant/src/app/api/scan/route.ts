@@ -43,6 +43,13 @@ async function pccSearch(query: string, page = 1): Promise<PCCSearchResponse> {
   return res.json() as Promise<PCCSearchResponse>;
 }
 
+/** YYYYMMDD 數字 → "YYYY-MM-DD" ISO 日期字串 */
+function pccDateToISO(dateNum: number): string {
+  const s = String(dateNum);
+  if (s.length !== 8) return s;
+  return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
+}
+
 /** 將 PCC record 轉為 ScanTender（brief 層級，預算未知） */
 function toScanTender(record: PCCRecord): ScanTender {
   return {
@@ -50,8 +57,8 @@ function toScanTender(record: PCCRecord): ScanTender {
     unit: record.unit_name,
     jobNumber: record.job_number,
     budget: 0, // brief 不含預算，需另外取 detail
-    deadline: "",
-    publishDate: String(record.date),
+    deadline: "", // brief 不含截標日，detail API 才有
+    publishDate: pccDateToISO(record.date),
     url: record.url,
     category: record.brief.type,
   };
