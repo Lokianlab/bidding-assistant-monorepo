@@ -11,6 +11,7 @@ import {
 } from "@/data/config/prompt-assembly";
 import { STAGES } from "@/data/config/stages";
 import { useState, useCallback, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { useKnowledgeBase } from "@/lib/knowledge-base/useKnowledgeBase";
@@ -30,7 +31,11 @@ const KB_FILE_IDS = new Set<string>(["00A", "00B", "00C", "00D", "00E"]);
 
 // ====== 主頁面 ======
 export default function AssemblyPage() {
-  const [selectedStage, setSelectedStage] = useState("L1");
+  const searchParams = useSearchParams();
+  const initialStage = searchParams.get("stage") || "L1";
+  const [selectedStage, setSelectedStage] = useState(
+    STAGES.some((s) => s.id === initialStage) ? initialStage : "L1"
+  );
   // 檔案內容快取：id → content
   const [fileContents, setFileContents] = useState<Record<string, string>>({});
   // 載入中的檔案

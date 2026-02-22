@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   Sheet,
   SheetContent,
@@ -36,6 +37,7 @@ interface PCCTenderSheetProps {
 }
 
 export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany, onViewCommittee }: PCCTenderSheetProps) {
+  const router = useRouter();
   const { settings } = useSettings();
   const myCompany = settings.company?.brand || "大員洛川";
   const [detail, setDetail] = useState<PCCTenderDetail | null>(null);
@@ -238,6 +240,24 @@ export function PCCTenderSheet({ record, open, onOpenChange, onViewCompany, onVi
           {/* 機關情報 */}
           <Separator />
           <AgencyIntelSection intel={agencyIntel} unitName={record.unit_name} />
+
+          {/* 跨模組導航：分析適配度 */}
+          <Separator />
+          <Button
+            variant="default"
+            size="sm"
+            className="w-full"
+            onClick={() => {
+              const params = new URLSearchParams();
+              params.set("caseName", summary?.title || record.brief.title);
+              params.set("agency", record.unit_name);
+              if (summary?.budget) params.set("budget", String(summary.budget));
+              onOpenChange(false);
+              router.push(`/strategy?${params.toString()}`);
+            }}
+          >
+            分析適配度（值不值得投）
+          </Button>
 
           {/* P 偵察報告 + PCC 原始連結 */}
           <Separator />

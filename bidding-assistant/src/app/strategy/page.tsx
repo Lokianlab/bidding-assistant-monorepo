@@ -2,7 +2,8 @@
 
 // ====== M03 戰略分析頁面 ======
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { FitScoreCard } from "@/components/strategy/FitScoreCard";
 import { useFitScore } from "@/lib/strategy/useFitScore";
@@ -19,12 +20,14 @@ const EMPTY_INTELLIGENCE: IntelligenceInputs = {
 };
 
 export default function StrategyPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const { data: kb, hydrated } = useKnowledgeBase();
 
-  // 表單狀態
-  const [caseName, setCaseName] = useState("");
-  const [agency, setAgency] = useState("");
-  const [budgetInput, setBudgetInput] = useState("");
+  // 表單狀態（從 URL 參數或空值初始化）
+  const [caseName, setCaseName] = useState(searchParams.get("caseName") || "");
+  const [agency, setAgency] = useState(searchParams.get("agency") || "");
+  const [budgetInput, setBudgetInput] = useState(searchParams.get("budget") || "");
 
   // 送出後鎖定分析
   const [submitted, setSubmitted] = useState(false);
@@ -54,6 +57,17 @@ export default function StrategyPage() {
     EMPTY_INTELLIGENCE,
     kb,
   );
+
+  // 從情報頁帶參數過來時自動分析
+  const [autoAnalyzed, setAutoAnalyzed] = useState(false);
+  useEffect(() => {
+    if (autoAnalyzed || !hydrated) return;
+    const urlCaseName = searchParams.get("caseName");
+    if (urlCaseName && urlCaseName.trim()) {
+      handleAnalyze();
+      setAutoAnalyzed(true);
+    }
+  }, [hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const hasKBData =
     kb["00A"].length > 0 || kb["00B"].length > 0;
@@ -135,7 +149,7 @@ export default function StrategyPage() {
 
       {/* 分析結果 */}
       {submitted && fitScore && (
-        <div className="space-y-2">
+        <div className="space-y-4">
           <h2 className="font-semibold">
             分析結果：
             <span className="text-muted-foreground font-normal ml-2">
@@ -143,6 +157,16 @@ export default function StrategyPage() {
             </span>
           </h2>
           <FitScoreCard fitScore={fitScore} kbMatch={kbMatch} />
+
+          {/* 跨模組導航：開始撰寫 */}
+          <Button
+            className="w-full"
+            onClick={() => {
+              router.push(`/assembly?stage=L1`);
+            }}
+          >
+            開始撰寫（進入提示詞組裝）
+          </Button>
         </div>
       )}
 
