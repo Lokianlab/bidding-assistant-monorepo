@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2355|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260228-2357|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -56,3 +56,4 @@ SNAPSHOT|20260228-2355|JDNE|claude-sonnet-4-6
 [x] feat-scan-exclusion|巡標排除記憶模組|exclusion.ts + 18 tests + ScanDashboard 接線，已完成
 [x] test-patrol-api-routes|patrol API route 測試補強|/api/patrol/notion/create + update + /api/patrol/drive/create，+24 tests，2878 total
 [x] test-patrol-api-client|patrol api-client 測試補強|17 tests 覆蓋所有 fetch wrapper（成功/例外），2907 total
+[x] test-orchestrate-accept|orchestrateAccept 編排流程測試|7 tests 覆蓋：Notion短路/Drive有無/converter路徑/例外捕捉，2912 total
