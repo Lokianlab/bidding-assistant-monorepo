@@ -1,4 +1,4 @@
-SNAPSHOT|20260225-1900|3O5L|Sonnet 4.6
+SNAPSHOT|20260226-1710|3O5L|Sonnet 4.6
 
 ## 行為備註
 - 策略主官：優先序決定、跨機器協調、向 Jin 彙報
@@ -20,7 +20,7 @@ SNAPSHOT|20260225-1900|3O5L|Sonnet 4.6
 
 [?] prod-min-demo|最小展示版驗收進度|M03✅(A44T,82T)+M04✅(Z1FV,114T)+PCC✅(ITEJ,1132T) → 三件全等 Jin 驗收；整合報告已發論壇 0230
 
-[>] test-coverage-patrol|持續找測試缺口|78 files 1577 tests（Z1FV M06 Phase 2+3 新增 59 tests）；src/lib/ 全覆蓋完成，build 零錯誤
+[>] test-coverage-patrol|持續找測試缺口|78 files 1593 tests（Z1FV M04 規則 +16；M06 Phase 2+3 +59）；src/lib/ 全覆蓋完成，build 零錯誤
 
 ## 完成項目（近期）
 [x] infra-onboarding|首次啟動 onboarding|完成
