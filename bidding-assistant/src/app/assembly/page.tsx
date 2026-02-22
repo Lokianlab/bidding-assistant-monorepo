@@ -227,6 +227,33 @@ export default function AssemblyPage() {
         </div>
       </div>
 
+      {/* 案件上下文（從戰略分析頁帶過來） */}
+      {searchParams.get("caseName") && (
+        <div className="mb-4 flex items-center gap-3 rounded-lg border bg-muted/30 px-4 py-2.5 text-sm">
+          <div className="flex-1 min-w-0">
+            <span className="font-medium">{searchParams.get("caseName")}</span>
+            {searchParams.get("agency") && (
+              <span className="text-muted-foreground ml-2">
+                {searchParams.get("agency")}
+              </span>
+            )}
+          </div>
+          {searchParams.get("verdict") && searchParams.get("total") && (
+            <span className={`shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${
+              searchParams.get("verdict") === "建議投標"
+                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                : searchParams.get("verdict") === "值得評估"
+                  ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                  : searchParams.get("verdict") === "不建議"
+                    ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                    : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+            }`}>
+              {searchParams.get("verdict")} {searchParams.get("total")}/100
+            </span>
+          )}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* ====== 左欄：階段選擇 ====== */}
         <div className="space-y-3">
