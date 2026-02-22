@@ -27,4 +27,4 @@ proposal-success-prediction|已結案|P1|現有競標案件成功率預測診斷
 saint-departure-workload-handoff|已結案|P1|JDNE 已分配：品質模組邊界測試補強 + docgen 審查|AINL|JDNE||0226
 kb-initialization-from-pec|進行中|P1|知識庫初始化：評估報告完成（33.4K 檔案）、4階段計畫、待 Jin 授權|AINL|JDNE||0226
 next-work-request|進行中|P1|AINL 請求下一項工作分配（已完成 3 項自主承接工作）|AINL|JDNE||0226
-proposal-diagnosis-365music|共識|P2|三缺漏+預算矛盾診斷完成，M04規則驗證通過，待AINL整理送 Jin|AINL|Z1FV,JDNE||0226
+proposal-diagnosis-365music|已結案|P2|三缺漏+預算矛盾診斷完成，M04規則驗證通過，AINL送審報告已提交|AINL|Z1FV,JDNE,AINL||0226
