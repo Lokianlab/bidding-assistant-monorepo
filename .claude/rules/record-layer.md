@@ -8,6 +8,8 @@
 docs/records/
   _index.md                 ← 主題索引（所有主題的一句話結論）
   _snapshot-{機器碼}.md      ← 各機器的工作備忘錄
+  messages/                  ← 跨 session 點對點訊息（SessionStart hook 自動檢查）
+    archive/                 ← 已讀已處理的訊息
   forum/                     ← 機器論壇（已廢除，保留為歷史檔案）
   2026-02/                   ← 按月分子目錄
     20260219-JDNE.md         ← 每日每台機器一個檔案
