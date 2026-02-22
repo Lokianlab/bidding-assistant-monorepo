@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSettings } from "@/lib/context/settings-context";
 import { useScanResults } from "@/lib/scan/useScanResults";
+import { DEFAULT_KEYWORD_RULES } from "@/lib/scan/constants";
 import {
   addExclusion,
   getExcludedJobNumbers,
@@ -35,6 +36,7 @@ export function ScanDashboard() {
   // 初始化時從 localStorage 載入排除清單（hydration-safe）
   const [skipped, setSkipped] = useState<Set<string>>(new Set());
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
   const [pendingResult, setPendingResult] = useState<ScanResult | null>(null);
   const [createdCases, setCreatedCases] = useState<Set<string>>(new Set());
   useEffect(() => {
@@ -133,6 +135,9 @@ export function ScanDashboard() {
           )}
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={() => setRulesOpen((o) => !o)}>
+            {rulesOpen ? "▲" : "▼"} 分類說明
+          </Button>
           <Button variant="outline" size="sm" asChild>
             <Link href="/settings/modules">關鍵字設定</Link>
           </Button>
@@ -141,6 +146,42 @@ export function ScanDashboard() {
           </Button>
         </div>
       </div>
+
+      {/* 分類規則說明面板 */}
+      {rulesOpen && (
+        <div className="rounded-md border bg-muted/30 p-4 text-sm space-y-3">
+          <p className="font-medium text-foreground">分類邏輯說明</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {(["must", "review", "exclude"] as const).map((cat) => {
+              const rules = DEFAULT_KEYWORD_RULES.filter((r) => r.category === cat);
+              const catLabel = cat === "must" ? "⭐ 推薦" : cat === "review" ? "🔍 需要看" : "❌ 排除";
+              return (
+                <div key={cat}>
+                  <p className="font-medium mb-1 text-foreground">{catLabel}</p>
+                  <ul className="space-y-0.5 text-muted-foreground">
+                    {rules.map((r, i) => (
+                      <li key={i}>
+                        {r.keywords.length > 0
+                          ? `${r.label}（${r.keywords.join("、")}）`
+                          : r.budgetMax
+                          ? `${r.label}（預算 ≤ ${(r.budgetMax / 10000).toFixed(0)} 萬元）`
+                          : r.label}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+            <div>
+              <p className="font-medium mb-1 text-foreground">❓ 其他</p>
+              <p className="text-muted-foreground">不符合上述任何規則的標案</p>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground border-t pt-2">
+            規則優先序：排除 &gt; 推薦 = 需要看（以命中最長關鍵字的規則為準）&gt; 其他
+          </p>
+        </div>
+      )}
 
       {/* 錯誤訊息 */}
       {error && (
