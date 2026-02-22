@@ -132,10 +132,10 @@ export const APPROVAL_SUMMARIES: Record<string, { what: string; detail: string; 
     reject: "保持現有的模糊規則",
   },
   "scoring-architecture": {
-    what: "計分板拆成三部分，省掉每次載入的冗餘 token",
-    detail: "問題：計分板 15KB 每次載入，歷史佔 80% 只在查詢時需要。原方案：拆三檔省 12KB。\nJin 退回：如何評估方案是否有效？\nJDNE 建議撤回：省 12KB ≈ 2-3% context window，不是瓶頸；遷移風險高。替代方案：不動結構，扣分時在快照加行為備註（最近 3 條），成本極低效果相當。Z1FV 同意撤回。",
-    approve: "撤回主提案，只做快照備註",
-    reject: "維持現狀不改",
+    what: "計分板架構重構——4/5 建議撤回",
+    detail: "原方案：計分板 15KB 拆三檔省 12KB。Jin 退回：如何評估方案有效？\n分析結果：省 12KB ≈ 2-3% context window，不是瓶頸；遷移風險高（多台同時改格式）。\nA44T（提案者）+ JDNE + ITEJ + Z1FV = 4/5 同意撤回。替代方案：不動結構，快照加最近 3 條扣分備註。",
+    approve: "確認撤回，維持現狀",
+    reject: "你覺得還是要拆",
   },
   "rebase-standard": {
     what: "機器同步代碼用 rebase 取代 merge",

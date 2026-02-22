@@ -25,7 +25,7 @@ efficiency-calibration|進行中|P0|效率校準|Jin（用戶）|||0222
 role-assignment|進行中|P0|工作角色報告+重新分配|3O5L|||0223
 push-then-continue|已結案|-|push 後強制找下一步的執行順序（共識+第一級，直接遵守）|AINL|AINL,Z1FV,ITEJ,A44T,JDNE||0223
 tool-approval-not-stop|已結案|P2|工具批准等待期間繼續工作的規則|AINL|||0223
-scoring-architecture|已結案|P2|計分板架構重構（撤回：提案方 A44T+ITEJ+JDNE 一致同意，收益小風險高）|A44T|A44T,ITEJ,Z1FV||0223
+scoring-architecture|已結案|P2|計分板架構重構（撤回：A44T+JDNE+ITEJ+Z1FV 同意，收益小風險高）|A44T|A44T,ITEJ,Z1FV,JDNE||0223
 rebase-standard|進行中|P2|git pull --rebase 標準化（ITEJ 補評估報告，待 Jin 重審）|Z1FV|Z1FV,JDNE,ITEJ,A44T||0223
 verification-queue|已結案|P2|驗收佇列（Z1FV+ITEJ 整合：/待辦 加匯整視角 + 機器端重分類 [v]，4/5 同意）|Z1FV|ITEJ,JDNE,Z1FV,A44T,Jin||0223
 optimize-add-cut-add|已結案|P2|「先加再砍再加回」優化方法論|3O5L|A44T,JDNE,ITEJ,Z1FV||0223
