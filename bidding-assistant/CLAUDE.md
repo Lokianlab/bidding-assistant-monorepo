@@ -149,6 +149,11 @@ src/data/config/   ← 靜態設定資料（選用）
 - `.env.local` 存放本地開發環境變數，`.env.example` 列出所有需要的變數名稱
 - API 路由（`/api/*`）必須加入基本認證檢查
 - **資料庫安全**：可以讀取用戶的原始資料庫（Notion 等），但**禁止直接修改原始資料庫**。實驗、測試、開發一律使用沙盒或複製的資料庫。資料安全與效率同等重要。
+- **部署約束檢查清單** — PR 提交前必須過（詳見根目錄 `docs/methodology/decision-framework.md`）：
+  1. ☐ 無硬編碼路徑（`grep -r "C:\\|^\\.\/|^~\/" src/`）
+  2. ☐ 跨平台相容性（`npm test && npm run build` on macOS/Linux）
+  3. ☐ 資料存取經 API（grep 確認無 createClient 直連）
+  4. ☐ 機密存 .env（`git diff HEAD~1 | grep -i "key\|secret\|token"`）
 
 ### 11. 匯入路徑規範
 
