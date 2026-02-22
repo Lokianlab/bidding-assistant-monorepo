@@ -126,6 +126,19 @@ SNAPSHOT|20260219-2330|ITEJ
 [~] plan-discord-bot|Discord Bot 架構|放棄：改為 SaaS 網頁
 ```
 
+## 審查結果格式
+
+審查完成時，在快照記錄結構化結果，deferred issues 掛在對應模組行：
+
+```
+[x] review-{模組}|{模組名}審查完成|PASS：{N} issues，{M} fixed，{K} deferred
+  [deferred] {issue-1 一句話描述}
+  [deferred] {issue-2 一句話描述}
+```
+
+deferred 掛在快照行就不會被遺忘。下一個碰到這模組的機器評估是否要處理。
+審查全 PASS 且無 issues：直接寫 `PASS` 不加數字。（出處：efficiency-discussion 全員共識 0223）
+
 ## 主題索引（`_index.md`）
 
 每個主題一行：`{topic}|{狀態}|{一句話結論}|{最新出處}|{最後更新}`
