@@ -135,7 +135,7 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
   {
     id: "quality-gate",
     name: "品質閘門",
-    description: "三道品質檢查：事實查核、需求對照、實務檢驗",
+    description: "四道品質檢查：文字品質、事實查核、需求對照、實務檢驗",
     icon: "🛡️",
     routes: ["/tools/quality-gate"],
     section: "tools",
