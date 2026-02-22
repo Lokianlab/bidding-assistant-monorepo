@@ -254,13 +254,17 @@ export default function GuidePage() {
           </p>
           <ol className="list-decimal pl-5 space-y-1">
             <li>點「手動掃描」開始搜尋</li>
-            <li>系統用預設關鍵字搜尋 PCC，自動分為「推薦」「需要看」「其他」三類</li>
+            <li>系統用設定的關鍵字搜尋 PCC，自動分為「推薦」「需要看」「其他」三類</li>
             <li>在「推薦」分頁找到感興趣的案件</li>
             <li>點「建案」一鍵建入 Notion 資料庫</li>
             <li>不感興趣的點「跳過」，之後不會再出現</li>
           </ol>
           <Tip>
             建案後會在 Notion 自動建立頁面。下次回到案件看板時就能看到新案件。
+          </Tip>
+          <Tip>
+            搜尋關鍵字可以自訂：到「設定 → 功能模組 → 巡標關鍵字」，新增或移除
+            PCC 搜尋用的關鍵字，系統下次掃描時就會使用新的清單。
           </Tip>
         </Section>
 
