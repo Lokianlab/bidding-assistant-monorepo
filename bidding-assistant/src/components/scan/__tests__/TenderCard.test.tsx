@@ -99,4 +99,43 @@ describe("TenderCard", () => {
     render(<TenderCard result={makeResult({ category: "must", label: "食農教育" })} />);
     expect(screen.getByText("食農教育")).toBeDefined();
   });
+
+  it("createStatus=creating 時按鈕顯示「建案中...」並 disabled", () => {
+    render(
+      <TenderCard
+        result={makeResult({ category: "must" })}
+        onCreateCase={vi.fn()}
+        createStatus="creating"
+      />
+    );
+    const btn = screen.getByText("建案中...");
+    expect(btn).toBeDefined();
+    expect((btn.closest("button") as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("createStatus=done 時按鈕顯示「已建案」並 disabled", () => {
+    render(
+      <TenderCard
+        result={makeResult({ category: "must" })}
+        onCreateCase={vi.fn()}
+        createStatus="done"
+      />
+    );
+    const btn = screen.getByText("已建案");
+    expect(btn).toBeDefined();
+    expect((btn.closest("button") as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("createStatus=error 時按鈕顯示「重試」", () => {
+    const onCreateCase = vi.fn();
+    const result = makeResult({ category: "must" });
+    render(
+      <TenderCard
+        result={result}
+        onCreateCase={onCreateCase}
+        createStatus="error"
+      />
+    );
+    expect(screen.getByText("重試")).toBeDefined();
+  });
 });
