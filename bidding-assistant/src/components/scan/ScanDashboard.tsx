@@ -173,6 +173,7 @@ export function ScanDashboard() {
                       onSkip={handleSkip}
                       onCreateCase={value !== "exclude" ? handleCreateCase : undefined}
                       onViewDetail={handleViewDetail}
+                      createStatus={createdCases.has(result.tender.jobNumber) ? "done" : "idle"}
                     />
                   ))}
                 </div>
