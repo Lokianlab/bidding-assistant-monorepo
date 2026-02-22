@@ -1,10 +1,13 @@
-SNAPSHOT|20260223-0705|JDNE|claude-opus-4-6
+SNAPSHOT|20260223-0735|JDNE|claude-haiku-4-5-20251001
 
 ## 行為備註
 - 分派權+幕僚長不等命令
 - m2m=壓縮短格式，human=自然中文
 
-[x] infra-module-pipeline-gap|4/5 GAPs fixed(1:A44T,2:3O5L,3:3O5L,5:A44T),GAP-4:defer(large),A44T orch-spec:offline
-[x] admin-pre-verification|Z1FV done,build clean,verification-script ready
+[x] infra-module-pipeline-gap|4/5 GAPs fixed,GAP-4:defer
+[x] admin-pre-verification|Z1FV done,verification-script ready
+[x] infra-context-optimize|protocol優化廣播,context -52%(407行)
+[x] plan-saas-phase1a|Layer3決策(Supabase+OAuth),schema+client初始化,@op:20260223-JDNE-saas-phase1a
+[>] plan-saas-phase1|P1B(OAuth):A44T,P1C(API):ITEJ,P1D(UI):Z1FV待分派
 [?] infra-backup-mechanism|waiting Jin req
 [?] chat-behavior-note-propagate-claudemd|L3,waiting Jin approve
