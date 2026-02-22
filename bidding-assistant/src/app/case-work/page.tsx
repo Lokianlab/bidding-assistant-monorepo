@@ -24,8 +24,13 @@ import {
 } from "@/lib/dashboard/types";
 import { fmt, fmtDateTime, parseDateField } from "@/lib/dashboard/helpers";
 import { loadCaseById } from "@/lib/case-work/helpers";
-import { getCaseProgress, calculateProgress } from "@/lib/case-board/helpers";
-import type { CaseProgress } from "@/lib/case-board/types";
+import {
+  getCaseProgress,
+  saveCaseProgress,
+  calculateProgress,
+} from "@/lib/case-board/helpers";
+import type { CaseProgress, StageStatus } from "@/lib/case-board/types";
+import { StageProgressBar } from "@/components/case-board/StageProgressBar";
 import { useFitScore } from "@/lib/strategy/useFitScore";
 import { useKnowledgeBase } from "@/lib/knowledge-base/useKnowledgeBase";
 import { useSettings } from "@/lib/context/settings-context";
@@ -50,20 +55,6 @@ function Field({
   );
 }
 
-const STAGE_STATUS_STYLES: Record<string, string> = {
-  completed: "bg-green-50 text-green-700",
-  "in-progress": "bg-blue-50 text-blue-700",
-  skipped: "bg-gray-50 text-gray-400 line-through",
-  "not-started": "bg-muted/30 text-gray-400",
-};
-
-const STAGE_STATUS_ICONS: Record<string, string> = {
-  completed: "\u2713",
-  "in-progress": "\u25CF",
-  skipped: "\u2298",
-  "not-started": "\u25CB",
-};
-
 // ── Page ───────────────────────────────────────────
 
 export default function CaseWorkPage() {
@@ -76,6 +67,7 @@ export default function CaseWorkPage() {
 
   const [page, setPage] = useState<NotionPage | null>(null);
   const [progress, setProgress] = useState<CaseProgress | null>(null);
+  const [progressTick, setProgressTick] = useState(0);
   const [hydrated, setHydrated] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
@@ -94,6 +86,21 @@ export default function CaseWorkPage() {
     }
     setHydrated(true);
   }, [pageId]);
+
+  // 階段進度編輯
+  function handleStageChange(stageId: string, status: StageStatus) {
+    if (!progress || !pageId) return;
+    const updated: CaseProgress = {
+      ...progress,
+      stages: progress.stages.map((s) =>
+        s.stageId === stageId ? { ...s, status } : s,
+      ),
+      lastUpdated: new Date().toISOString(),
+    };
+    saveCaseProgress(pageId, updated);
+    setProgress(updated);
+    setProgressTick((t) => t + 1);
+  }
 
   // 案件欄位
   const p = page?.properties;
@@ -301,36 +308,30 @@ export default function CaseWorkPage() {
         </CardHeader>
         <CardContent>
           {/* 進度條 */}
-          <div className="w-full h-2 bg-muted rounded-full mb-4">
+          <div className="w-full h-2 bg-muted rounded-full mb-3">
             <div
               className="h-full bg-primary rounded-full transition-all"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
 
-          {/* 階段格 */}
-          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-            {STAGES.map((stage) => {
-              const sp = progress?.stages.find(
-                (s) => s.stageId === stage.id,
-              );
-              const status = sp?.status || "not-started";
-              return (
-                <div
-                  key={stage.id}
-                  className={`flex flex-col items-center gap-1 p-2 rounded text-center ${STAGE_STATUS_STYLES[status]}`}
-                >
-                  <span className="text-sm">
-                    {STAGE_STATUS_ICONS[status]}
+          {/* 可編輯的階段進度（點擊色塊可切換狀態） */}
+          {progress && (
+            <div className="space-y-2">
+              <StageProgressBar
+                stages={progress.stages}
+                editable
+                onStageChange={handleStageChange}
+              />
+              <div className="flex justify-between text-[9px] text-muted-foreground">
+                {STAGES.map((stage) => (
+                  <span key={stage.id} className="w-5 text-center truncate">
+                    {stage.id}
                   </span>
-                  <span className="text-[10px] font-medium">{stage.id}</span>
-                  <span className="text-[9px] text-muted-foreground leading-tight">
-                    {stage.name}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+                ))}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
