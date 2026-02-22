@@ -84,7 +84,7 @@ Monorepo 透過 GitHub 同步。遠端：`https://github.com/Lokianlab/bidding-a
 
 ### 重啟流程（新 session 開始時）
 
-SessionStart hook 自動執行 `git pull --rebase`（失敗時手動處理）→ git status → 有未提交就 commit → 掃論壇進行中 thread → 條件觸發碰撞偵測（只在 CLAUDE.md 有改動時）→ 代碼變化時 npm test → 讀 dev-map + 自己的 snapshot 恢復上下文 → 一句話報告
+SessionStart hook 自動執行 `git pull --rebase`（失敗時手動處理）→ git status → 有未提交就 commit → 掃論壇進行中 thread → 條件觸發碰撞偵測（只在 CLAUDE.md 有改動時）→ 代碼變化時 npm test → 讀 dev-map + business-context + 自己的 snapshot 恢復上下文 → 一句話報告
 
 首次啟動（找不到自己的 `_snapshot-{機器碼}.md`）時，額外讀 `docs/collaboration-onboarding.md` 了解協作方式。
 
