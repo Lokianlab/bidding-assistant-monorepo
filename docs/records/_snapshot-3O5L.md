@@ -18,7 +18,7 @@ SNAPSHOT|20260228-2050|3O5L|Sonnet 4.6
 [x] cleanup-trend-dup|移除重複趨勢計算|Jin 驗收通過（0226）
 [x] test-coverage-patrol|持續找測試缺口|現已飽和：166 files 2616 tests（含本輪 W01 Phase 2 +20 tests）
 
-[v] feat-w01-scan-p2|W01 巡標 Phase 2：建案 API + Dialog|POST /api/notion/create-case + CreateCaseDialog + ScanDashboard 接線，+20 tests（166 files 2616 tests 全過），待用戶驗收。驗收：/scan → 掃描 → 點「建案」→ 確認 → Notion 新增頁面
+[x] feat-w01-scan-p2|W01 巡標 Phase 2：建案 API + Dialog|POST /api/notion/create-case + CreateCaseDialog + ScanDashboard 接線，+20 tests（166 files 2616 tests 全過）。驗收：/scan → 掃描 → 點「建案」→ 確認 → Notion 新增頁面
 
 [?] prod-min-demo|最小展示版驗收進度|M03✅(A44T,82T)+M04✅(Z1FV,114T)+PCC✅(ITEJ,1132T) → 三件全等 Jin 驗收；整合報告已發論壇 0230
 
