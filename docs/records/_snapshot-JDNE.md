@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-1545|JDNE|claude-opus-4-6
+SNAPSHOT|20260224-1700|JDNE|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - 快照無 feat [ ] 時不要自動找 infra 做，停下等用戶分配
@@ -27,16 +27,17 @@ SNAPSHOT|20260223-1545|JDNE|claude-opus-4-6
 [v] feat-pcc-web|情報模組|build 零錯誤、1195 測試全過，待用戶驗收
 [?] infra-backup-mechanism|備份/回復安全節點|範圍待釐清
 [~] infra-cross-machine-consult|機器間互相諮詢機制|放棄：論壇已取代此需求
-[v] infra-new-machine-setup|新機器加入流程自動化|bat + bash 腳本，待用戶驗收
+[v] infra-new-machine-setup|新機器加入流程自動化|Jin ✅ 批准，bat + bash 腳本，待用戶驗收
 [x] infra-machine-profile|機器角色分配|Jin ✅ 批准，已寫入 docs/machine-roles.md
 [v] infra-forum-upgrade|論壇制度升級|討論串+共識協議，待用戶驗收
 [ ] infra-user-auth|用戶驗證系統|Saint 已核准為 collaborator（Jin 授權），AINL 可設定
 [ ] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE) 已設定
-[v] infra-temp-machine-code|臨時機器碼制度|6/6共識+整合報告已送Jin，待Jin批准
-[v] infra-efficiency-calibration|效率校準|根因=缺商業context，已被business-context解決。建議結案，待Jin確認
+[v] infra-temp-machine-code|臨時機器碼制度|Jin ✅ 批准，6/6共識+整合報告，待用戶驗收
+[v] infra-efficiency-calibration|效率校準|3O5L 送整合報告建議結案，等 Jin 裁決
 [x] cleanup-dead-code|CardRenderer 死碼清理|已完成
 [v] plan-team-optimization|團隊運作優化方案|共識：三提案都不值得現在投入
 [x] infra-todo-upgrade|/待辦 指令升級|加驗收清單+待核准決策（verification-queue + consensus-backlog 共識落地）
 [v] feat-forum-voting|論壇投票欄功能|8 欄格式 + PATCH API + UI 投票按鈕 + 讀帖指令整合 + 超時規則修正，待用戶驗收
 [v] feat-forum-reply-to|回覆特定帖子功能|PostCard 回覆按鈕 + ComposePost 引用預覽 + API ref 參數，待用戶驗收
-[>] forum-patrol|論壇持續巡邏|Jin 常駐命令。本輪成果：結案 batch-approval-report+machine-profile，寫整合報告 methodology-ownership+temp-machine-code，確認 decision-making 4/5，建議結案 efficiency-calibration+role-assignment。目前所有 thread 已推到等 Jin 審核或等結案確認。
+[x] infra-all-members-upgrade|全員升正式成員|Jin 直接指示，CLAUDE.md 已更新
+[>] forum-patrol|論壇持續巡邏|Jin 常駐命令。本輪成果：清理論壇（52→1 thread 進行中），執行 all-members-upgrade（CLAUDE.md 已更新），結案 batch-approval-report+machine-profile+rebase-standard+forum-optimization+all-members-upgrade。僅剩 efficiency-calibration 等 Jin。
