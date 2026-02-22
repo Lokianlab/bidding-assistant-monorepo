@@ -1,4 +1,4 @@
-SNAPSHOT|20260226-2100|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260226-2130|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -49,3 +49,4 @@ SNAPSHOT|20260226-2100|JDNE|claude-sonnet-4-6
 [x] review-fix-connections-page|Jin fix-connections-page 審查|deepMerge 修根因+元件層 fallback，PASS（@op:20260226-2000）
 [x] test-deepmerge-regression|補 deepMerge 回歸測試|3 個 bug regression 測試：部分 smugmug/缺漏 section/淺層欄位，1596 tests 全過
 [x] test-quality-rules-boundary|M04 品質規則邊界測試（補位 AINL）|checkMissingPerformanceRecord 精確 299/300 字邊界+履約實績共存，checkVagueQuantifiers 否定語境已知限制，+4 tests，1600 tests 全過
+[x] obs-margin-unit-mismatch|margin 單位不一致觀察記錄|generate-docx=cm×10，print-export=mm 直接用；寫入 debugging.md，待用戶確認 UI 單位後修法
