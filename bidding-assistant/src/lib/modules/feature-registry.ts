@@ -105,6 +105,16 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
     dependencies: ["dashboard"],
   },
   {
+    id: "case-work",
+    name: "案件工作頁",
+    description: "單一案件全視角：案件資訊、戰略分析、情報摘要，一頁看完",
+    icon: "📋",
+    routes: ["/case-work"],
+    section: "core",
+    defaultEnabled: true,
+    dependencies: ["case-board", "strategy"],
+  },
+  {
     id: "prompt-library",
     name: "模板庫",
     description: "提示詞模板庫：階段總覽、知識庫引用矩陣、緊急手動協作",

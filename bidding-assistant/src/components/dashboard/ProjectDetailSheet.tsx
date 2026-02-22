@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -129,19 +130,25 @@ export function ProjectDetailSheet({ page, open, onClose }: ProjectDetailSheetPr
             </div>
           </div>
 
+          <Separator />
+
+          {/* 案件工作頁連結 */}
+          <Link href={`/case-work?id=${page.id}`}>
+            <Button variant="default" size="sm" className="w-full">
+              前往案件工作頁
+            </Button>
+          </Link>
+
           {/* Notion 連結 */}
           {page.url && page.url !== "#" && (
-            <>
-              <Separator />
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full"
-                onClick={() => window.open(page.url, "_blank")}
-              >
-                在 Notion 中開啟
-              </Button>
-            </>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={() => window.open(page.url, "_blank")}
+            >
+              在 Notion 中開啟
+            </Button>
           )}
         </div>
       </SheetContent>
