@@ -1,4 +1,4 @@
-SNAPSHOT|20260303-2345|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260304-0030|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -67,3 +67,6 @@ A44T 已回覆，JDNE 尚未回覆。請優先處理。
 [x] feat-tender-detail|apiFetchTenderDetail 串接 /api/pcc|替換 null 佔位實作→實際 fetch+欄位解析，+7 tests，2945 total
 [x] fix-patrol-review-a44t|A44T 審查4項修正落地|validateNotionInput接線+ScanResult型別+測試mock補強+新驗收測試，2949 total，0303
 [x] admin-devmap-2949|dev-map 測試數更新|2945→2949，0303
+[x] admin-snapshot-cleanup|快照清理：ITEJ 三項 [] → [?]|plan-devplan-push + plan-m04-quality + plan-m06-output，0304
+[x] reply-budget-365|365 預算分析 JDNE 回覆|行政執行費合規風險 + 365 場槓桿警示，0304
+[x] admin-devmap-3040|dev-map 測試數更新|2949→3040（190 test files），A44T+3O5L 新增，0304
