@@ -190,6 +190,7 @@
 | A44T 快照 | 資料庫沙盒方案（推薦混合 JSON mock + UI 複製） | 待用戶決定 |
 | 暫存區 | 元方法論框架（四層架構 + 效率為終極標準） | 待用戶審定 |
 | AINL 分析（0225） | 提案寫作駕駛艙新模組（基於 112-114 年度真實標案案例）：8 層黃金模板 + 失敗模式診斷 + MVP 規格。設計文件：`docs/methodology/proposal-cockpit-design.md` | 待 Jin 排優先序 |
+| AINL 分析（0225） | 3 層成功框架（程序合規→內容品質→成本競爭力）：階層式篩選，直接對應 M03/M04 驗證方向。6 個現況競標案件成功率預測：`docs/records/analysis/_bidding-cases-success-prediction.md` | 建議納入 M04/M03 下一版設計參考 |
 
 ### 已放棄 / 已被取代
 
