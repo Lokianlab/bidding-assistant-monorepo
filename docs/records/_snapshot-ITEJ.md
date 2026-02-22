@@ -32,5 +32,6 @@ SNAPSHOT|20260228-2010|ITEJ|opus-4.6
 [v] feat-w01-scan-p1|W01 巡標 Phase 1 完成|關鍵字引擎+掃描API+巡標UI頁面（types+constants+engine+route+useScanResults+TenderCard+ScanDashboard+page，62 tests），Phase 2 需 Notion token/DB ID
 [x] review-a44t-case-work|A44T feat-case-work-page 審查|PASS，752行，SSOT+型別+hydration+跨模組整合全合規
 [v] feat-w01-scan-notion-mapper|W01 Phase 2 準備：notion-mapper|PCC→Notion 欄位映射，11 tests，待 Notion token/DB ID 才能接 Phase 2
+[x] review-z1fv-test-viz|Z1FV test-viz-components 審查|PASS，79 tests，8 個視覺化元件，mock 策略+斷言品質合格
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
