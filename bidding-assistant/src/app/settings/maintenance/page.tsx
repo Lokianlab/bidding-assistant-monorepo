@@ -6,16 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CHANGELOG } from "@/data/changelog";
 import { ChangelogPanel } from "@/components/settings/ChangelogPanel";
 import { DebugLogPanel } from "@/components/settings/DebugLogPanel";
+import { getExcludedJobNumbers, clearExclusions, getCreatedJobNumbers, clearCreatedCases } from "@/lib/scan/exclusion";
 
 const currentVersion = CHANGELOG[0]?.version ?? "0.0.0";
 
 export default function MaintenancePage() {
   const { settings, resetSettings } = useSettings();
   const [confirmReset, setConfirmReset] = useState(false);
+  const [skipCount, setSkipCount] = useState(0);
+  const [createdCount, setCreatedCount] = useState(0);
+  useEffect(() => {
+    setSkipCount(getExcludedJobNumbers().length);
+    setCreatedCount(getCreatedJobNumbers().length);
+  }, []);
 
   function exportSettings() {
     const blob = new Blob([JSON.stringify(settings, null, 2)], { type: "application/json" });
@@ -123,6 +130,40 @@ export default function MaintenancePage() {
               <Button variant="outline" onClick={clearCache}>
                 清除快取
               </Button>
+            </CardContent>
+          </Card>
+
+          {/* 巡標記憶 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">巡標記憶</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                巡標頁面的「跳過」和「建案」記憶儲存在瀏覽器中，不受上方「清除快取」影響。
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    clearExclusions();
+                    setSkipCount(0);
+                    toast.success("已清空跳過記憶");
+                  }}
+                >
+                  清空跳過記憶（{skipCount} 筆）
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    clearCreatedCases();
+                    setCreatedCount(0);
+                    toast.success("已清空建案記憶");
+                  }}
+                >
+                  清空建案記憶（{createdCount} 筆）
+                </Button>
+              </div>
             </CardContent>
           </Card>
 

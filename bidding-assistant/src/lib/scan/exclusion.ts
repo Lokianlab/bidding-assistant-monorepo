@@ -101,3 +101,13 @@ export function addCreatedCase(jobNumber: string): void {
 export function getCreatedJobNumbers(): string[] {
   return [...readCreatedSet()];
 }
+
+/** 清空建案記憶 */
+export function clearCreatedCases(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(CREATED_KEY);
+  } catch {
+    // silent
+  }
+}

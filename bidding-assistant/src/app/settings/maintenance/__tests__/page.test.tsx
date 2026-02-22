@@ -149,3 +149,35 @@ describe("MaintenancePage — 清除快取", () => {
     expect(mockToastSuccess).toHaveBeenCalledWith("已清除 0 個快取項目");
   });
 });
+
+// ── 巡標記憶 ──────────────────────────────────────────────────
+
+describe("MaintenancePage — 巡標記憶", () => {
+  it("初始顯示 0 筆的跳過和建案記憶按鈕", () => {
+    render(<MaintenancePage />);
+    expect(screen.getByText("清空跳過記憶（0 筆）")).toBeDefined();
+    expect(screen.getByText("清空建案記憶（0 筆）")).toBeDefined();
+  });
+
+  it("localStorage 有跳過記憶時顯示正確數量", () => {
+    localStorage.setItem("scan-excluded", JSON.stringify(["J001", "J002", "J003"]));
+    render(<MaintenancePage />);
+    expect(screen.getByText("清空跳過記憶（3 筆）")).toBeDefined();
+  });
+
+  it("點清空跳過記憶清除 localStorage 並顯示 toast", () => {
+    localStorage.setItem("scan-excluded", JSON.stringify(["J001"]));
+    render(<MaintenancePage />);
+    fireEvent.click(screen.getByText("清空跳過記憶（1 筆）"));
+    expect(localStorage.getItem("scan-excluded")).toBeNull();
+    expect(mockToastSuccess).toHaveBeenCalledWith("已清空跳過記憶");
+  });
+
+  it("點清空建案記憶清除 localStorage 並顯示 toast", () => {
+    localStorage.setItem("scan-created", JSON.stringify(["J001", "J002"]));
+    render(<MaintenancePage />);
+    fireEvent.click(screen.getByText("清空建案記憶（2 筆）"));
+    expect(localStorage.getItem("scan-created")).toBeNull();
+    expect(mockToastSuccess).toHaveBeenCalledWith("已清空建案記憶");
+  });
+});

@@ -8,6 +8,7 @@ import {
   getExcludedJobNumbers,
   addCreatedCase,
   getCreatedJobNumbers,
+  clearCreatedCases,
 } from "../exclusion";
 import type { ScanResult } from "../types";
 
@@ -198,5 +199,28 @@ describe("addCreatedCase / getCreatedJobNumbers", () => {
   it("localStorage 損毀時 getCreatedJobNumbers 回傳空陣列", () => {
     localStorage.setItem("scan-created", "not-json");
     expect(getCreatedJobNumbers()).toEqual([]);
+  });
+});
+
+// ── clearCreatedCases ─────────────────────────────────────────
+
+describe("clearCreatedCases", () => {
+  it("清空後 getCreatedJobNumbers 回傳空陣列", () => {
+    addCreatedCase("J001");
+    addCreatedCase("J002");
+    clearCreatedCases();
+    expect(getCreatedJobNumbers()).toEqual([]);
+  });
+
+  it("清空空清單不報錯", () => {
+    expect(() => clearCreatedCases()).not.toThrow();
+  });
+
+  it("清空建案記憶不影響排除記憶", () => {
+    addCreatedCase("J001");
+    addExclusion("J002");
+    clearCreatedCases();
+    expect(getCreatedJobNumbers()).toEqual([]);
+    expect(getExcludedJobNumbers()).toContain("J002");
   });
 });
