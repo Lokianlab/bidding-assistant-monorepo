@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-1650|Z1FV|Sonnet 4.6
+SNAPSHOT|20260222-1730|Z1FV|Sonnet 4.6
 [>] infra-forum-patrol|論壇留守巡邏|所有 thread 已結案，持續巡邏中
 [v] feat-m06-output-phase1|M06 排版輸出模組 Phase 1|文件組裝管線+範本系統+DOCX/Markdown 匯出，39 tests，build 通過。驗收：npm run dev → /tools/output → 選範本 → 填章節 → 匯出 DOCX
 [v] feat-docgen-markdown|docgen 支援完整 markdown 格式|標題+列表+粗斜體，+19 tests，待用戶驗收
@@ -16,3 +16,4 @@ SNAPSHOT|20260222-1650|Z1FV|Sonnet 4.6
 [x] review-itej-quality|ITEJ feat-quality-refactor 審查|SSOT+鐵律全對，PASS，feedback 已發論壇
 [x] review-a44t-m03|A44T feat-m03-strategy 審查|五維評分純函式，PASS，一個文件注釋建議
 [x] review-a44t-docxgen|A44T feat-docx-gen 審查|Markdown→DOCX 轉換，狀態機 buffer 設計正確，1026 tests 完整，PASS
+[x] review-itej-pcc-web|ITEJ feat-pcc-web 審查|12 impl + 13 tests，五層架構乾淨，PASS，一個 serverless rate limiting 觀察
