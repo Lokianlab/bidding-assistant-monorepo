@@ -281,6 +281,31 @@ describe("ScanDashboard", () => {
   });
 });
 
+// ── 自訂關鍵字設定 ─────────────────────────────────────────
+
+describe("ScanDashboard — 自訂關鍵字設定", () => {
+  it("掃描時帶入 settings.scan.searchKeywords", async () => {
+    vi.mocked(useSettings).mockReturnValue({
+      settings: {
+        connections: { notion: { token: "", databaseId: "" } },
+        scan: { searchKeywords: ["AI應用", "數位轉型"] },
+      },
+    } as unknown as ReturnType<typeof useSettings>);
+
+    mockScanSuccess();
+    render(<ScanDashboard />);
+    fireEvent.click(screen.getByText("手動掃描"));
+
+    await waitFor(() => {
+      expect(screen.getByText("食農教育推廣計畫")).toBeDefined();
+    });
+
+    // 驗證 fetch 被呼叫時帶入了自訂關鍵字
+    const fetchBody = JSON.parse((mockFetch.mock.calls[0][1] as RequestInit).body as string);
+    expect(fetchBody.keywords).toEqual(["AI應用", "數位轉型"]);
+  });
+});
+
 // ── 建案記憶持久化 ─────────────────────────────────────────
 
 describe("ScanDashboard — 建案記憶持久化", () => {
