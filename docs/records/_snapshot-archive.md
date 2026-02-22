@@ -137,6 +137,8 @@
 [x] feat-assembly-refactor|提案組裝引擎重構|lib/assembly/，31 tests
 [x] plan-saas-storage|知識庫儲存方案|已決：Notion+Supabase+Web App（0226）
 [x] plan-notion-mcp-status|Notion MCP 定位|暫緩（內建版夠用）
+[x] doc-vitest-mock-patterns|vitest mock 三個陷阱寫進 debugging.md|JDNE 先到一步寫入（3O5L 版本），ITEJ 同步寫了另一版，合併衝突時保留 JDNE 版+補出處，0223
+[x] fix-page-tests-failure|三個頁面測試 timeout 修正|mock Accordion + Select，44 tests all pass，commit 83fec6f
 [x] feat-test-coverage|持續補測試|182檔 2921 tests，CardPickerDialog+DashboardGrid+orchestrateAccept+lint cleanup
 [x] plan-m02-kb|M02 知識庫模組規格|v0.1 草案完成（0227），待用戶審閱
 [x] plan-w01-scan|W01 巡標自動化規格|v0.1 草案完成（0227）
