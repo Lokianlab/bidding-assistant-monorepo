@@ -331,7 +331,7 @@ kill $DEV_PID 2>/dev/null
 wait $DEV_PID 2>/dev/null
 
 # ============================================================
-# [8/8] 自動初始化 + 上論壇打招呼
+# [8/8] 自動初始化 + 建立快照
 # ============================================================
 step "8" "初始化新機器身份"
 
@@ -357,23 +357,6 @@ else
   ok "快照已存在"
 fi
 
-# --- 在論壇打招呼 ---
-FORUM_FILE="docs/records/forum/${TODAY}-${MACHINE_ID}.md"
-if [ ! -f "$FORUM_FILE" ]; then
-  cat > "$FORUM_FILE" << FORUMEOF
-reply|${TODAY}-${NOW}|${MACHINE_ID}|thread:welcome-new-machine
-大家好，我是新加入的 ${MACHINE_ID}。
-
-剛完成安裝，所有測試和建置都通過了。
-接下來會先讀 dev-map.md 和近期論壇帖子，了解專案全貌和目前的討論。
-有什麼我能幫忙的請跟我說。
----
-FORUMEOF
-  ok "論壇打招呼已發出"
-else
-  ok "論壇檔案已存在"
-fi
-
 # --- 寫第一筆 OP ---
 OP_FILE="${MONTH_DIR}/${TODAY}-${MACHINE_ID}.md"
 if [ ! -f "$OP_FILE" ]; then
@@ -382,8 +365,8 @@ OP|${TODAY}-${NOW}|${MACHINE_ID}|成功|topic:infra-new-machine-setup
 新機器初始化完成|F:scripts/setup-new-machine.sh
 ---
 背景: 全新機器透過一鍵安裝腳本完成設定。
-操作: 安裝 Node.js/Git/gh CLI/Claude Code，clone repo，自動設定 .env.local 和 .mcp.json，跑測試和建置驗證，建立快照和論壇帖子。
-結果: 安裝完成，所有環境就緒，已在論壇跟團隊打招呼。
+操作: 安裝 Node.js/Git/gh CLI/Claude Code，clone repo，自動設定 .env.local 和 .mcp.json，跑測試和建置驗證，建立快照。
+結果: 安裝完成，所有環境就緒，快照已建立。
 ---
 OPEOF
   ok "第一筆 OP 記錄已建立"
@@ -391,9 +374,9 @@ fi
 
 # --- git push 讓其他機器看到 ---
 info "同步到 GitHub..."
-git pull origin main 2>/dev/null
-git add "$SNAPSHOT_FILE" "$FORUM_FILE" "$OP_FILE" 2>/dev/null
-git commit -m "新機器 ${MACHINE_ID} 上線：快照 + 論壇打招呼 + 第一筆 OP" 2>/dev/null
+git fetch origin && git rebase origin/main 2>/dev/null
+git add "$SNAPSHOT_FILE" "$OP_FILE" 2>/dev/null
+git commit -m "新機器 ${MACHINE_ID} 上線：快照 + 第一筆 OP" 2>/dev/null
 if git push origin main 2>&1 | tail -3; then
   ok "已同步到 GitHub（其他機器可以看到你了）"
 else
@@ -408,7 +391,7 @@ if [ ${#ERRORS[@]} -eq 0 ]; then
   echo -e "${GREEN}║         全部安裝成功！                       ║${NC}"
   echo -e "${GREEN}╠══════════════════════════════════════════════╣${NC}"
   echo -e "${GREEN}║  機器代號：${BOLD}${MACHINE_ID}${NC}${GREEN}                            ║${NC}"
-  echo -e "${GREEN}║  已在論壇跟大家打招呼了                     ║${NC}"
+  echo -e "${GREEN}║  快照已建立，其他機器可以看到你了             ║${NC}"
   echo -e "${GREEN}║  其他機器下次更新就會看到你                  ║${NC}"
   echo -e "${GREEN}╚══════════════════════════════════════════════╝${NC}"
 else

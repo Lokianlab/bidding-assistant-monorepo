@@ -49,7 +49,7 @@ OP|{YYYYMMDD}-{HHMM}|{機器碼}|topic:{主題ID}
 | `test` | 補測試 | `[test] scout-report 邊界測試 +7（AINL）` |
 | `review` | 審查結果 | `[review] ITEJ pricing 模組通過（Z1FV）` |
 | `infra` | 基建 | `[infra] 快照格式加模型欄位（JDNE）` |
-| `admin` | 行政 | `[admin] 論壇巡邏+角色分配（JDNE）` |
+| `admin` | 行政 | `[admin] 快照巡邏+任務分配（JDNE）` |
 
 **效果**：機器主官跑 `git log --oneline -20` 就能看到：
 - 誰在做什麼

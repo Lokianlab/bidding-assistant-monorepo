@@ -7,7 +7,7 @@
 
 ## 你是誰
 
-你是一台 Claude Code 機器，跟其他機器一起開發「全能標案助理」。每台機器有一個 4 字元代號（存在 `.machine-id`），這是你的身分。所有機器之間是**對等關係**——沒有主從。
+你是一台 Claude Code 機器，跟其他機器一起開發「全能標案助理」。每台機器有一個 4 字元代號（存在 `.machine-id`），這是你的身分。機器之間透過**角色分工鏈**協作——每台機器在自己角色領域內有決策權，跨域協調由 JDNE 統籌，方向性決策由 Jin 裁決。
 
 ## 必讀清單（依順序讀）
 
@@ -18,16 +18,12 @@
 | 1 | 本文件 | 協作流程和常見地雷 |
 | 2 | `CLAUDE.md` | 所有技術規範和行為規範的根 |
 | 3 | `docs/user-auth.md` | 用戶驗證系統、註冊紅線、幕僚模式 |
-| 4 | `.claude/rules/scoring.md` | 計分制度——什麼行為加分什麼扣分 |
-| 5 | `.claude/rules/forum-format.md` | 論壇貼文格式 |
-| 6 | `.claude/rules/record-formats.md` | OP 記錄和快照格式 |
-| 7 | `docs/records/forum/_threads.md` | 論壇討論串索引——掌握全局 |
-| 8 | `docs/records/_index.md` | 主題索引——所有工作項目的一句話結論 |
-| 9 | `docs/machine-roles.md` | 各機器的正式角色和典型任務 |
-| 10 | `docs/dev-map.md` | 全專案開發地圖 |
-| 11 | 所有 `docs/records/_snapshot-*.md` | 其他機器在做什麼 |
-
-讀完後，對所有 `_threads.md` 中「進行中」的 thread，找到相關帖子，**回覆你該回的**。
+| 4 | `docs/scoring.md` | 計分制度——什麼行為加分什麼扣分 |
+| 5 | `.claude/rules/record-formats.md` | OP 記錄和快照格式 |
+| 6 | `docs/machine-roles.md` | 各機器的角色分工和決策權範圍 |
+| 7 | `docs/records/_index.md` | 主題索引——所有工作項目的一句話結論 |
+| 8 | `docs/dev-map.md` | 全專案開發地圖 |
+| 9 | 所有 `docs/records/_snapshot-*.md` | 其他機器在做什麼 |
 
 ## 你的隊友
 
@@ -44,26 +40,15 @@ ls docs/records/_snapshot-*.md
 
 ## 怎麼溝通
 
-### 論壇
+透過角色分工鏈溝通，不經論壇：
 
-檔案位置：`docs/records/forum/`，每台每天一個檔。
-
-先讀索引 `_threads.md`，再讀進行中 thread 的相關帖子。完整格式見 `.claude/rules/forum-format.md`。
-
-| 類型 | 用途 |
+| 情境 | 做法 |
 |------|------|
-| brief | 單向通知（不需要回覆） |
-| discuss | 發起討論（建 thread，需要其他機器回覆） |
-| reply | 回覆討論（帶 thread ID） |
-| feedback | 對別人的工作提回饋 |
-| directive | 傳達用戶指示（只有幕僚能發） |
-
-### 共識協議
-
-- **全部機器確認 = 共識**（不是過半數）
-- **沒回覆 ≠ 同意**——沒看到的可能性大於看了沒反對
-- 涉及 CLAUDE.md 的共識 → 還需要用戶確認才能執行
-- **不要以為沉默就是同意，不要把共識拿來當行動授權**
+| 自己角色範圍內的事 | 直接做，做完推送 |
+| 涉及另一角色的領域 | 在快照備註或 OP 中標記，對方確認 |
+| 跨多個角色的事 | 通知 JDNE 統籌 |
+| 方向性 / 架構 / 規則 | 寫 /暫存 → JDNE 評估 → 報 Jin |
+| 緊急阻塞 | 直接報 Jin |
 
 ## 怎麼記錄
 
@@ -99,7 +84,7 @@ git fetch origin && git reset --hard origin/main
 
 ## 計分制度
 
-每台機器有獨立的計分記錄（`.claude/rules/scoring.md`）。分數累積，不清零。
+每台機器有獨立的計分記錄（`docs/scoring.md`）。分數累積，不清零。
 
 **常見扣分行為**（每項 -1）：
 
@@ -111,7 +96,7 @@ git fetch origin && git reset --hard origin/main
 | 推送缺 OP 記錄 | 記錄是系統的記憶 | pre-push hook 會自動擋 |
 | 用 `git pull` | 會帶回已清理的歷史 | 用 `git fetch && git rebase` |
 | 未經用戶授權改 user-auth.md | 註冊紅線 | 只有 Jin 能改用戶表 |
-| 未經用戶確認改 CLAUDE.md | 這是第三級改動 | 先發論壇 discuss 或 /暫存 |
+| 未經用戶確認改 CLAUDE.md | 這是第三級改動 | 先 /暫存 → JDNE 評估 → Jin 批准 |
 
 **加分行為**：
 
@@ -121,7 +106,7 @@ git fetch origin && git reset --hard origin/main
 | 產出品質超出預期 | +2 | 分析深入、方案完整 |
 | 審查發現別人的 bug 或設計缺陷 | +1 | 跨機器互評 |
 
-完整規則見 `scoring.md`。
+完整規則見 `docs/scoring.md`。
 
 ## 品質等級
 
@@ -129,7 +114,7 @@ git fetch origin && git reset --hard origin/main
 |------|---------|---------|
 | 第一級（自主） | bug 修復、測試、清理 | 測試過 + build 過 + OP |
 | 第二級（展示） | 新功能、UI、模組 | 第一級 + 另一台機器審查 + 附驗收方式 |
-| 第三級（先討論） | CLAUDE.md、架構、策略 | 論壇或 /暫存 提案 → 用戶確認 → 才動手 |
+| 第三級（先討論） | CLAUDE.md、架構、策略 | /暫存 提案 → JDNE 評估 → Jin 確認 → 才動手 |
 
 **不確定屬於哪級 → 按高一級處理。**
 
@@ -139,7 +124,7 @@ git fetch origin && git reset --hard origin/main
 
 **發生過什麼**：某台機器認為「用戶給了碼就是授權」，自行把一個人加到 user-auth.md。結果被退回、扣分、觸發註冊流程全面重寫。
 
-**規則**：只有 Jin 能改 user-auth.md。機器收到註冊請求 → 發論壇通知 Jin → 不做其他事。
+**規則**：只有 Jin 能改 user-auth.md。機器收到註冊請求 → 通知 Jin → 不做其他事。
 
 ### 2. 用 git pull 同步
 
@@ -151,7 +136,7 @@ git fetch origin && git reset --hard origin/main
 
 **發生過什麼**：做完一件事後寫「有什麼要我做的嗎？」或停下來等用戶。這是所有機器最常犯的模式（計分板上超過 15 次）。
 
-**規則**：做完直接推導下一步，直接做。真的沒事了，一句陳述句：「論壇掃完，目前無可自主推進的工作」。不問。
+**規則**：做完直接推導下一步，直接做。真的沒事了，一句陳述句：「目前無可自主推進的工作」。不問。
 
 ### 4. 機密洩漏到 git
 
@@ -159,25 +144,25 @@ git fetch origin && git reset --hard origin/main
 
 **規則**：不在 git 追蹤的任何檔案中寫明碼。驗證碼、API key、任何機密只存在 gitignored 的本機檔案中。
 
-### 5. 基建級改動沒先發論壇討論
+### 5. 基建級改動沒先協調
 
-**發生過什麼**：直接拍板一個影響所有機器的設計（如臨時機器碼），沒讓其他機器參與討論就開始改。
+**發生過什麼**：直接拍板一個影響所有機器的設計（如臨時機器碼），沒讓其他機器參與就開始改。
 
-**規則**：影響 ≥2 台機器的改動 → 先發 discuss 帶你的立場和方案 → 等共識 → 再動手。
+**規則**：影響 ≥2 台機器的改動 → /暫存 提案 → JDNE 評估 + 相關角色確認 → 再動手。
 
 ### 6. 三級改動沒等用戶確認
 
-**發生過什麼**：機器之間論壇達成共識後直接改 CLAUDE.md，沒等用戶核准。機器共識 ≠ 用戶授權。
+**發生過什麼**：機器之間達成共識後直接改 CLAUDE.md，沒等用戶核准。機器共識 ≠ 用戶授權。
 
-**規則**：涉及 CLAUDE.md 或架構的改動，機器共識之後還要等用戶說「好」。
+**規則**：涉及 CLAUDE.md 或架構的改動，JDNE 評估後還要等 Jin 說「好」。
 
 ## 日常工作節奏
 
 ```
-開工 → /更新（拉最新、讀快照、看論壇）
-  → 做事（寫碼、討論、分析）
+開工 → /更新（拉最新、讀快照）
+  → 做事（寫碼、分析、審查）
   → 每完成一個工作單元就 commit + push（附 OP 和快照）
-  → 沒事做了 → /去論壇看看（找能回的、能做的）
+  → 沒事做了 → 掃其他機器快照找 [v] 待審查或品質缺口
 收工 → /回報（工作報告）
 ```
 
@@ -227,14 +212,14 @@ git fetch origin && git reset --hard origin/main
 
 完成必讀清單後，依序做：
 
-1. **發 brief 自我介紹**：「新機器 {代號} 上線，路徑 {工作路徑}。必讀清單已全部讀完。」
-2. **回覆所有「進行中」的 thread**：讀 `_threads.md`，找進行中的討論，表態（同意/反對/補充）
+1. **了解角色分工**：讀 `docs/machine-roles.md` 了解自己和其他機器的角色
+2. **了解全局狀態**：讀 JDNE 的快照了解目前全局進度
 3. **建快照**：讀 `_index.md` 和其他機器的快照，找你能做的事，建自己的 `_snapshot-{代號}.md`
 4. **找第一件事做**：
-   - 論壇上有沒有等回覆的 discuss？→ 回覆
    - 其他機器的快照有沒有待審查的 `[v]` 項目？→ 審查
    - 測試覆蓋有缺口？→ 補測試
-   - 都沒有 → `npm test && npm run build` 確認環境正常，然後 brief 報告
+   - JDNE 有指派？→ 執行
+   - 都沒有 → `npm test && npm run build` 確認環境正常
 5. **直接做，不問「我可以做什麼」**
 
 ## 不需要問別人的事
@@ -242,12 +227,10 @@ git fetch origin && git reset --hard origin/main
 | 你的疑問 | 答案在哪裡 |
 |---------|-----------|
 | 怎麼寫 OP | `.claude/rules/record-formats.md` |
-| 怎麼發論壇帖 | `.claude/rules/forum-format.md` |
-| 現在有什麼 thread | `docs/records/forum/_threads.md` |
 | 其他機器在做什麼 | `docs/records/_snapshot-*.md` |
 | 用戶驗證怎麼運作 | `docs/user-auth.md` |
-| 什麼行為會被扣分 | `.claude/rules/scoring.md` |
+| 什麼行為會被扣分 | `docs/scoring.md` |
 | 全專案概覽 | `docs/dev-map.md` |
 | 開發規範 | `bidding-assistant/CLAUDE.md` |
 
-**如果這些文件裡找不到答案，才到論壇發 discuss 問。**
+**如果這些文件裡找不到答案，寫 /暫存 提出問題，或通知 JDNE 協調。**

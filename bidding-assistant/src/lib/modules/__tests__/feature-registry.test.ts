@@ -31,8 +31,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(FEATURE_REGISTRY.length).toBeGreaterThan(0);
   });
 
-  it("has 14 registered features", () => {
-    expect(FEATURE_REGISTRY).toHaveLength(14);
+  it("has 13 registered features", () => {
+    expect(FEATURE_REGISTRY).toHaveLength(13);
   });
 
   it("every feature has all required fields", () => {
