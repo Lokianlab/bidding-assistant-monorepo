@@ -94,6 +94,9 @@ export {
   createDriveFolder,
 } from './drive-writer';
 
+// 編排 Hook（UI 層使用）
+export { usePatrolOrchestrator } from './usePatrolOrchestrator';
+
 // 型別橋接（W01 scan → P0 patrol）
 export {
   scanTenderToRaw,
