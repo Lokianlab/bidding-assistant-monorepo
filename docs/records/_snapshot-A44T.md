@@ -1,4 +1,4 @@
-SNAPSHOT|20260304-0010|A44T|claude-opus-4-6
+SNAPSHOT|20260304-0050|A44T|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - push 後直接讀 [ ] 找下一步，不停下報告
@@ -36,3 +36,4 @@ SNAPSHOT|20260304-0010|A44T|claude-opus-4-6
 [x] fix-ssot-tender-detail|apiFetchTenderDetail SSOT 重構|匯入 pcc/helpers 的 parseAmount+findDetailValue 取代重複 inline 函式，-14 行
 [x] fix-parseamount-empty|parseAmount 空字串 bug 修正|"元"/"   元" 原回傳 0 改為 null（JS Number("") 陷阱），+4 邊界測試，3010 total
 [x] sweep-pre-demo|驗收前品質掃瞄|M03+M04+PCC 三模組全 CLEAN，功能註冊+import+UI 中文+設定預設值全確認
+[x] fix-m04-sentence-split|M04 句子切割小數點 bug + 無依據改名|regex 修正（99.9% 不再拆句）+ unverified 標籤「無來源」→「無依據」+2 tests，3138 total

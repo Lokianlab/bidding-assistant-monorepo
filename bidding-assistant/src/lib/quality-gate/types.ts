@@ -58,7 +58,7 @@ export interface KBEntry {
 
 /** 事實查核設定 */
 export interface FactCheckOptions {
-  /** 無來源宣稱超過幾個才報 error（預設 3） */
+  /** 無依據宣稱超過幾個才報 error（預設 3） */
   unverifiedThreshold?: number;
   /** 幻覺旗標超過幾個才報 error（預設 2） */
   hallucinationThreshold?: number;

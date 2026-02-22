@@ -153,7 +153,7 @@ function buildIssues(
     }
   }
 
-  // 無來源宣稱超過閾值 → error
+  // 無依據宣稱超過閾值 → error
   const unverifiedSentences = annotations
     .filter((a) => a.confidence === "unverified" && a.hallucinations.length === 0)
     .slice(0, 3); // 最多顯示 3 個例子
