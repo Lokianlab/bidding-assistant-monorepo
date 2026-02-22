@@ -59,12 +59,21 @@ export {
 } from './exclusion';
 
 // 編排流程
-export type { AcceptProgress } from './orchestrator';
+export type { AcceptProgress, AcceptConfig } from './orchestrator';
 export {
   orchestrateAccept,
   validateOrchestrationResult,
   getProgressFromResult,
 } from './orchestrator';
+
+// API 客戶端（瀏覽器端呼叫 API routes）
+export {
+  apiCreateNotionCase,
+  apiUpdateNotionCase,
+  apiCreateDriveFolder,
+  apiSearchPcc,
+  apiFetchTenderDetail,
+} from './api-client';
 
 // Notion 建檔/回寫（Layer B）
 export type { NotionProperties } from './notion-writer';

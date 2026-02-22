@@ -5,114 +5,161 @@
  * 當使用者按「要」時，編排整個建檔流程
  */
 
-import {
+import type {
   PatrolItem,
-  PccTenderDetail,
   AcceptResult,
-  NotionCaseCreateResult,
-  DriveCreateFolderResult,
   NotionCaseCreateInput,
+  NotionCaseCreateResult,
+  NotionCaseUpdateInput,
+  DriveCreateFolderInput,
+  DriveCreateFolderResult,
 } from './types';
+import { convertToNotionInput } from './converter';
+import {
+  apiCreateNotionCase,
+  apiUpdateNotionCase,
+  apiCreateDriveFolder,
+  apiFetchTenderDetail,
+} from './api-client';
+
+// ============================================================
+// 認證參數（UI 從 settings 傳入）
+// ============================================================
+
+/** orchestrateAccept 所需的外部認證和設定 */
+export interface AcceptConfig {
+  /** Notion Integration Token */
+  notionToken: string;
+  /** Notion Database ID（沙盒或正式） */
+  notionDatabaseId: string;
+  /** Google Drive OAuth2 access token（選填，缺少時跳過 Drive） */
+  driveAccessToken?: string;
+  /** Google Drive 父資料夾 ID（B. 備標集中區） */
+  driveParentFolderId?: string;
+}
+
+// ============================================================
+// 摘要/情蒐（待串接現有模組）
+// ============================================================
 
 /**
- * 模擬 Layer A 的取得單筆完整公告
- * 實際應用中會呼叫真正的 API
+ * 摘要產出（串接現有分析模組）
+ * 目前回傳佔位文字，串接時替換為實際分析
  */
-export async function fetchTenderDetail(
-  _unitId: string,
-  _jobNumber: string
-): Promise<PccTenderDetail> {
-  // TODO: Layer A 會實作這個
-  throw new Error('fetchTenderDetail 未實作（待 Layer A）');
+async function generateSummary(_title: string): Promise<string> {
+  // TODO: 串接現有分析模組（如 M03 適配度分析、M04 品質檢查等）
+  return '[摘要功能開發中]';
 }
 
 /**
- * 模擬 Layer B 的 Notion 建檔
+ * 情蒐產出（串接現有機關情報模組）
+ * 目前回傳佔位文字，串接時替換為實際情蒐
  */
-export async function createNotionCase(
-  _input: NotionCaseCreateInput
-): Promise<NotionCaseCreateResult> {
-  // TODO: Layer B 會實作這個
-  throw new Error('createNotionCase 未實作（待 Layer B）');
+async function generateIntelligenceReport(_agency: string): Promise<string> {
+  // TODO: 串接現有的機關情報、競爭分析等模組
+  return '[情蒐功能開發中]';
 }
 
-/**
- * 模擬 Layer B 的 Drive 建資料夾
- */
-export async function createDriveFolder(
-  _caseUniqueId: string,
-  _publishDate: string,
-  _title: string
-): Promise<DriveCreateFolderResult> {
-  // TODO: Layer B 會實作這個
-  throw new Error('createDriveFolder 未實作（待 Layer B）');
-}
-
-/**
- * 模擬現有摘要產出模組
- */
-export async function generateSummary(_title: string): Promise<string> {
-  // TODO: 串接現有分析模組
-  return '[摘要待實作]';
-}
-
-/**
- * 模擬現有情蒐產出模組
- */
-export async function generateIntelligenceReport(_agency: string): Promise<string> {
-  // TODO: 串接現有機關情報、競爭分析等模組
-  return '[情蒐待實作]';
-}
+// ============================================================
+// 核心流程
+// ============================================================
 
 /**
  * 編排：一鍵上新的完整流程
  *
  * 步驟：
- * 1. 從 Layer A 取得完整公告
- * 2. Layer C 進行轉換
+ * 1. 嘗試取得完整公告詳情（Layer A）
+ * 2. Layer C 進行欄位轉換
  * 3. Layer B 建 Notion 檔案
- * 4. Layer B 建 Drive 資料夾
- * 5. 串接分析模組產出摘要和情蒐
- * 6. 回寫 Notion
+ * 4. Layer B 建 Drive 資料夾（並行 Step 5）
+ * 5. 產出摘要和情蒐（並行 Step 4）
+ * 6. 回寫摘要和情蒐到 Notion
  *
  * @param item - 使用者選擇的公告
+ * @param config - 外部認證和設定
  * @returns 所有操作結果
  */
-export async function orchestrateAccept(item: PatrolItem): Promise<AcceptResult> {
+export async function orchestrateAccept(
+  item: PatrolItem,
+  config: AcceptConfig,
+): Promise<AcceptResult> {
   try {
-    // Step 1：取得完整公告詳情（待整合：detail 將用於 convertToNotionInput）
-    const _detail = await fetchTenderDetail(item.unitId, item.jobNumber);
+    // Step 1: 嘗試取得完整公告詳情
+    const detail = await apiFetchTenderDetail(item.unitId, item.jobNumber);
 
-    // Step 2：Layer C 轉換欄位（這個模組會提供）
-    // 實際應用中會呼叫 convertToNotionInput
-    const notionInput: NotionCaseCreateInput = {
-      title: item.title,
-      jobNumber: item.jobNumber,
-      agency: item.agency,
-      budget: item.budget,
-      publishDate: item.publishDate,
-      deadline: item.deadline,
-      // ... 其他轉換邏輯
-    };
+    // Step 2: 欄位轉換
+    let notionInput: NotionCaseCreateInput;
 
-    // Step 3：建 Notion 檔案
-    const notionResult = await createNotionCase(notionInput);
+    if (detail) {
+      // 有完整詳情 → 用 converter 做完整轉換
+      notionInput = convertToNotionInput(detail);
+    } else {
+      // 沒有完整詳情 → 從 PatrolItem 已有資料建檔
+      notionInput = {
+        title: item.title,
+        jobNumber: item.jobNumber,
+        agency: item.agency,
+        budget: item.budget,
+        publishDate: item.publishDate,
+        deadline: item.deadline,
+      };
+    }
+
+    // Step 3: Notion 建檔
+    const notionResult = await apiCreateNotionCase(
+      notionInput,
+      config.notionToken,
+      config.notionDatabaseId,
+    );
 
     if (!notionResult.success || !notionResult.caseUniqueId) {
       return {
         notion: notionResult,
-        drive: { success: false, error: 'Notion 建檔失敗，中止流程' },
+        drive: { success: false, error: 'Notion 建檔失敗，中止 Drive 流程' },
         summary: '',
         intelligence: '',
       };
     }
 
-    // Step 4：建 Drive 資料夾（並行執行 Step 5）
+    // Step 4 & 5: 並行執行 Drive + 摘要 + 情蒐
+    const driveInput: DriveCreateFolderInput = {
+      caseUniqueId: notionResult.caseUniqueId,
+      publishDate: item.publishDate,
+      title: item.title,
+    };
+
+    const hasDriveConfig = config.driveAccessToken && config.driveParentFolderId;
+
     const [driveResult, summary, intelligence] = await Promise.all([
-      createDriveFolder(notionResult.caseUniqueId, item.publishDate, item.title),
+      hasDriveConfig
+        ? apiCreateDriveFolder(
+            driveInput,
+            config.driveAccessToken!,
+            config.driveParentFolderId!,
+          )
+        : Promise.resolve<DriveCreateFolderResult>({
+            success: false,
+            error: 'Drive 尚未設定（缺少 access token 或父資料夾 ID）',
+          }),
       generateSummary(item.title),
       generateIntelligenceReport(item.agency),
     ]);
+
+    // Step 6: 回寫摘要/情蒐到 Notion
+    if (summary || intelligence) {
+      const updateInput: NotionCaseUpdateInput = {
+        notionPageId: notionResult.notionPageId!,
+        summary: summary || undefined,
+        intelligenceReport: intelligence || undefined,
+        progressFlags: [
+          ...(summary ? ['摘要完成'] : []),
+          ...(intelligence ? ['情蒐完成'] : []),
+          ...(driveResult.success ? ['Drive 資料夾已建'] : []),
+        ],
+      };
+
+      await apiUpdateNotionCase(updateInput, config.notionToken);
+    }
 
     return {
       notion: notionResult,
