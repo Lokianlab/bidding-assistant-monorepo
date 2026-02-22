@@ -195,6 +195,7 @@
 [x] test-coverage-final|測試覆蓋率收尾|Providers hydration（+4）+ usePatrolOrchestrator empty-token 分支修正（+1），184 files 2939 tests，覆蓋率 99%+
 [x] infra-output-docs-folder|建立輸出文件目錄規則|docs/各種輸出文件/ + CLAUDE.md 規則（Jin 直接指示 0303），commit 09d3b88
 [x] doc-365music-proposal|365音樂振興計畫提案修改建議|基於 AINL 診斷，重算預算（移除周邊商品→再分配，補助比率 48.95%）+ KPI + 國際元素 + 質化效益，存入 docs/各種輸出文件/
+[x] review-a44t-deadline-filter|A44T feat-scan-deadline-filter 審查|PASS：兩階段過濾設計正確，16 tests 全過，保守策略（查不到截標日就保留）合理
 
 ---
 
@@ -220,3 +221,4 @@
 [x] fix-hydration-settings-pages|company/document/workflow 設定頁 hydration|同類 bug 統一修正 3 頁面，commit be4533d
 [x] feat-usePatrolOrchestrator|usePatrolOrchestrator hook|包裝 orchestrateAccept，hook 層銜接 UI 與 patrol orchestrator，+8 tests，commit ec4493c
 [x] budget-365-music|365 預算分析跨機器回覆|3O5L 回覆已補入，前三優先序共識確立（收支打平+補助比例、行政執行費、LOI），commit 5d711cb
+[x] test-coverage-patrol|持續找測試缺口|本輪 +12 tests（assembly page），204 files 3152 tests 全過
