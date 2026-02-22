@@ -5,7 +5,7 @@ import {
   countByCategory,
   sortByPriority,
 } from "../keyword-engine";
-import { DEFAULT_KEYWORD_RULES } from "../constants";
+
 import type { KeywordRule, ScanTender } from "../types";
 
 // ── classifyTender ─────────────────────────────────────────

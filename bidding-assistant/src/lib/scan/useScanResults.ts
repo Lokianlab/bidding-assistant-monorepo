@@ -1,7 +1,7 @@
 // ====== 巡標掃描結果管理 Hook ======
 
 import { useState, useCallback } from "react";
-import type { ScanResult, ScanSummary, KeywordCategory } from "./types";
+import type { ScanResult, KeywordCategory } from "./types";
 
 interface ScanResponse {
   scannedAt: string;
