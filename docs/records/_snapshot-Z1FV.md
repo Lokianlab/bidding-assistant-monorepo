@@ -1,4 +1,4 @@
-SNAPSHOT|20260222-1915|Z1FV|Sonnet 4.6
+SNAPSHOT|20260222-1930|Z1FV|Sonnet 4.6
 [>] infra-forum-patrol|論壇留守巡邏|所有 thread 已結案，持續巡邏中
 [v] feat-m06-output-phase1|M06 排版輸出模組 Phase 1|文件組裝管線+範本系統+DOCX/Markdown 匯出，39 tests，build 通過。驗收：npm run dev → /tools/output → 選範本 → 填章節 → 匯出 DOCX
 [v] feat-docgen-markdown|docgen 支援完整 markdown 格式|標題+列表+粗斜體，+19 tests，待用戶驗收
@@ -22,3 +22,4 @@ SNAPSHOT|20260222-1915|Z1FV|Sonnet 4.6
 [x] review-a44t-cross-module-nav|A44T feat-cross-module-nav 審查|情報→戰略→組裝→品質→匯出全鏈路，URL params 傳狀態，stage 驗證防禦，PASS
 [x] review-new-machine-setup|A44T+JDNE infra-new-machine-setup 審查|.bat 修正 clone-before-auth，npm 重試，機器碼碰撞偵測，PASS
 [x] review-ainl-useDocumentAssembly|AINL useDocumentAssembly.test.ts 審查|32 tests，邊界覆蓋完整，PASS
+[x] review-a44t-quickstart|A44T feat-dashboard-quickstart 審查|QuickStart.tsx，hydration-safe，auto-hide，PASS
