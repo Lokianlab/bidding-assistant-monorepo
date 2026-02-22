@@ -4,10 +4,6 @@ SNAPSHOT|20260304-0030|JDNE|claude-sonnet-4-6
 - 有分派權：可以分配工作給其他機器
 - 幕僚長不等命令：主動找基建/協調缺口，不停
 
-## ⚠️ 高優先：Saint 任務待回覆
-Saint 發布跨機器任務：365 基層音樂振興計畫預算分析，需各機器獨立審閱達成共識。
-A44T 已回覆，JDNE 尚未回覆。請優先處理。
-資料在 `docs/records/2026-03/20260303-AINL.md`，讀完在檔案末尾追加 `### JDNE 回覆`。
 [x] infra-record-layer|記錄層設計|@op:20260219-JDNE#1800
 [x] infra-staging-index|暫存索引機制|@op:20260219-JDNE#2000
 [x] infra-hooks|PreCompact + Stop + pre-push hooks|@op:20260221-JDNE#0900
