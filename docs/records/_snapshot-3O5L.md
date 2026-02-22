@@ -1,4 +1,4 @@
-SNAPSHOT|20260226-1710|3O5L|Sonnet 4.6
+SNAPSHOT|20260228-2050|3O5L|Sonnet 4.6
 
 ## 行為備註
 - 策略主官：優先序決定、跨機器協調、向 Jin 彙報
@@ -14,13 +14,13 @@ SNAPSHOT|20260226-1710|3O5L|Sonnet 4.6
 [x] test-useforum|useForum hook 補測試|已被 ITEJ 刪除（論壇廢除 0224），測試隨模組一起刪除
 [x] test-use-document-assembly|useDocumentAssembly hook 補測試|32 tests 全過，Z1FV 審查 PASS，76 files 1518 tests
 [x] test-use-export|useExport hook 補測試|19 tests 全過（doExport 成功×4、失敗×5、downloadBlob DOM×4、FORMAT_LABELS×4），commit 908c724
+[x] fix-sidebar-link|Sidebar Link href undefined bug|Jin 驗收通過（0226 rebase 後確認）
+[x] cleanup-trend-dup|移除重複趨勢計算|Jin 驗收通過（0226）
+[x] test-coverage-patrol|持續找測試缺口|現已飽和：166 files 2616 tests（含本輪 W01 Phase 2 +20 tests）
 
-[x] fix-sidebar-link|Sidebar Link href undefined bug|驗收：npm run dev → 不再報 Link href undefined 錯誤
-[x] cleanup-trend-dup|移除重複趨勢計算|驗收：npm run dev → 儀表板趨勢圖表仍正常顯示
+[v] feat-w01-scan-p2|W01 巡標 Phase 2：建案 API + Dialog|POST /api/notion/create-case + CreateCaseDialog + ScanDashboard 接線，+20 tests（166 files 2616 tests 全過），待用戶驗收。驗收：/scan → 掃描 → 點「建案」→ 確認 → Notion 新增頁面
 
 [?] prod-min-demo|最小展示版驗收進度|M03✅(A44T,82T)+M04✅(Z1FV,114T)+PCC✅(ITEJ,1132T) → 三件全等 Jin 驗收；整合報告已發論壇 0230
-
-[>] test-coverage-patrol|持續找測試缺口|78 files 1593 tests（Z1FV M04 規則 +16；M06 Phase 2+3 +59）；src/lib/ 全覆蓋完成，build 零錯誤
 
 ## 完成項目（近期）
 [x] infra-onboarding|首次啟動 onboarding|完成
