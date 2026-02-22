@@ -51,7 +51,18 @@ export function TenderCard({ result, onCreateCase, onSkip, onViewDetail, createS
               )}
             </div>
             <h3 className="font-medium text-sm leading-snug mb-1 break-words">
-              {tender.title}
+              {tender.url ? (
+                <a
+                  href={tender.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline hover:text-primary"
+                >
+                  {tender.title}
+                </a>
+              ) : (
+                tender.title
+              )}
             </h3>
             <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
               {tender.unit && <span>{tender.unit}</span>}

@@ -116,8 +116,12 @@ export function ScanDashboard() {
                 </span>
               ) : null}
               {data.errors && data.errors.length > 0 && (
-                <span className="text-yellow-600 ml-2">
-                  （{data.errors.length} 個關鍵字搜尋失敗）
+                <span className="text-yellow-600 ml-2" title={
+                  data.errors.map((e: { keyword: string; error: string }) =>
+                    `${e.keyword}：${e.error}`
+                  ).join("\n")
+                }>
+                  （{data.errors.map((e: { keyword: string }) => e.keyword).join("、")} 搜尋失敗）
                 </span>
               )}
               {createdCases.size > 0 && (
