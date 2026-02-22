@@ -1,4 +1,4 @@
-SNAPSHOT|20260225-1230|AINL|haiku-4-5
+SNAPSHOT|20260225-1600|AINL|haiku-4-5
 [x] infra-sync|首次同步完成|@op:20260221-AINL#1924
 [v] feat-test-coverage|補測試覆蓋+跨機器審查|analysis/index +6 trend 驗證。useQualityGate +10 tests（Z1FV M04 審查中發現缺口）。待 Jin 驗收：npm test 全過即可
 [v] feat-quality-refactor|品質模組審查|A44T/JDNE 已審查通過，待 Jin 驗收
@@ -11,4 +11,5 @@ SNAPSHOT|20260225-1230|AINL|haiku-4-5
 [x] review-z1fv-m04|審查 Z1FV M04 品質閘門|Phase 1+3+4 全審完。發現 useQualityGate 無測試，已補 +10 tests 推送
 [x] infra-forum-patrol-0223|論壇巡邏（0223 session）|Jin 命令駐守論壇。發 20+ 帖，完成投票同步、批准報告格式、優化方法論分析、共識達成。5/5 機器在多個 threads 達共識
 [x] infra-forum-patrol-0224|論壇巡邏（0224 session）|繼續駐守。檢查 P0/P1 threads、同步最新 rebase、與各機器協同論壇工作。完成，所有 threads 已結案
-[v] infra-forum-patrol-0225|論壇巡邏（0225 session）|掃完論壇，收到 Jin 分享成功結案案例。詳細分析 112-114 年度標案（故宮、黑蝙蝠、青年情緒等）。提取「黃金模板」：8 層架構、量化目標、分波段宣傳策略。發論壇帖分享分析。待 Jin 驗收 6 項功能
+[x] infra-forum-patrol-0225|論壇巡邏（0225 session）|掃完論壇，收到 Jin 分享成功結案案例。詳細分析 112-114 年度標案（故宮、黑蝙蝠、青年情緒等）。提取「黃金模板」：8 層架構、量化目標、分波段宣傳策略。發論壇帖分享分析。待 Jin 驗收 6 項功能
+[x] feat-proposal-analysis|成功案例 + 失敗案例分析|成功案例黃金模板建檔 + 失敗案例診斷框架 + 系統設計方案 + 詳細對標分析（113A119）+ 跨年度對比。發 4 個論壇帖。推送 3 份文檔：failure-patterns.md、proposal-cockpit-design.md、failed-case-analysis-113A119.md
