@@ -121,19 +121,48 @@ describe("CaseWorkPage — 有 pageId 但找不到案件", () => {
 });
 
 describe("CaseWorkPage — 有 pageId 且找到案件", () => {
-  it("顯示案件名稱", async () => {
+  const CASE_PROPS = {
+    "標案名稱": "食農教育推廣計畫",
+    "招標機關": "教育局",
+  };
+
+  beforeEach(() => {
     mockSearchGet.mockImplementation((key: string) =>
       key === "id" ? "abc123def" : null,
     );
-    vi.mocked(loadCaseById).mockReturnValueOnce({
+    vi.mocked(loadCaseById).mockReturnValue({
       id: "abc123def",
       url: "https://www.notion.so/abc123def",
-      properties: { "標案名稱": "食農教育推廣計畫" },
-    });
+      properties: CASE_PROPS,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+  });
 
+  it("顯示案件名稱", async () => {
     render(<CaseWorkPage />);
     await vi.waitFor(() => {
       expect(screen.getByText("食農教育推廣計畫")).toBeTruthy();
+    });
+  });
+
+  it("顯示招標機關", async () => {
+    render(<CaseWorkPage />);
+    await vi.waitFor(() => {
+      expect(screen.getByText("教育局")).toBeTruthy();
+    });
+  });
+
+  it("顯示備標進度區塊", async () => {
+    render(<CaseWorkPage />);
+    await vi.waitFor(() => {
+      expect(screen.getByText("備標進度")).toBeTruthy();
+    });
+  });
+
+  it("進度 0% 時顯示「開始撰寫」按鈕", async () => {
+    render(<CaseWorkPage />);
+    await vi.waitFor(() => {
+      expect(screen.getByRole("button", { name: "開始撰寫" })).toBeTruthy();
     });
   });
 });
