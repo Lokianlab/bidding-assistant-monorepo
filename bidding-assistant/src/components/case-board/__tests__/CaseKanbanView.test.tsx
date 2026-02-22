@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { createElement } from "react";
 import { CaseKanbanView } from "../CaseKanbanView";
@@ -71,7 +71,7 @@ describe("CaseKanbanView — 有資料", () => {
       makePage("p2", "投遞中", "標案二"),
       makePage("p3", "得標", "標案三"),
     ];
-    const { container } = render(
+    render(
       createElement(CaseKanbanView, {
         pages,
         columns: COLUMNS,
@@ -80,8 +80,6 @@ describe("CaseKanbanView — 有資料", () => {
       })
     );
     // 「投遞中」欄 badge 應為 2
-    const badges = container.querySelectorAll(".rounded-full, [class*='badge']");
-    // 找到所有 badge，其中一個顯示 "2"
     expect(screen.getByText("2")).toBeTruthy();
   });
 

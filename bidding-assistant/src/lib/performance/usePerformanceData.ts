@@ -200,7 +200,6 @@ export function usePerformanceData(
   }, [token, databaseId, fetchRemaining]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time data fetch triggered by hydration flag
     if (hydrated) fetchData();
   }, [hydrated, fetchData]);
 

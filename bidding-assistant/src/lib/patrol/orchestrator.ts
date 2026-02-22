@@ -80,8 +80,8 @@ export async function generateIntelligenceReport(_agency: string): Promise<strin
  */
 export async function orchestrateAccept(item: PatrolItem): Promise<AcceptResult> {
   try {
-    // Step 1：取得完整公告詳情
-    const detail = await fetchTenderDetail(item.unitId, item.jobNumber);
+    // Step 1：取得完整公告詳情（待整合：detail 將用於 convertToNotionInput）
+    const _detail = await fetchTenderDetail(item.unitId, item.jobNumber);
 
     // Step 2：Layer C 轉換欄位（這個模組會提供）
     // 實際應用中會呼叫 convertToNotionInput

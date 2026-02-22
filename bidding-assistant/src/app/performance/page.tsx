@@ -101,7 +101,6 @@ export default function PerformancePage() {
   // 同期比較：初始化年份
   useEffect(() => {
     if (availableYears.length >= 2 && yoyBaseYear === 0 && yoyCompareYear === 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time initialization from async-derived availableYears
       setYoyBaseYear(availableYears[0]);
       setYoyCompareYear(availableYears[1]);
     } else if (availableYears.length === 1 && yoyBaseYear === 0) {

@@ -266,7 +266,6 @@ export default function DashboardPage() {
   }, [token, databaseId, applySchema]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetchData is an async API call; setting state after await is the intended pattern
     if (hydrated) fetchData();
   }, [hydrated, fetchData]);
 

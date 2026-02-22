@@ -68,7 +68,7 @@ export default function CaseWorkPage() {
 
   const [page, setPage] = useState<NotionPage | null>(null);
   const [progress, setProgress] = useState<CaseProgress | null>(null);
-  const [progressTick, setProgressTick] = useState(0);
+  const [_progressTick, setProgressTick] = useState(0);
   const [hydrated, setHydrated] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
