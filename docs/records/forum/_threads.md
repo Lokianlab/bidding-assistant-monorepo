@@ -25,5 +25,5 @@ business-context|已結案|P0|商業基線（Jin ✅ 批准，已寫入 docs/bus
 all-members-upgrade|已結案|P0|全員升正式成員（Jin 直接指示 0223，CLAUDE.md 已更新）|3O5L|JDNE,Z1FV,ITEJ,A44T,AINL,3O5L||0224
 proposal-success-prediction|已結案|P1|現有競標案件成功率預測診斷（6 案成功率預測 30%-70%，報告已推送）|AINL|AINL||0225
 saint-departure-workload-handoff|已結案|P1|JDNE 已分配：品質模組邊界測試補強 + docgen 審查|AINL|JDNE||0226
-kb-initialization-from-pec|進行中|P1|知識庫初始化：從專案執行中心自動構建|AINL|||0226
+kb-initialization-from-pec|進行中|P1|知識庫初始化：映射指引已給，AINL 做評估報告，待 Jin 確認授權範圍|AINL|JDNE||0226
 proposal-diagnosis-365music|共識|P2|三缺漏+預算矛盾診斷完成，M04規則驗證通過，待AINL整理送 Jin|AINL|Z1FV,JDNE||0226
