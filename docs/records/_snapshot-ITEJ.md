@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2020|ITEJ|opus-4.6
+SNAPSHOT|20260228-2100|ITEJ|opus-4.6
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -35,5 +35,8 @@ SNAPSHOT|20260228-2020|ITEJ|opus-4.6
 [x] review-z1fv-test-viz|Z1FV test-viz-components 審查|PASS，79 tests，8 個視覺化元件，mock 策略+斷言品質合格
 [x] review-z1fv-test-dash-perf|Z1FV test-dashboard-perf-components 審查|PASS，109 tests，9 個元件，斷言品質+邊界覆蓋合格
 [x] fix-entry-editors-timeout|EntryEditors 首個 test timeout 修復|動態 import 冷啟動加大 timeout 至 15s
+[x] fix-ts-type-errors|修正 6 個測試檔 43 個 TS 型別錯誤|ChartsSection/DashboardCard/EntryEditors/YoYSection/ToolFileDialog/helpers，tsc --noEmit 零錯誤
+[x] review-ainl-patrol-layerc|AINL Layer C patrol 模組審查|PASS（條件），94 tests，3 個 issue：orchestrator unused var、Notion 選項值硬編碼、關鍵字與 scan/constants 重複
+[x] review-jdne-scan-exclusion|JDNE 排除記憶模組審查|PASS，18+8 tests，hydration-safe，容錯完整，1 觀察：已排除 tab 永遠空
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
