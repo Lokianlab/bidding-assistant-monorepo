@@ -463,6 +463,43 @@ describe("checkMissingPerformanceRecord", () => {
     const results = checkMissingPerformanceRecord(text);
     expect(results).toHaveLength(0);
   });
+
+  it("邊界測試：298 字 + 活動關鍵詞 → 不觸發（未達 300 字)", () => {
+    const text = "a".repeat(297) + "辦理";
+    expect(text.length).toBe(299);
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(0);
+  });
+
+  it("邊界測試：302 字 + 活動關鍵詞、無履約實績 → 觸發", () => {
+    const text = "a".repeat(300) + "辦理";
+    expect(text.length).toBe(302);
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(1);
+  });
+
+  it("邊界測試：單獨「辦理」字眼但無活動內容描述 → 不觸發", () => {
+    // "辦理" 雖符合活動關鍵詞正則，但此測試驗證即便含該詞、
+    // 若其他條件不足仍可能不觸發。實際上本規則已透過長度 + 內容雙重檢查。
+    // 此案例：長度不足 300，故不觸發。
+    const text = "我們將辦理此工作";
+    expect(text.length).toBeLessThan(300);
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(0);
+  });
+
+  it("邊界測試：>300字 + 活動詞多個 + 無履約實績 → 觸發", () => {
+    const text = longProposalBase.repeat(8) + "講座、工作坊、展覽均將辦理";
+    expect(text.length).toBeGreaterThan(300);
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(1);
+  });
+
+  it("邊界測試：>300字 + 活動詞 + 履約實績詞變型（以往承辦）→ 不觸發", () => {
+    const text = longProposalBase.repeat(8) + "本團隊以往承辦類似項目";
+    const results = checkMissingPerformanceRecord(text);
+    expect(results).toHaveLength(0);
+  });
 });
 
 describe("checkVagueQuantifiers", () => {
@@ -526,6 +563,42 @@ describe("checkVagueQuantifiers", () => {
     // 此測試記錄現有行為，提醒後續改進可加 NLP 脈絡分析
     const results = checkVagueQuantifiers("本計畫明確拒絕使用若干這種模糊描述");
     expect(results).toHaveLength(1);
+  });
+
+  it("邊界測試：引用語境中出現模糊詞仍觸發（已知限制）", () => {
+    // 例如在引用或括號中出現的模糊詞，規則無法區分語境
+    // 此測試記錄這個已知限制，提醒後續改進需脈絡分析
+    const results = checkVagueQuantifiers("對方回應說『大概需要若干週時間』");
+    expect(results).toHaveLength(1);
+  });
+
+  it("邊界測試：重複詞三次以上各自計入", () => {
+    // 驗證同一詞出現 3 次，應各自回報
+    const results = checkVagueQuantifiers("第一階段若干人，第二階段若干人，第三階段若干人");
+    expect(results).toHaveLength(3);
+    expect(results.every(r => r.message.includes("若干"))).toBe(true);
+  });
+
+  it("邊界測試：多詞混合重複 → 各自獨立計數", () => {
+    // 若干 2 次 + 廣大民眾 1 次 = 3 個警告
+    const results = checkVagueQuantifiers("若干場次若干人，面向廣大民眾");
+    expect(results).toHaveLength(3);
+    const wordCount = (word: string) => results.filter(r => r.message.includes(word)).length;
+    expect(wordCount("若干")).toBe(2);
+    expect(wordCount("廣大民眾")).toBe(1);
+  });
+
+  it("邊界測試：模糊詞在括號備註中仍觸發", () => {
+    // 規則會偵測括號內的模糊詞，因為不分析語義邊界
+    const results = checkVagueQuantifiers("活動日期（屆時再定）");
+    expect(results).toHaveLength(1);
+  });
+
+  it("邊界測試：模糊詞與具體數字並存 → 仍觸發模糊詞", () => {
+    // 規則是詞彙級而非句子級，若干次與 100 人並存，仍會觸發若干的警告
+    const results = checkVagueQuantifiers("若干場次邀請共 100 人參加");
+    expect(results).toHaveLength(1);
+    expect(results[0].message).toContain("若干");
   });
 });
 
