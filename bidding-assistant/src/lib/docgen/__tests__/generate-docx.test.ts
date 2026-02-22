@@ -1022,4 +1022,39 @@ describe("generateDocx — 封面 + 目錄組合", () => {
     );
     expect(full.size).toBeGreaterThan(minimal.size);
   });
+
+  it("邊界補強：大幅 margin 設定不崩潰", async () => {
+    // margin 單位為 mm，驗證大值不導致文件生成失敗
+    const blob = await generateDocx(
+      makeOptions({
+        coverPage: true,
+        tableOfContents: true,
+        documentSettings: {
+          ...defaultDocSettings,
+          page: {
+            ...defaultDocSettings.page,
+            margins: { top: 20, bottom: 20, left: 20, right: 20 }, // 20mm margins
+          },
+        },
+      })
+    );
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it("邊界補強：零 margin 邊界案例", async () => {
+    const blob = await generateDocx(
+      makeOptions({
+        documentSettings: {
+          ...defaultDocSettings,
+          page: {
+            ...defaultDocSettings.page,
+            margins: { top: 0, bottom: 0, left: 0, right: 0 },
+          },
+        },
+      })
+    );
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
 });
