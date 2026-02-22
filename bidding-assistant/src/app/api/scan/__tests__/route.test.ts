@@ -135,6 +135,7 @@ function mockPCCError(status = 500) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockFetch.mockReset(); // 清除 mockResolvedValueOnce 佇列，防止跨測試洩漏
 });
 
 describe("POST /api/scan", () => {
@@ -144,7 +145,7 @@ describe("POST /api/scan", () => {
       makePCCRecord({ title: "道路養護工程", jobNumber: "J002" }),
     ];
     mockPCCSuccess(makePCCResponse(records, "食農教育"));
-    mockFutureDetails(2); // 2 筆招標公告各打一次 detail
+    mockFutureDetails(1); // 只有食農教育（must）打 detail，道路養護（other）跳過
 
     const req = makeRequest({ keywords: ["食農教育"] });
     const res = await POST(req);
@@ -196,7 +197,7 @@ describe("POST /api/scan", () => {
       makePCCRecord({ title: "道路工程", jobNumber: "J004" }),
     ];
     mockPCCSuccess(makePCCResponse(records));
-    mockFutureDetails(4);
+    mockFutureDetails(2); // 只有 must（食農教育）+ review（藝術節）打 detail
 
     const req = makeRequest({ keywords: ["測試"] });
     const res = await POST(req);
@@ -216,7 +217,7 @@ describe("POST /api/scan", () => {
       makePCCRecord({ title: "燈節策展", jobNumber: "J002" }),
     ];
     mockPCCSuccess(makePCCResponse(records));
-    mockFutureDetails(4);
+    mockFutureDetails(2); // 只有 must（食農教育）+ review（燈節）打 detail
 
     const req = makeRequest({ keywords: ["測試"] });
     const res = await POST(req);
@@ -325,7 +326,7 @@ describe("POST /api/scan — 過期標案過濾", () => {
       makePCCRecord({ title: "藝術活動", jobNumber: "J002", type: "決標公告" }),
     ];
     mockPCCSuccess(makePCCResponse(records));
-    mockFutureDetails(1); // 只有 J001 需要 detail，J002 被 brief type 擋掉
+    mockFutureDetails(1); // J001（must）打 detail；J002（決標公告）Phase 1 就擋掉
 
     const req = makeRequest({ keywords: ["測試"] });
     const res = await POST(req);
@@ -343,7 +344,7 @@ describe("POST /api/scan — 過期標案過濾", () => {
       makePCCRecord({ title: "案子C", jobNumber: "J003", type: "招標公告" }),
     ];
     mockPCCSuccess(makePCCResponse(records));
-    mockFutureDetails(1); // 只有 J003 需要 detail
+    // J001/J002 Phase 1 擋掉（決標/撤銷），J003 是 other → 不打 detail，不需要 mock
 
     const req = makeRequest({ keywords: ["測試"] });
     const res = await POST(req);
@@ -354,15 +355,16 @@ describe("POST /api/scan — 過期標案過濾", () => {
   });
 
   it("截標日已過的標案被過濾（用 detail API 實際截標日）", async () => {
+    // 必須用 must/review 標題，才會打 detail 並做截標日過濾
     const records = [
-      makePCCRecord({ title: "還在招標", jobNumber: "J001" }),
-      makePCCRecord({ title: "已經截標", jobNumber: "J002" }),
+      makePCCRecord({ title: "食農教育推廣", jobNumber: "J001" }), // must → 打 detail
+      makePCCRecord({ title: "藝術展覽活動", jobNumber: "J002" }), // must → 打 detail
     ];
     mockPCCSuccess(makePCCResponse(records));
     // J001: 未來截標日 → 保留
-    mockDetailSuccess("115/06/01", "1,000,000元");
+    mockDetailSuccess("115/06/01", "5,000,000元");
     // J002: 過去截標日 → 過濾
-    mockDetailSuccess("114/01/15", "500,000元");
+    mockDetailSuccess("114/01/15", "5,000,000元");
 
     const req = makeRequest({ keywords: ["測試"] });
     const res = await POST(req);
@@ -374,10 +376,11 @@ describe("POST /api/scan — 過期標案過濾", () => {
   });
 
   it("detail API 查不到截標日時保守保留（不過濾）", async () => {
+    // 必須用 must/review 標題，才會嘗試打 detail
     mockPCCSuccess(makePCCResponse([
-      makePCCRecord({ title: "招標中", jobNumber: "J001" }),
+      makePCCRecord({ title: "食農教育招標中", jobNumber: "J001" }),
     ]));
-    // detail 回傳失敗
+    // detail 回傳失敗 → 保守保留（不過濾）
     mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
 
     const req = makeRequest({ keywords: ["測試"] });
@@ -389,8 +392,9 @@ describe("POST /api/scan — 過期標案過濾", () => {
   });
 
   it("filteredExpired=0 當沒有過期標案", async () => {
+    // 必須用 must/review 標題，才會打 detail 並驗證截標日
     mockPCCSuccess(makePCCResponse([
-      makePCCRecord({ title: "招標中", jobNumber: "J001" }),
+      makePCCRecord({ title: "食農教育招標中", jobNumber: "J001" }),
     ]));
     mockFutureDetails(1);
 
@@ -408,8 +412,9 @@ describe("POST /api/scan — 過期標案過濾", () => {
 describe("截標日期解析", () => {
   // 直接測試 route 的行為：用 detail mock 傳不同格式
   it("民國年格式 115/04/15 正確解析", async () => {
+    // 必須用 must/review 標題，才會打 detail 並解析截標日
     mockPCCSuccess(makePCCResponse([
-      makePCCRecord({ title: "測試案", jobNumber: "J001" }),
+      makePCCRecord({ title: "食農教育測試案", jobNumber: "J001" }),
     ]));
     mockDetailSuccess("115/04/15"); // 2026/04/15，未來
 
@@ -421,8 +426,9 @@ describe("截標日期解析", () => {
   });
 
   it("西元年格式 2025/01/01 已過期", async () => {
+    // 必須用 must/review 標題，才會打 detail 並過濾過期截標日
     mockPCCSuccess(makePCCResponse([
-      makePCCRecord({ title: "測試案", jobNumber: "J001" }),
+      makePCCRecord({ title: "食農教育測試案", jobNumber: "J001" }),
     ]));
     mockDetailSuccess("2025/01/01"); // 過去
 

@@ -2,7 +2,7 @@
 // POST /api/scan — 用多個關鍵字搜 PCC，篩選分類後回傳結果
 
 import { NextRequest, NextResponse } from "next/server";
-import { classifyTenders, countByCategory, sortByPriority } from "@/lib/scan/keyword-engine";
+import { classifyTender, classifyTenders, countByCategory, sortByPriority } from "@/lib/scan/keyword-engine";
 import { DEFAULT_SEARCH_KEYWORDS, DEFAULT_KEYWORD_RULES } from "@/lib/scan/constants";
 import { findDetailValue, parseAmount } from "@/lib/pcc/helpers";
 import type { ScanTender } from "@/lib/scan/types";
@@ -169,17 +169,23 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Phase 2: 打 detail API 取截標日期和預算，過濾已過期的
+    // Phase 2: 只對 must/review 打 detail API（other/exclude 跳過，省 API call）
+    // 取捨：純預算規則（≤100萬）在 brief 層級無法判斷（budget=0），這類 other 不升級為 must
     const allTenders: ScanTender[] = [];
     for (const { record, tender } of candidates) {
-      const extra = await fetchTenderExtra(record.unit_id, record.job_number);
-      if (isDeadlinePassed(extra.deadline)) {
-        filteredCount++;
-        continue;
+      const briefClass = classifyTender(tender.title, 0, DEFAULT_KEYWORD_RULES);
+
+      if (briefClass.category === "must" || briefClass.category === "review") {
+        // 只有高優先級才打 detail API 取截標日和預算
+        const extra = await fetchTenderExtra(record.unit_id, record.job_number);
+        if (isDeadlinePassed(extra.deadline)) {
+          filteredCount++;
+          continue;
+        }
+        if (extra.deadline) tender.deadline = extra.deadline;
+        if (extra.budget !== null) tender.budget = extra.budget;
       }
-      // 填入從 detail 取得的截標日和預算
-      if (extra.deadline) tender.deadline = extra.deadline;
-      if (extra.budget !== null) tender.budget = extra.budget;
+      // other/exclude 不打 detail，直接收入（不做截標日過濾）
       allTenders.push(tender);
     }
 
