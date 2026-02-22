@@ -71,13 +71,11 @@ OP|{YYYYMMDD}-{HHMM}|{機器碼}|topic:{主題ID}
 
 ### 時間戳規則（必須遵守）
 
-**時間戳必須用 Bash 指令取得真實系統時間，禁止估算或手動填寫。**
+**所有時間戳一律使用 MEMORY.md 的 `currentDate`，所有機器、所有記錄均適用。**
 
-```bash
-date +%Y%m%d-%H%M
-```
+格式：`YYYYMMDD-HHMM`（時分用 `date +%H%M` 取得，日期固定用 currentDate）。
 
-OP 記錄的時間戳同樣適用此規則。（出處：Jin 直接指示 0223）
+OP 記錄、快照、OP header 全部適用此規則。（出處：Jin 直接指示 0223 + 0304）
 
 ### 格式與標記
 

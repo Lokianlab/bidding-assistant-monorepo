@@ -50,6 +50,7 @@ cc程式/                      ← 專案根目錄（每台機器各自 clone，
 - npm registry 用官方 `https://registry.npmjs.org/`（不要用 npmmirror）
 - **資料庫安全（硬性規定）**：可以讀取用戶的原始資料庫資料，但**禁止直接修改原始資料庫**。實驗、測試、開發一律使用沙盒或複製的資料庫。
 - 除錯經驗見 `docs/debugging.md`，環境設定見 `docs/dev-environment.md`
+- **時間戳（硬性規定）**：所有記錄的時間戳日期一律取 MEMORY.md 的 `currentDate`，所有機器均適用。（出處：Jin 直接指示 0304）
 
 ---
 
