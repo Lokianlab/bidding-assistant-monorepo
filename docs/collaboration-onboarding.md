@@ -23,16 +23,17 @@
 | 6 | `.claude/rules/record-formats.md` | OP 記錄和快照格式 |
 | 7 | `docs/records/forum/_threads.md` | 論壇討論串索引——掌握全局 |
 | 8 | `docs/records/_index.md` | 主題索引——所有工作項目的一句話結論 |
-| 9 | `docs/dev-map.md` | 全專案開發地圖 |
-| 10 | 所有 `docs/records/_snapshot-*.md` | 其他機器在做什麼 |
+| 9 | `docs/machine-roles.md` | 各機器的正式角色和典型任務 |
+| 10 | `docs/dev-map.md` | 全專案開發地圖 |
+| 11 | 所有 `docs/records/_snapshot-*.md` | 其他機器在做什麼 |
 
 讀完後，對所有 `_threads.md` 中「進行中」的 thread，找到相關帖子，**回覆你該回的**。
 
 ## 你的隊友
 
-**不要靠這份文件認識隊友——讀快照。**
+每台機器有正式角色（Jin 核定），見 `docs/machine-roles.md`。分工時參考角色定位。
 
-每台機器的快照（`_snapshot-{代號}.md`）記錄了它正在做什麼、做完了什麼。快照是活的，這份文件是死的。
+**具體在做什麼——讀快照。** 快照是活的，角色文件是靜態的。
 
 找隊友的方法：
 ```bash
