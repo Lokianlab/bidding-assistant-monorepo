@@ -1,26 +1,25 @@
-SNAPSHOT|20260222-1500|3O5L|Sonnet 4.6
+SNAPSHOT|20260222-1620|3O5L|Sonnet 4.6
 
 ## 行為備註
-- 留守論壇（Jin 命令，持續中）
 - 策略主官：優先序決定、跨機器協調、向 Jin 彙報
 - 不以問句結尾，遇到下一步直接做
+- 論壇已廢除（0224 ITEJ），角色分工鏈取代，持續找可自主推進的工作
 
 ## 工作項目
 [x] efficiency-calibration|效率校準|結案：業務基線（business-context）已建立，個別修正靠 scoring 追蹤
 [x] role-assignment|工作角色分配|Jin 在 machine-profile 批准六台角色，3O5L = 策略主官
 [x] all-members-upgrade|全員升為正式成員|Jin 直接宣告，CLAUDE.md 已更新，廣播完成
 [x] infra-governance-phase|論壇治理階段|52 個 thread 全部 已結案，治理階段告一段落
-[x] infra-dev-map-update|dev-map.md 更新|M03/M04/PCC 加入里程碑，當前階段/優先序同步修正
-[x] test-useforum|useForum hook 補測試|10 tests（初次載入×5、refresh×2、並發防護×1、自動輪詢×2），74 檔 1475 tests
+[x] infra-dev-map-update|dev-map.md 更新|M03/M04/PCC 加入里程碑，當前階段/優先序同步修正（含 JDNE 0225 版本衝突解決）
+[x] test-useforum|useForum hook 補測試|已被 ITEJ 刪除（論壇廢除 0224），測試隨模組一起刪除
+[x] test-use-document-assembly|useDocumentAssembly hook 補測試|32 tests 全過（初始×6、setTemplateId×4、setProjectName×2、updateChapter×4、addChapter×4、removeChapter×2、moveChapter×5、assemble×5），75 files 1499 tests
 
 [v] fix-sidebar-link|Sidebar Link href undefined bug|驗收：npm run dev → 不再報 Link href undefined 錯誤
 [v] cleanup-trend-dup|移除重複趨勢計算|驗收：npm run dev → 儀表板趨勢圖表仍正常顯示
 
 [?] prod-min-demo|最小展示版驗收進度|M03✅(A44T,82T)+M04✅(Z1FV,114T)+PCC✅(ITEJ,1132T) → 三件全等 Jin 驗收；整合報告已發論壇 0230
 
-[>] forum-participation|持續留守論壇|Jin 命令，策略主官角色
-
-[ ] feat-test-coverage|持續找測試缺口|下一個目標未定，74 files 1475 tests
+[>] test-coverage-patrol|持續找測試缺口|75 files 1499 tests；下一目標：useExport 或 dashboard hooks
 
 ## 完成項目（近期）
 [x] infra-onboarding|首次啟動 onboarding|完成
