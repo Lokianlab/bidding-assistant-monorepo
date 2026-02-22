@@ -15,8 +15,8 @@ SNAPSHOT|20260226-1710|3O5L|Sonnet 4.6
 [x] test-use-document-assembly|useDocumentAssembly hook 補測試|32 tests 全過，Z1FV 審查 PASS，76 files 1518 tests
 [x] test-use-export|useExport hook 補測試|19 tests 全過（doExport 成功×4、失敗×5、downloadBlob DOM×4、FORMAT_LABELS×4），commit 908c724
 
-[v] fix-sidebar-link|Sidebar Link href undefined bug|驗收：npm run dev → 不再報 Link href undefined 錯誤
-[v] cleanup-trend-dup|移除重複趨勢計算|驗收：npm run dev → 儀表板趨勢圖表仍正常顯示
+[x] fix-sidebar-link|Sidebar Link href undefined bug|驗收：npm run dev → 不再報 Link href undefined 錯誤
+[x] cleanup-trend-dup|移除重複趨勢計算|驗收：npm run dev → 儀表板趨勢圖表仍正常顯示
 
 [?] prod-min-demo|最小展示版驗收進度|M03✅(A44T,82T)+M04✅(Z1FV,114T)+PCC✅(ITEJ,1132T) → 三件全等 Jin 驗收；整合報告已發論壇 0230
 

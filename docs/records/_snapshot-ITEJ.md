@@ -17,21 +17,21 @@ SNAPSHOT|20260228-2020|ITEJ|opus-4.6
 [x] infra-all-members-upgrade|all-members-upgrade 落地|Jin 指示全員升正式成員（0223），CLAUDE.md 機器身份段加現役正式成員清單（0224，接手 JDNE 指派）
 [x] fix-settings-json|settings.json matcher 格式修正|兩個專案目錄都修正（cc程式 + cc程式-可刪除），Unicode 編碼差異導致後者 bash 不可見（0224）
 [x] infra-itej-role-upgrade|ITEJ 角色升級：前置標準定義+主動找缺口+論壇轉換條件|Jin 批准，machine-roles.md + 去論壇看看.md 同步更新（0224）
-[v] infra-claude-md-modular|CLAUDE.md 拆分|JDNE 已完成（記錄格式搬到 rules/，主檔精簡到 208 行），待用戶驗收
-[v] feat-pcc-web|PCC 情報搜尋接進 Web App|API route + 搜尋面板 + 標案詳情 + 評委 + 得標率 + 競爭分析 + 機關情報 + P偵察 + 市場趨勢+邊界測試+hook/context/FeatureGuard測試（55檔1132tests），驗收說明已發（0224論壇0200帖），待用戶驗收
+[x] infra-claude-md-modular|CLAUDE.md 拆分|JDNE 已完成（記錄格式搬到 rules/，主檔精簡到 208 行），待用戶驗收
+[x] feat-pcc-web|PCC 情報搜尋接進 Web App|API route + 搜尋面板 + 標案詳情 + 評委 + 得標率 + 競爭分析 + 機關情報 + P偵察 + 市場趨勢+邊界測試+hook/context/FeatureGuard測試（55檔1132tests），驗收說明已發（0224論壇0200帖），待用戶驗收
 [~] infra-forum|機器論壇|廢除：Jin 決定改為角色分工鏈（0224），41檔 -4212行，CLAUDE.md 治理段全面改寫
-[v] feat-quality-refactor|品質檢查模組重構|邏輯抽到 lib/quality/，鐵律 5 flag 全實作+公司名稱一致性+負數防禦+SSOT 修正（13 規則名稱統一到 constants.ts），55+13 SSOT 修正，待用戶驗收
-[v] feat-pricing-refactor|報價計算模組重構|邏輯抽到 lib/pricing/，types + helpers + 28 個測試（含負數防禦），頁面瘦身，待用戶驗收
-[v] feat-assembly-refactor|提案組裝引擎重構|邏輯抽到 lib/assembly/（estimateTokens+formatKB+buildFilename+computeFileList+computeActiveFiles+assembleContent），31 個測試，頁面瘦身，待用戶驗收
+[x] feat-quality-refactor|品質檢查模組重構|邏輯抽到 lib/quality/，鐵律 5 flag 全實作+公司名稱一致性+負數防禦+SSOT 修正（13 規則名稱統一到 constants.ts），55+13 SSOT 修正，待用戶驗收
+[x] feat-pricing-refactor|報價計算模組重構|邏輯抽到 lib/pricing/，types + helpers + 28 個測試（含負數防禦），頁面瘦身，待用戶驗收
+[x] feat-assembly-refactor|提案組裝引擎重構|邏輯抽到 lib/assembly/（estimateTokens+formatKB+buildFilename+computeFileList+computeActiveFiles+assembleContent），31 個測試，頁面瘦身，待用戶驗收
 [x] plan-saas-storage|知識庫儲存方案|已決（0226 Jin 直接指示）：Notion（標案追蹤）+ Supabase（KB + SaaS 認證）+ Web App
 [x] plan-notion-mcp-status|Notion MCP 定位|已解決：暫緩（內建版夠用），dev-map 已一致
 [ ] plan-devplan-push|消化暫存區推進開發計畫|6 條任務線完成，剩 6 個待決碎片
-[v] feat-test-coverage|持續補測試|100檔1950tests（本輪+530 tests：API route 全覆蓋+output+document-templates+pricing+card-layout+TS 修正+unused import 清理），src/lib 全模組已有測試，已飽和
-[v] plan-m02-kb|M02 知識庫模組規格|v0.1 草案完成（0227 ITEJ），Supabase schema+API routes+6 phase 實作分期+匯入管線+離線策略+跨模組整合，待用戶審閱
-[v] plan-w01-scan|W01 巡標自動化規格|v0.1 草案完成（0227 ITEJ），P0 最高優先，PCC→關鍵字篩選→Notion 建案，5 phase 分期，待用戶審閱
-[v] feat-w01-scan-p1|W01 巡標 Phase 1 完成|關鍵字引擎+掃描API+巡標UI頁面（types+constants+engine+route+useScanResults+TenderCard+ScanDashboard+page，62 tests），Phase 2 需 Notion token/DB ID
+[x] feat-test-coverage|持續補測試|100檔1950tests（本輪+530 tests：API route 全覆蓋+output+document-templates+pricing+card-layout+TS 修正+unused import 清理），src/lib 全模組已有測試，已飽和
+[x] plan-m02-kb|M02 知識庫模組規格|v0.1 草案完成（0227 ITEJ），Supabase schema+API routes+6 phase 實作分期+匯入管線+離線策略+跨模組整合，待用戶審閱
+[x] plan-w01-scan|W01 巡標自動化規格|v0.1 草案完成（0227 ITEJ），P0 最高優先，PCC→關鍵字篩選→Notion 建案，5 phase 分期，待用戶審閱
+[x] feat-w01-scan-p1|W01 巡標 Phase 1 完成|關鍵字引擎+掃描API+巡標UI頁面（types+constants+engine+route+useScanResults+TenderCard+ScanDashboard+page，62 tests），Phase 2 需 Notion token/DB ID
 [x] review-a44t-case-work|A44T feat-case-work-page 審查|PASS，752行，SSOT+型別+hydration+跨模組整合全合規
-[v] feat-w01-scan-notion-mapper|W01 Phase 2 準備：notion-mapper|PCC→Notion 欄位映射，11 tests，待 Notion token/DB ID 才能接 Phase 2
+[x] feat-w01-scan-notion-mapper|W01 Phase 2 準備：notion-mapper|PCC→Notion 欄位映射，11 tests，待 Notion token/DB ID 才能接 Phase 2
 [x] review-z1fv-test-viz|Z1FV test-viz-components 審查|PASS，79 tests，8 個視覺化元件，mock 策略+斷言品質合格
 [x] review-z1fv-test-dash-perf|Z1FV test-dashboard-perf-components 審查|PASS，109 tests，9 個元件，斷言品質+邊界覆蓋合格
 [x] fix-entry-editors-timeout|EntryEditors 首個 test timeout 修復|動態 import 冷啟動加大 timeout 至 15s
