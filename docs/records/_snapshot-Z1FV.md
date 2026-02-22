@@ -14,3 +14,4 @@ SNAPSHOT|20260222-1610|Z1FV|Sonnet 4.6
 [x] review-3o5l-0222|3O5L 代碼審查（fix-sidebar-link + cleanup-trend-dup）|兩項 PASS，feedback 發論壇 20260222-Z1FV.md
 [x] review-ainl-0222|AINL 代碼審查（feat-test-coverage/trend-analysis/dashboard-charts/scout-committee）|全部 PASS，recentMonths useMemo 小問題已標注
 [x] review-itej-quality|ITEJ feat-quality-refactor 審查|SSOT+鐵律全對，PASS，feedback 已發論壇
+[x] review-a44t-m03|A44T feat-m03-strategy 審查|五維評分純函式，PASS，一個文件注釋建議
