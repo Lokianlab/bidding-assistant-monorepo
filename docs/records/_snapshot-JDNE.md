@@ -45,3 +45,4 @@ SNAPSHOT|20260226-1840|JDNE|claude-sonnet-4-6
 [x] review-m06-phase1|Z1FV M06 Phase 1 審查|assembly-pipeline+template-manager+export-engine，39 tests，PASS（@op:20260225-1800）
 [x] review-m06-phase23|Z1FV M06 Phase 2+3 審查|kb-injector+print-export+DocumentPreview，PASS（@op:20260225-1700）
 [x] review-cross-module-nav|A44T 跨模組導航審查|81638fe，3 檔，PASS（@op:20260225-1600）
+[x] review-docgen-improvements|Z1FV docgen markdown+cover+TOC 審查|PASS，附 margin 注釋矛盾觀察（@op:20260226-1900）
