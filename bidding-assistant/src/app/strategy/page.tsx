@@ -177,14 +177,7 @@ export default function StrategyPage() {
           <Button
             className="w-full"
             onClick={() => {
-              const params = new URLSearchParams({ stage: "L1" });
-              if (frozenInput.caseName) params.set("caseName", frozenInput.caseName);
-              if (frozenInput.agency) params.set("agency", frozenInput.agency);
-              if (fitScore) {
-                params.set("verdict", fitScore.verdict);
-                params.set("total", String(fitScore.total));
-              }
-              router.push(`/assembly?${params.toString()}`);
+              router.push("/assembly?stage=L1");
             }}
           >
             開始撰寫（進入提示詞組裝）
