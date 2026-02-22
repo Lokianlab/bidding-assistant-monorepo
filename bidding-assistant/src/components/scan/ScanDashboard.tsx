@@ -13,7 +13,8 @@ import {
   getExcludedJobNumbers,
 } from "@/lib/scan/exclusion";
 import { TenderCard } from "./TenderCard";
-import { CreateCaseDialog } from "./CreateCaseDialog";
+import type { CreateStatus } from "./TenderCard";
+import { useSettings } from "@/lib/context/settings-context";
 import type { ScanResult, KeywordCategory } from "@/lib/scan/types";
 
 const TAB_CONFIG: { value: KeywordCategory; label: string; icon: string }[] = [
@@ -25,13 +26,12 @@ const TAB_CONFIG: { value: KeywordCategory; label: string; icon: string }[] = [
 
 export function ScanDashboard() {
   const router = useRouter();
+  const { settings } = useSettings();
   const { data, loading, error, scan } = useScanResults();
   const [activeTab, setActiveTab] = useState<KeywordCategory>("must");
   // 初始化時從 localStorage 載入排除清單（hydration-safe）
   const [skipped, setSkipped] = useState<Set<string>>(new Set());
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [pendingResult, setPendingResult] = useState<ScanResult | null>(null);
-  const [createdCases, setCreatedCases] = useState<Set<string>>(new Set());
+  const [createStatuses, setCreateStatuses] = useState<Map<string, CreateStatus>>(new Map());
   useEffect(() => {
     setSkipped(new Set(getExcludedJobNumbers()));
   }, []);
@@ -54,8 +54,9 @@ export function ScanDashboard() {
   }, [data, skipped]);
 
   const handleScan = () => {
-    // 新掃描保留持久化的排除記憶（不清空）
+    // 新掃描保留持久化的排除記憶（不清空），但清空建案狀態
     setSkipped(new Set(getExcludedJobNumbers()));
+    setCreateStatuses(new Map());
     scan();
   };
 
@@ -64,19 +65,26 @@ export function ScanDashboard() {
     setSkipped((prev) => new Set(prev).add(result.tender.jobNumber));
   };
 
-  const handleCreateCase = (result: ScanResult) => {
-    setPendingResult(result);
-    setDialogOpen(true);
-  };
-
-  const handleCreateSuccess = (pageUrl: string) => {
-    if (pendingResult) {
-      setCreatedCases((prev) => new Set(prev).add(pendingResult.tender.jobNumber));
-    }
-    setDialogOpen(false);
-    setPendingResult(null);
-    if (pageUrl) {
-      window.open(pageUrl, "_blank", "noopener,noreferrer");
+  const handleCreateCase = async (result: ScanResult) => {
+    const jobNumber = result.tender.jobNumber;
+    setCreateStatuses((prev) => new Map(prev).set(jobNumber, "creating"));
+    try {
+      const res = await fetch("/api/scan/accept", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tender: result.tender,
+          token: settings.connections.notion.token,
+          databaseId: settings.connections.notion.databaseId,
+        }),
+      });
+      if (!res.ok) {
+        setCreateStatuses((prev) => new Map(prev).set(jobNumber, "error"));
+        return;
+      }
+      setCreateStatuses((prev) => new Map(prev).set(jobNumber, "done"));
+    } catch {
+      setCreateStatuses((prev) => new Map(prev).set(jobNumber, "error"));
     }
   };
 
@@ -85,15 +93,10 @@ export function ScanDashboard() {
     router.push(`/intelligence?search=${encodeURIComponent(title)}`);
   };
 
+  const createdCount = Array.from(createStatuses.values()).filter((s) => s === "done").length;
+
   return (
     <div className="space-y-6">
-      <CreateCaseDialog
-        result={pendingResult}
-        open={dialogOpen}
-        onClose={() => { setDialogOpen(false); setPendingResult(null); }}
-        onSuccess={handleCreateSuccess}
-      />
-
       {/* 控制列 */}
       <div className="flex items-center justify-between">
         <div>
@@ -107,9 +110,9 @@ export function ScanDashboard() {
                   （{data.errors.length} 個關鍵字搜尋失敗）
                 </span>
               )}
-              {createdCases.size > 0 && (
+              {createdCount > 0 && (
                 <span className="text-green-600 dark:text-green-400 ml-2">
-                  ✅ 已建案 {createdCases.size} 筆
+                  ✅ 已建案 {createdCount} 筆
                 </span>
               )}
             </p>
@@ -173,6 +176,7 @@ export function ScanDashboard() {
                       onSkip={handleSkip}
                       onCreateCase={value !== "exclude" ? handleCreateCase : undefined}
                       onViewDetail={handleViewDetail}
+                      createStatus={createStatuses.get(result.tender.jobNumber) ?? "idle"}
                     />
                   ))}
                 </div>

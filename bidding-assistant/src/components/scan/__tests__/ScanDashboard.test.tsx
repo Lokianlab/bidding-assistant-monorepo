@@ -252,8 +252,13 @@ describe("ScanDashboard", () => {
     });
   });
 
-  it("點建案按鈕開啟 CreateCaseDialog", async () => {
+  it("點建案按鈕呼叫 /api/scan/accept 並更新狀態", async () => {
     mockScanSuccess();
+    // 建案 API 成功回應
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, notionPageId: "page-001" }),
+    });
     render(<ScanDashboard />);
 
     fireEvent.click(screen.getByText("手動掃描"));
@@ -266,9 +271,15 @@ describe("ScanDashboard", () => {
     const createButtons = screen.getAllByText("建案");
     fireEvent.click(createButtons[0]);
 
-    // Dialog 應該開啟
+    // 建案完成後按鈕顯示「已建案」
     await waitFor(() => {
-      expect(screen.getByText("建立追蹤案件")).toBeDefined();
+      expect(screen.getByText("已建案")).toBeDefined();
     });
+
+    // 確認 fetch 呼叫了 /api/scan/accept
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/api/scan/accept",
+      expect.objectContaining({ method: "POST" })
+    );
   });
 });
