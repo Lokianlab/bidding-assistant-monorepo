@@ -1,23 +1,239 @@
 /**
  * Layer C 編排流程測試
+ * 合併：JDNE（工廠 mock + converter 路徑）+ AINL（完整成功流程）
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
+  orchestrateAccept,
   validateOrchestrationResult,
   getProgressFromResult,
-  orchestrateAccept,
+  type AcceptConfig,
 } from '../orchestrator';
 import type { AcceptResult, PatrolItem } from '../types';
-import * as apiClient from '../api-client';
 
-vi.mock('../api-client');
+// ── Mocks ──────────────────────────────────────────────────
 
-beforeEach(() => {
-  vi.clearAllMocks();
-});
+vi.mock('../api-client', () => ({
+  apiCreateNotionCase: vi.fn(),
+  apiUpdateNotionCase: vi.fn(),
+  apiCreateDriveFolder: vi.fn(),
+  apiFetchTenderDetail: vi.fn(),
+}));
+
+vi.mock('../converter', () => ({
+  convertToNotionInput: vi.fn(),
+}));
+
+import {
+  apiCreateNotionCase,
+  apiUpdateNotionCase,
+  apiCreateDriveFolder,
+  apiFetchTenderDetail,
+} from '../api-client';
+import { convertToNotionInput } from '../converter';
+
+const mockCreateNotion = apiCreateNotionCase as ReturnType<typeof vi.fn>;
+const mockUpdateNotion = apiUpdateNotionCase as ReturnType<typeof vi.fn>;
+const mockCreateDrive = apiCreateDriveFolder as ReturnType<typeof vi.fn>;
+const mockFetchDetail = apiFetchTenderDetail as ReturnType<typeof vi.fn>;
+const mockConvert = convertToNotionInput as ReturnType<typeof vi.fn>;
+
+// ── 共用測試資料 ───────────────────────────────────────────
+
+const PATROL_ITEM: PatrolItem = {
+  id: 'unit-001-J001',
+  title: '食農教育推廣計畫',
+  budget: 500_000,
+  agency: '新北市教育局',
+  deadline: '2026-04-01',
+  publishDate: '2026-03-01',
+  jobNumber: 'J001',
+  unitId: 'unit-001',
+  url: 'https://pcc.gov.tw/unit-001/J001',
+  category: 'definite',
+  status: 'new',
+};
+
+const BASE_CONFIG: AcceptConfig = {
+  notionToken: 'notion-tok',
+  notionDatabaseId: 'db-123',
+};
+
+const CONFIG_WITH_DRIVE: AcceptConfig = {
+  ...BASE_CONFIG,
+  driveAccessToken: 'drive-tok',
+  driveParentFolderId: 'parent-folder',
+};
+
+// ── 測試主體 ───────────────────────────────────────────────
 
 describe('orchestrator - 編排流程', () => {
+  describe('orchestrateAccept', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      // Layer A 尚未實作，預設回傳 null
+      mockFetchDetail.mockResolvedValue(null);
+    });
+
+    it('完整成功流程：Notion + Drive 均建立，回寫摘要/情蒐', async () => {
+      mockCreateNotion.mockResolvedValue({
+        success: true,
+        notionPageId: 'page-1',
+        caseUniqueId: 'case-1',
+      });
+      mockCreateDrive.mockResolvedValue({
+        success: true,
+        folderId: 'folder-1',
+        folderUrl: 'https://drive.google.com/drive/folders/folder-1',
+      });
+      mockUpdateNotion.mockResolvedValue({ success: true });
+
+      const result = await orchestrateAccept(PATROL_ITEM, CONFIG_WITH_DRIVE);
+
+      expect(result.notion.success).toBe(true);
+      expect(result.drive.success).toBe(true);
+      expect(result.summary).toBeTruthy();
+      expect(result.intelligence).toBeTruthy();
+      expect(mockUpdateNotion).toHaveBeenCalledOnce();
+    });
+
+    it('Notion 建檔失敗時提前返回，跳過 Drive 和更新', async () => {
+      mockCreateNotion.mockResolvedValue({ success: false, error: 'Notion API 錯誤' });
+
+      const result = await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
+
+      expect(result.notion.success).toBe(false);
+      expect(result.drive.success).toBe(false);
+      expect(result.drive.error).toMatch(/Notion 建檔失敗/);
+      expect(mockCreateDrive).not.toHaveBeenCalled();
+      expect(mockUpdateNotion).not.toHaveBeenCalled();
+    });
+
+    it('無 Drive config 時，Drive 回傳「尚未設定」錯誤，不呼叫 apiCreateDriveFolder', async () => {
+      mockCreateNotion.mockResolvedValue({
+        success: true,
+        notionPageId: 'page-1',
+        caseUniqueId: 'C001',
+      });
+      mockUpdateNotion.mockResolvedValue({ success: true });
+
+      const result = await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
+
+      expect(result.notion.success).toBe(true);
+      expect(result.drive.success).toBe(false);
+      expect(result.drive.error).toMatch(/Drive 尚未設定/);
+      expect(mockCreateDrive).not.toHaveBeenCalled();
+    });
+
+    it('有 Drive config 時呼叫 apiCreateDriveFolder 並回傳結果', async () => {
+      mockCreateNotion.mockResolvedValue({
+        success: true,
+        notionPageId: 'page-1',
+        caseUniqueId: 'C001',
+      });
+      mockCreateDrive.mockResolvedValue({
+        success: true,
+        folderId: 'folder-abc',
+        folderUrl: 'https://drive/folder-abc',
+      });
+      mockUpdateNotion.mockResolvedValue({ success: true });
+
+      const result = await orchestrateAccept(PATROL_ITEM, CONFIG_WITH_DRIVE);
+
+      expect(mockCreateDrive).toHaveBeenCalledOnce();
+      expect(result.drive.success).toBe(true);
+      expect(result.drive.folderId).toBe('folder-abc');
+    });
+
+    it('apiFetchTenderDetail 回傳 null 時，用 PatrolItem 直接組裝 Notion 輸入（不走 converter）', async () => {
+      mockFetchDetail.mockResolvedValue(null);
+      mockCreateNotion.mockResolvedValue({
+        success: true,
+        notionPageId: 'page-1',
+        caseUniqueId: 'C001',
+      });
+      mockUpdateNotion.mockResolvedValue({ success: true });
+
+      await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
+
+      expect(mockConvert).not.toHaveBeenCalled();
+      expect(mockCreateNotion).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: PATROL_ITEM.title,
+          jobNumber: PATROL_ITEM.jobNumber,
+          agency: PATROL_ITEM.agency,
+        }),
+        BASE_CONFIG.notionToken,
+        BASE_CONFIG.notionDatabaseId,
+      );
+    });
+
+    it('apiFetchTenderDetail 有詳情時，走 convertToNotionInput 轉換', async () => {
+      const detail = {
+        ...PATROL_ITEM,
+        awardType: '最低價',
+        category: null,
+        contractPeriod: null,
+        description: '採購說明',
+      };
+      const convertedInput = {
+        title: '食農教育推廣計畫（轉換後）',
+        jobNumber: 'J001',
+        agency: '新北市教育局',
+        budget: 500_000,
+        publishDate: '2026-03-01',
+        deadline: '2026-04-01',
+      };
+      mockFetchDetail.mockResolvedValue(detail);
+      mockConvert.mockReturnValue(convertedInput);
+      mockCreateNotion.mockResolvedValue({
+        success: true,
+        notionPageId: 'page-1',
+        caseUniqueId: 'C001',
+      });
+      mockUpdateNotion.mockResolvedValue({ success: true });
+
+      await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
+
+      expect(mockConvert).toHaveBeenCalledWith(detail);
+      expect(mockCreateNotion).toHaveBeenCalledWith(
+        convertedInput,
+        BASE_CONFIG.notionToken,
+        BASE_CONFIG.notionDatabaseId,
+      );
+    });
+
+    it('Notion 成功後，以 notionPageId 呼叫 apiUpdateNotionCase 回寫摘要', async () => {
+      mockCreateNotion.mockResolvedValue({
+        success: true,
+        notionPageId: 'page-xyz',
+        caseUniqueId: 'C001',
+      });
+      mockUpdateNotion.mockResolvedValue({ success: true });
+
+      await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
+
+      expect(mockUpdateNotion).toHaveBeenCalledWith(
+        expect.objectContaining({ notionPageId: 'page-xyz' }),
+        BASE_CONFIG.notionToken,
+      );
+    });
+
+    it('頂層例外時，回傳 notion/drive 雙失敗，summary 和 intelligence 為空', async () => {
+      mockCreateNotion.mockRejectedValue(new Error('網路中斷'));
+
+      const result = await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
+
+      expect(result.notion.success).toBe(false);
+      expect(result.drive.success).toBe(false);
+      expect(result.summary).toBe('');
+      expect(result.intelligence).toBe('');
+    });
+  });
+
+  // ── validateOrchestrationResult ──────────────────────────
+
   describe('validateOrchestrationResult', () => {
     it('應該驗證全部成功的結果', () => {
       const result: AcceptResult = {
@@ -97,6 +313,8 @@ describe('orchestrator - 編排流程', () => {
       expect(validation.failedSteps).toHaveLength(4);
     });
   });
+
+  // ── getProgressFromResult ────────────────────────────────
 
   describe('getProgressFromResult', () => {
     it('全部成功應該回傳 complete', () => {
@@ -192,126 +410,5 @@ describe('orchestrator - 編排流程', () => {
         expect(progress.message.length).toBeGreaterThan(0);
       }
     });
-  });
-});
-
-// ── orchestrateAccept ─────────────────────────────────────────
-
-describe('orchestrateAccept', () => {
-  const mockItem: PatrolItem = {
-    id: 'unit-001-J001',
-    title: '食農教育推廣計畫',
-    budget: 1000000,
-    agency: '教育局',
-    deadline: '20260315',
-    publishDate: '20260228',
-    jobNumber: 'J001',
-    unitId: 'unit-001',
-    url: 'https://pcc.g0v.ronny.tw/tender/J001',
-    category: 'definite',
-    status: 'new',
-  };
-
-  const mockConfig = {
-    notionToken: 'notion-token',
-    notionDatabaseId: 'db-id',
-    driveAccessToken: 'drive-token',
-    driveParentFolderId: 'parent-id',
-  };
-
-  it('完整成功流程：Notion + Drive 均建立，回寫摘要/情蒐', async () => {
-    vi.mocked(apiClient.apiFetchTenderDetail).mockResolvedValue(null);
-    vi.mocked(apiClient.apiCreateNotionCase).mockResolvedValue({
-      success: true,
-      notionPageId: 'page-1',
-      caseUniqueId: 'case-1',
-    });
-    vi.mocked(apiClient.apiCreateDriveFolder).mockResolvedValue({
-      success: true,
-      folderId: 'folder-1',
-      folderUrl: 'https://drive.google.com/drive/folders/folder-1',
-    });
-    vi.mocked(apiClient.apiUpdateNotionCase).mockResolvedValue({ success: true });
-
-    const result = await orchestrateAccept(mockItem, mockConfig);
-
-    expect(result.notion.success).toBe(true);
-    expect(result.drive.success).toBe(true);
-    // generateSummary 和 generateIntelligenceReport 回傳佔位字串
-    expect(result.summary).toBeTruthy();
-    expect(result.intelligence).toBeTruthy();
-    // 應回寫摘要/情蒐到 Notion
-    expect(apiClient.apiUpdateNotionCase).toHaveBeenCalledOnce();
-  });
-
-  it('Notion 建檔失敗時提早返回，Drive 不執行', async () => {
-    vi.mocked(apiClient.apiFetchTenderDetail).mockResolvedValue(null);
-    vi.mocked(apiClient.apiCreateNotionCase).mockResolvedValue({
-      success: false,
-      error: 'Notion API 錯誤',
-    });
-
-    const result = await orchestrateAccept(mockItem, mockConfig);
-
-    expect(result.notion.success).toBe(false);
-    expect(result.drive.success).toBe(false);
-    expect(result.drive.error).toContain('Notion 建檔失敗');
-    expect(apiClient.apiCreateDriveFolder).not.toHaveBeenCalled();
-    expect(apiClient.apiUpdateNotionCase).not.toHaveBeenCalled();
-  });
-
-  it('沒有 Drive 設定時跳過 Drive，Notion 仍建立', async () => {
-    vi.mocked(apiClient.apiFetchTenderDetail).mockResolvedValue(null);
-    vi.mocked(apiClient.apiCreateNotionCase).mockResolvedValue({
-      success: true,
-      notionPageId: 'page-1',
-      caseUniqueId: 'case-1',
-    });
-    vi.mocked(apiClient.apiUpdateNotionCase).mockResolvedValue({ success: true });
-
-    const configWithoutDrive = {
-      notionToken: 'notion-token',
-      notionDatabaseId: 'db-id',
-    };
-
-    const result = await orchestrateAccept(mockItem, configWithoutDrive);
-
-    expect(result.notion.success).toBe(true);
-    expect(result.drive.success).toBe(false);
-    expect(result.drive.error).toContain('Drive 尚未設定');
-    expect(apiClient.apiCreateDriveFolder).not.toHaveBeenCalled();
-  });
-
-  it('api-client 拋出例外時整體回傳錯誤', async () => {
-    vi.mocked(apiClient.apiFetchTenderDetail).mockRejectedValue(new Error('網路中斷'));
-
-    const result = await orchestrateAccept(mockItem, mockConfig);
-
-    expect(result.notion.success).toBe(false);
-    expect(result.drive.success).toBe(false);
-    expect(result.notion.error).toContain('網路中斷');
-  });
-
-  it('apiFetchTenderDetail 回傳 null 時用 PatrolItem 資料組裝 Notion 輸入', async () => {
-    vi.mocked(apiClient.apiFetchTenderDetail).mockResolvedValue(null);
-    vi.mocked(apiClient.apiCreateNotionCase).mockResolvedValue({
-      success: true,
-      notionPageId: 'page-1',
-      caseUniqueId: 'case-1',
-    });
-    vi.mocked(apiClient.apiCreateDriveFolder).mockResolvedValue({ success: true, folderId: 'f1' });
-    vi.mocked(apiClient.apiUpdateNotionCase).mockResolvedValue({ success: true });
-
-    await orchestrateAccept(mockItem, mockConfig);
-
-    expect(apiClient.apiCreateNotionCase).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: mockItem.title,
-        jobNumber: mockItem.jobNumber,
-        agency: mockItem.agency,
-      }),
-      mockConfig.notionToken,
-      mockConfig.notionDatabaseId,
-    );
   });
 });
