@@ -1,4 +1,4 @@
-SNAPSHOT|20260225-1730|3O5L|Sonnet 4.6
+SNAPSHOT|20260225-1900|3O5L|Sonnet 4.6
 
 ## 行為備註
 - 策略主官：優先序決定、跨機器協調、向 Jin 彙報
@@ -10,7 +10,7 @@ SNAPSHOT|20260225-1730|3O5L|Sonnet 4.6
 [x] role-assignment|工作角色分配|Jin 在 machine-profile 批准六台角色，3O5L = 策略主官
 [x] all-members-upgrade|全員升為正式成員|Jin 直接宣告，CLAUDE.md 已更新，廣播完成
 [x] infra-governance-phase|論壇治理階段|52 個 thread 全部 已結案，治理階段告一段落
-[x] infra-dev-map-update|dev-map.md 更新|M03/M04/PCC 加入里程碑，當前階段/優先序同步修正（含 JDNE 0225 版本衝突解決）；AINL Proposal Cockpit 加入待決事項（0225-1730）
+[x] infra-dev-map-update|dev-map.md 更新|M03/M04/PCC 里程碑+AINL Proposal Cockpit+3層成功框架+6案預測加入待決事項（持續補充）
 [x] test-useforum|useForum hook 補測試|已被 ITEJ 刪除（論壇廢除 0224），測試隨模組一起刪除
 [x] test-use-document-assembly|useDocumentAssembly hook 補測試|32 tests 全過，Z1FV 審查 PASS，76 files 1518 tests
 [x] test-use-export|useExport hook 補測試|19 tests 全過（doExport 成功×4、失敗×5、downloadBlob DOM×4、FORMAT_LABELS×4），commit 908c724
@@ -20,7 +20,7 @@ SNAPSHOT|20260225-1730|3O5L|Sonnet 4.6
 
 [?] prod-min-demo|最小展示版驗收進度|M03✅(A44T,82T)+M04✅(Z1FV,114T)+PCC✅(ITEJ,1132T) → 三件全等 Jin 驗收；整合報告已發論壇 0230
 
-[>] test-coverage-patrol|持續找測試缺口|76 files 1518 tests；src/lib/ 全覆蓋完成（所有 hooks/helpers/configs 均有測試），build 零錯誤
+[>] test-coverage-patrol|持續找測試缺口|78 files 1577 tests（Z1FV M06 Phase 2+3 新增 59 tests）；src/lib/ 全覆蓋完成，build 零錯誤
 
 ## 完成項目（近期）
 [x] infra-onboarding|首次啟動 onboarding|完成
