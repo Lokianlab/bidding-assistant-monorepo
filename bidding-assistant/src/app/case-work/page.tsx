@@ -409,6 +409,7 @@ export default function CaseWorkPage() {
                 const asmParams = new URLSearchParams({ stage });
                 if (caseName) asmParams.set("caseName", caseName);
                 if (agency) asmParams.set("agency", agency);
+                if (pageId) asmParams.set("caseId", pageId);
                 if (fitScore) {
                   asmParams.set("verdict", fitScore.verdict);
                   asmParams.set("total", String(fitScore.total));
@@ -422,7 +423,12 @@ export default function CaseWorkPage() {
               <Button
                 variant="outline"
                 className="flex-1"
-                onClick={() => router.push("/tools/quality-gate")}
+                onClick={() => {
+                  const qgParams = new URLSearchParams();
+                  if (pageId) qgParams.set("caseId", pageId);
+                  if (caseName) qgParams.set("caseName", caseName);
+                  router.push(`/tools/quality-gate?${qgParams.toString()}`);
+                }}
               >
                 品質檢查
               </Button>

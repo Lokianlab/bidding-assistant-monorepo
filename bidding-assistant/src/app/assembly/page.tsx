@@ -11,7 +11,7 @@ import {
 } from "@/data/config/prompt-assembly";
 import { STAGES } from "@/data/config/stages";
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { useKnowledgeBase } from "@/lib/knowledge-base/useKnowledgeBase";
@@ -32,6 +32,8 @@ const KB_FILE_IDS = new Set<string>(["00A", "00B", "00C", "00D", "00E"]);
 // ====== 主頁面 ======
 export default function AssemblyPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const caseId = searchParams.get("caseId") || "";
   const initialStage = searchParams.get("stage") || "L1";
   const [selectedStage, setSelectedStage] = useState(
     STAGES.some((s) => s.id === initialStage) ? initialStage : "L1"
@@ -190,6 +192,20 @@ export default function AssemblyPage() {
     } catch {
       toast.error("複製失敗，請手動選取複製");
     }
+  }
+
+  // 複製並前往品質檢查
+  async function handleCopyAndGoQualityGate() {
+    try {
+      await navigator.clipboard.writeText(assembled);
+    } catch {
+      // 複製失敗仍繼續導航
+    }
+    const params = new URLSearchParams();
+    if (caseId) params.set("caseId", caseId);
+    const caseName = searchParams.get("caseName") || "";
+    if (caseName) params.set("caseName", caseName);
+    router.push(`/tools/quality-gate?${params.toString()}`);
   }
 
   // 下載檔案
@@ -588,6 +604,13 @@ export default function AssemblyPage() {
                 onClick={handleCopy}
               >
                 📋 複製到剪貼簿
+              </Button>
+              <Button
+                className="w-full h-10"
+                variant="outline"
+                onClick={handleCopyAndGoQualityGate}
+              >
+                複製並前往品質檢查
               </Button>
 
               <div className="grid grid-cols-2 gap-2">

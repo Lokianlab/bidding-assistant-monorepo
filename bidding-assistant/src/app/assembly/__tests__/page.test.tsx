@@ -1,15 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import AssemblyPage from "../page";
 
 // ── Hoisted mocks ─────────────────────────────────────
-const { mockSearchGet } = vi.hoisted(() => ({
+const { mockPush, mockSearchGet } = vi.hoisted(() => ({
+  mockPush: vi.fn(),
   mockSearchGet: vi.fn(() => null),
 }));
 
 // ── Mock next/navigation ──────────────────────────────
 vi.mock("next/navigation", () => ({
   useSearchParams: () => ({ get: mockSearchGet }),
+  useRouter: () => ({ push: mockPush }),
+}));
+
+// ── Mock assembly helpers（控制 activeFiles 為空，避免 loadFile fetch） ──
+vi.mock("@/lib/assembly/helpers", () => ({
+  estimateTokens: vi.fn(() => 0),
+  formatKB: vi.fn(() => "0 B"),
+  buildFilename: vi.fn(() => "file.md"),
+  computeFileList: vi.fn(() => []),
+  computeActiveFiles: vi.fn(() => []),
+  assembleContent: vi.fn(() => "組裝後的提示詞內容"),
 }));
 
 // ── Mock sonner ───────────────────────────────────────
@@ -37,11 +49,14 @@ vi.mock("@/lib/knowledge-base/helpers", () => ({
   renderKBToMarkdown: vi.fn(() => ""),
 }));
 
+const mockClipboardWrite = vi.fn().mockResolvedValue(undefined);
+
 beforeEach(() => {
   vi.clearAllMocks();
   mockSearchGet.mockReturnValue(null);
+  mockClipboardWrite.mockResolvedValue(undefined);
   Object.assign(navigator, {
-    clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
+    clipboard: { writeText: mockClipboardWrite },
   });
 });
 
@@ -122,5 +137,75 @@ describe("AssemblyPage — 案件上下文 banner", () => {
     });
     render(<AssemblyPage />);
     expect(screen.getByText("建議投標 82/100")).toBeTruthy();
+  });
+});
+
+// ── 輔助：渲染並觸發組裝（showResult → true） ─────────
+async function renderAndAssemble() {
+  render(<AssemblyPage />);
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: /組裝提示詞/ }));
+  });
+}
+
+describe("AssemblyPage — GAP-2：複製並前往品質檢查", () => {
+  it("組裝後顯示「複製並前往品質檢查」按鈕", async () => {
+    await renderAndAssemble();
+    expect(
+      screen.getByRole("button", { name: "複製並前往品質檢查" }),
+    ).toBeTruthy();
+  });
+
+  it("無 caseId 時點按鈕仍導航至品質檢查（不帶 caseId param）", async () => {
+    mockSearchGet.mockReturnValue(null);
+    await renderAndAssemble();
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", { name: "複製並前往品質檢查" }),
+      );
+    });
+    expect(mockPush).toHaveBeenCalledWith("/tools/quality-gate?");
+  });
+
+  it("有 caseId 時導航帶 caseId param", async () => {
+    mockSearchGet.mockImplementation((key: string) =>
+      key === "caseId" ? "abc-123" : null,
+    );
+    await renderAndAssemble();
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", { name: "複製並前往品質檢查" }),
+      );
+    });
+    expect(mockPush).toHaveBeenCalledWith(
+      "/tools/quality-gate?caseId=abc-123",
+    );
+  });
+
+  it("有 caseId+caseName 時導航帶兩個 params", async () => {
+    mockSearchGet.mockImplementation((key: string) => {
+      if (key === "caseId") return "abc-123";
+      if (key === "caseName") return "某某音樂節目";
+      return null;
+    });
+    await renderAndAssemble();
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", { name: "複製並前往品質檢查" }),
+      );
+    });
+    expect(mockPush).toHaveBeenCalledWith(
+      "/tools/quality-gate?caseId=abc-123&caseName=%E6%9F%90%E6%9F%90%E9%9F%B3%E6%A8%82%E7%AF%80%E7%9B%AE",
+    );
+  });
+
+  it("點按鈕時複製組裝內容到剪貼簿", async () => {
+    await renderAndAssemble();
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", { name: "複製並前往品質檢查" }),
+      );
+    });
+    expect(mockClipboardWrite).toHaveBeenCalledWith("組裝後的提示詞內容");
   });
 });
