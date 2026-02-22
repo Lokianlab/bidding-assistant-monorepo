@@ -80,3 +80,4 @@ feat-scan-exclusion|完成|巡標排除記憶：localStorage 黑名單（跳過/
 feat-scan-createcase|完成|巡標建案：CreateCaseDialog + /api/notion/create-case + 建案後防重複記憶（addCreatedCase），9 tests|A44T 快照|2026-02-28
 feat-w01-scan-p2|完成|W01 P0 全鏈路完成：Layer A+B+C+D 全通，AINL Layer C 橋接+94 tests，排除記憶+建案對話框|各機器快照|2026-02-28
 infra-operating-constraints|完成|Agent 運作約束 v1.0（46 條）+ 優化記錄檔，與 CLAUDE.md 互補|@op:20260223-JIVK#0401|2026-02-23
+infra-claude-md-split|完成|CLAUDE.md 拆分（247→96 行）：4 個 rules 檔 + currentDate 時間戳規則 + 檔案整理|@op:20260223-JIVK#0417|2026-02-23

@@ -71,13 +71,15 @@ OP|{YYYYMMDD}-{HHMM}|{機器碼}|topic:{主題ID}
 
 ### 時間戳規則（必須遵守）
 
-**時間戳必須用 Bash 指令取得真實系統時間，禁止估算或手動填寫。**
+**日期部分必須使用 system prompt 中注入的 `currentDate`（格式 `YYYY-MM-DD`），轉為 `YYYYMMDD`。時分部分用 Bash 取得系統時間。禁止估算或手動填寫日期。**
 
 ```bash
-date +%Y%m%d-%H%M
+# 日期：從 currentDate 取（例：2026-02-23 → 20260223）
+# 時分：Bash 取得
+powershell -c "Get-Date -Format 'HHmm'"
 ```
 
-OP 記錄的時間戳同樣適用此規則。（出處：Jin 直接指示 0223）
+所有機器的所有時間戳（OP、快照、commit 記錄）都必須遵守此規則。（出處：Jin 直接指示 0223, 0223b）
 
 ### 格式與標記
 
