@@ -9,7 +9,6 @@ import type {
   PatrolItem,
   AcceptResult,
   NotionCaseCreateInput,
-  NotionCaseCreateResult,
   NotionCaseUpdateInput,
   DriveCreateFolderInput,
   DriveCreateFolderResult,
