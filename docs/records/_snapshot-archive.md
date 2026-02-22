@@ -257,3 +257,6 @@
 [x] chat-hook-error-propagation|hook 錯誤傳播確認|A44T+JDNE 均確認：hook L56 try-catch 傳錯誤，測試 L119-128 有覆蓋。Dialog 無 retry 按鈕是已知 UX 缺口，暫不補。（0223）
 [x] broadcast-autonomous-expansion|授權擴大廣播確認|Jin 0223 授權可逆操作全自主，CLAUDE.md 已更新（075f4c8），Z1FV 確認。
 [x] review-scan-rules-panel|審查 A44T 分類說明面板|PASS：補 toggle 測試 3 個，全過。（Z1FV 0223）
+[x] feat-CreateCaseDialog-retry|CreateCaseDialog 加重試按鈕|4 tests，15 tests pass，af426aa（3O5L）
+[x] scan-explain-panel|巡標頁「分類說明」摺疊面板|A44T 先做（cb0ff45），3O5L 合併加元件架構+「❓ 其他」+3 tests，a7fe263（3O5L）
+[x] broadcast-autonomous-expansion|授權擴大廣播|Jin 0223 授權，CLAUDE.md 已更新（075f4c8），全員快照已收到。（3O5L）
