@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2010|ITEJ|opus-4.6
+SNAPSHOT|20260228-2020|ITEJ|opus-4.6
 [x] infra-memory-rules|MEMORY.md 維護規則（含分流表升級）|@op:20260219-ITEJ#0829
 [x] method-self-qa|自問自答法|@op:20260219-ITEJ#2130
 [x] cleanup-gas-monitor|GAS 監控 + 刪 GitHub Actions|@op:20260219-ITEJ#2100
@@ -33,5 +33,7 @@ SNAPSHOT|20260228-2010|ITEJ|opus-4.6
 [x] review-a44t-case-work|A44T feat-case-work-page 審查|PASS，752行，SSOT+型別+hydration+跨模組整合全合規
 [v] feat-w01-scan-notion-mapper|W01 Phase 2 準備：notion-mapper|PCC→Notion 欄位映射，11 tests，待 Notion token/DB ID 才能接 Phase 2
 [x] review-z1fv-test-viz|Z1FV test-viz-components 審查|PASS，79 tests，8 個視覺化元件，mock 策略+斷言品質合格
+[x] review-z1fv-test-dash-perf|Z1FV test-dashboard-perf-components 審查|PASS，109 tests，9 個元件，斷言品質+邊界覆蓋合格
+[x] fix-entry-editors-timeout|EntryEditors 首個 test timeout 修復|動態 import 冷啟動加大 timeout 至 15s
 [ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
 [ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱後開發機器可接手 Phase 1
