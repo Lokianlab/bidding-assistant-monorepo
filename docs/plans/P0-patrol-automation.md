@@ -378,11 +378,12 @@ async function onAccept(item: PatrolItem): Promise<{
 
 | 層 | 認領機器 | 狀態 | 備註 |
 |----|---------|------|------|
-| A：PCC 資料 | — | 待認領 | |
-| B：Notion/Drive 寫入 | — | 待認領 | |
-| C：業務邏輯 | — | 待認領 | |
-| D：UI | — | 待認領 | |
-| 串接 | — | 等四層完成 | |
+| A：PCC 資料 | ITEJ | 已推送 | `src/lib/scan/` + `/api/scan/route.ts`，以 W01 Phase 1 名義完成 |
+| B：Notion 建檔 | 3O5L + Z1FV | 已推送 | `/api/notion/create-case`（3O5L）+ `/api/scan/accept`（Z1FV）；Drive 部分**待認領** |
+| C：業務邏輯 | AINL | 已推送（ITEJ 審查 PASS） | `src/lib/patrol/`，classifier+converter+exclusion+orchestrator，94 tests |
+| D：UI | ITEJ + JDNE + 3O5L | 已推送 | `/scan` 頁面、ScanDashboard、TenderCard、CreateCaseDialog，`scan` 已在 FEATURE_REGISTRY |
+| Drive 建資料夾 | — | 待認領 | Layer B 子任務，需 Google Drive API 授權 |
+| 串接 | — | 等四層完成 | Layer A 用 `src/lib/scan/` 而非 `src/lib/patrol/`，串接時需對應調整 |
 
 狀態值：`待認領` → `施工中` → `測試過` → `已推送` → `待驗收`
 
