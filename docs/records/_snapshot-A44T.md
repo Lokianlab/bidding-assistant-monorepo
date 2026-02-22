@@ -1,4 +1,4 @@
-SNAPSHOT|20260226-1920|A44T|claude-opus-4-6
+SNAPSHOT|20260222-1930|A44T|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - push 後直接讀 [ ] 找下一步，不停下報告
@@ -20,10 +20,11 @@ SNAPSHOT|20260226-1920|A44T|claude-opus-4-6
 [v] plan-product-pivot|產品開發轉向|跨模組導航+儀表板 QuickStart+PCC 情報橋接+跨頁上下文傳遞。Z1FV 審查 PASS。待用戶驗收
 [?] infra-db-safety|資料庫安全規則|沙盒方案暫存檔已建（推薦混合 JSON mock + UI 複製），待用戶決定
 [x] infra-governance|治理機制寫入 CLAUDE.md|用戶核准通過，commit 12d5d69
-[ ] infra-quality-audit|品管員角色（用戶指派）|SSOT 全域掃描完畢（10 源碼檔、4 批 commit）。AINL 趨勢/圖表卡片審查通過。建議終止角色
-[ ] infra-efficiency-cal|效率校準 P0 第一輪答辯|已回覆 Jin 三題（ref:1451）：token 分佈 feat 20%/infra 67%、方法論用了閉環驗證 1 次、下一步做 feat+停品管
-[v] feat-m03-strategy|M03 戰略分析引擎|Phase 1+2+PCC橋接：5維評分引擎（82 tests）+ intelligence-bridge + FitScoreRadar + FitScoreCard（15 tests）+ /strategy 頁面。Z1FV 審查 PASS。待用戶驗收
-[ ] infra-scoring-arch|計分板架構重構|論壇 discuss 已發（thread:scoring-architecture），等共識+用戶核准
+[~] infra-quality-audit|品管員角色（用戶指派）|放棄：方向轉向產品優先，品管角色不再需要
+[~] infra-efficiency-cal|效率校準|放棄：方向已轉，效率議題過時
+[v] feat-m03-strategy|M03 戰略分析引擎|Phase 1+2+PCC橋接：5維評分引擎（82 tests）+ intelligence-bridge + FitScoreRadar + FitScoreCard（15 tests）+ /strategy 頁面。Z1FV 審查 PASS。待用戶驗收。新方向下嵌入 P1 案件工作頁
+[~] infra-scoring-arch|計分板架構重構|放棄：方向轉向產品優先，計分板重構不再需要
 [v] infra-stop-hook|hook 架構泛化重構：5 hooks（SessionStart/PreCompact/PreToolUse/PostToolUse/Stop）+ 2 conf（stop-patterns/dangerous-commands）+ CLAUDE.md 更新|驗收：看 .claude/settings.json 確認 5 個 hook 註冊、看 .claude/hooks/ 目錄確認 5 個 .sh + 2 個 .conf
 [v] feat-cross-module-nav|跨模組導航串流|情報→戰略→組裝→品質→匯出全鏈路按鈕+上下文傳遞。Z1FV 審查 PASS。待用戶驗收
-[v] test-component-coverage|元件測試擴充|QuickStart 10 + FitScoreCard 15 + ChapterEditor 16 + ExportPanel 10 + TemplateSelector 5 + QualityGateDashboard 9 = 65 新元件測試。待用戶驗收
+[v] test-component-coverage|元件測試擴充|110 檔 2043 tests。DashboardCard+CustomCard+CardPickerDialog+FeatureToggleCard+ChangelogPanel+StageCard+ToolCard+KBMatrixTable+ChapterList+AssemblyWarnings+ChapterEditor+ExportPanel+TemplateSelector+QualityGateDashboard 共 99 新測試。待用戶驗收
+[ ] feat-case-work-page|P1 案件工作頁|將 M03 戰略分析+PCC 情報整合進單一案件頁面。Jin 確認新方向 P1
