@@ -95,6 +95,33 @@ function mockPCCSuccess(data: unknown) {
   });
 }
 
+/** mock detail API 回傳（每筆招標公告都會打一次） */
+function mockDetailSuccess(deadline: string, budget = "50,000,000元") {
+  mockFetch.mockResolvedValueOnce({
+    ok: true,
+    status: 200,
+    headers: new Headers({ "content-type": "application/json" }),
+    json: async () => ({
+      detail: {
+        "已公告資料:截止投標日期": deadline,
+        "已公告資料:預算金額": budget,
+      },
+    }),
+  });
+}
+
+/** 快速 mock N 筆 detail（全部用未來截標日） */
+function mockFutureDetails(count: number) {
+  const future = new Date();
+  future.setDate(future.getDate() + 30);
+  const y = future.getFullYear() - 1911;
+  const m = String(future.getMonth() + 1).padStart(2, "0");
+  const d = String(future.getDate()).padStart(2, "0");
+  for (let i = 0; i < count; i++) {
+    mockDetailSuccess(`${y}/${m}/${d}`);
+  }
+}
+
 function mockPCCError(status = 500) {
   mockFetch.mockResolvedValueOnce({
     ok: false,
@@ -117,6 +144,7 @@ describe("POST /api/scan", () => {
       makePCCRecord({ title: "道路養護工程", jobNumber: "J002" }),
     ];
     mockPCCSuccess(makePCCResponse(records, "食農教育"));
+    mockFutureDetails(2); // 2 筆招標公告各打一次 detail
 
     const req = makeRequest({ keywords: ["食農教育"] });
     const res = await POST(req);
@@ -124,7 +152,7 @@ describe("POST /api/scan", () => {
 
     expect(body.results).toHaveLength(2);
     expect(body.counts.must).toBe(1); // 食農教育
-    expect(body.counts.other).toBe(1); // 道路養護（預算=0，不觸發預算規則）
+    expect(body.counts.other).toBe(1); // 道路養護
     expect(body.searchKeywords).toEqual(["食農教育"]);
     expect(body.scannedAt).toBeDefined();
     expect(body.totalRaw).toBe(2);
@@ -133,16 +161,15 @@ describe("POST /api/scan", () => {
   it("多個關鍵字搜尋且自動去重", async () => {
     const sharedRecord = makePCCRecord({ title: "藝術活動計畫", jobNumber: "J001", unitId: "u1" });
 
-    // 第一個關鍵字回傳 J001
     mockPCCSuccess(makePCCResponse([sharedRecord], "藝術"));
-    // 第二個關鍵字也回傳 J001（應去重）
     mockPCCSuccess(makePCCResponse([sharedRecord], "活動"));
+    mockFutureDetails(1); // 去重後只有 1 筆需要 detail
 
     const req = makeRequest({ keywords: ["藝術", "活動"] });
     const res = await POST(req);
     const body = await res.json();
 
-    expect(body.results).toHaveLength(1); // 去重後只有 1 筆
+    expect(body.results).toHaveLength(1);
     expect(body.totalRaw).toBe(1);
   });
 
@@ -169,6 +196,7 @@ describe("POST /api/scan", () => {
       makePCCRecord({ title: "道路工程", jobNumber: "J004" }),
     ];
     mockPCCSuccess(makePCCResponse(records));
+    mockFutureDetails(4);
 
     const req = makeRequest({ keywords: ["測試"] });
     const res = await POST(req);
@@ -188,6 +216,7 @@ describe("POST /api/scan", () => {
       makePCCRecord({ title: "燈節策展", jobNumber: "J002" }),
     ];
     mockPCCSuccess(makePCCResponse(records));
+    mockFutureDetails(4);
 
     const req = makeRequest({ keywords: ["測試"] });
     const res = await POST(req);
@@ -198,12 +227,11 @@ describe("POST /api/scan", () => {
   });
 
   it("部分關鍵字搜尋失敗時繼續處理其他關鍵字", async () => {
-    // 第一個關鍵字成功
     mockPCCSuccess(makePCCResponse([
       makePCCRecord({ title: "食農教育推廣", jobNumber: "J001" }),
     ]));
-    // 第二個關鍵字失敗
     mockPCCError(500);
+    mockFutureDetails(1);
 
     const req = makeRequest({ keywords: ["食農教育", "壞掉的"] });
     const res = await POST(req);
@@ -234,16 +262,17 @@ describe("POST /api/scan", () => {
     };
     mockPCCSuccess(page1Response);
     mockPCCSuccess(page2Response);
+    mockFutureDetails(2);
 
     const req = makeRequest({ keywords: ["藝術"], maxPages: 2 });
     const res = await POST(req);
     const body = await res.json();
 
     expect(body.results).toHaveLength(2);
-    expect(mockFetch).toHaveBeenCalledTimes(2);
+    expect(mockFetch).toHaveBeenCalledTimes(4); // 2 search + 2 detail
   });
 
-  it("ScanTender 欄位正確轉換", async () => {
+  it("ScanTender 欄位正確轉換（含 detail 填入的預算和截標日）", async () => {
     const record = makePCCRecord({
       title: "食農教育推廣",
       jobNumber: "J001",
@@ -251,6 +280,7 @@ describe("POST /api/scan", () => {
       type: "招標公告",
     });
     mockPCCSuccess(makePCCResponse([record]));
+    mockDetailSuccess("115/04/15", "500,000元");
 
     const req = makeRequest({ keywords: ["食農教育"] });
     const res = await POST(req);
@@ -260,7 +290,8 @@ describe("POST /api/scan", () => {
     expect(tender.title).toBe("食農教育推廣");
     expect(tender.unit).toBe("農業局");
     expect(tender.jobNumber).toBe("J001");
-    expect(tender.budget).toBe(0); // brief 不含預算
+    expect(tender.budget).toBe(500000); // detail 填入的預算
+    expect(tender.deadline).toBe("115/04/15"); // detail 填入的截標日
     expect(tender.category).toBe("招標公告");
   });
 
@@ -274,25 +305,27 @@ describe("POST /api/scan", () => {
       records: [makePCCRecord({ title: "藝術計畫", jobNumber: "J001" })],
     };
     mockPCCSuccess(response);
+    mockFutureDetails(1);
 
     const req = makeRequest({ keywords: ["藝術"] });
     const res = await POST(req);
     const body = await res.json();
 
     expect(body.results).toHaveLength(1);
-    expect(mockFetch).toHaveBeenCalledTimes(1); // 只搜一頁
+    expect(mockFetch).toHaveBeenCalledTimes(2); // 1 search + 1 detail
   });
 });
 
 // ── 過期過濾 ───────────────────────────────────────────────
 
 describe("POST /api/scan — 過期標案過濾", () => {
-  it("決標公告不會出現在結果中", async () => {
+  it("決標公告不會出現在結果中（不打 detail）", async () => {
     const records = [
       makePCCRecord({ title: "食農教育推廣", jobNumber: "J001", type: "招標公告" }),
       makePCCRecord({ title: "藝術活動", jobNumber: "J002", type: "決標公告" }),
     ];
     mockPCCSuccess(makePCCResponse(records));
+    mockFutureDetails(1); // 只有 J001 需要 detail，J002 被 brief type 擋掉
 
     const req = makeRequest({ keywords: ["測試"] });
     const res = await POST(req);
@@ -310,6 +343,7 @@ describe("POST /api/scan — 過期標案過濾", () => {
       makePCCRecord({ title: "案子C", jobNumber: "J003", type: "招標公告" }),
     ];
     mockPCCSuccess(makePCCResponse(records));
+    mockFutureDetails(1); // 只有 J003 需要 detail
 
     const req = makeRequest({ keywords: ["測試"] });
     const res = await POST(req);
@@ -319,17 +353,16 @@ describe("POST /api/scan — 過期標案過濾", () => {
     expect(body.filteredExpired).toBe(2);
   });
 
-  it("公告超過 30 天的標案被過濾", async () => {
-    const oldDate = new Date();
-    oldDate.setDate(oldDate.getDate() - 45);
-    const recentDate = new Date();
-    recentDate.setDate(recentDate.getDate() - 5);
-
+  it("截標日已過的標案被過濾（用 detail API 實際截標日）", async () => {
     const records = [
-      makePCCRecord({ title: "新案子", jobNumber: "J001", date: toDateNum(recentDate) }),
-      makePCCRecord({ title: "舊案子", jobNumber: "J002", date: toDateNum(oldDate) }),
+      makePCCRecord({ title: "還在招標", jobNumber: "J001" }),
+      makePCCRecord({ title: "已經截標", jobNumber: "J002" }),
     ];
     mockPCCSuccess(makePCCResponse(records));
+    // J001: 未來截標日 → 保留
+    mockDetailSuccess("115/06/01", "1,000,000元");
+    // J002: 過去截標日 → 過濾
+    mockDetailSuccess("114/01/15", "500,000元");
 
     const req = makeRequest({ keywords: ["測試"] });
     const res = await POST(req);
@@ -340,10 +373,26 @@ describe("POST /api/scan — 過期標案過濾", () => {
     expect(body.filteredExpired).toBe(1);
   });
 
+  it("detail API 查不到截標日時保守保留（不過濾）", async () => {
+    mockPCCSuccess(makePCCResponse([
+      makePCCRecord({ title: "招標中", jobNumber: "J001" }),
+    ]));
+    // detail 回傳失敗
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
+
+    const req = makeRequest({ keywords: ["測試"] });
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(body.results).toHaveLength(1);
+    expect(body.filteredExpired).toBe(0);
+  });
+
   it("filteredExpired=0 當沒有過期標案", async () => {
     mockPCCSuccess(makePCCResponse([
       makePCCRecord({ title: "招標中", jobNumber: "J001" }),
     ]));
+    mockFutureDetails(1);
 
     const req = makeRequest({ keywords: ["測試"] });
     const res = await POST(req);
@@ -351,5 +400,37 @@ describe("POST /api/scan — 過期標案過濾", () => {
 
     expect(body.filteredExpired).toBe(0);
     expect(body.results).toHaveLength(1);
+  });
+});
+
+// ── isDeadlinePassed 民國年解析 ──────────────────────────────
+
+describe("截標日期解析", () => {
+  // 直接測試 route 的行為：用 detail mock 傳不同格式
+  it("民國年格式 115/04/15 正確解析", async () => {
+    mockPCCSuccess(makePCCResponse([
+      makePCCRecord({ title: "測試案", jobNumber: "J001" }),
+    ]));
+    mockDetailSuccess("115/04/15"); // 2026/04/15，未來
+
+    const req = makeRequest({ keywords: ["測試"] });
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(body.results).toHaveLength(1); // 未過期，保留
+  });
+
+  it("西元年格式 2025/01/01 已過期", async () => {
+    mockPCCSuccess(makePCCResponse([
+      makePCCRecord({ title: "測試案", jobNumber: "J001" }),
+    ]));
+    mockDetailSuccess("2025/01/01"); // 過去
+
+    const req = makeRequest({ keywords: ["測試"] });
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(body.results).toHaveLength(0); // 已過期，過濾
+    expect(body.filteredExpired).toBe(1);
   });
 });

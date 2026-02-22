@@ -4,13 +4,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { classifyTenders, countByCategory, sortByPriority } from "@/lib/scan/keyword-engine";
 import { DEFAULT_SEARCH_KEYWORDS, DEFAULT_KEYWORD_RULES } from "@/lib/scan/constants";
+import { findDetailValue, parseAmount } from "@/lib/pcc/helpers";
 import type { ScanTender } from "@/lib/scan/types";
-import type { PCCSearchResponse, PCCRecord } from "@/lib/pcc/types";
+import type { PCCSearchResponse, PCCRecord, TenderDetailValue } from "@/lib/pcc/types";
 
 const API_BASE = "https://pcc-api.openfun.app/api";
 const MIN_INTERVAL_MS = 300;
-/** 公告超過幾天視為過期（政府標案投標期通常 2-4 週） */
-const MAX_PUBLISH_AGE_DAYS = 30;
 /** 已決標的公告類型（不需要再投） */
 const EXPIRED_BRIEF_TYPES = ["決標公告", "無法決標公告", "撤銷公告"];
 let lastRequestTime = 0;
@@ -54,16 +53,64 @@ function pccDateToISO(dateNum: number): string {
   return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
 }
 
-/** 判斷 PCC record 是否已過期（已決標 or 公告太久） */
-function isExpired(record: PCCRecord): boolean {
-  // 已決標 / 無法決標 / 撤銷 → 不需要再投
-  if (EXPIRED_BRIEF_TYPES.includes(record.brief.type)) return true;
+/** 判斷 brief type 是否已決標（不需打 detail） */
+function isDecided(record: PCCRecord): boolean {
+  return EXPIRED_BRIEF_TYPES.includes(record.brief.type);
+}
 
-  // 公告日超過閾值 → 截標日幾乎一定過了
-  const pubDate = new Date(pccDateToISO(record.date));
-  const ageMs = Date.now() - pubDate.getTime();
-  const ageDays = ageMs / (1000 * 60 * 60 * 24);
-  return ageDays > MAX_PUBLISH_AGE_DAYS;
+/** 從 PCC detail API 取截標日期和預算（帶 rate limiting） */
+async function fetchTenderExtra(
+  unitId: string,
+  jobNumber: string,
+): Promise<{ deadline: string | null; budget: number | null }> {
+  try {
+    const now = Date.now();
+    const elapsed = now - lastRequestTime;
+    if (elapsed < MIN_INTERVAL_MS) {
+      await new Promise((r) => setTimeout(r, MIN_INTERVAL_MS - elapsed));
+    }
+    lastRequestTime = Date.now();
+
+    const url = new URL(`${API_BASE}/tender`);
+    url.searchParams.set("unit_id", unitId);
+    url.searchParams.set("job_number", jobNumber);
+
+    const res = await fetch(url.toString(), {
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) return { deadline: null, budget: null };
+
+    const data = await res.json() as { detail?: Record<string, TenderDetailValue> };
+    if (!data.detail) return { deadline: null, budget: null };
+
+    return {
+      deadline: findDetailValue(data.detail, ":截止投標日期"),
+      budget: parseAmount(findDetailValue(data.detail, ":預算金額")),
+    };
+  } catch {
+    return { deadline: null, budget: null };
+  }
+}
+
+/** 判斷截標日期是否已過 */
+function isDeadlinePassed(deadline: string | null): boolean {
+  if (!deadline) return false; // 查不到截標日就不過濾（保守）
+  // PCC 格式可能是 "114/03/15" 或 "2025/03/15" 等
+  const cleaned = deadline.replace(/\//g, "-");
+  // 嘗試解析民國年（三位數年份）
+  const rocMatch = cleaned.match(/^(\d{2,3})-(\d{2})-(\d{2})/);
+  let dateStr: string;
+  if (rocMatch && Number(rocMatch[1]) < 200) {
+    // 民國年轉西元
+    dateStr = `${Number(rocMatch[1]) + 1911}-${rocMatch[2]}-${rocMatch[3]}`;
+  } else {
+    dateStr = cleaned;
+  }
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return false; // 解析失敗就不過濾
+  // 截標日當天 23:59:59 前都算有效
+  d.setHours(23, 59, 59, 999);
+  return d.getTime() < Date.now();
 }
 
 /** 將 PCC record 轉為 ScanTender（brief 層級，預算未知） */
@@ -89,9 +136,9 @@ export async function POST(req: NextRequest) {
         : DEFAULT_SEARCH_KEYWORDS;
     const maxPagesPerKeyword: number = body.maxPages ?? 1;
 
-    // 逐關鍵字搜尋 + 去重 + 過濾過期
+    // Phase 1: 逐關鍵字搜尋 + 去重 + 擋掉已決標
     const seen = new Set<string>();
-    const allTenders: ScanTender[] = [];
+    const candidates: { record: PCCRecord; tender: ScanTender }[] = [];
     const errors: { keyword: string; error: string }[] = [];
     let filteredCount = 0;
 
@@ -100,20 +147,18 @@ export async function POST(req: NextRequest) {
         for (let page = 1; page <= maxPagesPerKeyword; page++) {
           const result = await pccSearch(kw, page);
           for (const record of result.records) {
-            // 用 job_number + unit_id 去重（同案可能出現在不同關鍵字搜尋）
             const key = `${record.job_number}:${record.unit_id}`;
             if (seen.has(key)) continue;
             seen.add(key);
 
-            // 過濾已決標和公告太久的（截標日幾乎一定過了）
-            if (isExpired(record)) {
+            // 已決標 / 撤銷 → 直接排除（不需打 detail）
+            if (isDecided(record)) {
               filteredCount++;
               continue;
             }
 
-            allTenders.push(toScanTender(record));
+            candidates.push({ record, tender: toScanTender(record) });
           }
-          // 不需要翻更多頁
           if (page >= result.total_pages) break;
         }
       } catch (err) {
@@ -122,6 +167,20 @@ export async function POST(req: NextRequest) {
           error: err instanceof Error ? err.message : "搜尋失敗",
         });
       }
+    }
+
+    // Phase 2: 打 detail API 取截標日期和預算，過濾已過期的
+    const allTenders: ScanTender[] = [];
+    for (const { record, tender } of candidates) {
+      const extra = await fetchTenderExtra(record.unit_id, record.job_number);
+      if (isDeadlinePassed(extra.deadline)) {
+        filteredCount++;
+        continue;
+      }
+      // 填入從 detail 取得的截標日和預算
+      if (extra.deadline) tender.deadline = extra.deadline;
+      if (extra.budget !== null) tender.budget = extra.budget;
+      allTenders.push(tender);
     }
 
     // 分類 + 排序
