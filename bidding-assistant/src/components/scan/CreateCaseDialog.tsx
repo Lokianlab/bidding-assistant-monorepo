@@ -102,7 +102,18 @@ export function CreateCaseDialog({
           )}
 
           {error && (
-            <p className="text-red-600 dark:text-red-400">{error}</p>
+            <div className="flex items-start gap-2">
+              <p className="text-red-600 dark:text-red-400 flex-1">{error}</p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleCreate}
+                disabled={accepting}
+                className="shrink-0"
+              >
+                🔄 重試
+              </Button>
+            </div>
           )}
         </div>
 

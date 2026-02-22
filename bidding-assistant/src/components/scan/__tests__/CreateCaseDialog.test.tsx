@@ -174,6 +174,44 @@ describe("CreateCaseDialog", () => {
     expect(screen.getByText("Token 無效")).toBeTruthy();
   });
 
+  it("hook.error 有值 → 顯示「重試」按鈕", () => {
+    mockUseOrchestrator.mockReturnValue(makeOrchestrator({ error: "Notion API 錯誤" }));
+
+    render(
+      <CreateCaseDialog result={MOCK_RESULT} open={true} onClose={onClose} onSuccess={onSuccess} />,
+    );
+    expect(screen.getByRole("button", { name: /重試/ })).toBeTruthy();
+  });
+
+  it("點「重試」→ 重新呼叫 accept", async () => {
+    mockAccept.mockResolvedValueOnce({
+      notion: { success: true, notionPageId: "abc-def", caseUniqueId: "PCC-001" },
+      drive: { success: false, error: "" },
+      summary: "",
+      intelligence: "",
+    });
+    mockUseOrchestrator.mockReturnValue(makeOrchestrator({ error: "上次失敗" }));
+
+    render(
+      <CreateCaseDialog result={MOCK_RESULT} open={true} onClose={onClose} onSuccess={onSuccess} />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /重試/ }));
+
+    await waitFor(() => {
+      expect(mockAccept).toHaveBeenCalledWith(MOCK_RESULT);
+    });
+  });
+
+  it("accepting=true 時「重試」按鈕 disabled", () => {
+    mockUseOrchestrator.mockReturnValue(makeOrchestrator({ error: "上次失敗", accepting: true }));
+
+    render(
+      <CreateCaseDialog result={MOCK_RESULT} open={true} onClose={onClose} onSuccess={onSuccess} />,
+    );
+    const retryBtn = screen.getByRole("button", { name: /重試/ }) as HTMLButtonElement;
+    expect(retryBtn.disabled).toBe(true);
+  });
+
   it("accepting=true → 按鈕文字改為「建案中...」且 disabled", () => {
     mockUseOrchestrator.mockReturnValue(makeOrchestrator({ accepting: true }));
 
