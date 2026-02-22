@@ -1,6 +1,6 @@
 # 全專案開發地圖
 
-> 最後更新：2026-02-28 20:10（UTC+8）｜更新者：ITEJ
+> 最後更新：2026-02-28 21:10（UTC+8）｜更新者：ITEJ
 
 ## 1. 系統概覽
 
@@ -8,7 +8,7 @@
 
 | 組件 | 路徑 | 狀態 | 說明 |
 |------|------|------|------|
-| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，15 個功能模組（140 檔 2368 tests） |
+| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，15 個功能模組（172 檔 2739 tests） |
 | SmugMug MCP | `smugmug-mcp/` | 已完成 | 實績照片存取（7 工具） |
 | PCC API MCP | `pcc-api-mcp/` | 已完成 | 政府標案情報（6 工具） |
 | PCC Monitor | `pcc-monitor/` | 已完成 | API 更新延遲監控（GAS 每小時） |
@@ -41,7 +41,7 @@
 
 | 規劃文件 | 名稱 | 狀態 | 依賴 |
 |---------|------|------|------|
-| W01（v0.1 草案） | 行政巡標自動化 | **P0 Phase 1 完成**：關鍵字引擎+掃描API+UI（62 tests）+ notion-mapper（11 tests）。Phase 2 待 Notion token/DB ID | PCC API（已有）+ Notion 寫入（待建） |
+| W01（v0.1 草案） | 行政巡標自動化 | **P0 Phase 1-2 進行中**：Phase 1 完成（關鍵字引擎+掃描API+UI+notion-mapper，73 tests）。Phase 2 多機平行：建案API（Z1FV /api/scan/accept）+排除記憶（JDNE 18 tests）+patrol 分類引擎（AINL Layer C 94 tests） | PCC API（已有）+ Notion 寫入（Z1FV 已接線） |
 | M02（v0.1 草案） | 知識庫模組 | 草案完成 | Supabase schema + API routes + 6 phase 分期 + 匯入管線，待用戶審閱 |
 | M06（v0.1 草案） | 排版輸出 | Phase 1-3 已實作，整合進 docgen 路由 | 現有 docgen |
 
@@ -116,11 +116,10 @@
 
 | 指標 | 數值 |
 |------|------|
-| topic 總數 | 67 |
-| 完成 | 35 |
-| 待驗收 | 19 |
-| 進行中 | 8 |
-| 已放棄 / 已被取代 | 5 |
+| topic 總數 | 74 |
+| 完成 | 41 |
+| 進行中 | 5 |
+| 已放棄 / 已被取代 | 7 |
 | 活躍機器 | 6（JDNE、A44T、ITEJ、AINL、Z1FV、3O5L） |
 | 回報數 | 14（JDNE 5、ITEJ 5、A44T 4） |
 
@@ -167,6 +166,8 @@
 - [x] M06 排版輸出模組 Phase 1-3（文件組裝管線 + 範本系統 + KB 佔位符注入 + 列印/PDF，96 tests）
 - [x] 案件工作頁（A44T）：案件資訊 + L1-L8 備標進度 + 自動 M03 評分 + PCC 情報摘要，ITEJ 審查 PASS
 - [x] W01 巡標自動化 Phase 1（ITEJ）：關鍵字引擎 + 掃描 API + 巡標 UI + notion-mapper，73 tests
+- [x] W01 Phase 2 建案 API（Z1FV）：/api/scan/accept + TenderCard 建案狀態 + 排除記憶模組（JDNE）
+- [x] W01 patrol 分類引擎（AINL Layer C）：classifier + converter + exclusion + orchestrator，94 tests
 
 ### 當前階段
 
@@ -185,7 +186,7 @@
 2. **批量驗收積壓**：品質/報價/組裝重構、文件生成、M06 排版、趨勢分析、儀表板等多個已完成功能等待確認
 3. **知識庫初始化**：AINL 已完成評估報告（H: 資料夾 33,447 個檔案），待 Jin 授權執行 Phase 1-4
 4. **M02 知識庫模組規格**：v0.1 草案完成（0227 ITEJ），待用戶審閱後開發機器可接手 Phase 1
-5. **持續補測試**：140 檔 2368 tests，src/lib 全模組 + 全 API route 已覆蓋
+5. **持續補測試**：172 檔 2739 tests，src/lib 全模組 + 全 API route + 元件層已大致覆蓋
 
 ### 待決事項
 
@@ -195,7 +196,7 @@
 | JDNE 快照 | SaaS 產品方向（自適應網頁 + 聊天介面 + 多租戶） | **已決（0226）**：Supabase 負責多租戶認證 |
 | JDNE 快照 | 備份/回復安全節點範圍 | 未決 |
 | A44T 快照 | 資料庫沙盒方案（推薦混合 JSON mock + UI 複製） | 待用戶決定 |
-| ITEJ 快照 | Notion MCP 定位（CLAUDE.md 說暫緩，實際狀態請確認） | 未決 |
+| ITEJ 快照 | Notion MCP 定位 | **已解決**：暫緩（內建版夠用） |
 | 暫存區 | 元方法論框架（四層架構 + 效率為終極標準） | 待用戶審定 |
 | AINL 論壇（0226） | 知識庫初始化授權（33.4K 檔案，D→E→C→B 四階段計畫，評估報告：KB-initialization-assessment.md） | 待 Jin 授權 |
 | AINL 分析（0225） | 提案寫作駕駛艙新模組（基於 112-114 年度真實標案案例）：8 層黃金模板 + 失敗模式診斷 + MVP 規格。設計文件：`docs/methodology/proposal-cockpit-design.md` | 待 Jin 排優先序 |
