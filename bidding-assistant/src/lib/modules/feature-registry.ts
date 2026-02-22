@@ -162,6 +162,15 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
     defaultEnabled: true,
     dependencies: ["intelligence", "knowledge-base"],
   },
+  {
+    id: "docs",
+    name: "文件瀏覽器",
+    description: "瀏覽所有專案文件：開發計畫、方法論、操作記錄、分析報告",
+    icon: "📋",
+    routes: ["/docs"],
+    section: "tools",
+    defaultEnabled: true,
+  },
 ];
 
 /** 從 settings 的 featureToggles 取得最終的啟用狀態 */
