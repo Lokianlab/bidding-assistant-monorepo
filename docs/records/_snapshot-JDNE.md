@@ -1,4 +1,4 @@
-SNAPSHOT|20260226-2215|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260226-2230|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -51,3 +51,4 @@ SNAPSHOT|20260226-2215|JDNE|claude-sonnet-4-6
 [x] test-quality-rules-boundary|M04 品質規則邊界測試（補位 AINL）|checkMissingPerformanceRecord 精確 299/300 字邊界+履約實績共存，checkVagueQuantifiers 否定語境已知限制，+4 tests，1600 tests 全過
 [x] obs-margin-unit-mismatch|margin 單位不一致觀察記錄|generate-docx=cm×10，print-export=mm 直接用；寫入 debugging.md，待用戶確認 UI 單位後修法
 [x] fix-print-export-margin-unit|修正 print-export.ts margin 單位|UI 確認 cm，改 marginStr 單位+測試資料+斷言，1600 tests 全過（@op:20260226-2210）
+[x] arch-decision-notion-supabase|架構決策備忘：Notion+Supabase+Web App|Jin 直接指示 0226，更新 CLAUDE.md+dev-map+business-context（@op:20260226-2230）
