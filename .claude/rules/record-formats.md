@@ -1,209 +1,22 @@
----
-paths:
-  - "docs/records/**"
----
+# 記錄格式規則（精簡版）
 
-# 記錄層格式規範
+完整範例見 `docs/records/format-reference.md`（按需 Read，不自動載入）。
 
-碰到 `docs/records/` 檔案時自動載入。觸發規則和目錄結構見 CLAUDE.md。
+## 核心規則
 
----
-
-## OP 記錄格式（只記例外）
-
-**什麼時候寫 OP**：只在例行 commit message 說不清楚的時候——失敗、意外、重要決策、教訓。成功的例行工作靠 commit message 記錄，不另寫 OP。
-
-檔名：`{YYYYMMDD}-{機器碼}.md`，時間戳用台北時間 UTC+8。
-每筆 OP 用 `---` 分隔：
-
-```
-OP|{YYYYMMDD}-{HHMM}|{機器碼}|topic:{主題ID}
-自然語言描述（發生什麼、為什麼、學到什麼）
----
-```
-
-- **第一行**：結構化 header（`grep "^OP|"` 可列出所有例外記錄）
-- **topic**：可選。跨 session 或跨機器的工作才需要
-- **內容**：自由格式，長短不限。一句話能說清楚就一句話
-
-## Topic ID 命名規範
-
-格式：`{類別}-{描述}`，描述用小寫英文+連字號，不超過 20 字元。
-類別詞彙表：`feat`(新功能) / `fix`(修正) / `plan`(計畫) / `cleanup`(清理) / `infra`(基建) / `doc`(文件)
-寫 OP 時先掃最近記錄，有已存在的相近 topic 就沿用。
-
-## Commit Message 格式（推送回報）
-
-每次 push 的 commit message 就是向小組的回報。格式：
-
-```
-[類型] 一句話說做了什麼（機器碼）
-```
-
-**類型標籤**：
-
-| 標籤 | 含義 | 例子 |
-|------|------|------|
-| `feat` | 產品功能 | `[feat] M03 適配度評分五維函式完成（ITEJ）` |
-| `fix` | 修 bug | `[fix] 報價負數防護補雙層（ITEJ）` |
-| `test` | 補測試 | `[test] scout-report 邊界測試 +7（AINL）` |
-| `review` | 審查結果 | `[review] ITEJ pricing 模組通過（Z1FV）` |
-| `infra` | 基建 | `[infra] 快照格式加模型欄位（JDNE）` |
-| `admin` | 行政 | `[admin] 快照巡邏+任務分配（JDNE）` |
-
-**效果**：機器主官跑 `git log --oneline -20` 就能看到：
-- 誰在做什麼
-- feat/infra 比例一目了然
-- 不需要讀 OP 或快照就知道全局動態
-
-**規則**：
-- 括號裡帶機器碼，讓 log 裡能分辨是誰的 commit
-- 類型誠實標——把 infra 標成 feat 會被品管抓
-- 例行成功靠 commit message 記錄，OP 只記例外
-
-## 修正記錄
-
-不改原檔，寫新的 OP，內容提及原記錄的日期和 topic。
-
-## 快照
-
-檔名：`_snapshot-{機器碼}.md`，定位為本機工作備忘錄。
-
-### 時間戳規則（必須遵守）
-
-**日期部分必須使用 system prompt 中注入的 `currentDate`（格式 `YYYY-MM-DD`），轉為 `YYYYMMDD`。時分部分用 Bash 取得系統時間。禁止估算或手動填寫日期。**
-
-```bash
-# 日期：從 currentDate 取（例：2026-02-23 → 20260223）
-# 時分：Bash 取得
-powershell -c "Get-Date -Format 'HHmm'"
-```
-
-所有機器的所有時間戳（OP、快照、commit 記錄）都必須遵守此規則。（出處：Jin 直接指示 0223）
-
-### 格式與標記
-
-```
-SNAPSHOT|{YYYYMMDD-HHMM}|{機器碼}|{模型}
-[ ] {主題ID}|{描述}|{進度}
-[>] {主題ID}|{描述}|{進行中說明}
-[x] {主題ID}|{描述}|{出處：@op: 或 commit hash}
-[?] {主題ID}|{描述}|{未決原因}
-[~] {主題ID}|{描述}|放棄：{理由}
-```
-
-四種標記：`[ ]` 待做、`[x]` 完成、`[?]` 未決、`[~]` 放棄。進行中用 `[>]`。
-`[~]` 必須附理由（寫在描述欄尾部，格式 `放棄：{理由}`）。
-
-**`[>]` 補測試時的粒度規則**：準備連續多天補同一測試檔時，在描述欄標明具體檔名，避免多台同時補同一個：
-```
-[>] feat-test|orchestrateAccept.test.ts|補整合測試中
-```
-一次性小補（預期當天完成）不需標檔名，碰撞了 rebase 解決即可。（出處：efficiency-discussion 全員共識 0223）
-
-**完成標準**：第一級測試+build 過即完成；第二級加上另一台審查即完成；第三級需 Jin 確認。用戶使用時發現問題隨時開 issue 退回。
-
-### 時間完備原則
-
-快照中的每個項目必須有明確結局，不能悄悄消失。
-
-**更新流程**（每次更新快照時必須依序執行）：
-1. **讀舊**：`Read _snapshot-{自己}.md`
-2. **清理舊項目**：把所有 `[x]`/`[~]` 遷入 `docs/records/_snapshot-archive.md`（在各機器段落下追加），再從快照刪除
-3. **逐項確認**：對每個留下的項目，更新標記和描述
-4. **加新**：補入 context window 中有結論的新項目
-5. **寫入**：`Write` 覆蓋快照檔
-
-退出快照的原則：
-- `[x]` 或 `[~]`：可在任何快照更新時移除，但必須先遷入 `_snapshot-archive.md`
-- `[ ]`、`[?]`、`[v]`、`[>]`：不能消失（未結案）
-
-### 範例
-
-```
-SNAPSHOT|20260219-2330|ITEJ
-[ ] plan-build-pcc-mcp|建 PCC MCP server|待 Layer 0 階段
-[x] infra-memory-rules|MEMORY.md 維護規則|@op:20260219-ITEJ#2130
-[?] plan-saas-storage|知識庫儲存方案|Notion vs Supabase 未決
-[~] plan-discord-bot|Discord Bot 架構|放棄：改為 SaaS 網頁
-```
-
-## 審查結果格式
-
-審查完成時，在快照記錄結構化結果，deferred issues 掛在對應模組行：
-
-```
-[x] review-{模組}|{模組名}審查完成|PASS：{N} issues，{M} fixed，{K} deferred
-  [deferred] {issue-1 一句話描述}
-  [deferred] {issue-2 一句話描述}
-```
-
-deferred 掛在快照行就不會被遺忘。下一個碰到這模組的機器評估是否要處理。
-審查全 PASS 且無 issues：直接寫 `PASS` 不加數字。（出處：efficiency-discussion 全員共識 0223）
-
-## 主題索引（`_index.md`）
-
-每個主題一行：`{topic}|{狀態}|{一句話結論}|{最新出處}|{最後更新}`
-狀態值：`進行中` / `完成` / `已被取代` / `已放棄`
-寫 OP 或回報時自動更新。啟動時一次 Read 即可了解所有主題現況。
-
-## 寫入前自我檢查
-
-1. 這件事靠 commit message 說不清楚嗎？說得清楚就不用寫 OP。
-2. header 格式正確？檔名格式正確？月份子目錄存在？
-
-## 三層檢索架構
-
-```
-主題索引 _index.md    ← 「是什麼」「目前狀態」（1 次 Read）
-    ↓ 需要更多細節
-回報                  ← 「為什麼」「決策脈絡」（1 次 Read）
-    ↓ 需要原始細節
-OP 記錄               ← 完整操作過程（grep + Read）
-```
-
-查詢時從上往下找，大部分問題在前兩層就能回答。
-回報的讀取範圍 = 上次回報到現在，所有機器的快照 + OP。
-
-## 跨 session 訊息
-
-機器之間直接傳話，靠 git push/pull 投遞。SessionStart hook 自動檢查收件匣。
-
-### 目錄
-
-```
-docs/records/messages/
-  {YYYYMMDD}-{HHMM}-{寄件人}-to-{收件人}.md   ← 一個檔案 = 一則訊息
-  archive/                                      ← 已讀已處理的訊息
-```
-
-### 檔名規則
-
-- 收件人 = 機器碼（如 `ITEJ`）或 `ALL`（廣播）
-- 範例：`20260223-0630-JDNE-to-ITEJ.md`、`20260223-0630-JDNE-to-ALL.md`
-
-### 訊息格式
-
-```
-MSG|{YYYYMMDD}-{HHMM}|{寄件人}|to:{收件人}
-{自然語言內容，長短不限}
-```
-
-### 收發流程
-
-| 動作 | 怎麼做 |
-|------|--------|
-| 寄信 | Write 訊息檔 → git add + commit + push |
-| 收信 | SessionStart hook 自動掃描並輸出（或手動 `git pull` 後掃描） |
-| 已讀 | 處理完後，把檔案從 `messages/` 搬到 `messages/archive/` |
-
-### 使用原則
-
-- 快照是工作備忘錄，訊息是點對點通訊——職責不混
-- 不急的資訊寫快照就好，需要對方下次啟動就看到的用訊息
-- 廣播（to-ALL）只用在需要全員知道的事，不濫用
-- **機器間語言**：訊息內容可用高度壓縮的機器短格式（縮寫、符號、省略語法），省 token 優先。只有面對人類的介面（UI、回報、對話）才需要自然中文。（Jin 指示 0223）
-
-## 歸檔
-
-不搬檔案。靠檢索層級自動控制：有了回報後，回報之前的 OP 只在搜尋時才讀。
+- **OP 只記例外**：失敗、意外、重要決策、教訓。成功靠 commit message。
+- **Commit 格式**：`[type] 一句話（機器碼）`。type = feat/fix/test/review/infra/admin。
+- **快照標記**：`[ ]` 待做 `[>]` 進行中 `[x]` 完成 `[?]` 未決 `[~]` 放棄（附理由）。
+- **快照時間戳**：日期從 system prompt `currentDate`，時分用 `powershell -c "Get-Date -Format 'HHmm'"`。禁止估算。
+- **快照更新**：讀舊 → [x]/[~] 遷 archive → 逐項更新 → 加新 → Write 覆蓋。
+- **[>] 補測試粒度**：連續多天同檔 → 描述標檔名避碰撞。一次性不需要。
+- **完成標準**：L1 test+build; L2 +非作者審查; L3 +Jin 確認。
+- **審查結果**：`[x] review-{模組}|PASS：{N} issues，{M} fixed，{K} deferred`，deferred 掛快照行。
+- **索引格式**：`{topic}|{狀態}|{一句話}|{出處}|{日期}`。狀態：進行中/完成/已被取代/已放棄。
+- **訊息格式**：`MSG|{日期時間}|{寄件人}|to:{收件人}`，內容用壓縮短格式。收件人=機器碼或 ALL。
+- **訊息收發**：Write→push 寄出；SessionStart hook 自動掃描收件匣；已讀搬 archive/。
+- **機器間語言**：快照/訊息/OP 用壓縮英文短格式。面對人類才用自然中文。
+- **m2m 訊息限制**：最多 3 行，避免冗詞。超過 3 行分割成多則訊息。
+- **三層檢索**：索引（是什麼）→ 回報（為什麼）→ OP（原始細節）。從上往下查。
+- **修正**：不改原檔，寫新 OP 提及原記錄日期和 topic。
+- **寫入前檢查**：commit message 說得清楚嗎？說得清就不用寫 OP。

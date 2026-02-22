@@ -25,6 +25,7 @@ if [ -n "$MACHINE_ID" ]; then
 
   # ═══ 收件匣：掃描寄給本機或 ALL 的訊息 ═══
   MSG_DIR="$CLAUDE_PROJECT_DIR/docs/records/messages"
+  ARCHIVE_DIR="$MSG_DIR/archive"
   if [ -d "$MSG_DIR" ]; then
     MSGS=$(find "$MSG_DIR" -maxdepth 1 -name "*.md" \( -name "*-to-${MACHINE_ID}.md" -o -name "*-to-ALL.md" \) 2>/dev/null | sort)
     if [ -n "$MSGS" ]; then
@@ -34,10 +35,11 @@ if [ -n "$MACHINE_ID" ]; then
         echo "--- $(basename "$MSG_FILE") ---"
         cat "$MSG_FILE"
         echo ""
+        # 自動歸檔（無需 AI 手動操作）
+        mkdir -p "$ARCHIVE_DIR"
+        mv "$MSG_FILE" "$ARCHIVE_DIR/" 2>/dev/null || true
       done
-      echo "=== 收件匣結束 ==="
-      echo ""
-      echo "讀完訊息後：(1) 處理內容 (2) 把已讀檔案搬到 messages/archive/"
+      echo "=== 收件匣結束 (已自動歸檔) ==="
     fi
   fi
 fi

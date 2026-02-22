@@ -5,14 +5,14 @@ import { DEFAULT_SETTINGS } from "@/lib/settings/defaults";
 import { useSettings } from "@/lib/context/settings-context";
 
 // ── Hoisted mocks ─────────────────────────────────────────
-const { mockPush, mockSearchGet } = vi.hoisted(() => ({
+const { mockPush, mockGet } = vi.hoisted(() => ({
   mockPush: vi.fn(),
-  mockSearchGet: vi.fn(() => null),
+  mockGet: vi.fn().mockReturnValue(null),
 }));
 
 // ── Mock next/navigation ──────────────────────────────────
 vi.mock("next/navigation", () => ({
-  useSearchParams: () => ({ get: mockSearchGet }),
+  useSearchParams: () => ({ get: mockGet }),
   useRouter: () => ({ push: mockPush }),
 }));
 
@@ -67,6 +67,7 @@ vi.mock("@/components/layout/Sidebar", () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockGet.mockReturnValue(null); // 預設：所有 searchParams 回傳 null
   vi.mocked(useSettings).mockReturnValue({
     settings: DEFAULT_SETTINGS,
   } as unknown as ReturnType<typeof useSettings>);
@@ -165,38 +166,41 @@ describe("StrategyPage — 表單互動", () => {
   });
 });
 
-describe("StrategyPage — 回到案件按鈕", () => {
-  it("無 caseId 時分析後不顯示「← 回到案件」按鈕", () => {
+describe("StrategyPage — 回到案件導覽", () => {
+  it("無 caseId 時不顯示「回到案件」按鈕", () => {
+    mockGet.mockReturnValue(null);
     render(<StrategyPage />);
-    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
-      target: { value: "食農教育推廣計畫" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
     expect(screen.queryByRole("button", { name: "← 回到案件" })).toBeNull();
   });
 
-  it("有 caseId 且分析後顯示「← 回到案件」按鈕", () => {
-    mockSearchGet.mockImplementation((key: string) =>
-      key === "caseId" ? "abc123def" : null,
+  it("有 caseId 時顯示「← 回到案件」按鈕", () => {
+    mockGet.mockImplementation((key: string) =>
+      key === "caseId" ? "page-abc" : null,
     );
     render(<StrategyPage />);
-    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
-      target: { value: "食農教育推廣計畫" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
     expect(screen.getByRole("button", { name: "← 回到案件" })).toBeTruthy();
   });
 
-  it("點「← 回到案件」導航到 /case-work?id=", () => {
-    mockSearchGet.mockImplementation((key: string) =>
-      key === "caseId" ? "abc123def" : null,
+  it("點「← 回到案件」導向 /case-work?id={caseId}", () => {
+    mockGet.mockImplementation((key: string) =>
+      key === "caseId" ? "page-abc" : null,
+    );
+    render(<StrategyPage />);
+    fireEvent.click(screen.getByRole("button", { name: "← 回到案件" }));
+    expect(mockPush).toHaveBeenCalledWith("/case-work?id=page-abc");
+  });
+
+  it("點「開始撰寫」時帶 caseId 到 /assembly", () => {
+    mockGet.mockImplementation((key: string) =>
+      key === "caseId" ? "page-abc" : null,
     );
     render(<StrategyPage />);
     fireEvent.change(screen.getByLabelText("案件名稱 *"), {
       target: { value: "食農教育推廣計畫" },
     });
     fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
-    fireEvent.click(screen.getByRole("button", { name: "← 回到案件" }));
-    expect(mockPush).toHaveBeenCalledWith("/case-work?id=abc123def");
+    fireEvent.click(screen.getByRole("button", { name: "開始撰寫（進入提示詞組裝）" }));
+    expect(mockPush.mock.calls[0][0]).toContain("/assembly");
+    expect(mockPush.mock.calls[0][0]).toContain("caseId=page-abc");
   });
 });
