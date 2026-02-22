@@ -270,6 +270,8 @@
 [x] broadcast-autonomous-expansion|授權擴大廣播|Jin 0223 授權，CLAUDE.md 已更新（075f4c8），全員快照已收到。（3O5L）
 [x] feat-test-page-expand|頁面測試全覆蓋|5 檔新增（case-board+prompts+docx+quality+explore），215 files 3282 tests（AINL 0223）
 [x] broadcast-autonomous-expansion|自主授權擴大：可逆操作全部自主|Jin 指示 0223，CLAUDE.md 已更新（075f4c8）（AINL 0223）
+[x] feat-gap3-quality-gate-context|GAP-3: quality-gate case context|?caseId/?caseName + back btn (header+bottom) + 4 tests, 3314 tests (3O5L)
+[x] feat-gap2-assembly-quality-gate|GAP-2: assembly copy+go quality-gate btn|case-work passes caseId to assembly, assembly adds btn, 5 tests, 3326 tests (3O5L)
 [x] infra-去聊天-token-rules|/去聊天 加字數限制規則|A44T 三條規則落地，commit 992af66（AINL 0223）
 [x] admin-devmap-3282|dev-map 更新：測試數+Explorer 模組（15→16）+里程碑|commit 4a9dc7f（AINL 0223）
 [x] test-feature-registry-explore|feature-registry 測試補完：explore/scan/case-work/strategy/quality-gate 斷言，+1 路由測試|commit 87b455a（AINL 0223）
