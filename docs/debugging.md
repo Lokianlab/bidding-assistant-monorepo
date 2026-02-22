@@ -84,61 +84,57 @@
 
 在用戶裁決前，不應單方面修改任何一個模組。
 
-## 6. Vitest Mock 三個陷阱
+## 5. Vitest Mock 陷阱（Page 測試）
 
-多台機器在補 page-level 測試時踩到，整理如下。（來源：3O5L/A44T/AINL 效率討論 0223）
+補 `src/app/` 頁面測試時，兩個非顯而易見的 mock 問題（3O5L 0223 整理）：
 
-### 陷阱一：Mock 工廠函式每次回傳新物件 → useEffect 無限重渲染 → OOM
-
-```ts
-// 危險：每次 render 都是新物件，React 認為 dependency 改變
-vi.mock("@/lib/useData", () => ({
-  useData: () => ({ items: [] }),  // 新物件
-}));
-
-// 安全：抽出常數，保持物件同一個引用
-const MOCK_ITEMS: Item[] = [];
-vi.mock("@/lib/useData", () => ({
-  useData: () => ({ items: MOCK_ITEMS }),
-}));
-```
-
-**根因**：`useEffect` 依賴陣列用 `Object.is` 比較，新物件 = 永遠不等 → 無限 re-render → OOM 崩潰。
-
-### 陷阱二：靜態 import 含 recharts 的元件 → ESM 錯誤
-
-即使元件被條件渲染（`{showChart && <Chart />}`），只要在測試環境靜態 import 就會觸發 recharts 的 ESM 問題。
-
-**解法**：在測試檔頂部 mock 掉含圖表的元件：
+### 陷阱一：mock 工廠每次回傳新物件 → useEffect 無限重渲染 → OOM 崩潰
 
 ```ts
-vi.mock("@/components/charts/SomeChart", () => ({
-  SomeChart: () => <div data-testid="mock-chart" />,
-}));
+// ❌ 危險：每次 render 都回傳不同物件參考
+vi.mock('@/lib/settings', () => ({
+  useSettings: () => ({ user: { name: 'test' } })  // 新物件 ≠ 舊物件
+}))
+
+// ✅ 安全：物件在 mock 外部宣告，參考穩定
+const mockUser = { name: 'test' }
+vi.mock('@/lib/settings', () => ({
+  useSettings: () => ({ user: mockUser })
+}))
 ```
 
-**根因**：recharts 的 ESM 模組在 vitest 的 jsdom 環境下無法正常解析，即使不執行也會在 import 階段出錯。
+**根因**：React `useEffect` 的依賴陣列比對用 `Object.is`（參考相等）。mock 每次回傳新物件 → 每次 render 依賴「改變」→ effect 觸發 → setState → render → 無限循環。
 
-### 陷阱三：Mock 預設值踩在業務邊界上
+### 陷阱二：靜態 import 含 recharts 的元件 → ESM 錯誤（即使條件渲染不走到）
 
 ```ts
-// 危險：budget "1,000,000元" 恰好命中分類門檻 budgetMax: 1_000_000
-const mockDetailSuccess = (override = {}) => ({
-  budget: "1,000,000元",  // 邊界值，默默觸發 must 分類
-  ...override,
-});
+// ❌ 危險：即使從不渲染 CardRenderer，import 就已觸發 recharts ESM 解析
+import CardRenderer from '@/components/dashboard/CardRenderer'
 
-// 安全：預設值遠離業務邊界
-const mockDetailSuccess = (override = {}) => ({
-  budget: "50,000,000元",  // 遠超門檻，分類行為明確
-  ...override,
-});
+// ✅ 解法一：dynamic import（讓 vitest 跳過靜態解析）
+const CardRenderer = dynamic(() => import('@/components/dashboard/CardRenderer'))
+
+// ✅ 解法二：在測試中 mock 掉整個模組
+vi.mock('@/components/dashboard/CardRenderer', () => ({
+  default: () => null
+}))
 ```
 
-**根因**：Mock 的預設值在業務邊界上，測試結果依賴具體數字而非邏輯，難以發現、難以維護。
+**根因**：vitest 在 Node.js 環境執行，recharts 使用 ESM 語法（`import.meta`），Node.js 原生解析時爆錯，跟元件是否被渲染無關。
 
-**原則**：Mock 預設值選「離業務邊界遠的安全值」，邊界條件測試才明確設定邊界值。
+### 陷阱三：mock 預設值踩在業務邊界 → 意外觸發業務規則
 
-## 5. Claude Desktop App 大檔問題
+```ts
+// ❌ 危險：budget 剛好 = budgetMax 邊界，觸發 must 分類而非 other
+const mockDetailSuccess = { budget: '1,000,000元', ... }  // 100萬 = 分類門檻
+
+// ✅ 安全：遠離業務邊界的安全值
+const mockDetailSuccess = { budget: '50,000,000元', ... }  // 5千萬，不觸發任何邊界
+```
+
+**根因**：mock 預設值恰好等於或接近程式的判斷門檻（`budgetMax: 1_000_000`），導致看起來無關的測試改動突然讓多個測試同時爆。
+**教訓**：mock 預設值要選「中性值」——遠離所有業務邊界，不觸發任何特殊邏輯。（A44T 0223）
+
+## 6. Claude Desktop App 大檔問題
 
 Session 檔案超過 10MB 時，Claude Desktop App 會出現 "Failed to load session" 錯誤，無法載入對話。這是 Desktop App 的已知限制，與 Claude Code CLI 無關。
