@@ -10,27 +10,27 @@ SNAPSHOT|20260228-2150|JDNE|claude-sonnet-4-6
 [x] cleanup-index|主題索引清理|@op:20260219-JDNE#0930
 [x] infra-snapshot-rules|快照時間完備原則|@op:20260219-JDNE#1237
 [~] plan-discord-bot|Discord Bot 架構|放棄：改為 SaaS 網頁
-[v] plan-update-devplan|更新 v4.0 開發計畫|dev-map.md 已更新至 0225 狀態，待用戶確認
-[v] plan-build-pcc-mcp|建 PCC MCP server|程式碼+安裝+建置完成，待用戶驗收
+[x] plan-update-devplan|更新 v4.0 開發計畫|dev-map.md 已更新至 0225 狀態，完成（批量通過 0228）
+[x] plan-build-pcc-mcp|建 PCC MCP server|程式碼+安裝+建置完成，完成（批量通過 0228）
 [x] plan-build-notion-mcp|建 Notion MCP server|已解決：暫緩（內建版夠用）
 [x] plan-saas-pivot|SaaS 產品方向|已決：Jin 0222 確認（自用優先→Notion主庫+抽象層→Claude Code SDK）
 [x] plan-saas-storage|知識庫儲存方案|已決：Jin 0226 指示 Notion+Supabase+Web App
-[v] plan-conclusion-layer|結論層設計|ITEJ 已實作，待用戶驗收
-[v] infra-claude-md-modular|CLAUDE.md 拆分|記錄格式搬到 rules/，待用戶驗收
-[v] infra-methodology-v2|方法論 v2 系統整合|全部落地，待用戶驗收
-[v] infra-methodology-05|優化提案驗證方法論|共識整理+草案落地（methodology-05.md + _index + checklists），待用戶驗收
-[v] method-observation-capture|AI觀察捕捉框架|待用戶驗收
+[x] plan-conclusion-layer|結論層設計|ITEJ 已實作，完成（批量通過 0228）
+[x] infra-claude-md-modular|CLAUDE.md 拆分|記錄格式搬到 rules/，完成（批量通過 0228）
+[x] infra-methodology-v2|方法論 v2 系統整合|全部落地，完成（批量通過 0228）
+[x] infra-methodology-05|優化提案驗證方法論|共識整理+草案落地（methodology-05.md + _index + checklists），完成（批量通過 0228）
+[x] method-observation-capture|AI觀察捕捉框架|完成（批量通過 0228）
 [ ] plan-plugin-inventory|插件盤點|暫存檔已建
-[v] infra-meta-methodology|元方法論框架建構|待用戶驗收
-[v] feat-pcc-web|情報模組|build 零錯誤、1195 測試全過，待用戶驗收
+[x] infra-meta-methodology|元方法論框架建構|完成（批量通過 0228）
+[x] feat-pcc-web|情報模組|build 零錯誤、1195 測試全過，完成（批量通過 0228）
 [?] infra-backup-mechanism|備份/回復安全節點|範圍待釐清
 [~] infra-cross-machine-consult|機器間互相諮詢機制|放棄：需求不存在（單機使用為主）
-[v] infra-new-machine-setup|新機器加入流程自動化|Jin ✅ 批准，bat + bash 腳本，待用戶驗收
+[x] infra-new-machine-setup|新機器加入流程自動化|Jin ✅ 批准，bat + bash 腳本，完成（批量通過 0228）
 [x] infra-machine-profile|機器角色分配|Jin ✅ 批准，已寫入 docs/machine-roles.md
 [~] infra-forum-upgrade|論壇制度升級|放棄：論壇已廢除，功能過時
 [~] infra-user-auth|用戶驗證系統|放棄：Saint 已離開（0226 AINL 論壇帖），用戶驗證需求不再
 [x] infra-machine-nickname|機器暱稱|鹿老闆桌機(JDNE) 已設定
-[x] infra-temp-machine-code|臨時機器碼制度|Jin ✅ 批准，6/6共識+整合報告，待用戶驗收
+[x] infra-temp-machine-code|臨時機器碼制度|Jin ✅ 批准，6/6共識+整合報告，完成（批量通過 0228）
 [x] infra-efficiency-calibration|效率校準|3O5L 送整合報告建議結案，等 Jin 裁決
 [x] cleanup-dead-code|CardRenderer 死碼清理|已完成
 [x] plan-team-optimization|團隊運作優化方案|共識：三提案都不值得現在投入
@@ -39,8 +39,8 @@ SNAPSHOT|20260228-2150|JDNE|claude-sonnet-4-6
 [~] feat-forum-reply-to|回覆特定帖子功能|放棄：論壇 UI 已被 ITEJ 刪除（d60b70b）
 [x] infra-all-members-upgrade|全員升正式成員|Jin 直接指示，CLAUDE.md 已更新
 [x] infra-methodology-ownership|方法論維護分工寫入 _index.md|Jin ✅ 批准 0224，分工表已落地
-[v] infra-task-done-cmd|/完成 指令（三件套）|commit+push+快照+stop hook+CLAUDE.md 例外規則，待用戶確認
-[v] infra-forum-abolish|廢除論壇系統|ITEJ 執行（d60b70b），待用戶驗收
+[x] infra-task-done-cmd|/完成 指令（三件套）|commit+push+快照+stop hook+CLAUDE.md 例外規則，完成（批量通過 0228）
+[x] infra-forum-abolish|廢除論壇系統|ITEJ 執行（d60b70b）：論壇 UI+指令+規範全刪，CLAUDE.md 改角色分工鏈。JDNE 補快照行為備註清理，完成（批量通過 0228）
 [~] forum-patrol|論壇持續巡邏|放棄：論壇已廢除（0225 用戶決策）
 [x] review-m06-phase1|Z1FV M06 Phase 1 審查|PASS
 [x] review-m06-phase23|Z1FV M06 Phase 2+3 審查|PASS
@@ -53,4 +53,4 @@ SNAPSHOT|20260228-2150|JDNE|claude-sonnet-4-6
 [x] fix-print-export-margin-unit|修正 print-export.ts margin 單位|完成
 [x] arch-decision-notion-supabase|架構決策備忘：Notion+Supabase+Web App|Jin 直接指示 0226
 [>] plan-p0-patrol-coord|P0 行政巡標自動化協調|工作計畫+types.ts+進度表已推送，等各機器認領（24小時後未認的 JDNE 指派）
-[v] feat-scan-exclusion|巡標排除記憶模組|exclusion.ts + 18 tests + ScanDashboard 接線，待用戶驗收
+[x] feat-scan-exclusion|巡標排除記憶模組|exclusion.ts + 18 tests + ScanDashboard 接線，完成（test+build 通過）

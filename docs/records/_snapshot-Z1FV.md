@@ -3,16 +3,16 @@ SNAPSHOT|20260228-2050|Z1FV|Sonnet 4.6
 [x] feat-m06-output-phase1|M06 排版輸出模組 Phase 1|文件組裝管線+範本系統+DOCX/Markdown 匯出，39 tests，build 通過。驗收：npm run dev → /tools/output → 選範本 → 填章節 → 匯出 DOCX
 [x] feat-m06-output-phase2|M06 排版輸出模組 Phase 2|KB 佔位符注入（{{kb:00A:PM}} 等）+品牌/日期變數替換+KBInsertDialog UI，30 tests，build 通過。驗收：ChapterEditor 中點「插入知識庫」→ 選類別 → 插入佔位符
 [x] feat-m06-output-phase3|M06 排版輸出模組 Phase 3|列印/PDF（print-export.ts + CSS print stylesheet）+ AssemblyWarnings + DocumentPreview，27 tests，build 通過。驗收：/tools/output → 選格式「列印（PDF）」→ 點匯出 → 列印預覽對話框開啟 → 點「列印 / 儲存為 PDF」
-[x] feat-docgen-markdown|docgen 支援完整 markdown 格式|標題+列表+粗斜體，+19 tests，待用戶驗收
-[x] feat-docgen-cover-toc|docgen 封面頁+自動目錄|封面+目錄+heading 樣式，+19 tests，待用戶驗收
-[x] feat-trend-dashboard|趨勢分析整合到儀表板卡片|LineChart+BarChart，待用戶驗收
+[x] feat-docgen-markdown|docgen 支援完整 markdown 格式|標題+列表+粗斜體，+19 tests，完成（批量通過 0228）
+[x] feat-docgen-cover-toc|docgen 封面頁+自動目錄|封面+目錄+heading 樣式，+19 tests，完成（批量通過 0228）
+[x] feat-trend-dashboard|趨勢分析整合到儀表板卡片|LineChart+BarChart，完成（批量通過 0228）
 [x] feat-pricing-refactor|pricing 模組跨機器審查|品質好無 bug，ITEJ 已採納建議
-[x] fix-connections-page|ConnectionsPage apiKey undefined|deepMerge+防禦性 fallback，待用戶驗收
+[x] fix-connections-page|ConnectionsPage apiKey undefined|deepMerge+防禦性 fallback，完成（批量通過 0228）
 [x] feat-m04-quality-gate|M04 品質閘門全模組完成（Phase 1-4）|四道閘門+報告+UI+Hook，114 tests 全過。驗收說明已發論壇
 [x] feat-assembly-refactor|ITEJ 組裝引擎審查|審查通過，32 tests
 [x] feat-m04-quality-rules-extension|M04 品質規則擴充（履約實績缺失 + 模糊量化詞）|基於 AINL 失敗模式分析，+16 tests，1593/1593，build 通過。365音樂提案診斷驗證規則方向正確
 [x] infra-forum-replies|論壇 thread 回覆|所有需要 Z1FV 回覆的 thread 已完成，含 proposal-diagnosis-365music（0226）
-[x] infra-review-mechanisms|三系統檢討|分析已交付，待用戶裁決
+[x] infra-review-mechanisms|三系統檢討|分析已交付，完成（批量通過 0228）
 [x] infra-business-context|商業基線文件|docs/business-context.md 已建立，Jin 批准
 [x] test-quality-gate-components|M04 品質閘門 UI 元件測試|5 個元件測試檔（GateSummary+IssueList+FactCheckPanel+FeasibilityPanel+RequirementMatrixPanel），75 tests，閾值邊界+gate2 null+fallback+STATUS_ICON三態+覆蓋來源邏輯，全過（100 檔 1950 tests）
 [x] test-output-components|M06 輸出元件測試|ChapterList（13）+KBInsertDialog（12）：Dialog開啟/品牌選項/佔位符/onInsert/類別切換，全過（101 檔 1962 tests）
