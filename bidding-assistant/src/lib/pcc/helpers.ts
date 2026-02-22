@@ -84,8 +84,8 @@ export function formatAmount(amount: number | null): string {
 // ====== 標案詳情解析 ======
 
 /** 從動態 key-value detail 中找值（用結尾匹配） */
-function findDetailValue(
-  detail: Record<string, TenderDetailValue>,
+export function findDetailValue(
+  detail: Record<string, TenderDetailValue | unknown>,
   suffix: string,
 ): string | null {
   for (const [key, val] of Object.entries(detail)) {

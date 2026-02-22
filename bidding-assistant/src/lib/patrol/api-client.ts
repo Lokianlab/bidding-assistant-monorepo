@@ -17,6 +17,7 @@ import type {
   PccTenderDetail,
 } from './types';
 import type { ScanResult } from '../scan/types';
+import { parseAmount, findDetailValue } from '@/lib/pcc/helpers';
 
 // ============================================================
 // Notion 操作
@@ -149,34 +150,19 @@ export async function apiFetchTenderDetail(
 
     const d = raw.detail;
 
-    // 以 key 後綴匹配取值（PCC API key 有前綴但後綴固定）
-    const getValue = (suffix: string): string | null => {
-      for (const [key, val] of Object.entries(d)) {
-        if (key.endsWith(suffix) && typeof val === 'string') return val;
-      }
-      return null;
-    };
-
-    // 解析金額字串 "318,600元" → number
-    const parseAmt = (str: string | null): number | null => {
-      if (!str) return null;
-      const num = Number(str.replace(/[,，元\s]/g, ''));
-      return isNaN(num) ? null : num;
-    };
-
     return {
-      title: getValue(':標案名稱') ?? getValue(':案名') ?? '',
-      budget: parseAmt(getValue(':預算金額')),
-      agency: getValue(':機關名稱') ?? '',
-      deadline: getValue(':截止投標日期') ?? '',
-      publishDate: getValue(':公告日期') ?? '',
+      title: findDetailValue(d, ':標案名稱') ?? findDetailValue(d, ':案名') ?? '',
+      budget: parseAmount(findDetailValue(d, ':預算金額')),
+      agency: findDetailValue(d, ':機關名稱') ?? '',
+      deadline: findDetailValue(d, ':截止投標日期') ?? '',
+      publishDate: findDetailValue(d, ':公告日期') ?? '',
       jobNumber,
       unitId,
       url: '', // URL 已在 PatrolItem 中，詳情 API 不提供
-      awardType: getValue(':決標方式'),
-      category: getValue(':採購類別'),
-      contractPeriod: getValue(':履約期限'),
-      description: getValue(':工作說明') ?? getValue(':採購說明'),
+      awardType: findDetailValue(d, ':決標方式'),
+      category: findDetailValue(d, ':採購類別'),
+      contractPeriod: findDetailValue(d, ':履約期限'),
+      description: findDetailValue(d, ':工作說明') ?? findDetailValue(d, ':採購說明'),
     };
   } catch {
     return null;
