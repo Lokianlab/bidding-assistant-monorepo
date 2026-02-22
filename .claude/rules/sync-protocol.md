@@ -4,7 +4,7 @@
 
 - 推送用 `bash .claude/hooks/push-retry.sh`（自動 fetch+rebase+push，3次重試）
 - **push 節奏**：session 最多 2-3 次（中段+收尾），admin 改動攢一批
-- **巡邏**：code commit 推完才巡邏；admin commit 推完不巡邏
+- **巡邏**：只在「有衝突預期」或「JDNE 主動協調」時讀其他快照；禁自動巡邏
 - 長時間討論有重要決策 → 暫停推結論再繼續
 - 不能只寫進本機 MEMORY.md——其他機器看不到
 
