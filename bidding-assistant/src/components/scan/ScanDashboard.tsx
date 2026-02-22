@@ -13,6 +13,7 @@ import {
   getExcludedJobNumbers,
 } from "@/lib/scan/exclusion";
 import { TenderCard } from "./TenderCard";
+import { CreateCaseDialog } from "./CreateCaseDialog";
 import type { ScanResult, KeywordCategory } from "@/lib/scan/types";
 
 const TAB_CONFIG: { value: KeywordCategory; label: string; icon: string }[] = [
@@ -28,6 +29,9 @@ export function ScanDashboard() {
   const [activeTab, setActiveTab] = useState<KeywordCategory>("must");
   // 初始化時從 localStorage 載入排除清單（hydration-safe）
   const [skipped, setSkipped] = useState<Set<string>>(new Set());
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [pendingResult, setPendingResult] = useState<ScanResult | null>(null);
+  const [createdCases, setCreatedCases] = useState<Set<string>>(new Set());
   useEffect(() => {
     setSkipped(new Set(getExcludedJobNumbers()));
   }, []);
@@ -60,9 +64,20 @@ export function ScanDashboard() {
     setSkipped((prev) => new Set(prev).add(result.tender.jobNumber));
   };
 
-  const handleCreateCase = (_result: ScanResult) => {
-    // Phase 2: 呼叫 Notion 建案 API
-    // 目前僅提示功能尚未啟用
+  const handleCreateCase = (result: ScanResult) => {
+    setPendingResult(result);
+    setDialogOpen(true);
+  };
+
+  const handleCreateSuccess = (pageUrl: string) => {
+    if (pendingResult) {
+      setCreatedCases((prev) => new Set(prev).add(pendingResult.tender.jobNumber));
+    }
+    setDialogOpen(false);
+    setPendingResult(null);
+    if (pageUrl) {
+      window.open(pageUrl, "_blank", "noopener,noreferrer");
+    }
   };
 
   const handleViewDetail = (result: ScanResult) => {
@@ -72,6 +87,13 @@ export function ScanDashboard() {
 
   return (
     <div className="space-y-6">
+      <CreateCaseDialog
+        result={pendingResult}
+        open={dialogOpen}
+        onClose={() => { setDialogOpen(false); setPendingResult(null); }}
+        onSuccess={handleCreateSuccess}
+      />
+
       {/* 控制列 */}
       <div className="flex items-center justify-between">
         <div>
@@ -83,6 +105,11 @@ export function ScanDashboard() {
               {data.errors && data.errors.length > 0 && (
                 <span className="text-yellow-600 ml-2">
                   （{data.errors.length} 個關鍵字搜尋失敗）
+                </span>
+              )}
+              {createdCases.size > 0 && (
+                <span className="text-green-600 dark:text-green-400 ml-2">
+                  ✅ 已建案 {createdCases.size} 筆
                 </span>
               )}
             </p>

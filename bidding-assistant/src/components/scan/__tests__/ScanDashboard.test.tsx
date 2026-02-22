@@ -8,6 +8,18 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
+// ── Mock settings context（CreateCaseDialog 需要）──────────
+vi.mock("@/lib/context/settings-context", () => ({
+  useSettings: () => ({
+    settings: {
+      connections: {
+        notion: { token: "ntn_test", databaseId: "db-123" },
+      },
+    },
+    hydrated: true,
+  }),
+}));
+
 // ── Mock fetch ──────────────────────────────────────────────
 
 const mockFetch = vi.fn();
