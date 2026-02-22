@@ -9,6 +9,8 @@ export {
   filterExcluded,
   clearExclusions,
   getExcludedJobNumbers,
+  addCreatedCase,
+  getCreatedJobNumbers,
 } from "./exclusion";
 export type {
   KeywordCategory,
