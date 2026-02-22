@@ -271,3 +271,5 @@
 [x] admin-devmap-consistency|dev-map 系統概覽一致性修正：15→16 模組，3282→3286 tests|commit a4ed501（AINL 0223）
 
 [x] feat-scan-memory-mgmt|維護頁加巡標記憶管理|clearCreatedCases + UI Card + 7 tests，3296 tests，13202d4（3O5L）
+
+[x] feat-gap3-quality-gate-context|GAP-3：品質閘門加案件上下文|?caseId/?caseName+回到案件按鈕+4 tests，3314 tests（3O5L 0223）

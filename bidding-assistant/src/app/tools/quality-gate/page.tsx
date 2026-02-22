@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { MobileMenuButton } from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -10,6 +11,11 @@ import { QualityGateDashboard } from "@/components/quality-gate/QualityGateDashb
 import { useQualityGate } from "@/lib/quality-gate/useQualityGate";
 
 export default function QualityGatePage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const caseId = searchParams.get("caseId") || "";
+  const caseName = searchParams.get("caseName") || "";
+
   const [text, setText] = useState("");
   const { report, isAnalyzing, analyze, clear } = useQualityGate();
 
@@ -28,12 +34,26 @@ export default function QualityGatePage() {
       {/* Header */}
       <div className="flex items-center gap-3">
         <MobileMenuButton />
-        <div>
-          <h1 className="text-2xl font-bold">品質閘門</h1>
+        <div className="flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-2xl font-bold">品質閘門</h1>
+            {caseName && (
+              <span className="text-muted-foreground text-sm">— {caseName}</span>
+            )}
+          </div>
           <p className="text-muted-foreground text-sm mt-1">
             四道檢查：文字品質、事實查核、需求對照、實務檢驗
           </p>
         </div>
+        {caseId && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push(`/case-work?id=${caseId}`)}
+          >
+            ← 回到案件
+          </Button>
+        )}
       </div>
 
       {/* 輸入區 */}
@@ -64,7 +84,15 @@ export default function QualityGatePage() {
         <>
           <QualityGateDashboard report={report} />
           {/* 跨模組導航：品質通過後匯出文件 */}
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            {caseId && (
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/case-work?id=${caseId}`)}
+              >
+                ← 回到案件
+              </Button>
+            )}
             <Button asChild>
               <Link href="/tools/output">匯出文件（進入文件生成）</Link>
             </Button>

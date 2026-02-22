@@ -3,9 +3,17 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import QualityGatePage from "../page";
 
 // ── Hoisted mocks ─────────────────────────────────────────
-const { mockAnalyze, mockClear } = vi.hoisted(() => ({
+const { mockAnalyze, mockClear, mockPush, mockSearchGet } = vi.hoisted(() => ({
   mockAnalyze: vi.fn(),
   mockClear: vi.fn(),
+  mockPush: vi.fn(),
+  mockSearchGet: vi.fn(() => null),
+}));
+
+// ── Mock next/navigation ──────────────────────────────────
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => ({ get: mockSearchGet }),
+  useRouter: () => ({ push: mockPush }),
 }));
 
 // ── Mock useQualityGate ────────────────────────────────────
@@ -33,6 +41,7 @@ vi.mock("@/components/layout/Sidebar", () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockSearchGet.mockReturnValue(null);
   mockUseQualityGate.mockReturnValue({
     report: null,
     isAnalyzing: false,
@@ -65,6 +74,11 @@ describe("QualityGatePage — 渲染", () => {
       name: "開始檢查",
     }) as HTMLButtonElement;
     expect(btn.disabled).toBe(true);
+  });
+
+  it("無 caseId 時不顯示「← 回到案件」按鈕", () => {
+    render(<QualityGatePage />);
+    expect(screen.queryByRole("button", { name: "← 回到案件" })).toBeNull();
   });
 });
 
@@ -159,5 +173,48 @@ describe("QualityGatePage — 報告顯示", () => {
   it("report 為 null 時不顯示 QualityGateDashboard", () => {
     render(<QualityGatePage />);
     expect(screen.queryByTestId("quality-gate-dashboard")).toBeNull();
+  });
+});
+
+describe("QualityGatePage — caseId 上下文（GAP-3）", () => {
+  it("有 caseId 時顯示「← 回到案件」按鈕（Header 區）", () => {
+    mockSearchGet.mockImplementation((key: string) =>
+      key === "caseId" ? "abc-123" : null,
+    );
+    render(<QualityGatePage />);
+    const btns = screen.getAllByRole("button", { name: "← 回到案件" });
+    expect(btns.length).toBeGreaterThan(0);
+  });
+
+  it("有 caseName 時標題旁顯示案件名稱", () => {
+    mockSearchGet.mockImplementation((key: string) =>
+      key === "caseId" ? "abc-123" : key === "caseName" ? "某某音樂節目" : null,
+    );
+    render(<QualityGatePage />);
+    expect(screen.getByText("— 某某音樂節目")).toBeTruthy();
+  });
+
+  it("點「← 回到案件」呼叫 router.push 到 case-work", () => {
+    mockSearchGet.mockImplementation((key: string) =>
+      key === "caseId" ? "abc-123" : null,
+    );
+    render(<QualityGatePage />);
+    fireEvent.click(screen.getAllByRole("button", { name: "← 回到案件" })[0]);
+    expect(mockPush).toHaveBeenCalledWith("/case-work?id=abc-123");
+  });
+
+  it("report 存在且有 caseId 時底部也顯示「← 回到案件」按鈕", () => {
+    mockSearchGet.mockImplementation((key: string) =>
+      key === "caseId" ? "abc-123" : null,
+    );
+    mockUseQualityGate.mockReturnValue({
+      report: { overall: "pass" },
+      isAnalyzing: false,
+      analyze: mockAnalyze,
+      clear: mockClear,
+    });
+    render(<QualityGatePage />);
+    const btns = screen.getAllByRole("button", { name: "← 回到案件" });
+    expect(btns.length).toBe(2); // Header 和底部報告區各一個
   });
 });
