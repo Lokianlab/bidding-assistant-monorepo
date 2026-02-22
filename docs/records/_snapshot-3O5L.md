@@ -1,4 +1,4 @@
-SNAPSHOT|20260225-1620|3O5L|Sonnet 4.6
+SNAPSHOT|20260225-1730|3O5L|Sonnet 4.6
 
 ## 行為備註
 - 策略主官：優先序決定、跨機器協調、向 Jin 彙報
@@ -10,7 +10,7 @@ SNAPSHOT|20260225-1620|3O5L|Sonnet 4.6
 [x] role-assignment|工作角色分配|Jin 在 machine-profile 批准六台角色，3O5L = 策略主官
 [x] all-members-upgrade|全員升為正式成員|Jin 直接宣告，CLAUDE.md 已更新，廣播完成
 [x] infra-governance-phase|論壇治理階段|52 個 thread 全部 已結案，治理階段告一段落
-[x] infra-dev-map-update|dev-map.md 更新|M03/M04/PCC 加入里程碑，當前階段/優先序同步修正（含 JDNE 0225 版本衝突解決）
+[x] infra-dev-map-update|dev-map.md 更新|M03/M04/PCC 加入里程碑，當前階段/優先序同步修正（含 JDNE 0225 版本衝突解決）；AINL Proposal Cockpit 加入待決事項（0225-1730）
 [x] test-useforum|useForum hook 補測試|已被 ITEJ 刪除（論壇廢除 0224），測試隨模組一起刪除
 [x] test-use-document-assembly|useDocumentAssembly hook 補測試|32 tests 全過，Z1FV 審查 PASS，76 files 1518 tests
 [x] test-use-export|useExport hook 補測試|19 tests 全過（doExport 成功×4、失敗×5、downloadBlob DOM×4、FORMAT_LABELS×4），commit 908c724
