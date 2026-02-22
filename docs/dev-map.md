@@ -8,7 +8,7 @@
 
 | 組件 | 路徑 | 狀態 | 說明 |
 |------|------|------|------|
-| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，12 個功能模組（74 檔 1467 tests） |
+| 主程式 Web App | `bidding-assistant/` | 開發中 | Next.js 16 + React 19，12 個功能模組（76 檔 1518 tests） |
 | SmugMug MCP | `smugmug-mcp/` | 已完成 | 實績照片存取（7 工具） |
 | PCC API MCP | `pcc-api-mcp/` | 已完成 | 政府標案情報（6 工具） |
 | PCC Monitor | `pcc-monitor/` | 已完成 | API 更新延遲監控（GAS 每小時） |
