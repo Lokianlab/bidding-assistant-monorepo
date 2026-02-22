@@ -157,11 +157,9 @@ export default function ForumPage() {
     return Array.from(set).sort();
   }, [data]);
 
-  // SSR 和 client hydration 都返回 null（避免 hydration mismatch），
-  // mounted 後再顯示 loading 或內容
-  if (!mounted) return null;
-
-  if (loading) {
+  // SSR / client hydration / loading 都顯示同一個 skeleton，
+  // 確保 SSR HTML 和 client 首次渲染結構一致，避免 hydration mismatch。
+  if (!mounted || loading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
         <div className="text-muted-foreground">載入論壇資料中...</div>

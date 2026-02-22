@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -20,13 +19,9 @@ interface PostCardProps {
   onReply?: (post: ForumPost) => void;
 }
 
-// forum/page.tsx 已有 !mounted return null，PostCard 在 SSR 時不會渲染。
-// 用 mounted guard 取代 next/dynamic ssr:false，避免後者在模組層級建立動態邊界
-// 觸發 Next.js MetadataOutlet hydration mismatch。
+// page.tsx 已有 !mounted return null，PostCard 在 SSR 時不會渲染，
+// 所以這裡不需要額外的 mounted guard。直接渲染 ReactMarkdown。
 function MarkdownContent({ children }: { children: string }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return <div className="animate-pulse h-4 bg-muted rounded" />;
   return <ReactMarkdown>{children}</ReactMarkdown>;
 }
 
