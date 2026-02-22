@@ -11,4 +11,15 @@ git pull --rebase origin main 2>/dev/null || true
 # 更新同步時間
 date +%s > "$CLAUDE_PROJECT_DIR/.last-sync-time"
 
+# 自動輸出本機快照（壓縮恢復時零成本接回工作）
+MACHINE_ID=$(cat "$CLAUDE_PROJECT_DIR/.machine-id" 2>/dev/null)
+if [ -n "$MACHINE_ID" ]; then
+  SNAPSHOT="$CLAUDE_PROJECT_DIR/docs/records/_snapshot-${MACHINE_ID}.md"
+  if [ -f "$SNAPSHOT" ]; then
+    echo "=== 本機快照（${MACHINE_ID}）==="
+    cat "$SNAPSHOT"
+    echo "=== 快照結束 ==="
+  fi
+fi
+
 exit 0
