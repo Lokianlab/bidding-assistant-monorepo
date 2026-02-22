@@ -111,7 +111,7 @@ export async function orchestrateAccept(
       config.notionDatabaseId,
     );
 
-    if (!notionResult.success || !notionResult.caseUniqueId) {
+    if (!notionResult.success || !notionResult.caseUniqueId || !notionResult.notionPageId) {
       return {
         notion: notionResult,
         drive: { success: false, error: 'Notion 建檔失敗，中止 Drive 流程' },

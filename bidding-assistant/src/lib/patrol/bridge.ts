@@ -41,7 +41,7 @@ const REVERSE_CATEGORY_MAP: Record<PatrolCategory, KeywordCategory> = {
 export function scanTenderToRaw(tender: ScanTender): PccAnnouncementRaw {
   return {
     title: tender.title,
-    budget: tender.budget || null,
+    budget: tender.budget ?? null,
     agency: tender.unit,
     deadline: tender.deadline,
     publishDate: tender.publishDate,

@@ -70,8 +70,14 @@ describe('bridge - 型別橋接', () => {
       expect(raw.unitId).toBe('');
     });
 
-    it('應該處理 budget=0 為 null', () => {
+    it('應該保留 budget=0（NT$0 是有效值）', () => {
       const tender = createMockScanTender({ budget: 0 });
+      const raw = scanTenderToRaw(tender);
+      expect(raw.budget).toBe(0);
+    });
+
+    it('應該將 undefined budget 轉為 null', () => {
+      const tender = createMockScanTender({ budget: undefined });
       const raw = scanTenderToRaw(tender);
       expect(raw.budget).toBeNull();
     });

@@ -110,6 +110,21 @@ describe('orchestrator - 編排流程', () => {
       expect(mockUpdateNotion).not.toHaveBeenCalled();
     });
 
+    it('Notion 回 success 但缺 notionPageId 時，視為失敗並中止', async () => {
+      mockCreateNotion.mockResolvedValue({
+        success: true,
+        caseUniqueId: 'case-1',
+        // notionPageId 缺失
+      });
+
+      const result = await orchestrateAccept(PATROL_ITEM, BASE_CONFIG);
+
+      expect(result.notion.success).toBe(true); // API 本身成功
+      expect(result.drive.error).toMatch(/Notion 建檔失敗/); // 但 orchestrator 視為中止
+      expect(mockCreateDrive).not.toHaveBeenCalled();
+      expect(mockUpdateNotion).not.toHaveBeenCalled();
+    });
+
     it('無 Drive config 時，Drive 回傳「尚未設定」錯誤，不呼叫 apiCreateDriveFolder', async () => {
       mockCreateNotion.mockResolvedValue({
         success: true,
