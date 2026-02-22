@@ -1,4 +1,4 @@
-SNAPSHOT|20260226-2040|AINL|opus-4-6
+SNAPSHOT|20260226-2235|AINL|opus-4-6
 
 ## 外部指派（JDNE，20260226）與主動承接
 - **品質模組邊界測試補強**（優先）✓ 完成（+11 tests）
@@ -23,4 +23,4 @@ SNAPSHOT|20260226-2040|AINL|opus-4-6
 [x] infra-kb-dedup-strategy|B 資料夾去重策略詳化|掃描實際檔案（18,732 Word 檔），去重方案三層（Layer 1 檔名標記 7%、Layer 2 案件編號 ~15%、Layer 3 內容雜湊可選），完整 JavaScript 導入腳本框架 + 授權清單。報告已存檔 docs/records/KB-deduplication-strategy.md，待 Jin 授權後執行
 [x] feat-test-assembly-helpers|assembly/helpers 測試覆蓋補強|19 個測試覆蓋 6 個 pure functions，所有邊界情況和正常路徑完整。npm test + npm run build 均通過
 [x] infra-kb-import-scripts|KB初始化自動化腳本|Phase 1-2 去重腳本完成（phase1-dedup.js、phase2-dedup.js）+ EXECUTION-PLAN.md。包含試運行、備份、驗證、回滾機制。待 Jin 授權後可直接執行
-[>] plan-p0-patrol-c|P0 巡標 Layer C 業務邏輯層|classifier+converter+exclusion+orchestrator 四模組完成，94 tests 全過
+[x] plan-p0-patrol-c|P0 巡標 Layer C 業務邏輯層|5 模組（classifier+converter+exclusion+orchestrator+bridge）+ barrel export，110 tests，W01 scan 橋接完成。169 files 2705 tests 全過
