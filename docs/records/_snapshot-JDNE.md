@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2150|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260228-2205|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -52,5 +52,5 @@ SNAPSHOT|20260228-2150|JDNE|claude-sonnet-4-6
 [x] obs-margin-unit-mismatch|margin 單位不一致觀察記錄|已修正
 [x] fix-print-export-margin-unit|修正 print-export.ts margin 單位|完成
 [x] arch-decision-notion-supabase|架構決策備忘：Notion+Supabase+Web App|Jin 直接指示 0226
-[>] plan-p0-patrol-coord|P0 行政巡標自動化協調|工作計畫+types.ts+進度表已推送，等各機器認領（24小時後未認的 JDNE 指派）
-[x] feat-scan-exclusion|巡標排除記憶模組|exclusion.ts + 18 tests + ScanDashboard 接線，完成（test+build 通過）
+[v] plan-p0-patrol-coord|P0 行政巡標自動化協調|全鏈路完成：Layer A+B+C+D。A44T 建案記憶+對話框，AINL Layer C 94 tests，JDNE 排除記憶+接線，待 Jin 驗收
+[x] feat-scan-exclusion|巡標排除記憶模組|exclusion.ts + 18 tests + ScanDashboard 接線，已完成
