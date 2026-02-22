@@ -71,3 +71,4 @@ feat-scout-committee|待驗收|P偵察提示詞加入評委情報（外聯名單
 plan-m06-output|進行中|M06 排版輸出模組規格草案：三大功能（文件組裝管線/範本系統/多格式輸出），建立在現有 docgen 之上，四期分期|@op:20260222-ITEJ#2359|2026-02-22
 feat-m04-phase2|待驗收|M04 Phase 1-4 全完成：四道閘門純函式（104 tests）+ 6 UI 元件 + Hook + Feature Registry + 頁面，70 檔 1412 tests 全過|@op:20260223-Z1FV#0325|2026-02-23
 plan-m02-kb|待驗收|M02 知識庫模組規格 v0.1：Supabase schema + API routes + 6 phase 分期 + H: 匯入管線 + 離線策略|ITEJ 快照|2026-02-27
+feat-case-work-page|待驗收|P1 案件工作頁：/case-work?id={pageId}，案件資訊+可編輯 L1-L8 進度+自動 M03 戰略評分+PCC 情報摘要+行動按鈕|commit 71aa45d|2026-02-27
