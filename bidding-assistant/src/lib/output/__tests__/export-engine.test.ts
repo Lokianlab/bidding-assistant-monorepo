@@ -97,11 +97,27 @@ describe("exportDocument — Markdown", () => {
 });
 
 describe("exportDocument — Print", () => {
-  it("回傳 format: print", async () => {
+  it("回傳 format: print 且 HTML 非空", async () => {
     const result = await exportDocument({ ...baseOptions, format: "print" });
     expect(result.format).toBe("print");
     if (result.format === "print") {
-      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(100);
+    }
+  });
+
+  it("HTML 包含案件名稱和章節標題", async () => {
+    const result = await exportDocument({ ...baseOptions, format: "print" });
+    if (result.format === "print") {
+      expect(result.html).toContain("測試案件");
+      expect(result.html).toContain("第一章");
+      expect(result.html).toContain("第二章");
+    }
+  });
+
+  it("HTML 包含 @media print 樣式", async () => {
+    const result = await exportDocument({ ...baseOptions, format: "print" });
+    if (result.format === "print") {
+      expect(result.html).toContain("@media print");
     }
   });
 });
