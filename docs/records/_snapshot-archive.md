@@ -19,6 +19,16 @@
 [x] plan-saas-pivot|SaaS 產品方向|已決：Jin 0222 確認（自用優先→Notion主庫+抽象層→Claude Code SDK）
 [x] plan-saas-storage|知識庫儲存方案|已決：Jin 0226 指示 Notion+Supabase+Web App
 [x] plan-conclusion-layer|結論層設計|ITEJ 已實作，完成（批量通過 0228）
+[x] doc-product-compass|產品羅盤 v0.6 納入規範體系|ff2294d
+[x] infra-cross-session-msg|跨 session 訊息機制|0975fc7
+[x] infra-dual-lang-rule|雙語制寫入規範|9606e8f
+[x] infra-push-retry|push-retry 腳本|145334d
+[x] infra-token-rules|Token 效率硬性規則|8f922b7
+[x] infra-prepush-relax|pre-push hook 放寬基建檔|3704e26
+[x] chat-optimize-chat-cost|/去聊天 加字數限制|AINL 代勞 e3f9094
+[x] chat-3O5L-check-in|3O5L 報到|已回覆 via msgs/
+[x] chat-a44t-checkin|A44T 詢問優先序|已回覆 via msgs/
+[x] fix-page-tests-failure|5 個頁面測試失敗|Z1FV+3O5L 雙確認 3285 tests
 [x] infra-claude-md-modular|CLAUDE.md 拆分|記錄格式搬到 rules/，完成（批量通過 0228）
 [x] infra-methodology-v2|方法論 v2 系統整合|全部落地，完成（批量通過 0228）
 [x] infra-methodology-05|優化提案驗證方法論|共識整理+草案落地（methodology-05.md + _index + checklists），完成（批量通過 0228）
