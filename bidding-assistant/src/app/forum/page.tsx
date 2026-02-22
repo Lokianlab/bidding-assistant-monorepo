@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useForum } from "@/lib/forum/useForum";
 import { ForumOverview } from "@/components/forum/ForumOverview";
 import { ForumFilters, type ForumFilterState } from "@/components/forum/ForumFilters";
@@ -20,15 +20,12 @@ const DEFAULT_FILTERS: ForumFilterState = {
 };
 
 export default function ForumPage() {
-  const [mounted, setMounted] = useState(false);
   const { data, loading, error, refresh } = useForum();
   const [filters, setFilters] = useState<ForumFilterState>(DEFAULT_FILTERS);
   const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
   const [showOverview, setShowOverview] = useState(false);
   const [showCompose, setShowCompose] = useState(false);
   const [replyingTo, setReplyingTo] = useState<ForumPost | null>(null);
-
-  useEffect(() => setMounted(true), []);
 
   // 篩選討論串
   const filteredThreads = useMemo(() => {
@@ -157,9 +154,8 @@ export default function ForumPage() {
     return Array.from(set).sort();
   }, [data]);
 
-  // SSR / client hydration / loading 都顯示同一個 skeleton，
-  // 確保 SSR HTML 和 client 首次渲染結構一致，避免 hydration mismatch。
-  if (!mounted || loading) {
+  // loading.tsx 提供 Suspense fallback，這裡只處理 data loading
+  if (loading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
         <div className="text-muted-foreground">載入論壇資料中...</div>
