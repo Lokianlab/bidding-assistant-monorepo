@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import CaseWorkPage from "../page";
 import { DEFAULT_SETTINGS } from "@/lib/settings/defaults";
 import { useSettings } from "@/lib/context/settings-context";
+import { loadCaseById } from "@/lib/case-work/helpers";
 
 // ── Hoisted mocks ─────────────────────────────────────────
 const { mockSearchGet } = vi.hoisted(() => ({
@@ -115,6 +116,24 @@ describe("CaseWorkPage — 有 pageId 但找不到案件", () => {
       expect(
         screen.getByRole("heading", { name: "找不到案件" }),
       ).toBeTruthy();
+    });
+  });
+});
+
+describe("CaseWorkPage — 有 pageId 且找到案件", () => {
+  it("顯示案件名稱", async () => {
+    mockSearchGet.mockImplementation((key: string) =>
+      key === "id" ? "abc123def" : null,
+    );
+    vi.mocked(loadCaseById).mockReturnValueOnce({
+      id: "abc123def",
+      url: "https://www.notion.so/abc123def",
+      properties: { "標案名稱": "食農教育推廣計畫" },
+    });
+
+    render(<CaseWorkPage />);
+    await vi.waitFor(() => {
+      expect(screen.getByText("食農教育推廣計畫")).toBeTruthy();
     });
   });
 });
