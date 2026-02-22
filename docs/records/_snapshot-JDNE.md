@@ -1,4 +1,4 @@
-SNAPSHOT|20260226-1840|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260226-2000|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -46,3 +46,4 @@ SNAPSHOT|20260226-1840|JDNE|claude-sonnet-4-6
 [x] review-m06-phase23|Z1FV M06 Phase 2+3 審查|kb-injector+print-export+DocumentPreview，PASS（@op:20260225-1700）
 [x] review-cross-module-nav|A44T 跨模組導航審查|81638fe，3 檔，PASS（@op:20260225-1600）
 [x] review-docgen-improvements|Z1FV docgen markdown+cover+TOC 審查|PASS，附 margin 注釋矛盾觀察（@op:20260226-1900）
+[x] review-fix-connections-page|Jin fix-connections-page 審查|deepMerge 修根因+元件層 fallback，PASS（@op:20260226-2000）
