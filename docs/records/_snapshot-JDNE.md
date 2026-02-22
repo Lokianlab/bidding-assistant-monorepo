@@ -1,4 +1,4 @@
-SNAPSHOT|20260228-2345|JDNE|claude-sonnet-4-6
+SNAPSHOT|20260228-2355|JDNE|claude-sonnet-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
@@ -55,3 +55,4 @@ SNAPSHOT|20260228-2345|JDNE|claude-sonnet-4-6
 [v] plan-p0-patrol-coord|P0 行政巡標自動化協調|全鏈路完成：Layer A+B+C+D。A44T 建案記憶+對話框，AINL Layer C 94 tests，JDNE 排除記憶+接線，待 Jin 驗收
 [x] feat-scan-exclusion|巡標排除記憶模組|exclusion.ts + 18 tests + ScanDashboard 接線，已完成
 [x] test-patrol-api-routes|patrol API route 測試補強|/api/patrol/notion/create + update + /api/patrol/drive/create，+24 tests，2878 total
+[x] test-patrol-api-client|patrol api-client 測試補強|17 tests 覆蓋所有 fetch wrapper（成功/例外），2907 total
