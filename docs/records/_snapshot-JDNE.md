@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-0632|JDNE|claude-opus-4-6
+SNAPSHOT|20260223-0633|JDNE|claude-opus-4-6
 
 ## 行為備註（改了就移除）
 - 有分派權：可以分配工作給其他機器
