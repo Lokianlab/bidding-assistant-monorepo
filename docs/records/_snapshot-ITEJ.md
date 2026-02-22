@@ -25,7 +25,7 @@ SNAPSHOT|20260302-0100|ITEJ|opus-4.6
 [x] feat-assembly-refactor|提案組裝引擎重構|lib/assembly/，31 tests
 [x] plan-saas-storage|知識庫儲存方案|已決：Notion+Supabase+Web App（0226）
 [x] plan-notion-mcp-status|Notion MCP 定位|暫緩（內建版夠用）
-[ ] plan-devplan-push|消化暫存區推進開發計畫|6 條任務線完成，剩 6 個待決碎片
+[?] plan-devplan-push|消化暫存區推進開發計畫|6 條任務線完成，剩 6 個待決碎片，等 Jin 裁決
 [x] feat-test-coverage|持續補測試|182檔 2921 tests，CardPickerDialog+DashboardGrid+orchestrateAccept+lint cleanup
 [x] plan-m02-kb|M02 知識庫模組規格|v0.1 草案完成（0227），待用戶審閱
 [x] plan-w01-scan|W01 巡標自動化規格|v0.1 草案完成（0227）
@@ -44,5 +44,5 @@ SNAPSHOT|20260302-0100|ITEJ|opus-4.6
 [x] review-ainl-patrol-bridge|AINL patrol 型別橋接審查|PASS，16 tests，雙向映射正確
 [x] review-3o5l-keyword-manager|3O5L KeywordManager 審查|PASS，10 tests，Settings pattern 正確
 [x] review-ainl-patrol-layerb|AINL Layer B Notion/Drive writers 審查|PASS（條件），71 tests，7 issues（1 medium）
-[ ] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待用戶審閱
-[ ] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待用戶審閱
+[?] plan-m04-quality|M04 品質閘門模組規格|v0.1 草案完成，待 Jin 審閱
+[?] plan-m06-output|M06 排版輸出模組規格|v0.1 草案完成，待 Jin 審閱
