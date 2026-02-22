@@ -407,6 +407,69 @@ describe("POST /api/scan — 過期標案過濾", () => {
   });
 });
 
+// ── 效能優化：only must/review 打 detail ─────────────────────
+
+describe("POST /api/scan — detail API 呼叫控制", () => {
+  it("other 和 exclude 不打 detail API（fetch 呼叫次數驗證）", async () => {
+    const records = [
+      makePCCRecord({ title: "道路工程", jobNumber: "J001" }),   // other
+      makePCCRecord({ title: "課後服務", jobNumber: "J002" }),   // exclude
+    ];
+    mockPCCSuccess(makePCCResponse(records));
+    // other + exclude 應跳過 detail，所以只有 1 次 search fetch
+
+    const req = makeRequest({ keywords: ["測試"] });
+    await POST(req);
+
+    expect(mockFetch).toHaveBeenCalledTimes(1); // 只有 1 次 search，無 detail
+  });
+
+  it("other 類別的 budget 和 deadline 保持空（不填充）", async () => {
+    const records = [makePCCRecord({ title: "道路工程", jobNumber: "J001" })];
+    mockPCCSuccess(makePCCResponse(records));
+
+    const req = makeRequest({ keywords: ["測試"] });
+    const res = await POST(req);
+    const body = await res.json();
+
+    const tender = body.results[0].tender;
+    expect(tender.budget).toBe(0);     // brief 不含預算，且 other 跳過 detail
+    expect(tender.deadline).toBe(""); // brief 不含截標日，且 other 跳過 detail
+  });
+
+  it("PCC 回傳 HTML（端點異常）時拋出錯誤並記錄", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
+      json: async () => ({}),
+    });
+
+    const req = makeRequest({ keywords: ["測試"] });
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(body.errors).toHaveLength(1);
+    expect(body.errors[0].error).toMatch(/非預期格式/);
+  });
+
+  it("PCC 回傳 429 時顯示友善的限流訊息", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 429,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({}),
+    });
+
+    const req = makeRequest({ keywords: ["測試"] });
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(body.errors).toHaveLength(1);
+    expect(body.errors[0].error).toMatch(/請求過於頻繁/);
+  });
+});
+
 // ── isDeadlinePassed 民國年解析 ──────────────────────────────
 
 describe("截標日期解析", () => {
