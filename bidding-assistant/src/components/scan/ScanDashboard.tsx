@@ -4,6 +4,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -109,6 +110,11 @@ export function ScanDashboard() {
               共 {data.totalRaw} 筆公告，
               推薦 {data.counts.must} 筆，
               待審 {data.counts.review} 筆
+              {data.filteredExpired ? (
+                <span className="ml-1">
+                  （已過濾 {data.filteredExpired} 筆過期）
+                </span>
+              ) : null}
               {data.errors && data.errors.length > 0 && (
                 <span className="text-yellow-600 ml-2">
                   （{data.errors.length} 個關鍵字搜尋失敗）
@@ -122,9 +128,14 @@ export function ScanDashboard() {
             </p>
           )}
         </div>
-        <Button onClick={handleScan} disabled={loading}>
-          {loading ? "掃描中..." : "手動掃描"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/settings/modules">關鍵字設定</Link>
+          </Button>
+          <Button onClick={handleScan} disabled={loading}>
+            {loading ? "掃描中..." : "手動掃描"}
+          </Button>
+        </div>
       </div>
 
       {/* 錯誤訊息 */}

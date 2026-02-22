@@ -9,6 +9,7 @@ interface ScanResponse {
   results: ScanResult[];
   counts: Record<KeywordCategory, number>;
   totalRaw: number;
+  filteredExpired?: number;
   errors?: { keyword: string; error: string }[];
 }
 

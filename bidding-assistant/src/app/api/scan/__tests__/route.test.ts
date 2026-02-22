@@ -42,15 +42,24 @@ function makeRequest(body: unknown): NextRequest {
 
 // ── PCC mock data ───────────────────────────────────────────
 
+/** 產生 YYYYMMDD 格式的日期數字 */
+function toDateNum(d: Date): number {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return Number(`${y}${m}${day}`);
+}
+
 function makePCCRecord(overrides: {
   title: string;
   jobNumber?: string;
   unitName?: string;
   unitId?: string;
   type?: string;
+  date?: number;
 }) {
   return {
-    date: 20260228,
+    date: overrides.date ?? toDateNum(new Date()),
     filename: "test.html",
     brief: {
       type: overrides.type ?? "招標公告",
@@ -272,5 +281,75 @@ describe("POST /api/scan", () => {
 
     expect(body.results).toHaveLength(1);
     expect(mockFetch).toHaveBeenCalledTimes(1); // 只搜一頁
+  });
+});
+
+// ── 過期過濾 ───────────────────────────────────────────────
+
+describe("POST /api/scan — 過期標案過濾", () => {
+  it("決標公告不會出現在結果中", async () => {
+    const records = [
+      makePCCRecord({ title: "食農教育推廣", jobNumber: "J001", type: "招標公告" }),
+      makePCCRecord({ title: "藝術活動", jobNumber: "J002", type: "決標公告" }),
+    ];
+    mockPCCSuccess(makePCCResponse(records));
+
+    const req = makeRequest({ keywords: ["測試"] });
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(body.results).toHaveLength(1);
+    expect(body.results[0].tender.jobNumber).toBe("J001");
+    expect(body.filteredExpired).toBe(1);
+  });
+
+  it("無法決標公告和撤銷公告也被過濾", async () => {
+    const records = [
+      makePCCRecord({ title: "案子A", jobNumber: "J001", type: "無法決標公告" }),
+      makePCCRecord({ title: "案子B", jobNumber: "J002", type: "撤銷公告" }),
+      makePCCRecord({ title: "案子C", jobNumber: "J003", type: "招標公告" }),
+    ];
+    mockPCCSuccess(makePCCResponse(records));
+
+    const req = makeRequest({ keywords: ["測試"] });
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(body.results).toHaveLength(1);
+    expect(body.filteredExpired).toBe(2);
+  });
+
+  it("公告超過 30 天的標案被過濾", async () => {
+    const oldDate = new Date();
+    oldDate.setDate(oldDate.getDate() - 45);
+    const recentDate = new Date();
+    recentDate.setDate(recentDate.getDate() - 5);
+
+    const records = [
+      makePCCRecord({ title: "新案子", jobNumber: "J001", date: toDateNum(recentDate) }),
+      makePCCRecord({ title: "舊案子", jobNumber: "J002", date: toDateNum(oldDate) }),
+    ];
+    mockPCCSuccess(makePCCResponse(records));
+
+    const req = makeRequest({ keywords: ["測試"] });
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(body.results).toHaveLength(1);
+    expect(body.results[0].tender.jobNumber).toBe("J001");
+    expect(body.filteredExpired).toBe(1);
+  });
+
+  it("filteredExpired=0 當沒有過期標案", async () => {
+    mockPCCSuccess(makePCCResponse([
+      makePCCRecord({ title: "招標中", jobNumber: "J001" }),
+    ]));
+
+    const req = makeRequest({ keywords: ["測試"] });
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(body.filteredExpired).toBe(0);
+    expect(body.results).toHaveLength(1);
   });
 });
