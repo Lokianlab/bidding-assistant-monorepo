@@ -47,8 +47,8 @@ function buildCss(ds: DocumentSettings): string {
   const { fonts, fontSize, page } = ds;
   const { margins } = page;
 
-  // 單位轉換：DocumentSettings 的 margins 用 mm，fontSize 用 pt
-  const marginStr = `${margins.top}mm ${margins.right}mm ${margins.bottom}mm ${margins.left}mm`;
+  // 單位轉換：DocumentSettings 的 margins 用 cm（UI 標籤「邊距（cm）」），fontSize 用 pt
+  const marginStr = `${margins.top}cm ${margins.right}cm ${margins.bottom}cm ${margins.left}cm`;
 
   return `
     /* ── 基礎排版 ─────────────────────────── */

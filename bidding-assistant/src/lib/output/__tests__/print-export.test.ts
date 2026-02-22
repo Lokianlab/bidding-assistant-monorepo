@@ -10,7 +10,7 @@ const mockDocSettings: DocumentSettings = {
   fontSize: { body: 12, h1: 22, h2: 18, h3: 14, h4: 12 },
   page: {
     size: "A4",
-    margins: { top: 25, bottom: 25, left: 30, right: 30 },
+    margins: { top: 2.5, bottom: 2.5, left: 3, right: 3 },
     lineSpacing: 1.5,
     paragraphSpacing: { before: 0, after: 5 },
   },
@@ -100,9 +100,9 @@ describe("generatePrintHtml — 字型和樣式設定", () => {
 
   it("CSS 包含頁邊距設定", () => {
     const { html } = generatePrintHtml(baseOptions) as { format: "print"; html: string };
-    // 25mm top/bottom, 30mm left/right
-    expect(html).toContain("25mm");
-    expect(html).toContain("30mm");
+    // 2.5cm top/bottom, 3cm left/right（UI 標籤「邊距（cm）」）
+    expect(html).toContain("2.5cm");
+    expect(html).toContain("3cm");
   });
 });
 
