@@ -421,11 +421,7 @@ export default function CaseWorkPage() {
               <Button
                 variant="outline"
                 className="flex-1"
-                onClick={() => {
-                  const params = new URLSearchParams();
-                  if (caseName) params.set("caseName", caseName);
-                  router.push(`/tools/quality-gate?${params.toString()}`);
-                }}
+                onClick={() => router.push("/tools/quality-gate")}
               >
                 品質檢查
               </Button>
