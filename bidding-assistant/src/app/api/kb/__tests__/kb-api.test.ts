@@ -68,8 +68,19 @@ const mockSupabaseData: Record<string, any[]> = {
 
 // ============ Mock 函式 ============
 
+/**
+ * 建立 P1B OAuth session cookie（模擬登入後的狀態）
+ * 格式：base64(JSON) 其中 JSON = { userId, tenantId, email, googleId, iat }
+ */
 function createAuthToken(userId: string, email: string, tenantId: string) {
-  return Buffer.from(`${userId}:${email}:${tenantId}`).toString('base64');
+  const sessionData = {
+    userId,
+    tenantId,
+    email,
+    googleId: `google-${userId}`,
+    iat: Math.floor(Date.now() / 1000),
+  };
+  return Buffer.from(JSON.stringify(sessionData)).toString('base64');
 }
 
 function createMockRequest(
@@ -78,8 +89,9 @@ function createMockRequest(
   options?: { body?: any; token?: string },
 ) {
   const headers = new Headers();
+  // 改為設定 auth-session cookie（P1B OAuth 格式）
   if (options?.token) {
-    headers.set('authorization', `Bearer ${options.token}`);
+    headers.set('cookie', `auth-session=${options.token}`);
   }
   return new NextRequest(url, {
     method,
@@ -117,8 +129,8 @@ describe('知識庫 API 整合測試', () => {
         { token: 'invalid-token' },
       );
 
-      const authHeader = request.headers.get('authorization');
-      expect(authHeader).toEqual('Bearer invalid-token');
+      const cookieHeader = request.headers.get('cookie');
+      expect(cookieHeader).toContain('auth-session=invalid-token');
     });
 
     it('[基本查詢] 返回該租戶的所有項目', () => {
