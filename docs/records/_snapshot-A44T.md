@@ -15,3 +15,4 @@ SNAPSHOT|20260223-1600|A44T|claude-haiku-4-5-20251001
 [x] plan-saas-phase1|P1a-P1f 全部實裝完成，awaiting Jin 驗收|P1e(3O5L)待與 P1c 整合
 [x] m09-negotiation-prep|M09 議價分析準備完成：規格+邏輯(28)+Hook(14)+UI框架|7a07201,M02完成
 [x] m09-negotiation-phase1|M09 Phase 1 完成：UI(13)+整合(10)=65tests|c44bae2,待 Case-work 集成
+[>] m09-negotiation-phase2-init|M09 Phase 2 協調啟動：case-work 整合(Z1FV 5fe65e3)+轉換函式(73 tests)|0011d35,Settings UI 待做
