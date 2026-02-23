@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { CostBase, NegotiationConfig, NegotiationAnalysis, QuoteScenario } from "./types";
-import { analyzeNegotiation, simulateMultiple } from "./helpers";
+import type { CostBase, NegotiationConfig, NegotiationAnalysis, QuoteScenario, SensitivityAnalysis } from "./types";
+import { analyzeNegotiation, simulateMultiple, analyzeSensitivity } from "./helpers";
 import { useSettings } from "@/lib/context/settings-context";
 
 /** 議價分析 Hook */
@@ -93,4 +93,37 @@ export function useNegotiation(
     removeScenario,
     clearScenarios,
   };
+}
+
+/** 敏感度分析 Hook */
+export function useSensitivityAnalysis(
+  costBase: CostBase | null,
+  customConfig?: Partial<NegotiationConfig>
+): SensitivityAnalysis | null {
+  const { settings } = useSettings();
+
+  // 合併設定：用戶自訂 > 應用設定 > 預設值
+  const config: NegotiationConfig = useMemo(() => {
+    const defaultConfig = {
+      minMargin: 0.05,
+      expectedMargin: 0.15,
+      idealMargin: 0.2,
+      maxMargin: 0.3,
+    };
+
+    const appConfig = settings?.modules?.negotiation || defaultConfig;
+
+    return {
+      ...appConfig,
+      ...customConfig,
+    };
+  }, [settings, customConfig]);
+
+  // 敏感度分析
+  const sensitivity = useMemo(() => {
+    if (!costBase) return null;
+    return analyzeSensitivity(costBase, config);
+  }, [costBase, config]);
+
+  return sensitivity;
 }

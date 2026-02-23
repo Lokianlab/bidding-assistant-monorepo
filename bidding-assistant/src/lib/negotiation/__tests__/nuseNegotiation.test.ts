@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useNegotiation } from "../useNegotiation";
+import { useNegotiation, useSensitivityAnalysis } from "../useNegotiation";
 import { useSettings } from "@/lib/context/settings-context";
 import type { CostBase } from "../types";
 
@@ -230,6 +230,106 @@ describe("useNegotiation Hook", () => {
       const secondTotal = result.current.analysis?.proposed.quoteAmount;
 
       expect(secondTotal).toBeGreaterThan(firstTotal || 0);
+    });
+  });
+});
+
+describe("useSensitivityAnalysis Hook", () => {
+  const mockCostBase: CostBase = {
+    directCost: 1000000,
+    managementFee: 100000,
+    tax: 110000,
+    subtotal: 1210000,
+  };
+
+  const mockSettings = {
+    modules: {
+      negotiation: {
+        minMargin: 0.05,
+        expectedMargin: 0.15,
+        idealMargin: 0.2,
+        maxMargin: 0.3,
+      },
+    },
+  };
+
+  beforeEach(() => {
+    vi.mocked(useSettings).mockReturnValue({
+      settings: mockSettings,
+      updateSettings: vi.fn(),
+      updateSection: vi.fn(),
+      isLoading: false,
+    } as any);
+  });
+
+  it("無成本基礎時返回 null", () => {
+    const { result } = renderHook(() => useSensitivityAnalysis(null));
+
+    expect(result.current).toBeNull();
+  });
+
+  it("有成本基礎時計算敏感度分析", () => {
+    const { result } = renderHook(() => useSensitivityAnalysis(mockCostBase));
+
+    expect(result.current).not.toBeNull();
+    expect(result.current?.scenarios).toBeDefined();
+    expect(result.current?.scenarios.length).toBeGreaterThan(0);
+  });
+
+  it("預設包含 5 個變化場景", () => {
+    const { result } = renderHook(() => useSensitivityAnalysis(mockCostBase));
+
+    expect(result.current?.scenarios).toHaveLength(5);
+  });
+
+  it("成本變化時報價跟著變化", () => {
+    const { result } = renderHook(() => useSensitivityAnalysis(mockCostBase));
+
+    const scenarios = result.current?.scenarios || [];
+    const decreaseQuote = scenarios[0]?.proposed.quoteAmount; // -10%
+    const baselineQuote = scenarios[2]?.proposed.quoteAmount; // 0%
+    const increaseQuote = scenarios[4]?.proposed.quoteAmount; // +10%
+
+    expect(decreaseQuote).toBeLessThan(baselineQuote || 0);
+    expect(increaseQuote).toBeGreaterThan(baselineQuote || 0);
+  });
+
+  it("costBase 改變時重新計算", () => {
+    const { result, rerender } = renderHook(
+      ({ cost }) => useSensitivityAnalysis(cost),
+      { initialProps: { cost: mockCostBase } }
+    );
+
+    const firstBaseCost = result.current?.baseCost;
+
+    const newCostBase: CostBase = {
+      ...mockCostBase,
+      subtotal: 2000000,
+    };
+
+    rerender({ cost: newCostBase });
+
+    const secondBaseCost = result.current?.baseCost;
+
+    expect(secondBaseCost).toBeGreaterThan(firstBaseCost || 0);
+  });
+
+  it("記錄基準成本", () => {
+    const { result } = renderHook(() => useSensitivityAnalysis(mockCostBase));
+
+    expect(result.current?.baseCost).toBe(mockCostBase.subtotal);
+  });
+
+  it("計算成本變化影響", () => {
+    const { result } = renderHook(() => useSensitivityAnalysis(mockCostBase));
+
+    const scenarios = result.current?.scenarios || [];
+    scenarios.forEach((scenario) => {
+      // 每個場景都應該有 impact 信息
+      expect(scenario.impact).toBeDefined();
+      expect(scenario.impact.costChange).toBeDefined();
+      expect(scenario.impact.quoteChange).toBeDefined();
+      expect(scenario.impact.profitChangeRate).toBeDefined();
     });
   });
 });
