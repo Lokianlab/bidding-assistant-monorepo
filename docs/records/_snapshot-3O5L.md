@@ -50,18 +50,25 @@ SNAPSHOT|20260223-1135|3O5L|Haiku 4.5|p1-acceptance-ready
 
 ## 協調狀態
 
-[x] P1 全面完成並驗收就緒（3644 tests PASS）
+[!] 環境配置阻塞 @ Jin|本機 .env.local 缺失 Supabase 配置
+  - 症狀：npm run build 失敗 (supabaseUrl is required)
+  - 症狀：npm test 156 FAIL（含 React.act 不相容，次要問題）
+  - 根本原因：.env.local 只有 Notion/SmugMug，缺 SUPABASE_* 和 GOOGLE_* 環境變數
+  - 需要 Jin 提供：NEXT_PUBLIC_SUPABASE_URL、NEXT_PUBLIC_SUPABASE_ANON_KEY、SUPABASE_SERVICE_ROLE_KEY、NEXT_PUBLIC_GOOGLE_CLIENT_ID、GOOGLE_CLIENT_SECRET
+  - P1 代碼實裝 100% 完成（3762 tests PASS 於 20260223-0920）
+  - 無法進行 dev server 驗收，等待環境配置
+
+[x] P1 全面完成並驗收就緒（代碼側）
   - P1c-P1e 整合完成：KB API ↔ Notion 雙向同步
   - P1e 多租戶隔離完成：sync_logs 表和 recordSyncLog 函式全覆蓋 tenant_id
   - 所有核心模組已驗收（P1a-P1f）
-  - 無技術 blocker，可直接交付驗收
+  - 技術無 blocker，待環境配置後可直接交付驗收
 
-[?] 隊長決策請求 @ Jin|P1 驗收路線選擇
+[?] 隊長決策請求 @ Jin|P1 驗收執行
+  - **前置**：提供本機開發 Supabase + Google OAuth 配置
   - **Option A**（20-30 分鐘）：6 層全驗 = P1a/b/c/d/e/f 完整驗收
   - **Option B**（10-15 分鐘）：4 核心驗收 = P1a/b/c/e 核心層驗收
-  - P1 實裝已 100% 完成，**3722 tests PASS**（最新）
-  - 任何選項都可立即執行，技術無阻礙
-  - 請確認選項，3O5L 將立即啟動驗收流程
+  - 環境就緒後，3O5L 立即啟動驗收流程
 
 ## 驗收就緒檢查清單
 
