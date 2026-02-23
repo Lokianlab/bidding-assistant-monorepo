@@ -1,6 +1,7 @@
 # 全專案開發地圖
 
-> 最後更新：2026-02-23 06:56（UTC+8）｜更新者：JDNE
+> 最後更新：2026-02-23 13:20（UTC+8）｜更新者：JDNE
+> **新進展**：SaaS Phase 1 六層全部實裝完成（待 Jin 驗收）｜Phase 2 量產規劃完成
 
 ## 1. 系統概覽
 
@@ -212,24 +213,39 @@
 - [x] W01 全鏈路完成（0228）：CreateCaseDialog + /api/notion/create-case + 排除記憶持久化 + 防重複建案，Layer A+B+C+D 全通，2921 tests
 - [x] Explorer 情報探索 Phase 1（JDNE 0223）：可鑽探搜尋，SearchView → TenderView → AgencyView/CompanyView，7 元件 + hook，全頁面覆蓋
 
-### 當前階段
+### 當前階段（0223 快照）
 
-**治理階段結束，轉入產品優先（0224）。**
+**SaaS Phase 1 六層全部實裝完成，進入驗收與規劃階段。**
 
-最小展示版三件全部就緒，等 Jin 驗收：
+**Phase 1 完成狀態**：
+- ✅ **P1a Supabase 多租戶 schema**（0217 A44T）：設計完成
+- ✅ **P1b OAuth 整合**（0218 A44T）：Google + Microsoft 實裝完成，42 tests
+- ✅ **P1c KB API + RLS**（0219 ITEJ）：Supabase 知識庫 API + 行級安全實裝完成
+- ✅ **P1d KB UI**（0220 A44T）：知識庫上傳、搜尋、管理介面完成
+- ✅ **P1e Notion Sync**（0221 ITEJ）：Notion 資料同步機制完成，3O5L 協調
+- ✅ **P1f Auth 中間件**（0222 A44T）：Session 管理 + 多租戶隔離中間件完成，42 tests
+
+**最小展示版三件準備驗收**：
 - **M03 戰略分析引擎**（A44T）：5 維適配度評分 + 雷達圖 + /strategy 頁面，82 tests
 - **M04 品質閘門**（Z1FV）：四道閘門 + 驗收報告 + UI + Hook，114 tests
 - **PCC 情報整合**（ITEJ）：搜尋 + 詳情 + 機關情報 + 競爭分析 + P偵察 + 市場趨勢，1132 tests
+
+**infrastructure 規劃完成**（JDNE）：
+- 四層沙盒架構設計（local/staging/UAT/production）
+- 環境變數標準化（Zod schema 驗證）
+- RLS 隔離驗證腳本
+- GitHub Actions 自動化部署檢查
 
 另有多個已完成功能可隨時使用（詳見各機器快照）。
 
 ### 下一步優先序
 
-1. **驗收最小展示版**：M03+M04+PCC 三件，Jin 確認可用才算完成
-2. **已完成功能使用**：品質/報價/組裝重構、文件生成、M06 排版、趨勢分析、儀表板等多個功能可隨時使用，有問題開 issue
-3. **知識庫初始化**：AINL 已完成評估報告（H: 資料夾 33,447 個檔案），待 Jin 授權執行 Phase 1-4
+1. **驗收最小展示版**（Jin）：M03+M04+PCC 三件，確認可用才算完成（待 Jin 驗收）
+2. **Phase 2 規劃審查**（Jin）：四階段產品規劃（2a: 核心模組整合，2b: workflow engine，2c: 企業特性，2d: 效能優化），詳見 `docs/methodology/saas-phase2-roadmap.md`
+3. **知識庫初始化**：AINL 評估完成（H: 資料夾 33,447 檔案），待 Jin 授權執行 Phase 1-4
 4. **M02 知識庫模組規格**：v0.1 草案完成（0227 ITEJ），待用戶審閱後開發機器可接手 Phase 1
-5. **持續補測試**：215 檔 3295 tests，src/lib 全模組 + 全 API route + 元件層全覆蓋 + 全頁面覆蓋
+5. **基礎建設實裝**：四層沙盒驗證 + GitHub Actions 流程（待 Phase 1 驗收後執行）
+6. **持續補測試**：215 檔 3295 tests，src/lib 全模組 + 全 API route + 元件層全覆蓋 + 全頁面覆蓋
 
 ### 待決事項
 
@@ -237,6 +253,8 @@
 |------|------|------|
 | JDNE/ITEJ 快照 | 知識庫儲存方案 | **已決（0226）**：Notion（現有標案資料）+ Supabase（KB + SaaS 認證）+ Web App |
 | JDNE 快照 | SaaS 產品方向（自適應網頁 + 聊天介面 + 多租戶） | **已決（0226）**：Supabase 負責多租戶認證 |
+| JDNE 快照（0223） | SaaS Phase 2 四階段規劃（整合、workflow engine、企業特性、效能） | **規劃完成**：詳見 `docs/methodology/saas-phase2-roadmap.md`（376 行），四個決策點待 Jin 確認：Claude SDK 整合方式、計費模型、Beta 發布時機、多租戶部署策略 |
+| JDNE 快照（0223） | 基礎建設四層沙盒架構與環境變數標準化 | **規劃完成**：詳見 `docs/methodology/infra-db-safety-plan.md`（515 行），含 Zod schema + GitHub Actions + RLS 驗證腳本，待 Phase 1 驗收後實裝 |
 | JDNE 快照 | 備份/回復安全節點範圍 | 未決 |
 | A44T 快照 | 資料庫沙盒方案（推薦混合 JSON mock + UI 複製） | 待用戶決定 |
 | ITEJ 快照 | Notion MCP 定位 | **已解決**：暫緩（內建版夠用） |
