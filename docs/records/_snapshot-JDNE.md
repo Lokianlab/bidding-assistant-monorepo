@@ -16,4 +16,5 @@ SNAPSHOT|20260223-0735|JDNE|claude-haiku-4-5-20251001
 [x] admin-dev-map-sync|dev-map更新:Phase1完成狀態+Phase2規劃+基建規劃,28行增補
 [?] infra-backup-mechanism|waiting Jin req
 [?] chat-behavior-note-propagate-claudemd|L3,waiting Jin approve
-[>] admin-lifecycle-dispatch|12階段缺口規劃分派完成:M02(ITEJ+阻塞3點),M07(AINL),M08(JDNE規格),M09(A44T),M02P4+M10(Z1FV),M11(3O5L)|分派通知5份+主題公告,規格文檔框架待各機撰寫
+[x] admin-lifecycle-dispatch|12階段缺口規劃分派完成:M02(ITEJ+阻塞3點),M07(AINL),M08(JDNE規格),M09(A44T),M02P4+M10(Z1FV),M11(3O5L)|分派通知5份+主題公告,規格文檔框架待各機撰寫|fd5dd89+cdf47ce
+[>] admin-lifecycle-impl|實裝分派啟動(Jin直接授權):AINL/A44T可立即規格+實裝,Z1FV M08決策→code,等ITEJ阻塞解除|協作監控儀表板+訊息整合
