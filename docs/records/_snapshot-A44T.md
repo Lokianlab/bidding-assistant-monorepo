@@ -12,4 +12,5 @@ SNAPSHOT|20260223-1045|A44T|claude-haiku-4-5-20251001
 [x] admin-acceptance-coordination|驗收就緒 OP：4 項核心功能 + 7 KB UI 測試待調整|e54d85b。
 [?] infra-db-safety|DB 安全四層沙盒規劃完成(JDNE)，env 配置待實裝
 [?] chat-behavior-note-propagate|行為備註內化列 L3，待 Jin 確認
-[>] plan-saas-phase1|P1a-P1f 全部實裝完成，awaiting Jin 驗收|P1e(3O5L)待與 P1c 整合
+[x] plan-saas-phase1|P1a-P1f 全部實裝完成，awaiting Jin 驗收|P1e(3O5L)待與 P1c 整合
+[>] m09-negotiation-prep|M09 議價分析：規格 + 邏輯 + Hook (42 tests)|等 M02 → UI 實裝
