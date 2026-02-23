@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-1045|A44T|claude-haiku-4-5-20251001
+SNAPSHOT|20260223-1600|A44T|claude-haiku-4-5-20251001
 
 ## 行為備註（改了就移除）
 - push 後直接讀找下一步，不停下報告
@@ -14,4 +14,4 @@ SNAPSHOT|20260223-1045|A44T|claude-haiku-4-5-20251001
 [?] chat-behavior-note-propagate|行為備註內化列 L3，待 Jin 確認
 [x] plan-saas-phase1|P1a-P1f 全部實裝完成，awaiting Jin 驗收|P1e(3O5L)待與 P1c 整合
 [x] m09-negotiation-prep|M09 議價分析準備完成：規格+邏輯(28)+Hook(14)+UI框架|7a07201,M02完成
-[>] m09-negotiation-phase1|M09 Phase 1：UI 測試 + 整合 + Case-work 集成|進行中
+[x] m09-negotiation-phase1|M09 Phase 1 完成：UI(13)+整合(10)=65tests|c44bae2,待 Case-work 集成
