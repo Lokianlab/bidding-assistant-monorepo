@@ -32,14 +32,28 @@ OP|20260223-1215|AINL|M07-phase1-kickoff|level-2-new-feature
    - 本地搜尋篩選
    - API 集成
 
-### 進行中改動（本週完成）
+### Day 1 完成項目（2026-02-23）
 
-- ✅ `bidding-assistant/src/lib/partners/usePartners.ts`（227 行）
-- ⏳ `bidding-assistant/src/lib/partners/helpers.ts`（~100 行）
-- ⏳ `bidding-assistant/src/app/api/partners/route.ts`（~200 行）
-- ⏳ `bidding-assistant/src/app/api/partners/[id]/route.ts`（~200 行）
+- ✅ Supabase migration（95 行）
+- ✅ TypeScript types（145 行）
+- ✅ usePartners Hook（227 行）
+- ✅ Helpers 函式（170 行：validatePartner, searchPartners, validateBulkPartners, calculateTrustScore, sortByRecommendation）
+- ✅ API 路由（共 600 行）
+  - GET/POST /api/partners（~170 行）
+  - PATCH/DELETE /api/partners/[id]（~180 行）
+  - POST /api/partners/[id]/usage（~100 行）
+- ✅ API 輔助函式（~80 行：租戶驗證、授權檢查）
+- ✅ 測試覆蓋（40 tests, 100% pass）
+  - helpers.test.ts（24 tests）
+  - usePartners.test.ts（10 tests）
+  - route.test.ts（6 tests）
+
+### 待完成項目（Day 2-3）
+
 - ⏳ `bidding-assistant/src/components/partners/PartnerSidebar.tsx`（~300 行）
-- ⏳ `bidding-assistant/src/lib/partners/__tests__/`（~800 行）
+- ⏳ M03 Integration 試驗
+- ⏳ 邊界條件測試（empty array, null values, 並行請求）
+- ⏳ 效能最佳化與索引驗證
 
 ---
 

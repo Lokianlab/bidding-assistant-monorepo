@@ -75,12 +75,24 @@ SNAPSHOT|20260223-1049|AINL|claude-haiku-4-5-20251001|circulation-active
 - P2 規劃：四階段完成（2a/2b/2c/2d）
 - 待決項：2 項（P1 選項 + P2 四決策點）
 
-✅ **M07 Phase 1 啟動**
-- 規格文檔：已完成（bidding-assistant/docs/dev-plan/M07-外包資源庫.md）
-- Supabase migration：已完成（supabase/migrations/20260223_partner_contacts.sql）
-- 型別定義：已完成（bidding-assistant/src/lib/partners/types.ts）
-- OP 記錄：已完成（docs/records/OP-m07-phase1-kickoff.md）
-- 下一步：usePartners Hook + API routes（預計 2-3 小時）
+✅ **M07 Phase 1 實裝完成 (Day 1)**
+- Supabase migration：已完成（95 行）
+- TypeScript types：已完成（145 行）
+- usePartners Hook：已完成（227 行）
+- Helpers 函式：已完成（170 行，5 個功能）
+- API 路由：已完成（600 行，5 個端點）
+  - GET /api/partners（取得列表+搜尋篩選排序）
+  - POST /api/partners（新增+驗證）
+  - PATCH /api/partners/[id]（編輯+驗證）
+  - DELETE /api/partners/[id]（軟刪除）
+  - POST /api/partners/[id]/usage（標記使用）
+- API 輔助函式：已完成（80 行，租戶認證授權）
+- 測試：已完成（40 tests, 100% pass rate）
+  - helpers.test.ts（24 tests）
+  - usePartners.test.ts（10 tests）
+  - route.test.ts（6 tests）
+- OP 記錄：已更新
+- 下一步：PartnerSidebar UI 組件 + M03 集成測試
 
 🔄 **循環狀態**
 - 已完成 12 個協調循環 + 2 個新工作階段
