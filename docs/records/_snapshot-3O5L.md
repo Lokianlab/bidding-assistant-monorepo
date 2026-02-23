@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-1048|3O5L|Haiku 4.5|p1c-p1e-integration-complete
+SNAPSHOT|20260223-1123|3O5L|Haiku 4.5|p1e-multitenant-isolation-complete
 
 ## 行為備註
 - 策略主官：優先序決定、跨機器協調、向 Jin 彙報
@@ -38,10 +38,20 @@ SNAPSHOT|20260223-1048|3O5L|Haiku 4.5|p1c-p1e-integration-complete
 ### 關鍵成果
 ✅ P1a: Supabase schema 完成  ✅ P1b: OAuth 認證完成  ✅ P1c: KB API 6 端點 + 50 測試  ✅ P1d: 待 UI 實裝  ✅ P1e: Notion 同步引擎 + Cron  ✅ P1f: 多租戶中間件 + RLS 隔離
 
+## P1e 多租戶隔離（補強實作）
+
+[x] 同步日誌多租戶隔離完成（commit: 10449ca）
+  - 更新 sync_logs migration：新增 tenant_id 欄位 + 複合索引 idx_sync_logs_tenant_operation
+  - recordSyncLog 簽章升級：新增 tenantId?: string 參數，全部 7 個呼叫更新
+  - syncItemToNotion (4 呼叫) + syncNotionToSupabase (3 呼叫) 均傳遞 item.tenant_id 或 tenantId
+  - 測試狀態：✅ 3644 tests PASS / 1 skipped
+  - 設計效益：sync_logs 表現在可追蹤各租戶的同步操作歷史，支援異常恢復和審計
+
 ## 協調狀態
 
 [x] P1 全面完成並驗收就緒（3644 tests PASS）
   - P1c-P1e 整合完成：KB API ↔ Notion 雙向同步
+  - P1e 多租戶隔離完成：sync_logs 表和 recordSyncLog 函式全覆蓋 tenant_id
   - 所有核心模組已驗收（P1a-P1f）
   - 無技術 blocker，可直接交付驗收
 
