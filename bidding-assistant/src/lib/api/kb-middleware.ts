@@ -1,9 +1,11 @@
 /**
- * 知識庫 API 認證與租戶隔離中間件
+ * 知識庫 API 認證與租戶隔離中間件（過渡層）
  *
- * 實現：從 P1B OAuth 的 httpOnly cookie 讀取 session
- * Cookie 格式：auth-session=base64(JSON)
- * JSON 結構：{ userId, tenantId, email, googleId, iat }
+ * 支援兩種模式：
+ * 1. 新模式（P1F middleware）：從 headers 讀取 x-tenant-id, x-user-id
+ * 2. 舊模式（P1B）：從 httpOnly cookie 讀取 session
+ *
+ * 短期內維持向後相容，長期應全面遷移到新 guard 系統
  */
 
 import { NextRequest } from 'next/server';
@@ -12,13 +14,29 @@ export interface AuthSession {
   userId: string;
   userEmail: string;
   tenantId: string;
+  role?: 'admin' | 'member' | 'viewer';
 }
 
 /**
- * 從 request cookies 中提取並驗證 auth session
- * 讀取 auth-session cookie（由 P1B OAuth 設定）
+ * 從 request 中提取並驗證 auth session
+ * 優先讀取 headers（P1F middleware 模式），再回退到 cookie（P1B 模式）
  */
 export async function requireAuth(request: NextRequest): Promise<AuthSession> {
+  // 優先嘗試新模式：從 headers 讀取
+  const tenantId = request.headers.get('x-tenant-id');
+  const userId = request.headers.get('x-user-id');
+
+  if (tenantId && userId) {
+    // P1F middleware 已注入租戶上下文
+    return {
+      userId,
+      userEmail: '', // headers 中沒有 email，但不影響租戶隔離
+      tenantId,
+      role: (request.headers.get('x-user-role') as AuthSession['role']) || 'member',
+    };
+  }
+
+  // 回退到舊模式：從 cookie 讀取
   const cookieHeader = request.headers.get('cookie');
 
   if (!cookieHeader) {
@@ -32,7 +50,9 @@ export async function requireAuth(request: NextRequest): Promise<AuthSession> {
     const cookies = cookieHeader.split('; ').reduce(
       (acc, cookie) => {
         const [key, value] = cookie.split('=');
-        acc[key] = decodeURIComponent(value);
+        if (key && value) {
+          acc[key] = decodeURIComponent(value);
+        }
         return acc;
       },
       {} as Record<string, string>
@@ -57,6 +77,7 @@ export async function requireAuth(request: NextRequest): Promise<AuthSession> {
       userId: session.userId,
       userEmail: session.email,
       tenantId: session.tenantId,
+      role: session.role || 'member',
     };
   } catch (error: any) {
     if (error.statusCode === 401) {

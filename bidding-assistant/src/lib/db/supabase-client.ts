@@ -94,3 +94,80 @@ export function getTenantId(): string {
   }
   return tenantId;
 }
+
+/**
+ * 建立租戶隔離查詢
+ * 自動在所有查詢上加租戶過濾，防止租戶間資料洩漏
+ *
+ * 使用方式：
+ * ```ts
+ * const supabase = getSupabaseClient();
+ * const { data, error } = await createTenantQuery(
+ *   supabase,
+ *   tenantId,
+ *   'kb_items'
+ * )
+ *   .select('*')
+ *   .order('created_at', { ascending: false });
+ * ```
+ */
+export function createTenantQuery<T extends Record<string, any>>(
+  supabase: SupabaseClient,
+  tenantId: string,
+  tableName: string
+) {
+  return {
+    /**
+     * SELECT 查詢
+     */
+    select: (columns: string = '*') =>
+      supabase
+        .from(tableName)
+        .select(columns)
+        .eq('tenant_id', tenantId),
+
+    /**
+     * INSERT 操作
+     * 自動添加 tenant_id
+     */
+    insert: (data: Partial<T>) =>
+      supabase
+        .from(tableName)
+        .insert([
+          {
+            ...data,
+            tenant_id: tenantId,
+          } as unknown as T,
+        ]),
+
+    /**
+     * UPDATE 操作
+     * 自動限制為該租戶的資料
+     */
+    update: (data: Partial<T>) =>
+      supabase
+        .from(tableName)
+        .update(data)
+        .eq('tenant_id', tenantId),
+
+    /**
+     * DELETE 操作
+     * 自動限制為該租戶的資料
+     */
+    delete: () =>
+      supabase
+        .from(tableName)
+        .delete()
+        .eq('tenant_id', tenantId),
+
+    /**
+     * 直接存取底層 Supabase 物件
+     * 用於複雜查詢或自訂邏輯
+     */
+    raw: () =>
+      supabase
+        .from(tableName)
+        .select('*')
+        .eq('tenant_id', tenantId),
+  };
+}

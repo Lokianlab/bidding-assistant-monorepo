@@ -67,7 +67,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // 先查詢是否存在此用戶
     const { data: existingUser, error: queryError } = await supabase
       .from('users')
-      .select('id, tenant_id')
+      .select('id, tenant_id, role')
       .eq('google_email', userInfo.email)
       .single();
 
@@ -78,11 +78,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     let userId: string;
     let tenantId: string;
+    let role: 'admin' | 'member' | 'viewer';
 
     if (existingUser) {
       // 用戶已存在，直接使用
       userId = existingUser.id;
       tenantId = existingUser.tenant_id;
+      role = existingUser.role || 'member';
     } else {
       // 新用戶，需要建立租戶和用戶
       // 首先建立租戶（以 domain 為識別）
@@ -117,6 +119,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
 
       userId = newUser.id;
+      role = 'member';
     }
 
     // 7. 建立 session（簡單實現：存放 JWT-like token）
@@ -126,6 +129,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       tenantId,
       email: userInfo.email,
       googleId: userInfo.googleId,
+      role,
       iat: Math.floor(Date.now() / 1000),
     };
 
