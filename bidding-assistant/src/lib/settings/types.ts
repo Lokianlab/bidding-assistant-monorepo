@@ -71,10 +71,18 @@ export interface PricingSettings {
   marketRates: Record<string, { min: number; max: number }>;
 }
 
+export interface NegotiationModuleSettings {
+  minMargin: number;
+  expectedMargin: number;
+  idealMargin: number;
+  maxMargin: number;
+}
+
 export interface ModuleSettings {
   kbMatrix: Record<string, Record<string, KBRequirement>>;
   qualityRules: QualityRuleSettings;
   pricing: PricingSettings;
+  negotiation?: NegotiationModuleSettings;
 }
 
 export interface StageConfig {
