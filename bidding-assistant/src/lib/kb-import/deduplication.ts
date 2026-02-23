@@ -88,25 +88,24 @@ export class FileDeduplicator {
   async analyzeFolder(folderPath: string): Promise<DeduplicationResult> {
     logger.debug("system", `開始掃描資料夾: ${folderPath}`);
 
-    const files = await fs.readdir(folderPath, { recursive: true });
+    const files = (await fs.readdir(folderPath, { recursive: true })) as string[];
     const allFiles: FileInfo[] = [];
 
     // 1. 蒐集檔案資訊
     for (const file of files) {
-      const fileName = typeof file === 'string' ? file : file.toString();
-      const fullPath = path.join(folderPath, fileName);
+      const fullPath = path.join(folderPath, file);
       const stats = await fs.stat(fullPath);
 
       // 只處理 Word、Excel、PDF
-      if (!/\.(docx?|xlsx?|pdf)$/.test(fileName)) continue;
+      if (!/\.(docx?|xlsx?|pdf)$/.test(file)) continue;
 
       if (stats.isFile()) {
         allFiles.push({
-          name: fileName,
+          name: file,
           fullPath,
           mtime: stats.mtime.getTime(),
           size: stats.size,
-          isVersion: this.isVersionCopy(fileName),
+          isVersion: this.isVersionCopy(file),
         });
       }
     }
@@ -160,7 +159,7 @@ export class FileDeduplicator {
     let nameVariantCount = nameVariants.count;
 
     // 合併結果
-    const totalRemoved = removed.length + (Array.isArray(variantRemoved) ? variantRemoved.length : variantRemoved);
+    const totalRemoved = removed.length + variantRemoved.length;
     const reductionRate = ((totalRemoved / allFiles.length) * 100).toFixed(1);
 
     const result: DeduplicationResult = {

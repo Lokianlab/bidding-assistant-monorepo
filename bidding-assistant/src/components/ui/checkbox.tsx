@@ -7,17 +7,30 @@ import { Checkbox as CheckboxPrimitive } from "radix-ui"
 import { cn } from "@/lib/utils"
 
 interface CheckboxProps
-  extends React.ComponentProps<typeof CheckboxPrimitive.Root> {
+  extends Omit<React.ComponentProps<typeof CheckboxPrimitive.Root>, 'onChange'> {
   indeterminate?: boolean;
+  onChange?: (checked: boolean) => void;
 }
 
 function Checkbox({
   className,
   indeterminate,
   checked,
+  onChange,
+  onCheckedChange,
   ...props
 }: CheckboxProps) {
   const finalChecked = indeterminate ? "indeterminate" : checked;
+
+  // Map onChange to onCheckedChange for Radix UI compatibility
+  const handleCheckedChange = (newChecked: boolean | "indeterminate") => {
+    if (onCheckedChange) {
+      onCheckedChange(newChecked);
+    }
+    if (onChange && newChecked !== "indeterminate") {
+      onChange(newChecked);
+    }
+  };
 
   return (
     <CheckboxPrimitive.Root
@@ -28,6 +41,7 @@ function Checkbox({
       )}
       {...props}
       checked={finalChecked as any}
+      onCheckedChange={handleCheckedChange}
     >
       <CheckboxPrimitive.Indicator
         data-slot="checkbox-indicator"
