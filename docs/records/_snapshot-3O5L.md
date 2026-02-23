@@ -55,7 +55,9 @@ SNAPSHOT|20260223-1123|3O5L|Haiku 4.5|p1e-multitenant-isolation-complete
   - 所有核心模組已驗收（P1a-P1f）
   - 無技術 blocker，可直接交付驗收
 
-[>] 待 Jin 決策
-  - 驗收選項：A: 完全通過 vs B: 分階段驗收
-  - P1 實裝已 100% 完成，任何選項都可立即執行
-  - 後續步驟：SaaS 網頁 + Claude SDK 整合（P2 規劃）
+[?] 隊長決策請求 @ Jin|P1 驗收路線選擇
+  - **Option A**（20-30 分鐘）：6 層全驗 = P1a/b/c/d/e/f 完整驗收
+  - **Option B**（10-15 分鐘）：4 核心驗收 = P1a/b/c/e 核心層驗收
+  - P1 實裝已 100% 完成，3644 tests PASS
+  - 任何選項都可立即執行，技術無阻礙
+  - 請確認選項，3O5L 將立即啟動驗收流程
