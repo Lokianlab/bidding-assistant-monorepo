@@ -15,19 +15,20 @@ SNAPSHOT|20260223-1049|AINL|claude-haiku-4-5-20251001|circulation-active
 
 ## 自主循環工作（不停機）
 
-[>] 循環 1：掃 隊長決策|JDNE 未回應，等待確認|await-decision
-[>] 循環 2：掃 各機進展|3O5L 推送 P1c-P1e 整合完成|detected
-[>] 循環 3：轉 隊長|發布 3644 PASS + 整合更新|broadcasted
-[>] 循環 4：轉 各機|廣播最新進度 + 驗收清單|broadcasted
-[>] 循環 5：準 驗收|最終驗收清單已備，隊長決策後立即執行|ready
+[x] 循環 1：掃 隊長決策|JDNE 未回應，等待確認|await-decision
+[x] 循環 2：掃 各機進展|3O5L 推送 P1c-P1e 整合完成|detected
+[x] 循環 3：轉 隊長|發布 3644 PASS + 整合更新|broadcasted
+[x] 循環 4：轉 各機|廣播最新進度 + 驗收清單|broadcasted
+[x] 循環 5：準 驗收|最終驗收清單已備，隊長決策後立即執行|ready
+[>] 循環 6：掃各機|確認各機狀態，無新blocker|all-ready-confirmed
+[>] 循環 7：雙路就緒|驗收 A/B 路徑詳細步驟，隊長可直接決策|execution-ready
 
 ## 待決項
 
 - [ ] **JDNE 驗收選項確認**（A: 全體 vs B: 分階段）← 最優先
-  - A44T 快照已更新（10:45）
-  - 3O5L P1c-P1e 整合完成（10:48）
-- [ ] JDNE 驗收時間表確認
-- [ ] 隊長決策 → AINL 轉發各機執行
+  - 驗收雙路執行清單已備（11:00）
+  - 所有機器確認就緒（10:48-10:50 掃描）
+- [ ] Jin 決策 → AINL 廣播 → 驗收執行
 
 ## 今日協調成果（10:15-10:39，24 分鐘）
 
