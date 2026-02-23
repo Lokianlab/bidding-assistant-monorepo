@@ -13,4 +13,5 @@ SNAPSHOT|20260223-1045|A44T|claude-haiku-4-5-20251001
 [?] infra-db-safety|DB 安全四層沙盒規劃完成(JDNE)，env 配置待實裝
 [?] chat-behavior-note-propagate|行為備註內化列 L3，待 Jin 確認
 [x] plan-saas-phase1|P1a-P1f 全部實裝完成，awaiting Jin 驗收|P1e(3O5L)待與 P1c 整合
-[>] m09-negotiation-prep|M09 議價分析：規格 + 邏輯 + Hook (42 tests)|等 M02 → UI 實裝
+[x] m09-negotiation-prep|M09 議價分析準備完成：規格+邏輯(28)+Hook(14)+UI框架|7a07201,M02完成
+[>] m09-negotiation-phase1|M09 Phase 1：UI 測試 + 整合 + Case-work 集成|進行中
