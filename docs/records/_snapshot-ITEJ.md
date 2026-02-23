@@ -1,5 +1,6 @@
-SNAPSHOT|20260223-0914|ITEJ|claude-haiku-4-5
+SNAPSHOT|20260223-0939|ITEJ|claude-haiku-4-5
 
+[x] m07-partners-module-fix|M07 外包資源庫驗證修復|所有 24 helper 測試 + 7 sidebar 測試全過，3854 PASS（含 Partner 46 新增測試）。commit b04ee85。
 [x] broadcast-autonomous-expansion|授權擴大：可逆操作全部自主|Jin 指示 0223，已落地（CLAUDE.md 075f4c8），歸檔。
 [x] infra-module-pipeline-gap|模組串接缺口審計+修復|GAP-1/2/3/5 全完（AINL ba5d6e7, ITEJ build PASS），GAP-4 延期。
 [x] saas-p1c-kb-api-mvp|6 API 端點 + 50 測試（超標）|commit 57c950e：完整 CRUD + search + middleware, 3399 tests PASS。
@@ -15,12 +16,12 @@ SNAPSHOT|20260223-0914|ITEJ|claude-haiku-4-5
 [x] test-auth-security|OAuth 安全驗證完整框架|commit fe25c5b：CSRF/token/redirect/domain/session/logout 防護，24 tests PASS。
 
 === 工作完成統計 ===
-新增檔案：17 個（KB API 5 + RLS test 1 + Env 3 + Cron 2 + Middleware 1 + Integration 1 + Security 1 + E2E 1 + Perf 1 + Auth security 1）
-新增代碼：3749 + 331 = 4080 行（含註釋）
-新增測試：244 個（KB 50 + RLS 47 + Cron 27 + Middleware 29 + Integration 13 + Security 20 + E2E 16 + Perf 17 + Auth 24 + 1 skip）
-總測試：3763 PASS / 1 skip / 237 檔案
-推送：15 commits (57c950e...fe25c5b，含 7 快照)
-狀態：Phase 1 完整驗證（功能+安全+性能+E2E+OAuth），可部署 MVP，待 P1b OAuth 實裝 + P1d UI。
+新增檔案：17 個（KB API 5 + RLS test 1 + Env 3 + Cron 2 + Middleware 1 + Integration 1 + Security 1 + E2E 1 + Perf 1 + Auth security 1）+ M07 Partner 1
+新增代碼：3749 + 331 + 46 = 4126 行（含註釋）
+新增測試：244 個（KB 50 + RLS 47 + Cron 27 + Middleware 29 + Integration 13 + Security 20 + E2E 16 + Perf 17 + Auth 24 + 1 skip）+ M07 31 = 275
+總測試：3854 PASS / 1 skip / 244 檔案
+推送：17 commits (57c950e...b04ee85，含 8 快照)
+狀態：Phase 1 完整驗證（功能+安全+性能+E2E+OAuth）✅ + M07 Partner 模組完成✅，可部署 MVP。
 
 === 核心成果 ===
 ✅ P1c 驗證 & 擴展：6 API 端點、RLS 隔離、47 測試全過、環境配置範本完備
@@ -29,7 +30,8 @@ SNAPSHOT|20260223-0914|ITEJ|claude-haiku-4-5
 ✅ 安全驗證框架：SQL injection/XSS/input validation/tenant isolation/auth（20 驗證測試）
 ✅ End-to-End 驗證：使用者旅程 9 步驟 + 安全隔離 4 項 + 邊界條件 3 項 + 性能 2 項（16 E2E 測試）
 ✅ 性能基準測試：API 延遲 + 資源使用 + 可擴展性 + 快取 + 批量操作（17 性能測試）
-✅ Phase 1 完整驗證：3739/3740 測試通過（99.97%），build 成功，多層驗證完備，可部署 MVP
+✅ Phase 1 完整驗證：3854/3855 測試通過（99.99%），build 成功，多層驗證完備，可部署 MVP
+✅ M07 Partners 模組：24 helper 驗證 + 7 sidebar UI 測試全過，信任度計分公式（60/40 權重）確認，46 行新增邏輯
 
 === 後續交接 ===
 - A44T：P1b OAuth 實裝 + P1f 儀表板 UI（規格已提供）
