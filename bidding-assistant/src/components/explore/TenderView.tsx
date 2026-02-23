@@ -235,6 +235,11 @@ function CompanySection({
   // 從 detail 的 key-value 裡解析公司
   const companies: { name: string; role: string }[] = [];
 
+  // 防守：detail.detail 可能為 undefined
+  if (!detail.detail || typeof detail.detail !== "object") {
+    return null;
+  }
+
   for (const [key, val] of Object.entries(detail.detail)) {
     if (typeof val === "string") continue;
     if (val && typeof val === "object") {
