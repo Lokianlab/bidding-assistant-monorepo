@@ -5,19 +5,19 @@
 CREATE TABLE IF NOT EXISTS sync_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   item_id UUID REFERENCES kb_items(id) ON DELETE SET NULL,
+  tenant_id TEXT NOT NULL,
   operation TEXT NOT NULL CHECK (operation IN ('create', 'update', 'delete', 'import')),
   status TEXT NOT NULL CHECK (status IN ('success', 'error')),
   error_msg TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-
-  -- 索引優化查詢
-  created_at_idx TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
+CREATE INDEX idx_sync_logs_tenant_id ON sync_logs(tenant_id);
 CREATE INDEX idx_sync_logs_item_id ON sync_logs(item_id);
 CREATE INDEX idx_sync_logs_operation ON sync_logs(operation);
 CREATE INDEX idx_sync_logs_created_at ON sync_logs(created_at DESC);
 CREATE INDEX idx_sync_logs_status ON sync_logs(status);
+CREATE INDEX idx_sync_logs_tenant_operation ON sync_logs(tenant_id, operation);
 
 -- 行級別安全性（如啟用 RLS）
 -- 注意：初期不啟用 RLS，因為 sync_logs 是系統表

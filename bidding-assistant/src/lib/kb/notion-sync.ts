@@ -49,11 +49,13 @@ export async function recordSyncLog(
   operation: SyncLog['operation'],
   itemId: string | null,
   status: 'success' | 'error',
-  errorMsg?: string
+  errorMsg?: string,
+  tenantId?: string
 ): Promise<void> {
   try {
     await supabase.from('sync_logs').insert({
       item_id: itemId,
+      tenant_id: tenantId || 'unknown',
       operation,
       status,
       error_msg: errorMsg,
@@ -153,7 +155,7 @@ export async function syncItemToNotion(
         parent: { database_id: notionKBDbId },
         properties: notionData.properties,
       });
-      await recordSyncLog(supabase, operation, item.id, 'success');
+      await recordSyncLog(supabase, operation, item.id, 'success', undefined, item.tenant_id);
       logger.info('sync', `新增項目到 Notion: ${item.title}`);
     } else if (operation === 'update') {
       const pageId = await findNotionPageByTitle(notion, notionKBDbId, item.title);
@@ -165,7 +167,7 @@ export async function syncItemToNotion(
         page_id: pageId,
         properties: notionData.properties,
       });
-      await recordSyncLog(supabase, operation, item.id, 'success');
+      await recordSyncLog(supabase, operation, item.id, 'success', undefined, item.tenant_id);
       logger.info('sync', `更新 Notion 頁面: ${item.title}`);
     } else if (operation === 'delete') {
       const pageId = await findNotionPageByTitle(notion, notionKBDbId, item.title);
@@ -176,13 +178,13 @@ export async function syncItemToNotion(
             '同步狀態': { select: { name: 'deleted' } },
           },
         });
-        await recordSyncLog(supabase, operation, item.id, 'success');
+        await recordSyncLog(supabase, operation, item.id, 'success', undefined, item.tenant_id);
         logger.info('sync', `標記 Notion 頁面為已刪除: ${item.title}`);
       }
     }
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
-    await recordSyncLog(supabase, operation, item.id, 'error', errorMsg);
+    await recordSyncLog(supabase, operation, item.id, 'error', errorMsg, item.tenant_id);
     logger.error('sync', `同步失敗 (${operation} ${item.id}): ${errorMsg}`);
     throw error;
   }
@@ -261,7 +263,7 @@ export async function syncNotionToSupabase(
             created_at: new Date(page.created_time).toISOString(),
             updated_at: new Date(page.last_edited_time).toISOString(),
           });
-          await recordSyncLog(supabase, 'import', null, 'success');
+          await recordSyncLog(supabase, 'import', null, 'success', undefined, tenantId);
           logger.info('sync', `匯入新項目: ${title}`);
         } else {
           // 更新
@@ -272,7 +274,7 @@ export async function syncNotionToSupabase(
               updated_at: new Date(page.last_edited_time).toISOString(),
             })
             .eq('id', existingItem.id);
-          await recordSyncLog(supabase, 'import', existingItem.id, 'success');
+          await recordSyncLog(supabase, 'import', existingItem.id, 'success', undefined, tenantId);
           logger.info('sync', `更新項目: ${title}`);
         }
       }
@@ -281,7 +283,7 @@ export async function syncNotionToSupabase(
     logger.info('sync', `Notion → Supabase 同步完成`);
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
-    await recordSyncLog(supabase, 'import', null, 'error', errorMsg);
+    await recordSyncLog(supabase, 'import', null, 'error', errorMsg, tenantId);
     logger.error('sync', `Notion 同步失敗: ${errorMsg}`);
     throw error;
   }
