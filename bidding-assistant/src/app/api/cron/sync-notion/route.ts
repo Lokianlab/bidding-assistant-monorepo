@@ -27,8 +27,8 @@ const NOTION_KB_DB_ID = process.env.NOTION_KB_DB_ID;
  * - tenant_id: 指定租戶 ID（不指定時掃描所有租戶）
  *
  * 回應：
- * 200: { success: true, synced: { created: 5, updated: 3 }, duration: 2.3 }
- * 401: { error: 'Unauthorized' }
+ * 200: { success: true, synced: { succeeded: 3, failed: 0 }, duration: 2.3 }
+ * 401: { error: '未授權' }
  * 500: { error: '具體錯誤訊息' }
  */
 export async function GET(req: Request) {
@@ -72,15 +72,14 @@ export async function GET(req: Request) {
         `無可同步租戶${targetTenantId ? `(${targetTenantId})` : ''}`
       );
       return Response.json(
-        { success: true, synced: { created: 0, updated: 0 }, duration: 0 },
+        { success: true, synced: { succeeded: 0, failed: 0 }, duration: '0.0' },
         { status: 200 }
       );
     }
 
     // 4. 逐租戶同步
     const results = {
-      created: 0,
-      updated: 0,
+      succeeded: 0,
       failed: 0,
     };
 
@@ -88,6 +87,7 @@ export async function GET(req: Request) {
       try {
         await syncNotionToSupabase(notion, supabase, NOTION_KB_DB_ID, tenant.id);
         logger.info('cron', `租戶 ${tenant.id} 同步成功`);
+        results.succeeded++;
       } catch (error) {
         logger.error('cron', `租戶 ${tenant.id} 同步失敗: ${error}`);
         results.failed++;
@@ -98,7 +98,7 @@ export async function GET(req: Request) {
 
     logger.info(
       'cron',
-      `Notion 同步完成: ${results.created} 新增, ${results.updated} 更新, ${results.failed} 失敗 (${duration}s)`
+      `Notion 同步完成: ${results.succeeded} 成功, ${results.failed} 失敗 (${duration}s)`
     );
 
     return Response.json(
