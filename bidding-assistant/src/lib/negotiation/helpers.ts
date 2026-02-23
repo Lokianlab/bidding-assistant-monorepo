@@ -167,3 +167,51 @@ export function calculateConcessionRate(originalAmount: number, newAmount: numbe
   if (originalAmount <= 0) return 0;
   return (originalAmount - newAmount) / originalAmount;
 }
+
+/**
+ * 從 PricingSummary 轉換為 CostBase
+ * @param summary PricingSummary（來自計價模組）
+ * @returns CostBase
+ */
+export function costBaseFromPricingSummary(summary: {
+  directCost: number;
+  managementFee: number;
+  tax: number;
+  subtotal: number;
+}): CostBase {
+  return {
+    directCost: summary.directCost,
+    managementFee: summary.managementFee,
+    tax: summary.tax,
+    subtotal: summary.subtotal,
+  };
+}
+
+/**
+ * 建立預設成本基礎（用於案件初始估算）
+ * 假設：直接成本 = 預算 × 60%, 管理費率 = 10%, 營業稅率 = 5%
+ * @param budget 案件預算
+ * @returns CostBase
+ */
+export function createDefaultCostBase(budget?: number): CostBase {
+  if (!budget || budget <= 0) {
+    return {
+      directCost: 0,
+      managementFee: 0,
+      tax: 0,
+      subtotal: 0,
+    };
+  }
+
+  const directCost = Math.round(budget * 0.6);
+  const managementFee = Math.round(directCost * 0.1);
+  const subtotal = directCost + managementFee;
+  const tax = Math.round(subtotal * 0.05);
+
+  return {
+    directCost,
+    managementFee,
+    tax,
+    subtotal,
+  };
+}

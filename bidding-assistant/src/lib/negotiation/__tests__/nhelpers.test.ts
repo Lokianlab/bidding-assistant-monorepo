@@ -7,6 +7,8 @@ import {
   getQuoteStatus,
   formatAmount,
   calculateConcessionRate,
+  costBaseFromPricingSummary,
+  createDefaultCostBase,
 } from "../helpers";
 import type { CostBase, NegotiationConfig } from "../types";
 
@@ -228,6 +230,96 @@ describe("Negotiation Helpers", () => {
       };
       const analysis = analyzeNegotiation(largeCostBase, mockConfig);
       expect(analysis.proposed.quoteAmount).toBeGreaterThan(0);
+    });
+  });
+
+  describe("costBaseFromPricingSummary", () => {
+    it("從計價摘要轉換為成本基礎", () => {
+      const pricingSummary = {
+        directCost: 500000,
+        managementFee: 50000,
+        tax: 55000,
+        subtotal: 605000,
+        total: 660000,
+        overBudget: false,
+        utilization: "66.0",
+        byCategory: { 人事費: 300000, 業務費: 150000, 雜支: 50000 },
+      };
+
+      const result = costBaseFromPricingSummary(pricingSummary);
+
+      expect(result).toEqual({
+        directCost: 500000,
+        managementFee: 50000,
+        tax: 55000,
+        subtotal: 605000,
+      });
+    });
+
+    it("忽略額外欄位", () => {
+      const summary = {
+        directCost: 100000,
+        managementFee: 10000,
+        tax: 11000,
+        subtotal: 121000,
+        extra: "ignored" as any,
+      };
+
+      const result = costBaseFromPricingSummary(summary);
+      expect(result.directCost).toBe(100000);
+      expect((result as any).extra).toBeUndefined();
+    });
+  });
+
+  describe("createDefaultCostBase", () => {
+    it("從預算估算預設成本基礎", () => {
+      const budget = 1000000;
+      const result = createDefaultCostBase(budget);
+
+      // directCost = 1000000 * 0.6 = 600000
+      // managementFee = 600000 * 0.1 = 60000
+      // subtotal = 660000
+      // tax = 660000 * 0.05 = 33000
+      expect(result.directCost).toBe(600000);
+      expect(result.managementFee).toBe(60000);
+      expect(result.subtotal).toBe(660000);
+      expect(result.tax).toBe(33000);
+    });
+
+    it("無預算時返回零成本", () => {
+      const result = createDefaultCostBase(undefined);
+      expect(result.directCost).toBe(0);
+      expect(result.managementFee).toBe(0);
+      expect(result.subtotal).toBe(0);
+      expect(result.tax).toBe(0);
+    });
+
+    it("零預算時返回零成本", () => {
+      const result = createDefaultCostBase(0);
+      expect(result.subtotal).toBe(0);
+    });
+
+    it("負數預算時返回零成本", () => {
+      const result = createDefaultCostBase(-100000);
+      expect(result.subtotal).toBe(0);
+    });
+
+    it("小額預算計算", () => {
+      const budget = 10000;
+      const result = createDefaultCostBase(budget);
+
+      expect(result.directCost).toBe(6000);
+      expect(result.managementFee).toBe(600);
+      expect(result.subtotal).toBe(6600);
+      expect(result.tax).toBe(330);
+    });
+
+    it("大額預算計算", () => {
+      const budget = 100000000;
+      const result = createDefaultCostBase(budget);
+
+      expect(result.directCost).toBe(60000000);
+      expect(result.subtotal).toBe(66000000);
     });
   });
 });
