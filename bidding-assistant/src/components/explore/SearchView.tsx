@@ -249,12 +249,12 @@ function RecordCard({
         {/* 公司角色（可點擊鑽進廠商） */}
         {isAward && companies.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {companies.map((c) => {
+            {companies.map((c, companyIndex) => {
               const shortName = c.name.replace(/\s*\(.*\)\s*$/, "").trim();
               const isTarget = mode === "company" && c.name.includes(companyQuery);
-              return c.roles.map((role) => (
+              return c.roles.map((role, roleIndex) => (
                 <Badge
-                  key={`${c.name}-${role}`}
+                  key={`${record.unit_id}-${record.job_number}-${companyIndex}-${roleIndex}`}
                   variant={
                     role === "得標" ? "default" :
                     role === "未得標" ? "destructive" :
