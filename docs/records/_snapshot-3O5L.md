@@ -31,10 +31,10 @@ SNAPSHOT|20260223-1135|3O5L|Haiku 4.5|p1-acceptance-ready
 
 ## 整體 P1 測試狀態
 
-**3722 tests PASS / 1 skipped / 0 FAIL**（最新巡檢）
-- 235 test files passed (+4 新增測試覆蓋)
-- Build: ✓ Compiled successfully in 4.6s
-- 測試總進度：+78 相比上次檢查
+**3762 tests PASS / 1 skipped / 0 FAIL**（最新巡檢，20260223-0920）
+- 238 test files passed (+3 新增測試覆蓋相比上次）
+- Build: ✓ Compiled successfully，TypeScript clean
+- P1e Cron 路由測試驗證完成：11/11 PASS（GET 認證、租戶查詢、多租戶、POST 端點、回應格式、邊界條件）
 
 ### 關鍵成果
 ✅ P1a: Supabase schema 完成  ✅ P1b: OAuth 認證完成  ✅ P1c: KB API 6 端點 + 50 測試  ✅ P1d: 待 UI 實裝  ✅ P1e: Notion 同步引擎 + Cron  ✅ P1f: 多租戶中間件 + RLS 隔離
