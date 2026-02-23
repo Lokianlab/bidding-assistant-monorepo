@@ -166,13 +166,14 @@ export function validateBulkPartners(inputs: PartnerInput[]) {
 /**
  * 計算信任度分數
  * 基於評分和合作次數
+ * 公式: (rating/5 * 60) + (cooperation_count/100 * 40)
  */
 export function calculateTrustScore(partner: Partner): number {
-  // 評分權重: 70%
-  const ratingScore = (partner.rating / 5) * 70;
+  // 評分權重: 60%
+  const ratingScore = (partner.rating / 5) * 60;
 
-  // 合作次數權重: 30%（上限 50 次）
-  const cooperationScore = Math.min(partner.cooperation_count / 50, 1) * 30;
+  // 合作次數權重: 40%（基數 100 次）
+  const cooperationScore = (partner.cooperation_count / 100) * 40;
 
   return Math.round(ratingScore + cooperationScore);
 }
