@@ -37,6 +37,8 @@ import { useSettings } from "@/lib/context/settings-context";
 import { readCachedIntelligence } from "@/lib/strategy/intelligence-bridge";
 import type { SelfAnalysis, MarketTrend } from "@/lib/pcc/types";
 import { FitScoreCard } from "@/components/strategy/FitScoreCard";
+import { NegotiationPanel } from "@/components/negotiation/NegotiationPanel";
+import type { CostBase } from "@/lib/negotiation/types";
 import { STAGES } from "@/data/config/stages";
 
 // ── Helpers ────────────────────────────────────────
@@ -144,6 +146,29 @@ export default function CaseWorkPage() {
   const progressPercent = progress
     ? calculateProgress(progress.stages)
     : 0;
+
+  // 計算成本基礎（用於議價分析）
+  const costBase = useMemo<CostBase | null>(() => {
+    if (!budget || !settings?.modules?.pricing) return null;
+
+    const taxRate = settings.modules.pricing.taxRate || 0.05;
+    const managementFeeRate = settings.modules.pricing.managementFeeRate || 0.1;
+
+    // 假設預算是最終報價基礎，反推成本
+    // subtotal = budget / (1 + taxRate)
+    const subtotal = budget / (1 + taxRate);
+    // directCost = subtotal / (1 + managementFeeRate)
+    const directCost = subtotal / (1 + managementFeeRate);
+    const managementFee = directCost * managementFeeRate;
+    const tax = (directCost + managementFee) * taxRate;
+
+    return {
+      directCost: Math.round(directCost),
+      managementFee: Math.round(managementFee),
+      tax: Math.round(tax),
+      subtotal: Math.round(directCost + managementFee + tax),
+    };
+  }, [budget, settings?.modules?.pricing]);
 
   // ── 空狀態 ──
 
@@ -384,6 +409,9 @@ export default function CaseWorkPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* ── 議價分析 ── */}
+      {costBase && <NegotiationPanel costBase={costBase} />}
 
       {/* ── 下一步行動 ── */}
       <Card>
