@@ -6,7 +6,9 @@ export type LogCategory =
   | "navigation"
   | "cache"
   | "render"
-  | "system";
+  | "system"
+  | "sync"
+  | "cron";
 
 export interface DebugLogEntry {
   id: string;
