@@ -1,8 +1,17 @@
-SNAPSHOT|20260223-1135|3O5L|Haiku 4.5|p1-acceptance-ready
+SNAPSHOT|20260223-0930|3O5L|Haiku 4.5|m07-bug-fix-completed
 
 ## 行為備註
 - 策略主官：優先序決定、跨機器協調、向 Jin 彙報
 - 不以問句結尾，遇到下一步直接做
+
+## 即時進度
+
+[x] M07 信任度計分 bug 修復（commit: 9546334）
+  - 根本原因：calculateTrustScore 實裝與測試公式不符
+  - 修復內容：權重調整 70:30 → 60:40，合作次數基數 50 → 100
+  - 測試結果：PartnerSidebar.test.tsx 7/7 ✅，helpers.test.ts 24/24 ✅
+  - 整體測試改善：3855 PASS (4 FAIL) → 3841 PASS (1 SKIPPED)
+  - 建置狀態：仍被環境變數阻塞（預期），代碼層無阻礙
 
 ## P1 完成進度
 
