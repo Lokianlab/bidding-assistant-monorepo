@@ -18,6 +18,7 @@ export default function PresentationPage({ params }: { params: { id: string } })
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedPresentation, setGeneratedPresentation] = useState<any>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleGeneratePresentation = async () => {
     if (!selectedTemplate) {
@@ -51,6 +52,26 @@ export default function PresentationPage({ params }: { params: { id: string } })
       setError(err instanceof Error ? err.message : '簡報生成失敗');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExportPresentation = async () => {
+    setIsExporting(true);
+    try {
+      const response = await fetch(`/api/cases/${caseId}/presentation/export?format=pptx`);
+      if (!response.ok) throw new Error('匯出失敗');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `presentation-${caseId}.pptx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '匯出失敗');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -151,7 +172,9 @@ export default function PresentationPage({ params }: { params: { id: string } })
               >
                 重新生成
               </Button>
-              <Button className="flex-1">下載簡報（待集成）</Button>
+              <Button onClick={handleExportPresentation} disabled={isExporting} className="flex-1">
+                {isExporting ? '下載中...' : '下載簡報'}
+              </Button>
             </div>
           </div>
         )}

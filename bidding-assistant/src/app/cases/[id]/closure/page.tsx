@@ -20,6 +20,8 @@ const CLOSURE_CATEGORIES = [
 export default function CaseClosurePage({ params }: { params: { id: string } }) {
   const caseId = params.id;
   const { loading, error, closure, submitClosure, resetError } = useCaseClosure();
+  const [patterns, setPatterns] = useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const [formData, setFormData] = useState({
     final_status: 'completed' as 'completed' | 'cancelled' | 'suspended',
@@ -48,6 +50,24 @@ export default function CaseClosurePage({ params }: { params: { id: string } }) 
     };
 
     await submitClosure(caseId, payload);
+  };
+
+  const analyzeSuccessPatterns = async () => {
+    setIsAnalyzing(true);
+    try {
+      const response = await fetch(`/api/cases/${caseId}/closure/patterns`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) throw new Error('分析失敗');
+      const data = await response.json();
+      setPatterns(data);
+    } catch (err) {
+      resetError();
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (
@@ -189,33 +209,93 @@ export default function CaseClosurePage({ params }: { params: { id: string } }) 
 
         {/* 結案完成後的總結 */}
         {closure && (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">結案總結</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-slate-600 mb-1">狀態</p>
-                <p className="text-lg font-semibold text-slate-900">{closure.final_status}</p>
+          <>
+            <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+              <h2 className="text-xl font-semibold text-slate-900 mb-4">結案總結</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">狀態</p>
+                  <p className="text-lg font-semibold text-slate-900">{closure.final_status}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">結案日期</p>
+                  <p className="text-lg font-semibold text-slate-900">{closure.closure_date}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-slate-600 mb-1">結案日期</p>
-                <p className="text-lg font-semibold text-slate-900">{closure.closure_date}</p>
+
+              <div className="mt-6 border-t pt-6">
+                <h3 className="text-lg font-semibold text-slate-900 mb-3">評分總結</h3>
+                <div className="space-y-2">
+                  {closure.scores.map((score) => (
+                    <div key={score.id} className="flex justify-between items-center">
+                      <span className="text-slate-600">
+                        {CLOSURE_CATEGORIES.find((c) => c.id === score.category)?.label}
+                      </span>
+                      <span className="text-lg font-semibold text-blue-600">{score.score}/100</span>
+                    </div>
+                  ))}
+                </div>
               </div>
+
+              {!patterns && (
+                <Button onClick={analyzeSuccessPatterns} disabled={isAnalyzing} className="w-full mt-6">
+                  {isAnalyzing ? '分析中...' : '分析成功模式'}
+                </Button>
+              )}
             </div>
 
-            <div className="mt-6 border-t pt-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-3">評分總結</h3>
-              <div className="space-y-2">
-                {closure.scores.map((score) => (
-                  <div key={score.id} className="flex justify-between items-center">
-                    <span className="text-slate-600">
-                      {CLOSURE_CATEGORIES.find((c) => c.id === score.category)?.label}
-                    </span>
-                    <span className="text-lg font-semibold text-blue-600">{score.score}/100</span>
+            {/* 成功模式分析結果 */}
+            {patterns && (
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-xl font-semibold text-slate-900 mb-4">成功模式識別</h2>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">識別的模式</h3>
+                    <div className="space-y-3">
+                      {patterns.patterns_identified?.map((pattern: any) => (
+                        <div key={pattern.name} className="border-l-4 border-green-500 pl-4">
+                          <p className="font-semibold text-slate-900">{pattern.name}</p>
+                          <p className="text-sm text-slate-600 mt-1">{pattern.description}</p>
+                          <div className="flex gap-4 mt-2 text-sm">
+                            <span>頻率: {pattern.frequency}x</span>
+                            <span>可複製性: {pattern.replicability_score}%</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
+
+                  <div className="border-t pt-4">
+                    <h3 className="font-semibold text-slate-900 mb-2">關鍵成功因素</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {patterns.key_success_factors?.map((factor: string) => (
+                        <span key={factor} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                          {factor}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h3 className="font-semibold text-slate-900 mb-2">複製潛力: {patterns.replication_potential}%</h3>
+                    <p className="text-sm text-slate-600">此案件成功經驗可應用到類似專案的程度</p>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h3 className="font-semibold text-slate-900 mb-2">建議</h3>
+                    <ul className="space-y-1 text-sm text-slate-600">
+                      {patterns.recommendations?.map((rec: string) => (
+                        <li key={rec} className="flex gap-2">
+                          <span>•</span>
+                          <span>{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -18,6 +18,7 @@ export default function ContractPage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [workplan, setWorkplan] = useState<any>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const [milestones, setMilestones] = useState<Milestone[]>([
     { date: '2026-03-31', description: '需求確認完成', completed: false },
     { date: '2026-05-31', description: '設計文件交付', completed: false },
@@ -71,6 +72,30 @@ export default function ContractPage({ params }: { params: { id: string } }) {
     const newMilestones = [...milestones];
     newMilestones[idx].completed = !newMilestones[idx].completed;
     setMilestones(newMilestones);
+  };
+
+  const handleExportReport = async () => {
+    setIsExporting(true);
+    try {
+      const response = await fetch(`/api/cases/${caseId}/contract/report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ period: 'monthly' }),
+      });
+      if (!response.ok) throw new Error('報告匯出失敗');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `progress-report-${caseId}.txt`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '報告匯出失敗');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -179,8 +204,8 @@ export default function ContractPage({ params }: { params: { id: string } }) {
             {loading ? '生成中...' : '生成工作計畫書'}
           </Button>
           {workplan && (
-            <Button variant="outline" className="flex-1" size="lg">
-              下載工作計畫書（待集成）
+            <Button onClick={handleExportReport} disabled={isExporting} className="flex-1" size="lg">
+              {isExporting ? '匯出中...' : '下載報告'}
             </Button>
           )}
         </div>
