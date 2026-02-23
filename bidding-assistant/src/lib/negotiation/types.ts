@@ -35,3 +35,18 @@ export interface NegotiationAnalysis {
   scenarios: QuoteScenario[];         // 用戶模擬的其他方案
   allowanceAmount: number;            // 可讓步總額（預案 - 底線）
 }
+
+/** 成本敏感度分析 — 成本變化對報價的影響 */
+export interface SensitivityAnalysis {
+  baseCost: number;                   // 基準成本
+  scenarios: {
+    variation: number;                // 成本變化（e.g., -0.1 = 成本下降 10%）
+    costBase: CostBase;               // 變化後的成本基礎
+    proposed: QuoteScenario;          // 對應的預案報價
+    impact: {
+      costChange: number;             // 成本變化金額
+      quoteChange: number;            // 報價變化金額
+      profitChangeRate: number;       // 利潤率變化（e.g., 0.02 = 上升 2%）
+    };
+  }[];
+}

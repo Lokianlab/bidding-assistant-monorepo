@@ -4,6 +4,7 @@ import type {
   NegotiationAnalysis,
   QuoteScenario,
   QuoteStatus,
+  SensitivityAnalysis,
 } from "./types";
 
 /**
@@ -213,5 +214,72 @@ export function createDefaultCostBase(budget?: number): CostBase {
     managementFee,
     tax,
     subtotal,
+  };
+}
+
+/**
+ * 敏感度分析：成本變化對報價的影響
+ * @param baseCostBase 基準成本基礎
+ * @param config 議價設定
+ * @param variations 成本變化比例陣列（e.g., [-0.1, -0.05, 0, 0.05, 0.1]）
+ * @returns 敏感度分析結果
+ */
+export function analyzeSensitivity(
+  baseCostBase: CostBase,
+  config: NegotiationConfig,
+  variations: number[] = [-0.1, -0.05, 0, 0.05, 0.1]
+): SensitivityAnalysis {
+  if (!baseCostBase || !config) {
+    return {
+      baseCost: 0,
+      scenarios: [],
+    };
+  }
+
+  const baseProposed = createScenario(
+    Math.round(baseCostBase.subtotal * (1 + config.expectedMargin)),
+    baseCostBase,
+    "基準",
+    config
+  );
+
+  const scenarios = variations.map((variation) => {
+    // 按變化比例調整成本
+    const newSubtotal = Math.round(baseCostBase.subtotal * (1 + variation));
+    const newDirectCost = Math.round(newSubtotal / (1 + 0.1)); // 假設管理費率 10%
+    const newManagementFee = Math.round(newDirectCost * 0.1);
+    const newTax = Math.round((newDirectCost + newManagementFee) * 0.05);
+    const adjustedSubtotal = newDirectCost + newManagementFee + newTax;
+
+    const newCostBase: CostBase = {
+      directCost: newDirectCost,
+      managementFee: newManagementFee,
+      tax: newTax,
+      subtotal: adjustedSubtotal,
+    };
+
+    const proposedAmount = Math.round(adjustedSubtotal * (1 + config.expectedMargin));
+    const proposed = createScenario(proposedAmount, newCostBase, `預案`, config);
+
+    const costChange = adjustedSubtotal - baseCostBase.subtotal;
+    const quoteChange = proposedAmount - baseProposed.quoteAmount;
+    const baseProfitRate = baseProposed.profitRate;
+    const profitChangeRate = proposed.profitRate - baseProfitRate;
+
+    return {
+      variation,
+      costBase: newCostBase,
+      proposed,
+      impact: {
+        costChange,
+        quoteChange,
+        profitChangeRate,
+      },
+    };
+  });
+
+  return {
+    baseCost: baseCostBase.subtotal,
+    scenarios,
   };
 }

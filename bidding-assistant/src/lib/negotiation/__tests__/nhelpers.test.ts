@@ -9,6 +9,7 @@ import {
   calculateConcessionRate,
   costBaseFromPricingSummary,
   createDefaultCostBase,
+  analyzeSensitivity,
 } from "../helpers";
 import type { CostBase, NegotiationConfig } from "../types";
 
@@ -320,6 +321,95 @@ describe("Negotiation Helpers", () => {
 
       expect(result.directCost).toBe(60000000);
       expect(result.subtotal).toBe(66000000);
+    });
+  });
+
+  describe("analyzeSensitivity", () => {
+    it("成本下降時報價下降", () => {
+      const sensitivity = analyzeSensitivity(mockCostBase, mockConfig, [-0.1, 0, 0.1]);
+
+      expect(sensitivity.scenarios).toHaveLength(3);
+      // 成本下降 10%，報價應該也下降
+      expect(sensitivity.scenarios[0].proposed.quoteAmount).toBeLessThan(
+        sensitivity.scenarios[1].proposed.quoteAmount
+      );
+    });
+
+    it("成本上升時報價上升", () => {
+      const sensitivity = analyzeSensitivity(mockCostBase, mockConfig, [-0.1, 0, 0.1]);
+
+      // 成本上升 10%，報價應該也上升
+      expect(sensitivity.scenarios[2].proposed.quoteAmount).toBeGreaterThan(
+        sensitivity.scenarios[1].proposed.quoteAmount
+      );
+    });
+
+    it("計算成本變化金額", () => {
+      const sensitivity = analyzeSensitivity(mockCostBase, mockConfig, [-0.1, 0, 0.1]);
+
+      // 基準成本：1,210,000
+      // -10%：1,210,000 * 0.9 = 1,089,000
+      const costChange = sensitivity.scenarios[0].impact.costChange;
+      expect(costChange).toBeLessThan(0);
+    });
+
+    it("計算報價變化金額", () => {
+      const sensitivity = analyzeSensitivity(mockCostBase, mockConfig, [-0.1, 0, 0.1]);
+
+      const baselineQuote = sensitivity.scenarios[1].proposed.quoteAmount;
+      const decreasedQuote = sensitivity.scenarios[0].proposed.quoteAmount;
+      const increasedQuote = sensitivity.scenarios[2].proposed.quoteAmount;
+
+      expect(decreasedQuote).toBeLessThan(baselineQuote);
+      expect(increasedQuote).toBeGreaterThan(baselineQuote);
+    });
+
+    it("利潤率保持恆定（相同的 expectedMargin）", () => {
+      const sensitivity = analyzeSensitivity(mockCostBase, mockConfig, [-0.1, 0, 0.1]);
+
+      // 所有場景的利潤率應該相同（都是 expectedMargin）
+      sensitivity.scenarios.forEach((scenario) => {
+        expect(scenario.proposed.profitRate).toBeCloseTo(mockConfig.expectedMargin, 5);
+      });
+    });
+
+    it("基準成本記錄正確", () => {
+      const sensitivity = analyzeSensitivity(mockCostBase, mockConfig);
+
+      expect(sensitivity.baseCost).toBe(mockCostBase.subtotal);
+    });
+
+    it("預設變化比例 [-0.1, -0.05, 0, 0.05, 0.1]", () => {
+      const sensitivity = analyzeSensitivity(mockCostBase, mockConfig);
+
+      expect(sensitivity.scenarios).toHaveLength(5);
+      expect(sensitivity.scenarios[0].variation).toBe(-0.1);
+      expect(sensitivity.scenarios[2].variation).toBe(0);
+      expect(sensitivity.scenarios[4].variation).toBe(0.1);
+    });
+
+    it("自訂變化比例", () => {
+      const customVariations = [-0.2, -0.1, 0.1, 0.2];
+      const sensitivity = analyzeSensitivity(mockCostBase, mockConfig, customVariations);
+
+      expect(sensitivity.scenarios).toHaveLength(4);
+      expect(sensitivity.scenarios[0].variation).toBe(-0.2);
+      expect(sensitivity.scenarios[3].variation).toBe(0.2);
+    });
+
+    it("處理空值輸入", () => {
+      const sensitivity = analyzeSensitivity(null as any, mockConfig);
+
+      expect(sensitivity.baseCost).toBe(0);
+      expect(sensitivity.scenarios).toHaveLength(0);
+    });
+
+    it("成本變化導致的利潤率變化", () => {
+      const sensitivity = analyzeSensitivity(mockCostBase, mockConfig, [-0.1, 0]);
+
+      // 利潤率應該相同（因為都用 expectedMargin）
+      const profitRateDiff = sensitivity.scenarios[0].impact.profitChangeRate;
+      expect(profitRateDiff).toBeCloseTo(0, 5);
     });
   });
 });
