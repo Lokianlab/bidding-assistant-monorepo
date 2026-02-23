@@ -16,7 +16,7 @@ SNAPSHOT|20260223-2100|JDNE|claude-haiku-4-5-20251001
 [x] admin-dev-map-sync|dev-map更新:Phase1完成狀態+Phase2規劃+基建規劃,28行增補
 [x] infra-backup-mechanism|決策確認:B方案(pg_dump+GitHub)選中→ITEJ實裝,4-6hrs預計2026-02-24下午|backup-decision-exec.md|21:10|d17aa79
 [>] infra-backup-itej-impl|ITEJ備份系統實裝:pg_dump+GitHub Release自動化,工作包已發backup-impl-itej-phase2a.md|加速完成,預計2026-02-24 06:00|860f69d
-[>] impl-m08-z1fv|Z1FV M08評選簡報:API routes+UI基礎版,規格427行已交付,全力衝天亮|預計2026-02-24 05:30|860f69d
+[>] impl-m08-jdne|JDNE M08評選簡報:API routes+UI基礎版,generate端點完成,mock簡報邏輯就位|預計2026-02-24 04:00|0875c27
 [>] impl-m10-z1fv|Z1FV M10履約管理:API routes+進度dashboard,規格185行已交付,全力衝天亮|預計2026-02-24 05:30|860f69d
 [>] impl-m07-ainl|AINL M07前端:useKBSearch hook+搜尋頁面,M02 API就位,全力衝天亮|預計2026-02-24 04:00|860f69d
 [>] fix-m09-a44t|A44T M09修復:1個test缺口,快速定位+修復,全力衝天亮|預計2026-02-24 02:00|860f69d
