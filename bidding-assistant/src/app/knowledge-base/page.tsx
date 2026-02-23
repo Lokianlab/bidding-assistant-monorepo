@@ -133,27 +133,11 @@ export default function KnowledgeBasePage() {
   // 儲存
   function handleSave(entry: unknown) {
     const isNew = !editingEntry;
-    switch (activeTab) {
-      case "00A":
-        if (isNew) kb.addEntry00A(entry as KBEntry00A);
-        else kb.updateEntry00A((entry as KBEntry00A).id, entry as Partial<KBEntry00A>);
-        break;
-      case "00B":
-        if (isNew) kb.addEntry00B(entry as KBEntry00B);
-        else kb.updateEntry00B((entry as KBEntry00B).id, entry as Partial<KBEntry00B>);
-        break;
-      case "00C":
-        if (isNew) kb.addEntry00C(entry as KBEntry00C);
-        else kb.updateEntry00C((entry as KBEntry00C).id, entry as Partial<KBEntry00C>);
-        break;
-      case "00D":
-        if (isNew) kb.addEntry00D(entry as KBEntry00D);
-        else kb.updateEntry00D((entry as KBEntry00D).id, entry as Partial<KBEntry00D>);
-        break;
-      case "00E":
-        if (isNew) kb.addEntry00E(entry as KBEntry00E);
-        else kb.updateEntry00E((entry as KBEntry00E).id, entry as Partial<KBEntry00E>);
-        break;
+    if (isNew) {
+      kb.addEntry(activeTab, entry as KBEntry00A | KBEntry00B | KBEntry00C | KBEntry00D | KBEntry00E);
+    } else {
+      const entryId = (entry as { id: string }).id;
+      kb.updateEntry(activeTab, entryId, entry as Partial<KBEntry00A | KBEntry00B | KBEntry00C | KBEntry00D | KBEntry00E>);
     }
     setEditorOpen(false);
     setEditingEntry(null);
@@ -184,8 +168,7 @@ export default function KnowledgeBasePage() {
     let addedCount = 0;
     for (const entry of seedEntries) {
       if (!existingIds.has(entry.id)) {
-        if (kbId === "00C") kb.addEntry00C(entry as KBEntry00C);
-        else kb.addEntry00D(entry as KBEntry00D);
+        kb.addEntry(kbId, entry as KBEntry00C | KBEntry00D);
         addedCount++;
       }
     }

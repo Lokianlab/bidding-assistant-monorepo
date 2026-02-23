@@ -40,7 +40,7 @@ export function useKnowledgeBase() {
   const [conflicts, setConflicts] = useState<KBConflict[]>([]);
 
   // Refs
-  const syncTimerRef = useRef<NodeJS.Timeout>();
+  const syncTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const initialSyncDoneRef = useRef(false);
 
   /**
@@ -79,13 +79,13 @@ export function useKnowledgeBase() {
       const stats = await kbClient.getStats();
       clearTimeout(timeout);
 
-      logger.info("kb", "Initial sync successful", stats);
+      logger.info("sync", "Initial sync successful", JSON.stringify(stats));
       kbCache.updateSyncTime(Date.now());
 
       // 啟動定期同步
       scheduleSync();
     } catch (err) {
-      logger.warn("kb", "Initial sync failed, using local cache", String(err));
+      logger.warn("sync", "Initial sync failed, using local cache", String(err));
       // 仍然啟動定期同步，嘗試恢復
       scheduleSync();
     } finally {
@@ -114,7 +114,7 @@ export function useKnowledgeBase() {
       const queue = kbCache.getQueue();
       for (const item of queue) {
         if (item.attempts > CONFLICT_RETRY_LIMIT) {
-          logger.warn("kb", "Sync abandoned after retries", item.id);
+          logger.warn("sync", "Sync abandoned after retries", item.id);
           kbCache.clearQueueItem(item.id);
           continue;
         }
@@ -136,10 +136,10 @@ export function useKnowledgeBase() {
               break;
           }
           kbCache.clearQueueItem(item.id);
-          logger.info("kb", "Queue item synced", item.id);
+          logger.info("sync", "Queue item synced", item.id);
         } catch (err) {
           kbCache.incrementRetries(item.id);
-          logger.warn("kb", "Queue sync failed", `${item.id}: ${String(err)}`);
+          logger.warn("sync", "Queue sync failed", `${item.id}: ${String(err)}`);
         }
       }
 
@@ -150,9 +150,9 @@ export function useKnowledgeBase() {
       }
 
       kbCache.updateSyncTime(Date.now());
-      logger.info("kb", "Background sync completed");
+      logger.info("sync", "Background sync completed");
     } catch (err) {
-      logger.error("kb", "Background sync failed", String(err));
+      logger.error("sync", "Background sync failed", String(err));
     } finally {
       setSyncing(false);
     }
@@ -190,7 +190,7 @@ export function useKnowledgeBase() {
 
     if (newConflicts.length > 0) {
       setConflicts(newConflicts);
-      logger.warn("kb", "Conflicts detected", `${newConflicts.length} conflicts`);
+      logger.warn("sync", "Conflicts detected", `${newConflicts.length} conflicts`);
     }
   };
 
@@ -203,7 +203,7 @@ export function useKnowledgeBase() {
       [kbId]: (prev[kbId] as KBEntry[]).map((e) => (e.id === remote.id ? remote : e)),
     }));
     kbCache.save(data);
-    logger.debug("kb", "Remote change applied", remote.id);
+    logger.debug("cache", "Remote change applied", remote.id);
   };
 
   /**
@@ -247,7 +247,7 @@ export function useKnowledgeBase() {
 
     // 保存快取
     kbCache.save(data);
-    logger.debug("kb", "Entry added", `${kbId}:${newId}`);
+    logger.debug("cache", "Entry added", `${kbId}:${newId}`);
   }, [data]);
 
   /**
@@ -276,7 +276,7 @@ export function useKnowledgeBase() {
 
       // 保存快取
       kbCache.save(data);
-      logger.debug("kb", "Entry updated", `${kbId}:${entryId}`);
+      logger.debug("cache", "Entry updated", `${kbId}:${entryId}`);
     },
     [data]
   );
@@ -304,7 +304,7 @@ export function useKnowledgeBase() {
 
       // 保存快取
       kbCache.save(data);
-      logger.info("kb", "Entry deleted", `${kbId}:${entryId}`);
+      logger.info("sync", "Entry deleted", `${kbId}:${entryId}`);
     },
     [data]
   );
@@ -314,7 +314,7 @@ export function useKnowledgeBase() {
    */
   const resolveConflictLocal = useCallback((conflict: KBConflict) => {
     setConflicts((prev) => prev.filter((c) => c.entryId !== conflict.entryId));
-    logger.info("kb", "Conflict resolved (keep local)", conflict.entryId);
+    logger.info("sync", "Conflict resolved (keep local)", conflict.entryId);
   }, []);
 
   /**
@@ -323,8 +323,29 @@ export function useKnowledgeBase() {
   const resolveConflictRemote = useCallback((conflict: KBConflict) => {
     applyRemoteChange(conflict.kbId, conflict.remote);
     setConflicts((prev) => prev.filter((c) => c.entryId !== conflict.entryId));
-    logger.info("kb", "Conflict resolved (accept remote)", conflict.entryId);
+    logger.info("sync", "Conflict resolved (accept remote)", conflict.entryId);
   }, []);
+
+  /**
+   * 匯出資料
+   */
+  const exportData = useCallback(() => {
+    return data;
+  }, [data]);
+
+  /**
+   * 匯入資料（批量新增）
+   */
+  const importData = useCallback((importedData: KnowledgeBaseData) => {
+    for (const kbId of Object.keys(importedData) as KBId[]) {
+      if (Array.isArray(importedData[kbId])) {
+        for (const entry of importedData[kbId]) {
+          addEntry(kbId, entry);
+        }
+      }
+    }
+    logger.info("sync", "Data imported", `${Object.keys(importedData).length} categories`);
+  }, [addEntry]);
 
   return {
     // 狀態
@@ -341,5 +362,9 @@ export function useKnowledgeBase() {
     // 衝突解決
     resolveConflictLocal,
     resolveConflictRemote,
+
+    // 匯入匯出
+    exportData,
+    importData,
   };
 }
