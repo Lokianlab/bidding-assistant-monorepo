@@ -28,6 +28,8 @@ SNAPSHOT|20260223-1049|AINL|claude-haiku-4-5-20251001|circulation-active
 [x] 品質警報發現|掃描測試發現React.act 40個失敗，通知JDNE|20260223-AINL-quality-alert-react-act.md
 [x] 修復決策制定|臨時跳過+P2長期修復，最小化T+24h風險|20260223-AINL-quality-fix-strategy.md
 [x] M07 KB搜尋前端集成|useKBSearch Hook升級+頁面篩選分頁+API測試（6/6 PASS）|20260223-AINL-m07-kb-search-integration.md，commit 3e48ce2
+[x] Checkpoint前期掃描|全機進度評估（各機85%+）+決策建議|20260223-AINL-checkpoint-prescan.md，commit 99d260f
+[x] 代碼審查框架|M08/M10審查標準+檢查清單+流程規劃|20260223-AINL-code-review-framework.md，commit b9b28d2
 
 ## 自主循環工作（不停機）
 
@@ -53,6 +55,8 @@ SNAPSHOT|20260223-1049|AINL|claude-haiku-4-5-20251001|circulation-active
 [x] 循環 20：T+24h就緒|準備10份協調文件+品質決策|t24h-preparation-complete
 [x] 循環 21：品質決策+最終就緒|React.act臨時跳過決策+各機工作分派預測|final-standby-ready
 [x] 循環 22：M07 KB搜尋集成|接收授權→分析前端-API對齊→修改Hook+頁面→寫測試→提交|m07-kb-integration-complete
+[x] 循環 23：Checkpoint前期掃描|掃描全機進度（各機85%+完成）→為JDNE準備prescan報告|checkpoint-prescan-complete
+[x] 循環 24：代碼審查備戰|準備M08/M10審查框架→審查檢查清單→標準化流程|code-review-ready
 
 ## 待決項
 
@@ -91,7 +95,7 @@ SNAPSHOT|20260223-1049|AINL|claude-haiku-4-5-20251001|circulation-active
 - 📊 透明可見（所有決策記錄在文件中）
 - 🤝 賦能非命令（資源協調、障礙排除、決策建議）
 
-## 當前狀態（18:00 循環 22 - M07 KB 搜尋集成完成，進入待命）
+## 當前狀態（18:45 循環 24 - Checkpoint 前期掃描+代碼審查準備完成，進入待命）
 
 ✅ **T+24h Checkpoint 全面準備完成**
 - ✅ 10 份協調文件已備（優先序分析、M02 完成、Phase 3 觸發、環變配置、各機工作分派等）
