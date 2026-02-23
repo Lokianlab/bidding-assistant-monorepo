@@ -13,7 +13,7 @@ SNAPSHOT|20260223-1049|AINL|claude-haiku-4-5-20251001|circulation-active
 [x] P1協調進度檢查點 10:20|3624 PASS / 7 FAIL 確認|5f617bd|L1 完成
 [x] P1協調最終決策 10:30|驗收選項 A/B 框架提交|d2a7834|L1 完成
 [x] P1全程驗收準備|15 份協調文件 + 5 決策點|be8265b|L1 完成
-[>] M07 外包資源庫|規格文檔完成 + 實施計畫 3 天|規格已發佈，計畫確認
+[x] M07 外包資源庫|規格文檔完成 + Phase 1 完整實裝 (47 tests)|bee6511|L1 完成
 
 ## 自主循環工作（不停機）
 
@@ -75,32 +75,27 @@ SNAPSHOT|20260223-1049|AINL|claude-haiku-4-5-20251001|circulation-active
 - P2 規劃：四階段完成（2a/2b/2c/2d）
 - 待決項：2 項（P1 選項 + P2 四決策點）
 
-✅ **M07 Phase 1 實裝完成 (Day 1)**
-- Supabase migration：已完成（95 行）
-- TypeScript types：已完成（145 行）
-- usePartners Hook：已完成（227 行）
-- Helpers 函式：已完成（170 行，5 個功能）
-- API 路由：已完成（600 行，5 個端點）
-  - GET /api/partners（取得列表+搜尋篩選排序）
-  - POST /api/partners（新增+驗證）
-  - PATCH /api/partners/[id]（編輯+驗證）
-  - DELETE /api/partners/[id]（軟刪除）
-  - POST /api/partners/[id]/usage（標記使用）
-- API 輔助函式：已完成（80 行，租戶認證授權）
-- 測試：已完成（40 tests, 100% pass rate）
-  - helpers.test.ts（24 tests）
-  - usePartners.test.ts（10 tests）
-  - route.test.ts（6 tests）
-- OP 記錄：已更新
-- 下一步：PartnerSidebar UI 組件 + M03 集成測試
+✅ **M07 Phase 1 完整實裝完成 (09:30 推送)**
+- Helpers 函式：完成（驗證、搜尋、排序、信任度計算）
+  - validatePartner()、validateBulkPartners()
+  - searchPartners()、calculateTrustScore()、sortByRecommendation()
+- PartnerSidebar UI 組件：完成（列表、搜尋、篩選、排序、選擇）
+- 測試全數通過：47/47 tests ✓
+  - helpers.test.ts：24 tests
+  - usePartners.test.ts：10 tests
+  - route.test.ts：6 tests
+  - PartnerSidebar.test.tsx：7 tests
+- OP 記錄：已發佈（docs/records/2026-02/20260223-AINL-M07-phase1-complete.md）
+- Git 提交：bee6511（feat(M07) complete Phase 1）
+- **下一步**：M03 集成測試或等待 P1 驗收決策
 
 🔄 **循環狀態**
-- 已完成 12 個協調循環 + 2 個新工作階段
-- 已發佈 21 份協調文檔 + 3 份 M07 初始化檔
-- 當前：並行進行 P1 監聽 + M07 實裝
+- 已完成 13 個協調循環 + M07 Phase 1 獨立工作階段
+- 已發佈 22 份協調文檔 + OP 記錄
+- 當前：監聽 P1 決策 + 準備 M03 集成測試
 
-📍 **並行進行中**：
-1. ⏳ 監聽 Jin P1 決策 → 轉發各機執行驗收
-2. 🔧 M07 Phase 1 實裝中（usePartners Hook + API routes）
-3. 🔍 掃描其他機器進展（JDNE/A44T/Z1FV/ITEJ/3O5L）
-4. 📢 轉發新決策給各機
+📍 **待做清單**：
+1. ⏳ 監聽 Jin P1 驗收決策 → 轉發各機執行
+2. 🧪 M03 集成測試（與 M07 Partnership 集成）
+3. 🔍 掃描其他機器進展（JDNE/3O5L 協調）
+4. 📢 即時轉發新決策給各機
