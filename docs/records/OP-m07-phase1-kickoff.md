@@ -26,13 +26,20 @@ OP|20260223-1215|AINL|M07-phase1-kickoff|level-2-new-feature
    - `PartnerSearchParams` 搜尋參數
    - 常數與標籤定義
 
-### 預期改動（本週完成）
+3. **bidding-assistant/src/lib/partners/usePartners.ts**（227 行）
+   - 8 個操作方法（loadPartners, search, add, update, delete, markUsed）
+   - 錯誤處理與日誌記錄
+   - 本地搜尋篩選
+   - API 集成
 
-- `bidding-assistant/src/lib/partners/usePartners.ts`（~150 行）
-- `bidding-assistant/src/app/api/partners/route.ts`（~200 行）
-- `bidding-assistant/src/app/api/partners/[id]/route.ts`（~200 行）
-- `bidding-assistant/src/components/partners/PartnerSidebar.tsx`（~300 行）
-- `bidding-assistant/src/lib/partners/__tests__/`（~800 行）
+### 進行中改動（本週完成）
+
+- ✅ `bidding-assistant/src/lib/partners/usePartners.ts`（227 行）
+- ⏳ `bidding-assistant/src/lib/partners/helpers.ts`（~100 行）
+- ⏳ `bidding-assistant/src/app/api/partners/route.ts`（~200 行）
+- ⏳ `bidding-assistant/src/app/api/partners/[id]/route.ts`（~200 行）
+- ⏳ `bidding-assistant/src/components/partners/PartnerSidebar.tsx`（~300 行）
+- ⏳ `bidding-assistant/src/lib/partners/__tests__/`（~800 行）
 
 ---
 
@@ -124,7 +131,10 @@ OP|20260223-1215|AINL|M07-phase1-kickoff|level-2-new-feature
 - ✅ 測試計畫清晰
 - ✅ 時間表現實
 
-**狀態**：Ready to start Phase 1
+**狀態**：Phase 1 進行中（12:35）
+- ✅ 型別定義完成
+- ✅ usePartners Hook 完成
+- ⏳ API routes + helpers 進行中
 
-🚀 **隊長批准後，立刻啟動實裝。**
+🚀 **AINL 不停機繼續循環。**
 
