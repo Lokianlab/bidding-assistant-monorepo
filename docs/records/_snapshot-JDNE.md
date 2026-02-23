@@ -17,4 +17,5 @@ SNAPSHOT|20260223-0735|JDNE|claude-haiku-4-5-20251001
 [?] infra-backup-mechanism|waiting Jin req
 [?] chat-behavior-note-propagate-claudemd|L3,waiting Jin approve
 [x] admin-lifecycle-dispatch|12階段缺口規劃分派完成:M02(ITEJ+阻塞3點),M07(AINL),M08(JDNE規格),M09(A44T),M02P4+M10(Z1FV),M11(3O5L)|分派通知5份+主題公告,規格文檔框架待各機撰寫|fd5dd89+cdf47ce
-[>] admin-lifecycle-impl|實裝分派啟動(Jin直接授權):AINL/A44T可立即規格+實裝,Z1FV M08決策→code,等ITEJ阻塞解除|協作監控儀表板+訊息整合
+[x] admin-lifecycle-impl|實裝分派啟動(Jin直接授權):AINL/A44T可立即規格+實裝,Z1FV M08決策→code,等ITEJ阻塞解除|協作監控儀表板+訊息整合|9f14716+2452d56
+[>] admin-m02-decision-exec|M02決策執行+全機啟動:Supabase(P1a)+認証(bypass)+驗收(3模組通過)|ITEJ立即啟動,Z1FV/3O5L規格準備,全機無阻礙|e8d8168
