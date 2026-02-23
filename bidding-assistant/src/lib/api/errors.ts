@@ -73,7 +73,7 @@ export interface ApiErrorResponse {
   message: string;
 }
 
-export function handleApiError(error: any): ApiErrorResponse {
+export function handleApiError(error: unknown): ApiErrorResponse {
   if (error instanceof HttpError) {
     return {
       status: error.status,

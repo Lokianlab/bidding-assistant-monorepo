@@ -64,7 +64,11 @@ export async function GET(request: NextRequest) {
     const partners = (data || []) as Partner[];
     const search = searchParams.get('search');
     const category = searchParams.get('category');
-    const sort = searchParams.get('sort') as any;
+    const sortParam = searchParams.get('sort');
+    // 只允許 API 支援的排序值；"trust" 由 sortByRecommendation 在 helpers 中處理
+    const sort = (sortParam === 'name' || sortParam === 'rating' || sortParam === 'last_used' || sortParam === 'created_at')
+      ? sortParam
+      : undefined;
     const limit = searchParams.get('limit');
 
     const filtered = searchPartners(partners, {

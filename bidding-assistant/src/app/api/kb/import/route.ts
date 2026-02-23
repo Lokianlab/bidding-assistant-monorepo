@@ -98,10 +98,11 @@ export async function POST(request: NextRequest) {
           }
 
           imported.push(result.id);
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : 'Unknown error';
           errors.push({
             index: i,
-            error: error.message || 'Unknown error',
+            error: message,
           });
         }
       }
@@ -111,10 +112,11 @@ export async function POST(request: NextRequest) {
         errors,
         total: entries.length,
       });
-    } catch (error: any) {
-      console.error('[KB API] Import error:', error);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Internal Server Error';
+      console.error('[KB API] Import error:', message);
       return NextResponse.json(
-        { error: error.message || 'Internal Server Error' },
+        { error: message },
         { status: 500 }
       );
     }

@@ -11,8 +11,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/lib/db/supabase-client';
 import { withKBAuth } from '@/lib/supabase/middleware';
 import { requireAuth, canDelete } from '@/lib/api/kb-middleware';
-import { syncItemToNotion } from '@/lib/kb/notion-sync';
+import { syncItemToNotion, type KBItem } from '@/lib/kb/notion-sync';
 import { Client as NotionClient } from '@notionhq/client';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { logger } from '@/lib/logger';
 
 interface RouteParams {
@@ -62,9 +63,9 @@ export async function GET(
       ...item,
       children: children || [],
     });
-  } catch (error: any) {
-    const statusCode = error?.statusCode || 500;
-    const message = error?.message || 'Internal Server Error';
+  } catch (error: unknown) {
+    const statusCode = error instanceof Error && 'statusCode' in error ? (error.statusCode as number) : 500;
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
 
     console.error('[KB API] GET single error:', message);
     return NextResponse.json(
@@ -106,7 +107,15 @@ export async function PATCH(
     }
 
     // 更新項目
-    const updateData: any = {
+    interface UpdateData {
+      updated_at: string;
+      updated_by: string;
+      title?: string;
+      content?: string;
+      tags?: string[];
+    }
+
+    const updateData: UpdateData = {
       updated_at: new Date().toISOString(),
       updated_by: session.userId,
     };
@@ -134,9 +143,9 @@ export async function PATCH(
     });
 
     return NextResponse.json(data);
-  } catch (error: any) {
-    const statusCode = error?.statusCode || 500;
-    const message = error?.message || 'Internal Server Error';
+  } catch (error: unknown) {
+    const statusCode = error instanceof Error && 'statusCode' in error ? (error.statusCode as number) : 500;
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
 
     console.error('[KB API] PATCH error:', message);
     return NextResponse.json(
@@ -203,9 +212,9 @@ export async function DELETE(
       { message: 'Deleted' },
       { status: 204 },
     );
-  } catch (error: any) {
-    const statusCode = error?.statusCode || 500;
-    const message = error?.message || 'Internal Server Error';
+  } catch (error: unknown) {
+    const statusCode = error instanceof Error && 'statusCode' in error ? (error.statusCode as number) : 500;
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
 
     console.error('[KB API] DELETE error:', message);
     return NextResponse.json(
@@ -220,8 +229,8 @@ export async function DELETE(
  * 不等待完成，立即返回
  */
 async function syncToNotionAsync(
-  item: any,
-  supabase: any,
+  item: KBItem,
+  supabase: SupabaseClient,
   tenantId: string,
   operation: 'update' | 'delete',
 ) {

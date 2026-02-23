@@ -27,7 +27,7 @@ export function createSupabaseBrowserClient() {
  * Supabase 客戶端初始化（服務器端）
  * 用於 API routes 和服務器組件
  */
-export function createSupabaseServerClient(cookieStore?: any) {
+export function createSupabaseServerClient(cookieStore?: unknown) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 

@@ -75,9 +75,9 @@ export async function GET(request: NextRequest) {
         limit,
         offset,
       });
-    } catch (error: any) {
-      const statusCode = error?.statusCode || 500;
-      const message = error?.message || 'Internal Server Error';
+    } catch (error: unknown) {
+      const statusCode = error instanceof Error && 'statusCode' in error ? (error.statusCode as number) : 500;
+      const message = error instanceof Error ? error.message : 'Internal Server Error';
 
       console.error('[KB API] Search error:', message);
       return NextResponse.json(

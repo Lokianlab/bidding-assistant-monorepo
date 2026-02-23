@@ -62,17 +62,22 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
-      stats[category].total = data?.length || 0;
-      stats[category].active = data?.filter((d: any) => d.status === 'active').length || 0;
-      stats[category].draft = data?.filter((d: any) => d.status === 'draft').length || 0;
-      stats[category].archived = data?.filter((d: any) => d.status === 'archived').length || 0;
+      interface StatusRecord {
+        status: string;
+      }
+      const statusData = data as StatusRecord[] | null;
+      stats[category].total = statusData?.length || 0;
+      stats[category].active = statusData?.filter((d: StatusRecord) => d.status === 'active').length || 0;
+      stats[category].draft = statusData?.filter((d: StatusRecord) => d.status === 'draft').length || 0;
+      stats[category].archived = statusData?.filter((d: StatusRecord) => d.status === 'archived').length || 0;
     }
 
     return NextResponse.json(stats);
-  } catch (error: any) {
-    console.error('[KB API] Stats error:', error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
+    console.error('[KB API] Stats error:', message);
     return NextResponse.json(
-      { error: error.message || 'Internal Server Error' },
+      { error: message },
       { status: 500 },
     );
   }

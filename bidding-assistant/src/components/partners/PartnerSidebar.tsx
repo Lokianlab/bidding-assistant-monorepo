@@ -127,7 +127,7 @@ export function PartnerSidebar({
           {/* 排序選項 */}
           <div>
             <label className="text-sm font-medium block mb-2">排序</label>
-            <Tabs value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+            <Tabs value={sortBy} onValueChange={(v) => setSortBy(v as 'trust' | 'rating' | 'name')}>
               <TabsList className="w-full">
                 <TabsTrigger value="trust" className="flex-1 text-xs">
                   推薦度

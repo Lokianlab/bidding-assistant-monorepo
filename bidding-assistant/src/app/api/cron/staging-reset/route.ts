@@ -28,10 +28,16 @@ function validateCronSecret(token: string | null | undefined): boolean {
 /**
  * 重置 staging 資料庫
  */
-async function resetStagingDatabase(): Promise<{ success: boolean; message: string; stats?: Record<string, any> }> {
+interface ResetResult {
+  success: boolean;
+  message: string;
+  stats?: Record<string, number | string>;
+}
+
+async function resetStagingDatabase(): Promise<ResetResult> {
   try {
     const supabase = getSupabaseServerClient();
-    const stats: Record<string, any> = {};
+    const stats: Record<string, number | string> = {};
 
     // ── 重置策略 ──
     // 1. 清除所有應用資料（保留 schema）
@@ -115,11 +121,12 @@ async function resetStagingDatabase(): Promise<{ success: boolean; message: stri
       message: 'Staging 環境重置完成',
       stats,
     };
-  } catch (error: any) {
-    console.error('[Cron] Staging 重置失敗:', error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Cron] Staging 重置失敗:', message);
     return {
       success: false,
-      message: `重置失敗: ${error.message}`,
+      message: `重置失敗: ${message}`,
     };
   }
 }
@@ -178,10 +185,11 @@ export async function GET(request: NextRequest) {
       stats: result.stats,
       timestamp: new Date().toISOString(),
     });
-  } catch (error: any) {
-    console.error('[Cron] 請求處理失敗:', error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Cron] 請求處理失敗:', message);
     return NextResponse.json(
-      { error: 'Internal Server Error', message: error.message },
+      { error: 'Internal Server Error', message },
       { status: 500 },
     );
   }

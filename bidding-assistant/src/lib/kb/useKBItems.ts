@@ -69,8 +69,9 @@ export function useKBItems(initialCategory?: KBCategory): UseKBItemsReturn {
       setItems(response.data);
       setTotal(response.total);
       setSelected(new Set()); // 重新載入時清除選擇
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch items');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to fetch items';
+      setError(message);
     } finally {
       setIsLoading(false);
     }

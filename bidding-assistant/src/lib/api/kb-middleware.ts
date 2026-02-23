@@ -21,6 +21,10 @@ export interface AuthSession {
  * 從 request 中提取並驗證 auth session
  * 優先讀取 headers（P1F middleware 模式），再回退到 cookie（P1B 模式）
  */
+interface AuthError extends Error {
+  statusCode?: number;
+}
+
 export async function requireAuth(request: NextRequest): Promise<AuthSession> {
   // 優先嘗試新模式：從 headers 讀取
   const tenantId = request.headers.get('x-tenant-id');
@@ -40,8 +44,8 @@ export async function requireAuth(request: NextRequest): Promise<AuthSession> {
   const cookieHeader = request.headers.get('cookie');
 
   if (!cookieHeader) {
-    const error = new Error('Unauthorized - No session cookie');
-    (error as any).statusCode = 401;
+    const error: AuthError = new Error('Unauthorized - No session cookie');
+    error.statusCode = 401;
     throw error;
   }
 
@@ -60,8 +64,8 @@ export async function requireAuth(request: NextRequest): Promise<AuthSession> {
 
     const authCookie = cookies['auth-session'];
     if (!authCookie) {
-      const error = new Error('Unauthorized - No auth session');
-      (error as any).statusCode = 401;
+      const error: AuthError = new Error('Unauthorized - No auth session');
+      error.statusCode = 401;
       throw error;
     }
 
@@ -79,12 +83,12 @@ export async function requireAuth(request: NextRequest): Promise<AuthSession> {
       tenantId: session.tenantId,
       role: session.role || 'member',
     };
-  } catch (error: any) {
-    if (error.statusCode === 401) {
+  } catch (error: unknown) {
+    if (error instanceof Error && 'statusCode' in error && error.statusCode === 401) {
       throw error;
     }
-    const err = new Error('Invalid session');
-    (err as any).statusCode = 401;
+    const err: AuthError = new Error('Invalid session');
+    err.statusCode = 401;
     throw err;
   }
 }

@@ -36,7 +36,7 @@ export class KBClient {
   private async request<T>(
     method: string,
     path: string,
-    data?: any
+    data?: unknown
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`;
     const controller = new AbortController();
@@ -88,7 +88,7 @@ export class KBClient {
   /**
    * 建立新項目
    */
-  async create(category: KBId, data: any) {
+  async create(category: KBId, data: unknown) {
     return this.request<{ id: string; entryId: string; category: KBId }>(
       'POST',
       '/items',
@@ -99,7 +99,7 @@ export class KBClient {
   /**
    * 更新項目
    */
-  async update(id: string, data: any) {
+  async update(id: string, data: unknown) {
     return this.request<KBEntry>('PUT', `/items/${id}`, { data });
   }
 

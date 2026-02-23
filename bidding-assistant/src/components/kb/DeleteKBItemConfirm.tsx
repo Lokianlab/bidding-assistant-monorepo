@@ -39,8 +39,9 @@ export function DeleteKBItemConfirm({
       await KBApiClient.deleteItem(item.id);
       onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete item');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to delete item';
+      setError(message);
     } finally {
       setIsDeleting(false);
     }

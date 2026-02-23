@@ -64,10 +64,11 @@ export async function GET(request: NextRequest) {
       } else {
         return exportAsMarkdown(data || []);
       }
-    } catch (error: any) {
-      console.error('[KB API] Export error:', error);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Internal Server Error';
+      console.error('[KB API] Export error:', message);
       return NextResponse.json(
-        { error: error.message || 'Internal Server Error' },
+        { error: message },
         { status: 500 }
       );
     }

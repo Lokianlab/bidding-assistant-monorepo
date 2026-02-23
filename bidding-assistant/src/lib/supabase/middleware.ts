@@ -1,5 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "./client";
+
+/**
+ * KB 認證上下文介面
+ */
+interface KBAuthContext {
+  session: {
+    user: {
+      id: string;
+      email: string;
+    };
+  };
+  supabaseClient: SupabaseClient;
+}
 
 /**
  * Supabase 認證中間件
@@ -12,7 +26,7 @@ import { createSupabaseServerClient } from "./client";
  */
 export async function withKBAuth(
   req: NextRequest,
-  handler: (req: NextRequest, auth: any) => Promise<NextResponse>
+  handler: (req: NextRequest, auth: KBAuthContext) => Promise<NextResponse>
 ) {
   try {
     // 建立 Supabase 服務器客戶端
@@ -53,7 +67,7 @@ export async function withKBAuth(
  * 用於刪除等敏感操作
  */
 export async function canDeleteKBEntry(
-  supabaseClient: any,
+  supabaseClient: SupabaseClient,
   entryId: string,
   tenantId: string
 ): Promise<boolean> {

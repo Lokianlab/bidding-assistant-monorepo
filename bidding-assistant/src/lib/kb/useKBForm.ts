@@ -117,8 +117,8 @@ export function useKBForm(initialData?: KBItem): UseKBFormReturn {
 
         reset();
         return result;
-      } catch (err: any) {
-        const message = err.message || 'Failed to submit form';
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to submit form';
         setSubmitError(message);
         return null;
       } finally {
