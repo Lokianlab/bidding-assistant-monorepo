@@ -71,7 +71,7 @@ describe('KBPage', () => {
       render(<KBPage />);
       await waitFor(() => {
         const allButton = screen.getByText('全部');
-        expect(allButton).toHaveClass('ring-2');
+        expect(allButton).toHaveClass('bg-primary');
       });
     });
 
@@ -88,8 +88,10 @@ describe('KBPage', () => {
       const firstCategoryButton = screen.getAllByText(/策略框架/)[0];
       await user.click(firstCategoryButton);
 
-      // 驗證選擇已更新
-      expect(firstCategoryButton).toHaveClass('ring-2');
+      // 驗證選擇已更新 - 點擊後應該有 bg-primary 類
+      await waitFor(() => {
+        expect(firstCategoryButton).toHaveClass('bg-primary');
+      });
     });
 
     it('分類切換應該觸發表格重新載入', async () => {
