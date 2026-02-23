@@ -26,4 +26,6 @@ SNAPSHOT|20260223-0735|JDNE|claude-haiku-4-5-20251001
 [x] admin-decision-indexing|今日6項決策索引+執行狀態+向後相容驗證|3dcaf81
 [x] admin-m08-spec-writing|M08評選簡報規格書完成:427行,含功能清單/決策鎖定/API/測試清單,交付Z1FV實裝|bb415be
 [x] admin-npm-quality-fix|npm install 修復品質缺口:62→0 failed tests,M07/M09依賴補齊,全部3834 PASS|69b9c7c
-[>] admin-realtime-monitoring|進度掃描:P1決策+M08規格+npm修復+各機超進度,決策0延遲,協調無衝突|轉入自主並行模式+T+24h checkpoint監控持續
+[x] admin-m10-spec-writing|M10履約管理規格書完成:185行,含工作計畫書生成/里程碑管理/進度追蹤/定期報告,API路由清單,80+測試要求,交付Z1FV實裝|4bade8c
+[x] admin-m11-spec-writing|M11結案飛輪規格書完成:216行,含結案評分/知識庫回流/成功模式識別,API路由清單,60+測試要求,交付3O5L實裝|4bade8c
+[>] admin-realtime-monitoring|進度掃描:P1決策+M08/M10/M11規格完成+npm修復+各機超進度,決策0延遲,協調無衝突|轉入自主並行模式+T+24h checkpoint監控+機器新規格分派待確認
