@@ -1,11 +1,15 @@
 /**
- * GET /api/kb/items/:id — 取得單一項目
- * PATCH /api/kb/items/:id — 更新項目
- * DELETE /api/kb/items/:id — 刪除項目
+ * M02 Phase 2: KB Item Detail API Routes
+ *
+ * GET    /api/kb/items/[id] — 取得單個項目
+ * PUT    /api/kb/items/[id] — 更新項目
+ * DELETE /api/kb/items/[id] — 刪除項目
+ * PATCH  /api/kb/items/[id] — 更新狀態
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/lib/db/supabase-client';
+import { withKBAuth } from '@/lib/supabase/middleware';
 import { requireAuth, canDelete } from '@/lib/api/kb-middleware';
 import { syncItemToNotion } from '@/lib/kb/notion-sync';
 import { Client as NotionClient } from '@notionhq/client';
