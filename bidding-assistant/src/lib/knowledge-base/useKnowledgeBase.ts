@@ -1,221 +1,345 @@
 "use client";
 
-// ====== 知識庫資料 Hook ======
-// 管理 localStorage 中的知識庫資料
+/**
+ * M02 Phase 3b: useKnowledgeBase Hook（API + 離線快取版）
+ *
+ * 功能：
+ * - 背景同步：API 客戶端 + 離線快取層
+ * - 樂觀更新：本地立即更新，非同步同步到 API
+ * - 衝突解決：Last-Write-Wins + 時間戳比較
+ * - Hydration 安全：SSR 兼容
+ */
 
+import { useState, useEffect, useCallback, useRef } from "react";
 import { logger } from "@/lib/logger";
+import { kbClient } from "./kbClient";
+import { kbCache } from "./kbCache";
+import type { KBId, KBEntry, KnowledgeBaseData } from "./types";
+import { EMPTY_KB_DATA } from "./constants";
 
-import { useState, useEffect, useCallback } from "react";
-import type {
-  KBId,
-  KBEntry00A,
-  KBEntry00B,
-  KBEntry00C,
-  KBEntry00D,
-  KBEntry00E,
-  KnowledgeBaseData,
-} from "./types";
-import { KB_STORAGE_KEY, KB_DATA_VERSION, EMPTY_KB_DATA } from "./constants";
+const SYNC_INTERVAL = 30000; // 30s
+const INITIAL_SYNC_TIMEOUT = 5000; // 5s
+const CONFLICT_RETRY_LIMIT = 5; // 衝突重試限制
 
-/** 從 localStorage 載入資料 */
-function loadKBData(): KnowledgeBaseData {
-  if (typeof window === "undefined") return { ...EMPTY_KB_DATA };
-  try {
-    const raw = localStorage.getItem(KB_STORAGE_KEY);
-    if (!raw) return { ...EMPTY_KB_DATA };
-    const parsed = JSON.parse(raw) as KnowledgeBaseData;
-    // 版本檢查（未來擴充用）
-    if (!parsed.version || parsed.version < KB_DATA_VERSION) {
-      // 執行資料遷移（目前 v1 不需要）
-      parsed.version = KB_DATA_VERSION;
-    }
-    // 確保所有 key 存在
-    return {
-      "00A": parsed["00A"] ?? [],
-      "00B": parsed["00B"] ?? [],
-      "00C": parsed["00C"] ?? [],
-      "00D": parsed["00D"] ?? [],
-      "00E": parsed["00E"] ?? [],
-      lastUpdated: parsed.lastUpdated ?? new Date().toISOString(),
-      version: KB_DATA_VERSION,
-    };
-  } catch {
-    return { ...EMPTY_KB_DATA };
-  }
-}
-
-/** 儲存到 localStorage */
-function saveKBData(data: KnowledgeBaseData): void {
-  try {
-    const toSave = { ...data, lastUpdated: new Date().toISOString() };
-    localStorage.setItem(KB_STORAGE_KEY, JSON.stringify(toSave));
-  } catch (err) {
-    logger.warn("system", "知識庫儲存失敗", String(err));
-  }
+/**
+ * Conflict 類型
+ */
+export interface KBConflict {
+  kbId: KBId;
+  entryId: string;
+  local: KBEntry;
+  remote: KBEntry;
+  timestamp: number;
 }
 
 export function useKnowledgeBase() {
-  const [data, setData] = useState<KnowledgeBaseData>(() => loadKBData());
-  const [hydrated] = useState(() => typeof window !== "undefined");
+  // 狀態
+  const [data, setData] = useState<KnowledgeBaseData>(() => EMPTY_KB_DATA);
+  const [hydrated, setHydrated] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [conflicts, setConflicts] = useState<KBConflict[]>([]);
 
-  // data 變更時自動儲存
+  // Refs
+  const syncTimerRef = useRef<NodeJS.Timeout>();
+  const initialSyncDoneRef = useRef(false);
+
+  /**
+   * 初始化：從快取載入，背景同步 API
+   */
   useEffect(() => {
-    if (hydrated) {
-      saveKBData(data);
+    // 1. 從快取載入
+    const cachedData = kbCache.load();
+    setData(cachedData);
+
+    // 2. 背景初始同步（不阻塞 UI）
+    triggerInitialSync();
+
+    // 3. 設置清理
+    setHydrated(true);
+
+    return () => {
+      if (syncTimerRef.current) {
+        clearTimeout(syncTimerRef.current);
+      }
+    };
+  }, []);
+
+  /**
+   * 初始化同步：嘗試從 API 拉取資料
+   */
+  const triggerInitialSync = async () => {
+    if (initialSyncDoneRef.current) return;
+    initialSyncDoneRef.current = true;
+
+    try {
+      setSyncing(true);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), INITIAL_SYNC_TIMEOUT);
+
+      const stats = await kbClient.getStats();
+      clearTimeout(timeout);
+
+      logger.info("kb", "Initial sync successful", stats);
+      kbCache.updateSyncTime(Date.now());
+
+      // 啟動定期同步
+      scheduleSync();
+    } catch (err) {
+      logger.warn("kb", "Initial sync failed, using local cache", String(err));
+      // 仍然啟動定期同步，嘗試恢復
+      scheduleSync();
+    } finally {
+      setSyncing(false);
     }
-  }, [data, hydrated]);
+  };
 
-  // ====== CRUD 操作 ======
+  /**
+   * 排程定期同步（30s 間隔）
+   */
+  const scheduleSync = () => {
+    if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+    syncTimerRef.current = setTimeout(() => {
+      performBackgroundSync();
+      scheduleSync(); // 迴圈
+    }, SYNC_INTERVAL);
+  };
 
-  /** 新增 00A 條目 */
-  const addEntry00A = useCallback((entry: KBEntry00A) => {
+  /**
+   * 背景同步：上傳隊列 + 拉取遠端變更
+   */
+  const performBackgroundSync = async () => {
+    setSyncing(true);
+    try {
+      // 1. 上傳隊列
+      const queue = kbCache.getQueue();
+      for (const item of queue) {
+        if (item.attempts > CONFLICT_RETRY_LIMIT) {
+          logger.warn("kb", "Sync abandoned after retries", item.id);
+          kbCache.clearQueueItem(item.id);
+          continue;
+        }
+
+        try {
+          switch (item.operation) {
+            case "create":
+              await kbClient.createItem(item.kbId, item.data || {});
+              break;
+            case "update":
+              if (item.data?.id) {
+                await kbClient.updateItem(item.kbId, item.data.id, item.data);
+              }
+              break;
+            case "delete":
+              if (item.data?.id) {
+                await kbClient.deleteItem(item.kbId, item.data.id);
+              }
+              break;
+          }
+          kbCache.clearQueueItem(item.id);
+          logger.info("kb", "Queue item synced", item.id);
+        } catch (err) {
+          kbCache.incrementRetries(item.id);
+          logger.warn("kb", "Queue sync failed", `${item.id}: ${String(err)}`);
+        }
+      }
+
+      // 2. 拉取遠端變更（簡化：重新拉取所有資料）
+      const remoteData = await kbClient.getItems({ limit: 1000 });
+      if (remoteData.items.length > 0) {
+        checkConflicts(remoteData.items);
+      }
+
+      kbCache.updateSyncTime(Date.now());
+      logger.info("kb", "Background sync completed");
+    } catch (err) {
+      logger.error("kb", "Background sync failed", String(err));
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  /**
+   * 衝突檢測：Last-Write-Wins
+   */
+  const checkConflicts = (remoteItems: KBEntry[]) => {
+    const newConflicts: KBConflict[] = [];
+
+    for (const remote of remoteItems) {
+      const kbId = (remote as any).category || detectCategory(remote);
+      const local = data[kbId as KBId]?.find((e) => e.id === remote.id);
+
+      if (!local) continue; // 遠端新增，無衝突
+
+      const localTime = new Date(local.updatedAt || 0).getTime();
+      const remoteTime = new Date(remote.updatedAt || 0).getTime();
+
+      if (localTime > remoteTime) {
+        // 本地更新，保留本地
+        newConflicts.push({
+          kbId: kbId as KBId,
+          entryId: remote.id,
+          local,
+          remote,
+          timestamp: Date.now(),
+        });
+      } else if (remoteTime > localTime) {
+        // 遠端更新，應用遠端
+        applyRemoteChange(kbId as KBId, remote);
+      }
+    }
+
+    if (newConflicts.length > 0) {
+      setConflicts(newConflicts);
+      logger.warn("kb", "Conflicts detected", `${newConflicts.length} conflicts`);
+    }
+  };
+
+  /**
+   * 應用遠端變更
+   */
+  const applyRemoteChange = (kbId: KBId, remote: KBEntry) => {
     setData((prev) => ({
       ...prev,
-      "00A": [...prev["00A"], entry],
+      [kbId]: (prev[kbId] as KBEntry[]).map((e) => (e.id === remote.id ? remote : e)),
     }));
-  }, []);
+    kbCache.save(data);
+    logger.debug("kb", "Remote change applied", remote.id);
+  };
 
-  /** 更新 00A 條目 */
-  const updateEntry00A = useCallback((id: string, updates: Partial<KBEntry00A>) => {
+  /**
+   * 偵測 KBId（根據 entry 結構）
+   */
+  const detectCategory = (entry: any): KBId => {
+    if ("name" in entry && "title" in entry) return "00A"; // Member
+    if ("stage" in entry) return "00B"; // Stage output
+    if ("strategy" in entry) return "00C"; // Strategy
+    if ("qa" in entry) return "00D"; // QA
+    return "00E"; // Other
+  };
+
+  /**
+   * 通用：新增條目（樂觀更新）
+   */
+  const addEntry = useCallback((kbId: KBId, entry: KBEntry) => {
+    const newId = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    const newEntry = {
+      ...entry,
+      id: newId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // 立即本地更新
     setData((prev) => ({
       ...prev,
-      "00A": prev["00A"].map((e) => (e.id === id ? { ...e, ...updates, updatedAt: new Date().toISOString() } : e)),
+      [kbId]: [...(prev[kbId] as KBEntry[]), newEntry],
     }));
-  }, []);
 
-  /** 新增 00B 條目 */
-  const addEntry00B = useCallback((entry: KBEntry00B) => {
-    setData((prev) => ({
-      ...prev,
-      "00B": [...prev["00B"], entry],
-    }));
-  }, []);
+    // 加入隊列
+    kbCache.queueOperation({
+      id: newId,
+      kbId,
+      operation: "create",
+      data: newEntry,
+      timestamp: Date.now(),
+      attempts: 0,
+    });
 
-  /** 更新 00B 條目 */
-  const updateEntry00B = useCallback((id: string, updates: Partial<KBEntry00B>) => {
-    setData((prev) => ({
-      ...prev,
-      "00B": prev["00B"].map((e) => (e.id === id ? { ...e, ...updates, updatedAt: new Date().toISOString() } : e)),
-    }));
-  }, []);
-
-  /** 新增 00C 條目 */
-  const addEntry00C = useCallback((entry: KBEntry00C) => {
-    setData((prev) => ({
-      ...prev,
-      "00C": [...prev["00C"], entry],
-    }));
-  }, []);
-
-  /** 更新 00C 條目 */
-  const updateEntry00C = useCallback((id: string, updates: Partial<KBEntry00C>) => {
-    setData((prev) => ({
-      ...prev,
-      "00C": prev["00C"].map((e) => (e.id === id ? { ...e, ...updates, updatedAt: new Date().toISOString() } : e)),
-    }));
-  }, []);
-
-  /** 新增 00D 條目 */
-  const addEntry00D = useCallback((entry: KBEntry00D) => {
-    setData((prev) => ({
-      ...prev,
-      "00D": [...prev["00D"], entry],
-    }));
-  }, []);
-
-  /** 更新 00D 條目 */
-  const updateEntry00D = useCallback((id: string, updates: Partial<KBEntry00D>) => {
-    setData((prev) => ({
-      ...prev,
-      "00D": prev["00D"].map((e) => (e.id === id ? { ...e, ...updates, updatedAt: new Date().toISOString() } : e)),
-    }));
-  }, []);
-
-  /** 新增 00E 條目 */
-  const addEntry00E = useCallback((entry: KBEntry00E) => {
-    setData((prev) => ({
-      ...prev,
-      "00E": [...prev["00E"], entry],
-    }));
-  }, []);
-
-  /** 更新 00E 條目 */
-  const updateEntry00E = useCallback((id: string, updates: Partial<KBEntry00E>) => {
-    setData((prev) => ({
-      ...prev,
-      "00E": prev["00E"].map((e) => (e.id === id ? { ...e, ...updates, updatedAt: new Date().toISOString() } : e)),
-    }));
-  }, []);
-
-  /** 通用：刪除任一知識庫條目 */
-  const deleteEntry = useCallback((kbId: KBId, entryId: string) => {
-    setData((prev) => ({
-      ...prev,
-      [kbId]: (prev[kbId] as Array<{ id: string }>).filter((e) => e.id !== entryId),
-    }));
-  }, []);
-
-  /** 通用：更新條目狀態 */
-  const updateEntryStatus = useCallback(
-    (kbId: KBId, entryId: string, status: "active" | "draft" | "archived") => {
-      setData((prev) => ({
-        ...prev,
-        [kbId]: (prev[kbId] as Array<{ id: string; entryStatus: string; updatedAt: string }>).map((e) =>
-          e.id === entryId
-            ? { ...e, entryStatus: status, updatedAt: new Date().toISOString() }
-            : e
-        ),
-      }));
-    },
-    []
-  );
-
-  /** 匯入完整資料（從 JSON） */
-  const importData = useCallback((imported: Partial<KnowledgeBaseData>) => {
-    setData((prev) => ({
-      "00A": imported["00A"] ?? prev["00A"],
-      "00B": imported["00B"] ?? prev["00B"],
-      "00C": imported["00C"] ?? prev["00C"],
-      "00D": imported["00D"] ?? prev["00D"],
-      "00E": imported["00E"] ?? prev["00E"],
-      lastUpdated: new Date().toISOString(),
-      version: KB_DATA_VERSION,
-    }));
-  }, []);
-
-  /** 匯出完整資料 */
-  const exportData = useCallback((): KnowledgeBaseData => {
-    return { ...data, lastUpdated: new Date().toISOString() };
+    // 保存快取
+    kbCache.save(data);
+    logger.debug("kb", "Entry added", `${kbId}:${newId}`);
   }, [data]);
 
-  /** 清空所有資料 */
-  const clearAll = useCallback(() => {
-    setData({ ...EMPTY_KB_DATA, lastUpdated: new Date().toISOString() });
+  /**
+   * 通用：更新條目（樂觀更新）
+   */
+  const updateEntry = useCallback(
+    (kbId: KBId, entryId: string, updates: Partial<KBEntry>) => {
+      const now = new Date().toISOString();
+      const merged = { ...updates, updatedAt: now };
+
+      // 立即本地更新
+      setData((prev) => ({
+        ...prev,
+        [kbId]: (prev[kbId] as KBEntry[]).map((e) => (e.id === entryId ? { ...e, ...merged } : e)),
+      }));
+
+      // 加入隊列
+      kbCache.queueOperation({
+        id: `update-${entryId}`,
+        kbId,
+        operation: "update",
+        data: { id: entryId, ...merged },
+        timestamp: Date.now(),
+        attempts: 0,
+      });
+
+      // 保存快取
+      kbCache.save(data);
+      logger.debug("kb", "Entry updated", `${kbId}:${entryId}`);
+    },
+    [data]
+  );
+
+  /**
+   * 通用：刪除條目（樂觀更新）
+   */
+  const deleteEntry = useCallback(
+    (kbId: KBId, entryId: string) => {
+      // 立即本地更新
+      setData((prev) => ({
+        ...prev,
+        [kbId]: (prev[kbId] as KBEntry[]).filter((e) => e.id !== entryId),
+      }));
+
+      // 加入隊列
+      kbCache.queueOperation({
+        id: `delete-${entryId}`,
+        kbId,
+        operation: "delete",
+        data: { id: entryId },
+        timestamp: Date.now(),
+        attempts: 0,
+      });
+
+      // 保存快取
+      kbCache.save(data);
+      logger.info("kb", "Entry deleted", `${kbId}:${entryId}`);
+    },
+    [data]
+  );
+
+  /**
+   * 解決衝突：保留本地
+   */
+  const resolveConflictLocal = useCallback((conflict: KBConflict) => {
+    setConflicts((prev) => prev.filter((c) => c.entryId !== conflict.entryId));
+    logger.info("kb", "Conflict resolved (keep local)", conflict.entryId);
+  }, []);
+
+  /**
+   * 解決衝突：接受遠端
+   */
+  const resolveConflictRemote = useCallback((conflict: KBConflict) => {
+    applyRemoteChange(conflict.kbId, conflict.remote);
+    setConflicts((prev) => prev.filter((c) => c.entryId !== conflict.entryId));
+    logger.info("kb", "Conflict resolved (accept remote)", conflict.entryId);
   }, []);
 
   return {
-    data,
+    // 狀態
+    data: hydrated ? data : EMPTY_KB_DATA,
     hydrated,
-    // 00A
-    addEntry00A,
-    updateEntry00A,
-    // 00B
-    addEntry00B,
-    updateEntry00B,
-    // 00C
-    addEntry00C,
-    updateEntry00C,
-    // 00D
-    addEntry00D,
-    updateEntry00D,
-    // 00E
-    addEntry00E,
-    updateEntry00E,
-    // 通用
+    syncing,
+    conflicts,
+
+    // 操作
+    addEntry,
+    updateEntry,
     deleteEntry,
-    updateEntryStatus,
-    importData,
-    exportData,
-    clearAll,
+
+    // 衝突解決
+    resolveConflictLocal,
+    resolveConflictRemote,
   };
 }
