@@ -14,6 +14,7 @@ SNAPSHOT|20260223-1049|AINL|claude-haiku-4-5-20251001|circulation-active
 [x] P1協調最終決策 10:30|驗收選項 A/B 框架提交|d2a7834|L1 完成
 [x] P1全程驗收準備|15 份協調文件 + 5 決策點|be8265b|L1 完成
 [x] M07 外包資源庫|規格文檔完成 + Phase 1 完整實裝 (47 tests)|bee6511|L1 完成
+[x] M07-trust-score-fix|信任度公式修正 60/40 split (design aligned)|1fb4ffd|L1 完成
 
 ## 自主循環工作（不停機）
 
@@ -96,6 +97,6 @@ SNAPSHOT|20260223-1049|AINL|claude-haiku-4-5-20251001|circulation-active
 
 📍 **待做清單**：
 1. ⏳ 監聽 Jin P1 驗收決策 → 轉發各機執行
-2. 🧪 M03 集成測試（與 M07 Partnership 集成）
+2. 🧪 M03 集成測試（與 M07 Partnership 集成）← 進行中（掃描依賴中）
 3. 🔍 掃描其他機器進展（JDNE/3O5L 協調）
 4. 📢 即時轉發新決策給各機
