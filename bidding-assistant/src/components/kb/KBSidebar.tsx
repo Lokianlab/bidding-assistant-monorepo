@@ -34,7 +34,7 @@ export function KBSidebar({
 
       <Button
         variant={selectedCategory === null ? 'default' : 'ghost'}
-        className="justify-start"
+        className={`justify-start ${selectedCategory === null ? 'ring-2 ring-offset-0' : ''}`}
         onClick={() => onCategorySelect(null)}
         disabled={isLoading}
       >
@@ -48,7 +48,7 @@ export function KBSidebar({
         <Button
           key={cat.id}
           variant={selectedCategory === cat.id ? 'default' : 'ghost'}
-          className="justify-start"
+          className={`justify-start ${selectedCategory === cat.id ? 'ring-2' : ''}`}
           onClick={() => onCategorySelect(cat.id)}
           disabled={isLoading}
         >
