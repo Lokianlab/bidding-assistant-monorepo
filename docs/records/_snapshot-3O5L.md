@@ -9,9 +9,10 @@ SNAPSHOT|20260223-0915|3O5L|Sonnet 4.6
   - Cron 路由：GET /api/cron/sync-notion + 認證 + 租戶迴圈
   - sync_logs migration + logger 型別擴充 + Next.js 16 params 修正
   - 編譯成功 + 衝突解決 + rebase 成功推送
-  - ✅ 完整測試套件：22 項（recordSyncLog + syncItemToNotion + syncNotionToSupabase + verifyNotionConnection + 邊界條件 + 批量同步 + 衝突處理）
-  - 測試覆蓋：Happy Path + Error Cases + Edge Cases + Batch Operations
-  - 待：P1c 整合 + Cron 路由集成測試
+  - ✅ 核心邏輯測試：22 項（recordSyncLog + syncItemToNotion + syncNotionToSupabase + verifyNotionConnection + 邊界條件 + 批量同步 + 衝突處理）
+  - ✅ Cron 路由集成測試：11 項（認證、無租戶、回應格式、POST 代理、查詢參數、邊界條件）
+  - 🔧 Bug 修復：results 欄位從 (created, updated) → (succeeded, failed)
+  - 待：P1c 整合
 
 [>] 優先序掃描
   - ITEJ: P1c KB API 完成（6端點+50測試）→ 準備與 P1e 整合
