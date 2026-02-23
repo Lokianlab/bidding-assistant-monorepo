@@ -44,5 +44,7 @@ SNAPSHOT|20260223-2100|JDNE|claude-haiku-4-5-20251001
 [x] admin-checkpoint-exec-24h|Checkpoint執行完成:全機按時推進,0阻塊,決策環變待Jin真實值+集成測試延至02-25|回報已發MSG,2026-02-23 21:30|d17aa79
 [x] impl-m08-full-completion|M08評選簡報全完成:PPTX export route+real-time edit route+UI下載按鈕+預覽,編譯通過,build 5.7s|4035 tests PASS|23:45|4c3a682
 [x] impl-m10-full-completion|M10履約管理全完成:periodic report route+UI下載按鈕+進度統計,編譯通過|4035 tests PASS|23:45|4c3a682
+[x] impl-m10-helper-tests|M10 helper函式+型別定義測試完成:52 tests all PASS,build success|types(19tests)+helpers(33tests),邊界值涵蓋完整,calculateOverallProgress加權算法驗證通過|14:34|2fd4a5e
+[x] impl-m10-supabase-migration|M10 Supabase migration schema:contracts/milestones/progress_reports表+RLS政策+效能索引|20260225_m10_contracts.sql 142行|14:34|2fd4a5e
 [x] impl-m11-full-completion|M11結案飛輪全完成:success pattern analysis route+UI分析按鈕+模式展示,編譯通過|4035 tests PASS|23:45|4c3a682
 [ ] admin-checkpoint-exec-25h|2026-02-25 09:00 下一次 checkpoint|待執行|d17aa79
