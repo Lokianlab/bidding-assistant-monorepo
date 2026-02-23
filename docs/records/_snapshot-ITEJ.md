@@ -1,6 +1,7 @@
-SNAPSHOT|20260223-0939|ITEJ|claude-haiku-4-5
+SNAPSHOT|20260223-1045|ITEJ|claude-haiku-4-5
 
 [x] m07-partners-module-fix|M07 外包資源庫驗證修復|所有 24 helper 測試 + 7 sidebar 測試全過，3854 PASS（含 Partner 46 新增測試）。commit b04ee85。
+[x] phase2-integration-prep|Phase 2 整合準備（文件 + 測試框架）|規劃檢查清單 + 測試框架骨架。commit ca5c6b1 → 24931b0。
 [x] broadcast-autonomous-expansion|授權擴大：可逆操作全部自主|Jin 指示 0223，已落地（CLAUDE.md 075f4c8），歸檔。
 [x] infra-module-pipeline-gap|模組串接缺口審計+修復|GAP-1/2/3/5 全完（AINL ba5d6e7, ITEJ build PASS），GAP-4 延期。
 [x] saas-p1c-kb-api-mvp|6 API 端點 + 50 測試（超標）|commit 57c950e：完整 CRUD + search + middleware, 3399 tests PASS。
@@ -37,3 +38,14 @@ SNAPSHOT|20260223-0939|ITEJ|claude-haiku-4-5
 - A44T：P1b OAuth 實裝 + P1f 儀表板 UI（規格已提供）
 - 3O5L：P1e Notion 整合測試 + UI 連接
 - JDNE：協調整合、版本驗收
+
+=== Phase 2 準備完成 ===
+✅ Phase 2a 模組整合檢查清單
+  - 16 模組狀態掃描 + 依賴分析
+  - 5 條核心資料流 + 待補充整合測試清單
+  - 團隊分工建議 + 風險評估
+✅ Phase 2a 集成測試框架骨架（232 行）
+  - 3 條 P0 核心資料流測試框架
+  - 5 個 P1 工具箱模組整合測試框架
+  - 3 條 E2E 使用者旅程測試框架
+  - 實裝優先順序 + 4 週衝刺指南
