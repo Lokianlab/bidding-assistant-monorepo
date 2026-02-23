@@ -6,7 +6,7 @@ export default defineConfig({
     pool: "vmThreads",
     environment: "jsdom",
     globals: true,
-    setupFiles: [],
+    setupFiles: ["src/vitest.setup.ts"],
     include: ["src/**/__tests__/**/*.test.{ts,tsx}"],
     coverage: {
       provider: "v8",
