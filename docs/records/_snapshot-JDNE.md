@@ -25,4 +25,5 @@ SNAPSHOT|20260223-0735|JDNE|claude-haiku-4-5-20251001
 [x] admin-checkpoint-planning|T+24h執行計畫+各機目標確認+風險評估框架|03614d7
 [x] admin-decision-indexing|今日6項決策索引+執行狀態+向後相容驗證|3dcaf81
 [x] admin-m08-spec-writing|M08評選簡報規格書完成:427行,含功能清單/決策鎖定/API/測試清單,交付Z1FV實裝|bb415be
-[>] admin-realtime-monitoring|進度掃描:P1決策+M08規格+各機超進度,決策0延遲,協調無衝突|轉入自主並行模式+T+24h checkpoint監控持續
+[x] admin-npm-quality-fix|npm install 修復品質缺口:62→0 failed tests,M07/M09依賴補齊,全部3834 PASS|69b9c7c
+[>] admin-realtime-monitoring|進度掃描:P1決策+M08規格+npm修復+各機超進度,決策0延遲,協調無衝突|轉入自主並行模式+T+24h checkpoint監控持續
