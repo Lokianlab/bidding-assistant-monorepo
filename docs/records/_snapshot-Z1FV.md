@@ -9,3 +9,4 @@ SNAPSHOT|20260223-1046|Z1FV|Haiku 4.5
 [x] M02-kb-schema-foundation|M02 Phase 1 基礎架構：SQL migration + TDD 驗收|001-kb-schema.sql 完成（kb_entries、kb_metadata、kb_attachments 表），partition on category，RLS policy 4層隔離，index 5個（tenant_id、category、search_text、status、composite）。23/23 migration 結構驗收測試通過。3933 tests PASS。Commit: 9fc48cc
 [x] M02-kb-api-routes|M02 Phase 2a KB API Routes TDD 實裝|POST /api/kb/items + GET /api/kb/stats handlers 完成，9/9 API contract 測試通過，3924 整體測試全過。commits 3bb02ee + a47ac16
 [x] M02-kb-items-get-impl|M02 Phase 2b GET /api/kb/items 完整實裝 TDD 全流程|RED 5 個集成測試（篩選、分頁、認證、複合查詢、無效 category）→ GREEN 實裝支持 category/status 篩選+limit/offset 分頁 → REFACTOR 抽出 getAuthenticatedSupabase() 消除重複。18 檔 351 個 KB 測試 100% 通過。commit d53cd79
+[x] M02-kb-items-id-get|M02 Phase 2c GET /api/kb/items/:id 單筆查詢實裝|RED 5 個集成測試（正常查詢、404、401、多租戶隔離、不同 category）→ GREEN 實裝 handler 查詢 kb_entries 表、支援單筆查詢、多租戶隔離 → REFACTOR 複用 getAuthenticatedSupabase() 保持一致。5/5 測試通過、3979/3979 全體測試通過。commit d9f79cb
