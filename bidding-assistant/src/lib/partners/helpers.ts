@@ -21,25 +21,19 @@ export function validatePartner(input: PartnerInput): ValidationResult {
     errors.push('必須至少選擇一個專業類別');
   }
 
-  // 電話格式驗證（可選，最少 7 字元）
-  if (input.phone && input.phone.trim().length > 0) {
-    if (input.phone.trim().length < 7 || !/^[0-9\-\+\s()]+$/.test(input.phone)) {
-      errors.push('電話號碼格式不正確（至少 7 個字元）');
-    }
+  // 電話格式驗證（可選，至少 7 個字元）
+  if (input.phone && (input.phone.length < 7 || !/^[0-9\-\+\s()]+$/.test(input.phone))) {
+    errors.push('電話號碼格式不正確（至少 7 個字元）');
   }
 
-  // Email 格式驗證（可選）
-  if (input.email && input.email.trim().length > 0) {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email)) {
-      errors.push('Email 格式不正確');
-    }
+  // 電郵格式驗證（可選）
+  if (input.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email)) {
+    errors.push('Email 格式不正確');
   }
 
-  // URL 驗證（可選，必須以 http:// 或 https:// 開頭）
-  if (input.url && input.url.trim().length > 0) {
-    if (!input.url.startsWith('http://') && !input.url.startsWith('https://')) {
-      errors.push('網址必須以 http:// 或 https:// 開頭');
-    }
+  // 網址格式驗證（可選）
+  if (input.url && !/^https?:\/\//.test(input.url)) {
+    errors.push('網址必須以 http:// 或 https:// 開頭');
   }
 
   // 評分範圍驗證（可選）
@@ -90,7 +84,7 @@ export function searchPartners(partners: Partner[], params: PartnerSearchParams 
     });
   }
 
-  // 6. 排序（只在明確指定時執行）
+  // 6. 排序（僅當指定時）
   if (params.sort) {
     const sortKey = params.sort;
     const order = params.order === 'desc' ? -1 : 1;
@@ -134,52 +128,53 @@ export function searchPartners(partners: Partner[], params: PartnerSearchParams 
 
 /**
  * 批量驗證夥伴資料
- * 分離有效和無效的資料
  */
-export function validateBulkPartners(inputs: PartnerInput[]) {
+export function validateBulkPartners(inputs: PartnerInput[]): {
+  valid: Partner[];
+  invalid: Array<{ data: PartnerInput; errors: string[] }>;
+} {
   const valid: Partner[] = [];
-  const invalid: Array<{ input: PartnerInput; errors: string[] }> = [];
+  const invalid: Array<{ data: PartnerInput; errors: string[] }> = [];
 
-  inputs.forEach((input) => {
+  for (const input of inputs) {
     const result = validatePartner(input);
     if (result.valid) {
-      // 只有在驗證通過時才能轉為 Partner
-      // 這裡先放入，實際 API 會生成 id 等欄位
+      // 轉換為 Partner 物件（簡化版，實際需完整欄位）
       valid.push({
         id: '',
         tenant_id: '',
-        ...input,
+        name: input.name || '',
+        category: input.category || [],
+        rating: input.rating || 3,
+        cooperation_count: 0,
+        tags: [],
+        status: 'active',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        cooperation_count: 0,
-        status: 'active',
-        tags: input.tags || [],
-      } as Partner);
+      } as any);
     } else {
-      invalid.push({ input, errors: result.errors });
+      invalid.push({ data: input, errors: result.errors });
     }
-  });
+  }
 
   return { valid, invalid };
 }
 
 /**
- * 計算信任度分數
- * 基於評分和合作次數
- * 公式: (rating/5 * 60) + (cooperation_count/100 * 40)
+ * 計算夥伴信任度分數（0-100）
  */
 export function calculateTrustScore(partner: Partner): number {
-  // 評分權重: 60%
-  const ratingScore = (partner.rating / 5) * 60;
+  // 基分：評分（1-5）權重 50%
+  const ratingScore = (partner.rating / 5) * 50;
 
-  // 合作次數權重: 40%（基數 100 次）
-  const cooperationScore = (partner.cooperation_count / 100) * 40;
+  // 合作次數（權重 50%，上限 20 次）
+  const cooperationScore = Math.min(partner.cooperation_count / 20, 1) * 50;
 
   return Math.round(ratingScore + cooperationScore);
 }
 
 /**
- * 按推薦度排序（信任度高的優先）
+ * 按信任度排序夥伴（降序）
  */
 export function sortByRecommendation(partners: Partner[]): Partner[] {
   return [...partners].sort((a, b) => {
