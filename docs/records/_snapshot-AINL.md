@@ -35,7 +35,8 @@ SNAPSHOT|20260223-1049|AINL|claude-haiku-4-5-20251001|circulation-active
 [x] 循環 15：待命監聽|等待 Jin P1 驗收決策 + M08-M11 實裝進展|stand-by-ready
 [x] 循環 16：M08-M11 handoff|M03-M07驗收完成(3861 PASS)→Z1FV M08啟動、3O5L M11啟動|pipeline-activation
 [x] 循環 17：掃描新進展|ITEJ完成P1驗收(3854 PASS)、JDNE系統穩定檢查、各機實裝推進|discovery-complete
-[>] 循環 18：T+24h checkpoint準備|匯總各機進度+待決項+風險評估+明日執行計畫|t24h-coordination
+[x] 循環 18：T+24h checkpoint準備|匯總各機進度+待決項+風險評估+Jin決策指南|t24h-coordination-complete
+[>] 循環 19：待命監聽|等待 Jin 決策確認 + T+24h checkpoint 啟動 (2026-02-24 09:00)|standby-external-input
 
 ## 待決項
 
