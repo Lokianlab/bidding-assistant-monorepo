@@ -14,7 +14,8 @@ SNAPSHOT|20260223-2100|JDNE|claude-haiku-4-5-20251001
 [x] infra-db-safety-plan|四層沙盒規劃完成(環變標準化+自動化驗證+部署流程),infra-db-safety-plan.md 515行,待Phase1實裝
 [x] plan-saas-phase2|量產規劃完成:四階段(2a-2d)整合+workflow+企業特性+效能,saas-phase2-roadmap.md 376行,4決策點待Jin確認|dev-map同步
 [x] admin-dev-map-sync|dev-map更新:Phase1完成狀態+Phase2規劃+基建規劃,28行增補
-[?] infra-backup-mechanism|方案提案已準備:A(雲原生)B(應用層)C(混合,推薦),待 Jin 決策|docs/proposals/backup-mechanism-proposal.md|20:00|d17aa79
+[x] infra-backup-mechanism|決策確認:B方案(pg_dump+GitHub)選中→ITEJ實裝,4-6hrs預計2026-02-24下午|backup-decision-exec.md|21:10|d17aa79
+[>] infra-backup-itej-impl|ITEJ備份系統實裝:pg_dump+GitHub Release自動化,工作包已發backup-impl-itej-phase2a.md|預計2026-02-24 18:00|d17aa79
 [?] chat-behavior-note-propagate-claudemd|規範提案已準備:L3 規則修訂+消息格式,待 Jin 批准|docs/proposals/chat-behavior-note-proposal.md|20:00|d17aa79
 [x] admin-lifecycle-dispatch|12階段缺口規劃分派完成:M02(ITEJ+阻塞3點),M07(AINL),M08(JDNE規格),M09(A44T),M02P4+M10(Z1FV),M11(3O5L)|分派通知5份+主題公告,規格文檔框架待各機撰寫|fd5dd89+cdf47ce
 [x] admin-lifecycle-impl|實裝分派啟動(Jin直接授權):AINL/A44T可立即規格+實裝,Z1FV M08決策→code,等ITEJ阻塞解除|協作監控儀表板+訊息整合|9f14716+2452d56
