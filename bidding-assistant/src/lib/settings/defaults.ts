@@ -85,10 +85,10 @@ export const DEFAULT_SETTINGS: AppSettings = {
       marketRates: {},
     },
     negotiation: {
-      minMargin: 0.05,
-      expectedMargin: 0.15,
-      idealMargin: 0.2,
-      maxMargin: 0.3,
+      minMargin: 0.05,       // 5%
+      expectedMargin: 0.15,  // 15%
+      idealMargin: 0.20,     // 20%
+      maxMargin: 0.30,       // 30%
     },
   },
   yearlyGoal: 0,

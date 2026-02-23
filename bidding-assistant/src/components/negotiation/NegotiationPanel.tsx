@@ -132,13 +132,11 @@ export function NegotiationPanel({
 }
 
 /** 場景快速檢視卡片 */
-import type { QuoteScenario } from "@/lib/negotiation/types";
-
 function ScenarioQuickView({
   scenario,
   onClick,
 }: {
-  scenario: QuoteScenario;
+  scenario: { name: string; status: 'safe' | 'warning' | 'danger' | 'dream'; quoteAmount: number; profitAmount: number; profitRate: number };
   onClick?: () => void;
 }) {
   const statusLabel = QUOTE_STATUS_LABELS[scenario.status];

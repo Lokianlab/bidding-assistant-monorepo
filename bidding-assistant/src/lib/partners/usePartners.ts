@@ -53,11 +53,11 @@ export function usePartners() {
 
       const partners = Array.isArray(data.data) ? data.data : [];
       setState({ partners, loading: false, error: null });
-      // logger.info('api', 'Loaded partners', `count: ${partners.length}`);
+      logger.info('api', 'Loaded partners', `count: ${partners.length}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load partners';
       setState((prev) => ({ ...prev, loading: false, error: message }));
-      // logger.error('api', 'Failed to load partners', { error: message });
+      logger.error('api', 'Failed to load partners', message);
     }
   }, []);
 
@@ -101,12 +101,12 @@ export function usePartners() {
         partners: [...prev.partners, newPartner],
         loading: false,
       }));
-      // logger.info('partners', 'Partner added', { id: newPartner.id });
+      logger.info('api', 'Partner added', `id: ${newPartner.id}`);
       return newPartner;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to add partner';
       setState((prev) => ({ ...prev, loading: false, error: message }));
-      // logger.error('partners', 'Failed to add partner', { error: message });
+      logger.error('api', 'Failed to add partner', message);
       return null;
     }
   }, []);
@@ -136,12 +136,12 @@ export function usePartners() {
         partners: prev.partners.map((p) => (p.id === id ? updated : p)),
         loading: false,
       }));
-      // logger.info('partners', 'Partner updated', { id });
+      logger.info('api', 'Partner updated', `id: ${id}`);
       return updated;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to update partner';
       setState((prev) => ({ ...prev, loading: false, error: message }));
-      // logger.error('partners', 'Failed to update partner', { error: message });
+      logger.error('api', 'Failed to update partner', message);
       return null;
     }
   }, []);
@@ -163,12 +163,12 @@ export function usePartners() {
         partners: prev.partners.filter((p) => p.id !== id),
         loading: false,
       }));
-      // logger.info('partners', 'Partner deleted', { id });
+      logger.info('api', 'Partner deleted', `id: ${id}`);
       return true;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to delete partner';
       setState((prev) => ({ ...prev, loading: false, error: message }));
-      // logger.error('partners', 'Failed to delete partner', { error: message });
+      logger.error('api', 'Failed to delete partner', message);
       return false;
     }
   }, []);
@@ -197,12 +197,12 @@ export function usePartners() {
         partners: prev.partners.map((p) => (p.id === id ? updated : p)),
         loading: false,
       }));
-      // logger.info('partners', 'Partner marked used', { id });
+      logger.info('api', 'Partner marked used', `id: ${id}`);
       return updated;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to mark usage';
       setState((prev) => ({ ...prev, loading: false, error: message }));
-      // logger.error('partners', 'Failed to mark usage', { error: message });
+      logger.error('api', 'Failed to mark usage', message);
       return null;
     }
   }, []);

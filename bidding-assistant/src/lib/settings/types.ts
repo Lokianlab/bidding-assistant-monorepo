@@ -71,18 +71,18 @@ export interface PricingSettings {
   marketRates: Record<string, { min: number; max: number }>;
 }
 
-export interface NegotiationModuleSettings {
-  minMargin: number;
-  expectedMargin: number;
-  idealMargin: number;
-  maxMargin: number;
+export interface NegotiationSettings {
+  minMargin: number;       // 底線利潤率（e.g., 0.05 = 5%）
+  expectedMargin: number;  // 預期利潤率（e.g., 0.15 = 15%）
+  idealMargin: number;     // 理想利潤率（e.g., 0.20 = 20%）
+  maxMargin: number;       // 天花板利潤率（e.g., 0.30 = 30%）
 }
 
 export interface ModuleSettings {
   kbMatrix: Record<string, Record<string, KBRequirement>>;
   qualityRules: QualityRuleSettings;
   pricing: PricingSettings;
-  negotiation?: NegotiationModuleSettings;
+  negotiation?: NegotiationSettings;  // 新增
 }
 
 export interface StageConfig {
