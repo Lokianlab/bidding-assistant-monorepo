@@ -13,6 +13,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/lib/db/supabase-client';
 import { requireAuth } from '@/lib/api/kb-middleware';
+import { syncItemToNotion } from '@/lib/kb/notion-sync';
+import { Client as NotionClient } from '@notionhq/client';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -128,6 +131,12 @@ export async function POST(request: NextRequest) {
       throw error;
     }
 
+    // 非同步同步到 Notion（fire-and-forget）
+    // 不阻塞 KB API 回應，在背景執行
+    syncToNotionAsync(data, supabase, session.tenantId).catch((err) => {
+      logger.error('sync', `KB 項目 ${data.id} 同步 Notion 失敗: ${err.message}`);
+    });
+
     return NextResponse.json(data, { status: 201 });
   } catch (error: any) {
     const statusCode = error?.statusCode || 500;
@@ -138,5 +147,29 @@ export async function POST(request: NextRequest) {
       { error: message },
       { status: statusCode },
     );
+  }
+}
+
+/**
+ * 異步同步到 Notion（在 POST 後調用）
+ * 不等待完成，立即返回 201
+ */
+async function syncToNotionAsync(item: any, supabase: any, tenantId: string) {
+  // 檢查環境變數
+  const notionToken = process.env.NOTION_TOKEN;
+  const notionKBDbId = process.env.NOTION_KB_DB_ID;
+
+  if (!notionToken || !notionKBDbId) {
+    logger.debug('sync', 'Notion 未配置，跳過同步');
+    return;
+  }
+
+  try {
+    const notion = new NotionClient({ auth: notionToken });
+    await syncItemToNotion(notion, supabase, notionKBDbId, item, 'create');
+    logger.info('sync', `KB 項目同步 Notion 成功: ${item.title}`);
+  } catch (error) {
+    // 錯誤已在 syncItemToNotion 中記錄，此處不再拋出
+    throw error;
   }
 }

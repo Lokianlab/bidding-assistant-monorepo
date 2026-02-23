@@ -7,6 +7,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/lib/db/supabase-client';
 import { requireAuth, canDelete } from '@/lib/api/kb-middleware';
+import { syncItemToNotion } from '@/lib/kb/notion-sync';
+import { Client as NotionClient } from '@notionhq/client';
+import { logger } from '@/lib/logger';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -121,6 +124,11 @@ export async function PATCH(
       throw error;
     }
 
+    // 非同步同步到 Notion（fire-and-forget）
+    syncToNotionAsync(data, supabase, session.tenantId, 'update').catch((err) => {
+      logger.error('sync', `KB 項目 ${data.id} 同步 Notion 失敗: ${err.message}`);
+    });
+
     return NextResponse.json(data);
   } catch (error: any) {
     const statusCode = error?.statusCode || 500;
@@ -144,10 +152,10 @@ export async function DELETE(
 
     const supabase = getSupabaseClient();
 
-    // 取得項目以檢查權限
+    // 取得項目以檢查權限（需要完整資料用於 Notion 同步）
     const { data: item, error: checkError } = await supabase
       .from('kb_items')
-      .select('created_by')
+      .select('*')
       .eq('id', id)
       .eq('tenant_id', session.tenantId)
       .single();
@@ -182,6 +190,11 @@ export async function DELETE(
       throw error;
     }
 
+    // 非同步同步到 Notion（fire-and-forget）
+    syncToNotionAsync(item, supabase, session.tenantId, 'delete').catch((err) => {
+      logger.error('sync', `KB 項目 ${item.id} 刪除同步 Notion 失敗: ${err.message}`);
+    });
+
     return NextResponse.json(
       { message: 'Deleted' },
       { status: 204 },
@@ -195,5 +208,34 @@ export async function DELETE(
       { error: message },
       { status: statusCode },
     );
+  }
+}
+
+/**
+ * 異步同步到 Notion（PATCH/DELETE 後調用）
+ * 不等待完成，立即返回
+ */
+async function syncToNotionAsync(
+  item: any,
+  supabase: any,
+  tenantId: string,
+  operation: 'update' | 'delete',
+) {
+  // 檢查環境變數
+  const notionToken = process.env.NOTION_TOKEN;
+  const notionKBDbId = process.env.NOTION_KB_DB_ID;
+
+  if (!notionToken || !notionKBDbId) {
+    logger.debug('sync', 'Notion 未配置，跳過同步');
+    return;
+  }
+
+  try {
+    const notion = new NotionClient({ auth: notionToken });
+    await syncItemToNotion(notion, supabase, notionKBDbId, item, operation);
+    logger.info('sync', `KB 項目 ${operation} 同步 Notion 成功: ${item.title}`);
+  } catch (error) {
+    // 錯誤已在 syncItemToNotion 中記錄，此處不再拋出
+    throw error;
   }
 }
