@@ -27,6 +27,8 @@ SNAPSHOT|20260223-0735|JDNE|claude-haiku-4-5-20251001
 [x] admin-npm-quality-fix|npm install 修復品質缺口:62→0 failed tests,M07/M09依賴補齊,全部3834 PASS|69b9c7c
 [x] admin-m10-spec-writing|M10履約管理規格書完成:185行,含工作計畫書生成/里程碑管理/進度追蹤/定期報告,API路由清單,80+測試要求,交付Z1FV實裝|4bade8c
 [x] admin-m11-spec-writing|M11結案飛輪規格書完成:216行,含結案評分/知識庫回流/成功模式識別,API路由清單,60+測試要求,交付3O5L實裝|4bade8c
-[?] infra-env-config-block|Supabase環境變數缺失:build fail→dev server fail→驗收卡,但npm test正常(3854PASS)|各機可繼續開發,僅驗收卡點|d17aa79
+[x] infra-env-config-block|Supabase環境變數缺失初判→mock環變替代方案(A/B/C已評估)|各機可本機驗證,build通過,await Jin真實環變|d17aa79+baf041d
 [x] admin-env-block-broadcast|環境配置阻塞&開發路線廣播:各機繼續實裝+單元測試,await Jin環變+build通過|MSG-20260223-1050|d17aa79
+[x] admin-mock-env-impl|Mock環變實作完成:.env.local添加NEXT_PUBLIC_SUPABASE_URL+SUPABASE_SERVICE_ROLE_KEY,npm run build成功(4.4s)|各機本機驗證代碼結構+UI可視化,環變仍待Jin|baf041d
+[x] admin-m10m11-dispatch-notify|M10/M11規格分派確認:Z1FV(履約管理,估2026-02-24啟動)、3O5L(結案飛輪,M10後開始)廣播已送|MSG-20260223-1100|baf041d
 [>] admin-checkpoint-prep-24h|T+24h checkpoint準備:各機進度掃描+規格分派確認+環變等待狀態記錄|預計2026-02-24 09:00|d17aa79
