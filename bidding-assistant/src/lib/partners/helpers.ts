@@ -164,11 +164,11 @@ export function validateBulkPartners(inputs: PartnerInput[]): {
  * 計算夥伴信任度分數（0-100）
  */
 export function calculateTrustScore(partner: Partner): number {
-  // 基分：評分（1-5）權重 50%
-  const ratingScore = (partner.rating / 5) * 50;
+  // 評分權重: 60% (穩定指標，基準為 5 分)
+  const ratingScore = (partner.rating / 5) * 60;
 
-  // 合作次數（權重 50%，上限 20 次）
-  const cooperationScore = Math.min(partner.cooperation_count / 20, 1) * 50;
+  // 合作次數權重: 40% (基準為 100 次)
+  const cooperationScore = (partner.cooperation_count / 100) * 40;
 
   return Math.round(ratingScore + cooperationScore);
 }
