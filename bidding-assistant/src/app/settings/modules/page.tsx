@@ -114,6 +114,7 @@ export default function ModulesPage() {
           <TabsTrigger value="kb-matrix">知識庫矩陣</TabsTrigger>
           <TabsTrigger value="quality">品質規則</TabsTrigger>
           <TabsTrigger value="pricing">報價參數</TabsTrigger>
+          <TabsTrigger value="negotiation">協商參數</TabsTrigger>
           <TabsTrigger value="scan-keywords">巡標關鍵字</TabsTrigger>
         </TabsList>
 
@@ -512,6 +513,109 @@ export default function ModulesPage() {
             <Button onClick={handleSaveModules}>儲存模組參數</Button>
           </div>
         </TabsContent>
+
+        {/* ====== 協商參數 ====== */}
+        <TabsContent value="negotiation" className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">利潤率設定</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>底線利潤率（%）</Label>
+                <Input
+                  type="number"
+                  step={0.01}
+                  min={0}
+                  max={1}
+                  value={(modules.negotiation?.minMargin ?? 0.05) * 100}
+                  onChange={(e) =>
+                    setModules({
+                      ...modules,
+                      negotiation: {
+                        minMargin: Number(e.target.value) / 100,
+                        expectedMargin: modules.negotiation?.expectedMargin ?? 0.15,
+                        idealMargin: modules.negotiation?.idealMargin ?? 0.2,
+                        maxMargin: modules.negotiation?.maxMargin ?? 0.3,
+                      },
+                    })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>預期利潤率（%）</Label>
+                <Input
+                  type="number"
+                  step={0.01}
+                  min={0}
+                  max={1}
+                  value={(modules.negotiation?.expectedMargin ?? 0.15) * 100}
+                  onChange={(e) =>
+                    setModules({
+                      ...modules,
+                      negotiation: {
+                        minMargin: modules.negotiation?.minMargin ?? 0.05,
+                        expectedMargin: Number(e.target.value) / 100,
+                        idealMargin: modules.negotiation?.idealMargin ?? 0.2,
+                        maxMargin: modules.negotiation?.maxMargin ?? 0.3,
+                      },
+                    })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>理想利潤率（%）</Label>
+                <Input
+                  type="number"
+                  step={0.01}
+                  min={0}
+                  max={1}
+                  value={(modules.negotiation?.idealMargin ?? 0.2) * 100}
+                  onChange={(e) =>
+                    setModules({
+                      ...modules,
+                      negotiation: {
+                        minMargin: modules.negotiation?.minMargin ?? 0.05,
+                        expectedMargin: modules.negotiation?.expectedMargin ?? 0.15,
+                        idealMargin: Number(e.target.value) / 100,
+                        maxMargin: modules.negotiation?.maxMargin ?? 0.3,
+                      },
+                    })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>天花板利潤率（%）</Label>
+                <Input
+                  type="number"
+                  step={0.01}
+                  min={0}
+                  max={1}
+                  value={(modules.negotiation?.maxMargin ?? 0.3) * 100}
+                  onChange={(e) =>
+                    setModules({
+                      ...modules,
+                      negotiation: {
+                        minMargin: modules.negotiation?.minMargin ?? 0.05,
+                        expectedMargin: modules.negotiation?.expectedMargin ?? 0.15,
+                        idealMargin: modules.negotiation?.idealMargin ?? 0.2,
+                        maxMargin: Number(e.target.value) / 100,
+                      },
+                    })
+                  }
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button variant="outline" onClick={() => setModules(settings.modules)}>
+              取消
+            </Button>
+            <Button onClick={handleSaveModules}>儲存模組參數</Button>
+          </div>
+        </TabsContent>
+
         {/* ====== 巡標關鍵字 ====== */}
         <TabsContent value="scan-keywords" className="mt-4">
           <Card>
