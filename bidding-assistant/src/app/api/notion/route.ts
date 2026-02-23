@@ -185,6 +185,9 @@ function parseSchema(dbData: NotionDatabaseResponse) {
 }
 
 /** 從 schema 中根據欄位名稱列表取得對應的 property ID 列表 */
+// Notion API 的 filter_properties 不支援 formula / rollup 等計算型欄位
+const UNSUPPORTED_FILTER_TYPES = new Set(["formula", "rollup", "created_by", "last_edited_by"]);
+
 function resolvePropertyIds(
   schema: Record<string, { type: string; id?: string }>,
   fieldNames: string[],
@@ -192,7 +195,7 @@ function resolvePropertyIds(
   const ids: string[] = [];
   for (const name of fieldNames) {
     const entry = schema[name];
-    if (entry?.id) ids.push(entry.id);
+    if (entry?.id && !UNSUPPORTED_FILTER_TYPES.has(entry.type)) ids.push(entry.id);
   }
   return ids;
 }
@@ -208,7 +211,11 @@ interface NotionQueryBody {
 
 export async function POST(req: NextRequest) {
   try {
-    const { token, databaseId, action, data } = await req.json();
+    const body = await req.json();
+    // 前端未帶 token 時，fallback 到 server-side 環境變數
+    const token = body.token || process.env.NOTION_TOKEN;
+    const databaseId = body.databaseId || process.env.NOTION_DATABASE_ID;
+    const { action, data } = body;
 
     if (!token || !databaseId) {
       return NextResponse.json(
@@ -318,13 +325,24 @@ export async function POST(req: NextRequest) {
         if (data?.filter) sqBody.filter = data.filter;
         if (propIds && propIds.length > 0) sqBody.filter_properties = propIds;
 
-        // 第二步：查詢第一頁
-        const firstQueryResult = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+        // 第二步：查詢第一頁（filter_properties 失敗時自動降級為不帶欄位篩選）
+        let firstQueryResult = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
           method: "POST",
           headers: commonHeaders,
           body: JSON.stringify(sqBody),
         });
-        const firstQueryData: NotionQueryResponse = await firstQueryResult.json();
+        let firstQueryData: NotionQueryResponse = await firstQueryResult.json();
+
+        if (!firstQueryResult.ok && sqBody.filter_properties) {
+          // filter_properties 可能包含不支援的欄位類型（formula 等），降級重試
+          const { filter_properties: _dropped, ...fallbackBody } = sqBody;
+          firstQueryResult = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+            method: "POST",
+            headers: commonHeaders,
+            body: JSON.stringify(fallbackBody),
+          });
+          firstQueryData = await firstQueryResult.json();
+        }
 
         if (!firstQueryResult.ok) {
           return NextResponse.json(

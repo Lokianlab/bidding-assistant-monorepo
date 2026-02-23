@@ -31,8 +31,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   },
   connections: {
     notion: {
-      token: "",
-      databaseId: "",
+      token: process.env.NEXT_PUBLIC_NOTION_TOKEN ?? "",
+      databaseId: process.env.NEXT_PUBLIC_NOTION_DATABASE_ID ?? "",
     },
     googleDrive: {
       refreshToken: "",

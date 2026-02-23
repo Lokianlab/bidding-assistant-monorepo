@@ -48,7 +48,9 @@ interface NotionDatabaseResponse {
 
 export async function POST(req: NextRequest) {
   try {
-    const { token, databaseId } = await req.json();
+    const body = await req.json();
+    const token = body.token || process.env.NOTION_TOKEN;
+    const databaseId = body.databaseId || process.env.NOTION_DATABASE_ID;
 
     // 用 REST API 查 schema
     const schemaRes = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
