@@ -57,6 +57,10 @@ human_messages_*.txt
 pcc-data-result.json
 extract_human_messages.py
 
+# === Git Worktrees ===
+.worktrees/
+worktrees/
+
 # === Playwright MCP ===
 .playwright-mcp/
 
