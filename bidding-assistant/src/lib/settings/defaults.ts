@@ -84,6 +84,12 @@ export const DEFAULT_SETTINGS: AppSettings = {
       managementFeeRate: 0.1,
       marketRates: {},
     },
+    negotiation: {
+      minMargin: 0.05,
+      expectedMargin: 0.15,
+      idealMargin: 0.2,
+      maxMargin: 0.3,
+    },
   },
   yearlyGoal: 0,
   qualityGate: {
