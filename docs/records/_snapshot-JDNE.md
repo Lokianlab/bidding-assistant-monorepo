@@ -33,4 +33,5 @@ SNAPSHOT|20260223-0735|JDNE|claude-haiku-4-5-20251001
 [x] admin-m10m11-dispatch-notify|M10/M11規格分派確認:Z1FV(履約管理,估2026-02-24啟動)、3O5L(結案飛輪,M10後開始)廣播已送|MSG-20260223-1100|baf041d
 [x] admin-all-specs-finalized|M07-M11全規格書交付完成|8份規格文檔完成，各機收規格：AINL(M07)、Z1FV(M10)、3O5L(M11)、A44T(M09)|ec3031a
 [x] admin-system-state-stable|全機系統穩定檢查|各機進度檢查完成:ITEJ P1c 3854 PASS, Z1FV M09 3826 PASS, A44T M09 Phase2 83 PASS, AINL待命|11:00|ec3031a
-[>] admin-checkpoint-prep-24h|T+24h checkpoint準備:各機進度掃描+規格分派確認+環變等待狀態記錄|預計2026-02-24 09:00|d17aa79
+[x] admin-checkpoint-prep-24h|T+24h checkpoint準備完成:檢查清單+進度掃描表+環變狀態記錄已編寫|docs/records/checkpoints/20260224-checkpoint-prep.md|18:00|d17aa79
+[>] admin-checkpoint-exec-24h|執行 checkpoint:各機進度掃描+回報編寫+決策判斷|預計2026-02-24 09:30|d17aa79
