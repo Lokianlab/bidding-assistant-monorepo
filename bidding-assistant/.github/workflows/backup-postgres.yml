@@ -1,0 +1,75 @@
+name: PostgreSQL Backup
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # 每 6 小時執行（UTC 0,6,12,18）
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create backups
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          mkdir -p ./backups
+          npx ts-node -e "
+            import { createPostgresBackup, backupKBFiles } from './src/lib/backup/postgres-backup';
+            Promise.all([
+              createPostgresBackup(),
+              backupKBFiles()
+            ]).catch(e => { console.error(e); process.exit(1); });
+          "
+
+      - name: Upload to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx ts-node -e "
+            import { uploadToGitHubRelease } from './src/lib/backup/github-release';
+            import fs from 'fs';
+            import path from 'path';
+
+            const backupDir = './backups';
+            const files = fs.readdirSync(backupDir);
+            const timestamp = new Date().toISOString().split('T')[0];
+            const tagName = 'backup-' + timestamp;
+
+            Promise.all(
+              files.map(file =>
+                uploadToGitHubRelease(
+                  path.join(backupDir, file),
+                  tagName
+                )
+              )
+            ).catch(e => { console.error(e); process.exit(1); });
+          "
+
+      - name: Cleanup local backups
+        run: rm -rf ./backups
+
+      - name: Notify on failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              "text": "❌ PostgreSQL backup failed - check workflow logs"
+            }
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
