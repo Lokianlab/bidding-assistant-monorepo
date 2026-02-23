@@ -205,7 +205,7 @@ describe('KBPage', () => {
       await userEvent.click(firstCheckbox);
 
       await waitFor(() => {
-        expect(firstCheckbox).toBeChecked();
+        expect(firstCheckbox.getAttribute('data-state')).toBe('checked');
       });
     });
 
@@ -223,7 +223,7 @@ describe('KBPage', () => {
       await waitFor(() => {
         const allCheckboxes = screen.getAllByRole('checkbox');
         allCheckboxes.forEach((cb) => {
-          expect(cb).toBeChecked();
+          expect(cb.getAttribute('data-state')).toBe('checked');
         });
       });
     });

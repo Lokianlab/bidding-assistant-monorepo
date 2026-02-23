@@ -41,16 +41,25 @@ export function KBTable({
     () => [
       columnHelper.accessor('id', {
         id: 'select',
-        header: ({ table }) => (
-          <Checkbox
-            checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
-            onChange={() =>
-              onSelectAll(items.map((item) => item.id))
-            }
-            disabled={isLoading}
-          />
-        ),
+        header: () => {
+          const isAllSelected = items.length > 0 && items.every((item) => selectedIds.has(item.id));
+          const isSomeSelected = items.some((item) => selectedIds.has(item.id));
+
+          return (
+            <Checkbox
+              checked={isAllSelected}
+              indeterminate={isSomeSelected && !isAllSelected}
+              onChange={() => {
+                if (isAllSelected) {
+                  onSelectAll([]); // 取消全選
+                } else {
+                  onSelectAll(items.map((item) => item.id)); // 全選
+                }
+              }}
+              disabled={isLoading}
+            />
+          );
+        },
         cell: ({ row }) => (
           <Checkbox
             checked={row.getIsSelected()}
@@ -148,6 +157,7 @@ export function KBTable({
     data: items,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
     state: {
       rowSelection: Object.fromEntries(
         Array.from(selectedIds).map((id) => [id, true]),
