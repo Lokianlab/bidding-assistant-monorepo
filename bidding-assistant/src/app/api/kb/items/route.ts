@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 
 /**
  * GET /api/kb/items
- * 列表查詢（暫時返回空列表，綠色測試用）
+ * 列表查詢
  */
 export async function GET(request: NextRequest) {
   try {
