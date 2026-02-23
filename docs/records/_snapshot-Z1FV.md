@@ -7,4 +7,4 @@ SNAPSHOT|20260223-1046|Z1FV|Haiku 4.5
 [x] M03-M07-integration-test|M03 評分引擎與 M07 合作夥伴資料整合測試|scoreTeam 擴展 Partner[] 參數，實裝 M07 整合邏輯（關鍵字匹配、評分提升、信心度提升），3 個整合測試+56 原有測試=59/59 全通。M07 trust score 修復已驗證相容（3861 tests PASS）
   [✓] chat-m07-trust-score-fix|M07 信任度計分修復無直接影響|M03 整合邏輯直接用 Partner 的 rating 和 cooperation_count，未呼叫 calculateTrustScore。3O5L 的權重調整不影響 scoring accuracy 驗收。——Z1FV 回覆 0223
 [x] M02-kb-schema-foundation|M02 Phase 1 基礎架構：SQL migration + TDD 驗收|001-kb-schema.sql 完成（kb_entries、kb_metadata、kb_attachments 表），partition on category，RLS policy 4層隔離，index 5個（tenant_id、category、search_text、status、composite）。23/23 migration 結構驗收測試通過。3933 tests PASS。Commit: 9fc48cc
-[x] M02-kb-api-routes|M02 Phase 2a KB API Routes TDD 實裝|POST /api/kb/items handler 完成，9/9 API contract 測試通過，3924 整體測試全過。commit 3bb02ee
+[x] M02-kb-api-routes|M02 Phase 2a KB API Routes TDD 實裝|POST /api/kb/items + GET /api/kb/stats handlers 完成，9/9 API contract 測試通過，3924 整體測試全過。commits 3bb02ee + a47ac16
