@@ -13,6 +13,7 @@ import {
 import type { KBEntry00A, KBEntry00B } from "@/lib/knowledge-base/types";
 import type { SelfAnalysis, MarketTrend } from "@/lib/pcc/types";
 import type { FitScore, FitScoreInput } from "../types";
+import type { Partner } from "@/lib/partners/types";
 
 // ====== Mock 資料 ======
 
@@ -95,6 +96,28 @@ const mockPortfolio: KBEntry00B[] = [
   }),
 ];
 
+function makePartner(
+  overrides: Partial<Partner> & { name: string },
+): Partner {
+  return {
+    id: "P-EXT-001",
+    tenant_id: "tenant-001",
+    contact_name: "聯絡人",
+    phone: "02-1234-5678",
+    email: "contact@partner.com",
+    url: "",
+    rating: 4,
+    notes: "",
+    cooperation_count: 1,
+    last_used: new Date().toISOString(),
+    tags: [],
+    status: "active",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    ...overrides,
+  };
+}
+
 const mockTeam: KBEntry00A[] = [
   makeTeamMember({
     id: "M-001",
@@ -157,6 +180,34 @@ const mockTeam: KBEntry00A[] = [
     title: "行政專員",
     status: "已離職",
     additionalCapabilities: "行政庶務",
+  }),
+];
+
+const mockPartners: Partner[] = [
+  makePartner({
+    id: "P-EXT-001",
+    name: "文化策展顧問有限公司",
+    category: ["文化顧問", "展覽策劃"],
+    rating: 5,
+    cooperation_count: 8,
+    tags: ["推薦", "定期合作"],
+  }),
+  makePartner({
+    id: "P-EXT-002",
+    name: "視覺設計工作室",
+    category: ["視覺設計", "展場設計"],
+    rating: 4,
+    cooperation_count: 5,
+    tags: ["推薦"],
+  }),
+  makePartner({
+    id: "P-EXT-003",
+    name: "道路施工承包商",
+    category: ["工程施工", "工地主任"],
+    rating: 3,
+    cooperation_count: 2,
+    tags: ["待評估"],
+    status: "archived",
   }),
 ];
 
@@ -504,6 +555,32 @@ describe("scoreTeam", () => {
     const result = scoreTeam("道路工程施工", singleMember);
     expect(result.score).toBe(2);
     expect(result.confidence).toBe("低");
+  });
+
+  it("M03-M07 整合：內部團隊 + 外部夥伴 → 混合評分", () => {
+    // 案件需要展覽策劃：內部有 1-2 人匹配 + 外部夥伴專精此領域 → 應該提高分數
+    // M07 Partner 提供額外資源（文化策展顧問 rating:5, 視覺設計工作室 rating:4）
+    const result = scoreTeam("文化展覽策展計畫", mockTeam, mockPartners.filter(p => p.status === "active"));
+
+    // 期望分數 > 單純內部團隊（~13 分）
+    expect(result.score).toBeGreaterThan(13);
+    expect(result.confidence).toBe("高");
+    expect(result.evidence).toContain("文化策展");
+  });
+
+  it("M03-M07 整合：無符合夥伴 → 保持原分", () => {
+    // 案件是道路工程：外部夥伴全是文化相關，不匹配 → 分數不變
+    const result = scoreTeam("道路工程施工", mockTeam.slice(0, 1), mockPartners.filter(p => p.status === "active"));
+    expect(result.score).toBe(2); // 單個成員無匹配 → 2 分
+  });
+
+  it("M03-M07 整合：高評分夥伴提升信心度", () => {
+    // 案件需要特定技能，雖然內部團隊少，但有高評分夥伴補充 → 信心度提升
+    const limitedTeam = mockTeam.slice(0, 1); // 只有主持人
+    const result = scoreTeam("文化活動策展", limitedTeam, mockPartners.filter(p => p.status === "active"));
+
+    expect(result.confidence).toBe("高"); // 由於夥伴品質高，信心度提升
+    expect(result.evidence).toContain("文化");
   });
 });
 

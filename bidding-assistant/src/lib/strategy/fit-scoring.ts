@@ -11,6 +11,7 @@ import type {
 } from "./types";
 import type { KBEntry00A, KBEntry00B } from "@/lib/knowledge-base/types";
 import type { SelfAnalysis, MarketTrend } from "@/lib/pcc/types";
+import type { Partner } from "@/lib/partners/types";
 import {
   DEFAULT_FIT_WEIGHTS,
   FIT_THRESHOLDS,
@@ -291,10 +292,12 @@ export function scoreScale(
 
 /**
  * 團隊可用性（Team）— 是否有能做這案子的人
+ * M07 整合：支援外包夥伴資源補充評估
  */
 export function scoreTeam(
   caseName: string,
   team: KBEntry00A[],
+  partners?: Partner[],
 ): DimensionScore {
   const active = team.filter(
     (m) => m.entryStatus === "active" && m.status === "在職",
@@ -355,6 +358,45 @@ export function scoreTeam(
   if (needsPI && !hasPI) {
     score = Math.max(0, score - 5);
     evidence += "。案件要求計畫主持人但團隊無此資格";
+  }
+
+  // M07 整合：評估外包夥伴資源
+  if (partners && partners.length > 0) {
+    const activePartners = partners.filter((p) => p.status === "active");
+
+    // 匹配夥伴專業類別與案件需求
+    const matchedPartners = activePartners.filter((partner) => {
+      const partnerText = [
+        partner.name,
+        ...partner.category,
+        ...partner.tags,
+      ].join(" ");
+
+      return (
+        terms.some((t) => partnerText.includes(t)) ||
+        categories.some((c) => partnerText.includes(c))
+      );
+    });
+
+    if (matchedPartners.length > 0) {
+      // 計算匹配夥伴的平均評分與合作歷史
+      const avgRating = matchedPartners.reduce((sum, p) => sum + p.rating, 0) / matchedPartners.length;
+      const totalCooperation = matchedPartners.reduce((sum, p) => sum + p.cooperation_count, 0);
+
+      // 根據夥伴品質提升分數與信心度
+      // 高評分（>=4）+ 多次合作 → 提升 2-3 分
+      const partnerBoost = avgRating >= 4 ? (totalCooperation >= 3 ? 3 : 2) : 1;
+      const newScore = score + partnerBoost;
+
+      // 信心度提升邏輯：如果有高評分夥伴補充，提升信心度
+      const oldConfidence = confidence;
+      if (avgRating >= 4 && (oldConfidence === "低" || oldConfidence === "中")) {
+        confidence = "高";
+      }
+
+      evidence += `。外包夥伴補充（${matchedPartners.map((p) => p.name).slice(0, 2).join("、")}，平均評分：${avgRating.toFixed(1)} 星）`;
+      score = newScore;
+    }
   }
 
   return { score: clampScore(score), confidence, evidence };
