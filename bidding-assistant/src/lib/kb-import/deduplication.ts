@@ -86,31 +86,32 @@ export class FileDeduplicator {
    * 分析資料夾中的所有檔案，識別重複版本
    */
   async analyzeFolder(folderPath: string): Promise<DeduplicationResult> {
-    logger.debug("dedup", `開始掃描資料夾: ${folderPath}`);
+    logger.debug("system", `開始掃描資料夾: ${folderPath}`);
 
     const files = await fs.readdir(folderPath, { recursive: true });
     const allFiles: FileInfo[] = [];
 
     // 1. 蒐集檔案資訊
     for (const file of files) {
-      const fullPath = path.join(folderPath, file);
+      const fileName = typeof file === 'string' ? file : file.toString();
+      const fullPath = path.join(folderPath, fileName);
       const stats = await fs.stat(fullPath);
 
       // 只處理 Word、Excel、PDF
-      if (!/\.(docx?|xlsx?|pdf)$/.test(file)) continue;
+      if (!/\.(docx?|xlsx?|pdf)$/.test(fileName)) continue;
 
       if (stats.isFile()) {
         allFiles.push({
-          name: file,
+          name: fileName,
           fullPath,
           mtime: stats.mtime.getTime(),
           size: stats.size,
-          isVersion: this.isVersionCopy(file),
+          isVersion: this.isVersionCopy(fileName),
         });
       }
     }
 
-    logger.debug("dedup", `掃描完成，共 ${allFiles.length} 個檔案`);
+    logger.debug("system", `掃描完成，共 ${allFiles.length} 個檔案`);
 
     // 2. 計算 hash，建立映射
     const hashMap = new Map<string, FileInfo[]>();
@@ -122,7 +123,7 @@ export class FileDeduplicator {
         }
         hashMap.get(hash)!.push(file);
       } catch (err) {
-        logger.error("dedup", `無法讀取 ${file.name}: ${err}`);
+        logger.error("system", `無法讀取 ${file.name}: ${err}`);
       }
     }
 
@@ -141,7 +142,7 @@ export class FileDeduplicator {
         exactDuplicates += versions.length - 1;
 
         logger.debug(
-          "dedup",
+          "system",
           `重複檔案 (${versions.length} 個同內容): 保留 ${versions[0].name}, 移除 ${versions.slice(1).map((v) => v.name).join(", ")}`
         );
       } else {
@@ -159,7 +160,7 @@ export class FileDeduplicator {
     let nameVariantCount = nameVariants.count;
 
     // 合併結果
-    const totalRemoved = removed.length + variantRemoved;
+    const totalRemoved = removed.length + (Array.isArray(variantRemoved) ? variantRemoved.length : variantRemoved);
     const reductionRate = ((totalRemoved / allFiles.length) * 100).toFixed(1);
 
     const result: DeduplicationResult = {
@@ -174,11 +175,11 @@ export class FileDeduplicator {
     };
 
     logger.info(
-      "dedup",
+      "system",
       `分析完成: ${allFiles.length} 檔 → ${unique.size} 個唯一檔 (削減 ${reductionRate}%)`
     );
     logger.debug(
-      "dedup",
+      "system",
       `詳情: 完全相同 ${exactDuplicates}，名稱變體 ${nameVariantCount}`
     );
 
@@ -242,7 +243,7 @@ export class FileDeduplicator {
     }
 
     logger.info(
-      "dedup",
+      "system",
       `已建立 ${method === "symlink" ? "符號連結" : "複製"}: ${outputFolder}`
     );
   }
@@ -298,7 +299,7 @@ export async function runDeduplicationPhase4() {
   );
 
   logger.info(
-    "dedup",
+    "system",
     `Phase 4 去重完成: 可用 ${result.unique.size} 個檔案進行批次導入`
   );
 
