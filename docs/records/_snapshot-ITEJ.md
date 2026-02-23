@@ -1,4 +1,4 @@
-SNAPSHOT|20260223-0900|ITEJ|claude-haiku-4-5
+SNAPSHOT|20260223-0816|ITEJ|claude-haiku-4-5
 
 [x] broadcast-autonomous-expansion|授權擴大：可逆操作全部自主|Jin 指示 0223，已落地（CLAUDE.md 075f4c8），歸檔。
 [x] infra-module-pipeline-gap|模組串接缺口審計+修復|GAP-1/2/3/5 全完（AINL ba5d6e7, ITEJ build PASS），GAP-4 延期。
@@ -7,11 +7,12 @@ SNAPSHOT|20260223-0900|ITEJ|claude-haiku-4-5
 [x] infra-env-config-templates|環境配置範本|commit 354ccfa：.env.example/.staging/.uat，支持本機→staging→UAT→生產全程。
 [x] fix-kb-api-nextjs16-async|Next.js 16 params 修復|commit 131e740：動態路由改用 Promise params，build PASS。
 [x] infra-staging-reset-cron|Staging reset cron 端點+測試|commit 21b3497：POST/GET /api/cron/staging-reset，驗證+資料庫重置+27 測試，build PASS。
+[x] infra-p1f-middleware|多租戶隔離邊界中間件|commit 7689ab6：edge middleware、tenantId 提取、路由保護、29 測試案例全過，build PASS。
 
 === 工作完成統計 ===
-新增檔案：11 個（KB API 5 + RLS test 1 + Env 3 + Cron 2）
-新增代碼：1862 行（含註釋）
-新增測試：125 個（KB 50 + RLS 47 + Cron 27 + 1 skip）
-總測試：3434 PASS / 1 skip / 221 檔案
-推送：7 commits (57c950e...21b3497，含 2 快照)
-狀態：P1c 基礎設施完成，待 P1b OAuth（A44T）+ P1d UI 實裝。
+新增檔案：12 個（KB API 5 + RLS test 1 + Env 3 + Cron 2 + Middleware 1）
+新增代碼：2334 行（含註釋）
+新增測試：154 個（KB 50 + RLS 47 + Cron 27 + Middleware 29 + 1 skip）
+總測試：3587 PASS / 1 skip / 228 檔案
+推送：8 commits (57c950e...7689ab6，含 2 快照)
+狀態：P1c/P1f 基礎設施完成，待 P1b OAuth（A44T）+ P1d UI 實裝。
