@@ -172,6 +172,46 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
     defaultEnabled: true,
     dependencies: ["intelligence"],
   },
+  // ====== 第一階段新增模組 ======
+  {
+    id: "intel-report",
+    name: "情報分析",
+    description: "案件情報自動拉取：機關歷史、競爭者、RFP 解析、勝算評估",
+    icon: "📊",
+    routes: ["/cases"],
+    section: "core",
+    defaultEnabled: true,
+    dependencies: ["intelligence"],
+  },
+  {
+    id: "case-setup",
+    name: "一鍵建案",
+    description: "投標決策後自動建立 Notion 頁面和 Drive 資料夾",
+    icon: "🚀",
+    routes: [],
+    section: "tools",
+    defaultEnabled: true,
+    dependencies: ["intel-report"],
+  },
+  {
+    id: "knowledge-cards",
+    name: "知識庫卡片",
+    description: "Drive 檔案自動索引：搜尋過去的簡報、企劃、素材",
+    icon: "🗂️",
+    routes: ["/knowledge"],
+    section: "tools",
+    defaultEnabled: true,
+  },
+  {
+    id: "decisions",
+    name: "決策記錄",
+    description: "投標/不投標決策記錄與追溯",
+    icon: "⚖️",
+    routes: [],
+    section: "core",
+    defaultEnabled: true,
+    dependencies: ["intel-report"],
+  },
 ];
 
 /** 從 settings 的 featureToggles 取得最終的啟用狀態 */

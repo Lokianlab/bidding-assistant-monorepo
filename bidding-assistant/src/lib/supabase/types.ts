@@ -107,3 +107,68 @@ export interface KBExportRequest {
   categories?: KBId[];
   status?: KBEntryStatus;
 }
+
+// ====== 第一階段：情報部門 MVP 型別 ======
+
+/** 情報類型 */
+export type IntelType = 'agency_history' | 'competitor' | 'rfp_summary' | 'perplexity' | 'win_assessment';
+
+/** 情報來源 */
+export type IntelSource = 'pcc' | 'perplexity' | 'rfp_upload' | 'manual';
+
+/** intelligence_cache 表 */
+export interface IntelligenceCache {
+  id: string;
+  case_id: string;
+  intel_type: IntelType;
+  data: Record<string, unknown>;
+  source: IntelSource | null;
+  pcc_unit_id: string | null;
+  expires_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** knowledge_cards 表 */
+export type CardType = 'slide' | 'document_section' | 'image' | 'table';
+
+export interface KnowledgeCard {
+  id: string;
+  source_file_id: string;
+  source_file_name: string;
+  source_folder_path: string | null;
+  page_number: number | null;
+  card_type: CardType;
+  title: string | null;
+  summary: string;
+  content_text: string | null;
+  tags: string[];
+  category: string | null;
+  subcategory: string | null;
+  file_type: string | null;
+  mime_type: string | null;
+  is_scannable: boolean;
+  scan_error: string | null;
+  drive_url: string | null;
+  indexed_at: string;
+  updated_at: string;
+}
+
+/** 決策類型 */
+export type DecisionType = 'bid' | 'no_bid' | 'conditional';
+
+/** decisions 表 */
+export interface Decision {
+  id: string;
+  case_id: string;
+  notion_page_id: string | null;
+  decision: DecisionType;
+  reason: string | null;
+  win_assessment_id: string | null;
+  decided_by: string;
+  decided_at: string;
+  notion_created: boolean;
+  drive_folder_id: string | null;
+  drive_folder_url: string | null;
+  created_at: string;
+}

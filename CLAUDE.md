@@ -61,8 +61,16 @@
   - `_snapshot-archive.md` 只 append，不讀全檔
   - 多台快照一次讀：`for f in _snapshot-*.md; do echo "==$f=="; cat "$f"; done`
   - **禁止**：主動跑測試、讀下線機器快照、閒置巡邏（無目標不讀 git log/掃快照）
-  - 推送見 sync-protocol.md；回覆盡量簡短；未用 MCP 關閉；簡單任務用便宜模型
+  - 推送見 sync-protocol.md；回覆盡量簡短；未用 MCP 關閉
   （Jin 指示 0223，多輪補充）
+- **模型切換（硬性）**：
+  - 機器自己判斷當前任務複雜度，主動切換合適模型，做完切回來
+  - Opus：架構設計、方向討論、複雜推理、長脈絡決策
+  - Sonnet：批量寫碼、功能實作、重構、大多數日常開發
+  - Haiku：簡單 bug 修、文字修改、跑測試、格式調整
+  - 開 sub-agent 時也要選對模型（`model: "sonnet"` 或 `model: "haiku"`），不要全開 Opus
+  - 預設用 Sonnet，只在需要時升 Opus，不需要時降 Haiku
+  （Jin 指示 0225）
 - **優化回報**：發現優化用 `OPT: [類型] [描述] [預估省]` 記快照。經JDNE確認寫入 `docs/methodology/optimizations.md`
 - **重複問題治本**：同一錯誤或狀況頻繁出現，停下來找根因並修掉，不要每次手動繞過。兩次可能是巧合，太急改會過度優化。（Jin 指示 0223）
 - **指令修訂**：規則有矛盾/過時/反效果 → /暫存 REVISE 提案 → JDNE評估 → Jin批准
