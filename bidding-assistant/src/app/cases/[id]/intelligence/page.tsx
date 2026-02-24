@@ -179,6 +179,7 @@ export default function IntelligencePage() {
           { round: 1, title: '競爭者與甲方關係', prompt: '（需先拉取 PCC 情報後自動生成）', purpose: '確認最強競爭者跟甲方有沒有非標案合作關係' },
           { round: 2, title: '評審委員與市場背景', prompt: '（待生成）', purpose: '推測評審偏好和市場空白' },
           { round: 3, title: '案件策略意涵', prompt: '（待生成）', purpose: '這個案子對甲方的策略意義' },
+          { round: 4, title: '底價推估與報價策略', prompt: '（待生成）', purpose: '推估底價區間，制定報價策略' },
         ]}
         results={perplexityData?.rounds ?? []}
         onSaveResult={handleSavePerplexityResult}

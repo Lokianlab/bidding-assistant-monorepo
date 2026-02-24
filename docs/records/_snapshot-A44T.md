@@ -1,63 +1,44 @@
-# 快照 | A44T | 2026-02-23 14:59
+# 快照 | A44T | 2026-02-25 06:52
 
-## M08 評選簡報完整實裝
+## 第一階段開發手冊（31 項）— 全部完成
 
-### [x] M08 Presentation Generation Module
+### [x] D 系統基礎 + A 情報 + B 一鍵建案 + C 知識庫（31/31）
 
-**完成清單**
+- 123/123 測試全過（intelligence helpers 49 + case-setup helpers 29 + win-assessment 45）
+- npm run build 成功
+- TypeScript 零新增錯誤
+- commit 7bdea67 推送至 main
 
-1. [x] types.ts - 型別定義（M08Presentation, M08Slide, M08Template）
-2. [x] constants.ts - 三個模板常數 + 投影片標題集合（37 個標題跨三模板）
-3. [x] helpers.ts - 純函式層（generatePresentation, updateSlide, validateSlideContent, exportToJSON, generateSpeakerNotes, generateSlideContent）
-4. [x] useM08Presentation.ts - React Hook（使用 Supabase 預留位置）
-5. [x] helpers.test.ts - 36 個測試（generatePresentation 5 + updateSlide 7 + validateSlideContent 8 + exportToJSON 4 + generateSpeakerNotes 6 + generateSlideContent 6）
-6. [x] constants.test.ts - 30 個測試（M08_TEMPLATES 7 + SLIDE_LAYOUTS 4 + SPEAKER_NOTES_LIMITS 4 + M08_SLIDE_TITLES 15）
+### [x] 規範更新
 
-**測試狀態**
-- ✓ 66/66 測試全部通過
-- ✓ 常數驗證：三個模板正確定義，投影片計數相符，標題唯一且完整
-- ✓ Helper 函式：簡報生成、投影片更新、驗證、JSON 匯出、發言稿生成、內容生成全部通過
-- ✓ 深度複製修復：updateSlide 不修改原物件（測試中發現淺複製問題，已修複）
-
-**編譯與建置**
-- ✓ TypeScript 編譯通過
-- ✓ npm run build 成功（需 .env.local 以規避 Supabase 編譯期檢查）
-
-### [x] 額外修復 | M10 Milestone API Route
-
-- 修復 route.ts 中 Partial<Milestone> 型別檢查：使用 `'name' in body` 確保型別安全
-- 對齐 Milestone 型別：`contractId` → 移除（非 Milestone 屬性），改用 `name` 欄位
-- 更新欄位對映：`dueDate`, `status`, `weight`, `progress`, `paymentAmount`, `description` 一致
-
-**理由**：該檔案為分支中預先存在，其編譯錯誤阻擋了整體 build，修復允許 main build 通過。
-
-### 提交日誌
-
-```
-feat: M08 evaluation presentation - types+constants+helpers+66 tests (A44T)
-  - types: M08Presentation, M08Slide, M08Template 介面
-  - constants: 3 templates × 37 slide titles + speaker notes limits
-  - helpers: 6 pure functions (generate, update, validate, export, notes, content)
-  - hook: useM08Presentation with Supabase placeholder
-  - tests: 66/66 passing (36 + 30)
-  - fix: M10 milestones route type safety & field alignment
-```
-
-**推送状態**：
-- ✓ Local commit 成功
-- ⏳ Remote push 待 record 補寫完成
+- CLAUDE.md 新增模型切換規則（0225 Jin 指示）
+  - 預設 Sonnet，Opus 深度推理，Haiku 簡單任務
+  - **新增**：無法切換時 /clear 重啟是有效做法
 
 ---
 
-## 工作進度
+## 待完成（可自主）
 
-**M08 狀態**：✓ 完成實裝，待驗收或 UI 元件開發
+### [>] Perplexity 第三輪提示詞 — 最低標實務報價策略
 
-**M10 狀態**：修復分支中預存編譯錯誤（阻塞性）
-
-**M11 狀態**：未開始（等待分配）
+- 目標：在 `src/lib/intelligence/perplexity-prompts.ts` 補第三輪
+- 第一輪：競爭者與甲方關係
+- 第二輪：評審委員與市場背景
+- 第三輪（待補）：最低標報價策略 / 底價推估
+- 完成後更新 `src/app/cases/[id]/intelligence/page.tsx` 的 prompts 陣列
 
 ---
 
-_Updated: 2026-02-23 14:59 by Claude Haiku 4.5_
-**狀態**：M08 實裝完成，推送待 OP 記錄同步
+## 待 Jin 操作（不阻塞開發）
+
+| # | 項目 | Jin 要做什麼 |
+|---|------|------------|
+| J1 | GOOGLE_SCAFFOLD_FOLDER_ID | Drive 找「BZ. 製標鷹架」folder ID |
+| J2 | GOOGLE_KB_FOLDER_IDS | 指定要索引哪些 Drive 資料夾 |
+| J3 | Cloudflare Tunnel | 電腦安裝 cloudflared + 域名 |
+| J4 | Supabase migration | Dashboard 執行 002-intelligence-mvp.sql |
+
+---
+
+_Updated: 2026-02-25 06:52 by A44T_
+**狀態**：第一階段完成，下一步 Perplexity 第三輪提示詞

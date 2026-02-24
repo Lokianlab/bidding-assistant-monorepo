@@ -10,11 +10,12 @@ import type {
 } from "./types";
 
 /**
- * 產生三輪 Perplexity 搜尋提示。
+ * 產生四輪 Perplexity 搜尋提示。
  *
  * 第一輪：競爭對手與機關關係調查
  * 第二輪：評委背景與市場脈絡
  * 第三輪：標案策略意涵
+ * 第四輪：底價推估與報價策略
  *
  * 每則提示結構：已知線索 → 假設 → 調查指示 → 意外發現欄位
  */
@@ -35,6 +36,9 @@ export function generatePrompts(
   );
   prompts.push(
     buildRound3(caseTitle, agency, budget, agencyHistory, competitors),
+  );
+  prompts.push(
+    buildRound4(caseTitle, agency, budget, agencyHistory, competitors),
   );
 
   return prompts;
@@ -221,5 +225,94 @@ function buildRound3(
     title: "第三輪：策略意涵與投標方向",
     prompt,
     purpose: "綜合前兩輪情報，判斷投標的策略價值與差異化方向。",
+  };
+}
+
+// ====== 第四輪：底價推估與報價策略 ======
+
+function buildRound4(
+  caseTitle: string,
+  agency: string,
+  budget: number | null,
+  history: AgencyHistoryData,
+  competitors: CompetitorData,
+): PerplexityPrompt {
+  const budgetStr = budget ? formatBudget(budget) : "未公開";
+
+  // 計算歷史決標金額相對於預算的折扣率
+  const casesWithAmount = history.cases.filter(
+    (c) => c.award_amount !== null && c.award_amount > 0,
+  );
+  const avgDiscountPct =
+    casesWithAmount.length > 0 && budget
+      ? (
+          (casesWithAmount.reduce((sum, c) => sum + (c.award_amount ?? 0), 0) /
+            casesWithAmount.length /
+            budget) *
+          100
+        ).toFixed(0)
+      : null;
+
+  const recentAwards = history.cases
+    .filter((c) => c.award_amount !== null)
+    .slice(0, 5)
+    .map(
+      (c) =>
+        `「${c.title}」預算 vs 決標：${c.award_amount ? formatBudget(c.award_amount) : "不明"}（${c.award_date}）`,
+    )
+    .join("\n  - ");
+
+  const topCompetitor = competitors.competitors[0];
+  const competitorPricing = topCompetitor
+    ? `主要競爭對手「${topCompetitor.name}」歷史得標總額約 ${formatBudget(topCompetitor.total_amount)}，共 ${topCompetitor.win_count} 案，平均每案約 ${topCompetitor.win_count > 0 ? formatBudget(Math.round(topCompetitor.total_amount / topCompetitor.win_count)) : "不明"}。`
+    : "尚無競爭對手報價資料。";
+
+  const discountHint = avgDiscountPct
+    ? `此機關歷史決標金額平均約為預算的 ${avgDiscountPct}%。`
+    : "此機關歷史決標折扣率待調查。";
+
+  const prompt = `你是一位政府標案報價策略顧問。請協助推估此案的合理報價區間與底價範圍。
+
+【標案資訊】
+案名：${caseTitle}
+機關：${agency}
+公告預算：${budgetStr}
+
+【已知線索】
+1. ${discountHint}
+2. 此機關近期同類案件決標金額：
+  - ${recentAwards || "無近期決標紀錄"}
+3. 競爭對手報價參考：${competitorPricing}
+
+【假設】
+- 假設 H1：此機關的底價設定通常在預算的某個固定折扣區間（如 85-95%）。
+- 假設 H2：若競爭激烈（投標家數多），決標金額會更接近底價下緣。
+- 假設 H3：若以最低標決標，則報價必須低於底價但高於成本；若以最有利標，則過低報價反而引發疑慮。
+
+【調查指示】
+1. 搜尋此機關過去 3 年同類案件的「公告預算」與「決標金額」，計算實際折扣率區間。
+2. 查詢同性質案件（同一業務類別）在不同機關的底價折扣率，建立市場基準。
+3. 搜尋競爭對手在其他機關的報價紀錄，推估其成本結構與報價慣例。
+4. 若此案為「最低標」決標：查詢市場上同規格服務的行情價，釐清成本底線。
+5. 若此案為「最有利標」決標：查詢評選委員對「異常低價」的慣例處理方式。
+
+【意外發現】
+如果在搜尋過程中發現：
+- 此機關曾廢標重新招標（可能暗示底價設定過低或廠商惜標）
+- 有廠商因低價搶標後執行品質差而被列為不良廠商
+- 此案件過去有異議或申訴與報價相關
+請一併記錄，這些資訊直接影響報價策略。
+
+【輸出格式】
+請提供：
+1. 推估底價區間（例：預算的 X% 至 Y%）
+2. 建議報價策略（保守型 / 競爭型 / 破壞型的風險與適用情境）
+3. 需要 Jin 進一步確認的資訊`;
+
+  return {
+    round: 4,
+    title: "第四輪：底價推估與報價策略",
+    prompt,
+    purpose: "推估機關底價區間，制定兼顧得標機率與利潤的報價策略。",
   };
 }

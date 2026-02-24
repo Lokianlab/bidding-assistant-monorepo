@@ -70,6 +70,8 @@
   - Haiku：簡單 bug 修、文字修改、跑測試、格式調整
   - 開 sub-agent 時也要選對模型（`model: "sonnet"` 或 `model: "haiku"`），不要全開 Opus
   - 預設用 Sonnet，只在需要時升 Opus，不需要時降 Haiku
+  - **「無法切換」不存在**：主 session 模型不能中途換，但永遠可以用 Task tool 開正確模型的 sub-agent 來執行任務。主 session 負責協調，sub-agent 負責實際工作。需要 Opus 的任務 → `Task(model: "opus")`，需要 Haiku → `Task(model: "haiku")`，不需要 /clear。
+  - **主 session 用 Opus 的唯一合理情境**：對話本身就是工作，且需要跨多輪深度推理（架構設計、策略討論、Jin 積極參與的多輪分析）。輸出是「推理過程」而非「產出的檔案」。其他情況一律 Sonnet 主 session + 按需 Opus sub-agent。
   （Jin 指示 0225）
 - **優化回報**：發現優化用 `OPT: [類型] [描述] [預估省]` 記快照。經JDNE確認寫入 `docs/methodology/optimizations.md`
 - **重複問題治本**：同一錯誤或狀況頻繁出現，停下來找根因並修掉，不要每次手動繞過。兩次可能是巧合，太急改會過度優化。（Jin 指示 0223）
