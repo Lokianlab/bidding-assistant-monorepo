@@ -1,27 +1,29 @@
-# 快照 | A44T | 2026-02-25 06:52
+# 快照 | A44T | 2026-02-26 01:41
 
-## 第一階段開發手冊（31 項）— 全部完成
+## [x] 系統整合重構 — 消除疊床架屋
 
-### [x] D 系統基礎 + A 情報 + B 一鍵建案 + C 知識庫（31/31）
+### 完成項目
 
-- 123/123 測試全過（intelligence helpers 49 + case-setup helpers 29 + win-assessment 45）
-- npm run build 成功
-- TypeScript 零新增錯誤
-- commit 7bdea67 推送至 main
+- [x] feature-registry 清理：dashboard/prompt-library/quality/docgen/pricing routes:[]，explore/knowledge-cards defaultEnabled:false
+- [x] Sidebar 設定區 8→3 項（外部連線/功能與設定/系統維護），Logo 加首頁連結
+- [x] 情報中心加第 5 tab 鑽探模式，/explore redirect → /intelligence?tab=explore
+- [x] /tools/quality + /tools/docx + /tools/output → redirect 到 quality-gate 對應 tab
+- [x] ProjectDetailSheet 底部升級 5 個快速行動按鈕（工作頁/情報/撰寫/品質/Notion）
+- [x] settings/modules 加公司資訊 + 輸出格式 tab
+- [x] settings/maintenance 新建頁面（操作指南 tab）
+- [x] 測試全過（270 檔 4364 tests），build 零錯誤
+- [x] commit 8dfe7bd 推送至 main
 
-### [x] 規範更新
+### 測試修復紀錄
 
-- CLAUDE.md 新增模型切換規則（0225 Jin 指示）
-  - 預設 Sonnet，Opus 深度推理，Haiku 簡單任務
-  - **新增**：無法切換時 /clear 重啟是有效做法
-
----
-
-## 待完成（可自主）
-
-### [x] Perplexity 第四輪提示詞 — 底價推估與報價策略
-
-- 4 輪提示詞全部完成，31 個測試全過，commit 8142f49 推送
+- explore/page.test.tsx：改測 redirect 行為
+- intelligence/page.test.tsx：加 ExplorerPage mock，四個 Tab → 五個 Tab
+- feature-registry.test.ts：dashboard/prompt-library route 清空，getEnabledFeatures 計數邏輯更新
+- FeatureGuard.test.tsx：pricing/quality → quality-gate 路由
+- Sidebar.test.tsx：「操作指南」→「功能與設定」
+- useFeatureEnabled.test.ts：計數邏輯適應 explore/knowledge-cards defaultEnabled:false
+- docx/output/quality page tests：全改測 redirect
+- strategy/page.test.tsx：完整重寫（頁面 UI 從表單模式→選擇器+URL 參數模式）
 
 ---
 
@@ -36,5 +38,5 @@
 
 ---
 
-_Updated: 2026-02-25 06:52 by A44T_
-**狀態**：第一階段完成，下一步 Perplexity 第三輪提示詞
+_Updated: 2026-02-26 01:41 by A44T_
+**狀態**：系統整合重構完成。下一步待 Jin 指示（欄位說明需求待確認）。
