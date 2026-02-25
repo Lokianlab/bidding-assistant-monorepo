@@ -281,15 +281,14 @@ describe("fmtDateTime", () => {
 // ====== filterPages ======
 
 describe("filterPages", () => {
-  it("filters out pages without confirmed collaboration", () => {
+  it("不再篩選確定協作（已移至 Notion API 層的可設定篩選）", () => {
+    // filterPages 只處理截標日期邏輯，確定協作由看板篩選設定在 API 層控制
     const pages: NotionPage[] = [
-      makePage({ [F.確定協作]: true, [F.截標]: "2099-01-01" }),
-      makePage({ [F.確定協作]: false }),
-      makePage({ [F.確定協作]: null }),
+      makePage({ [F.確定協作]: false, [F.截標]: "2099-01-01" }),
+      makePage({ [F.確定協作]: null, [F.截標]: "2099-01-01" }),
     ];
     const result = filterPages(pages);
-    // Only the first one has truthy 確定協作
-    expect(result.length).toBe(1);
+    expect(result.length).toBe(2);
   });
 
   it("keeps pages with future deadline regardless of status", () => {

@@ -130,7 +130,7 @@ export function filterPages(raw: NotionPage[]): NotionPage[] {
   now.setHours(0, 0, 0, 0);
   const todayMs = now.getTime();
   return raw.filter((p) => {
-    if (!p.properties[F.確定協作]) return false;
+    // 確定協作 的篩選已移至 Notion API 層（看板篩選設定）
     const deadlineTs = parseDateField(p.properties[F.截標]);
     if (!deadlineTs || deadlineTs >= todayMs) return true;
     const status = p.properties[F.進程] ?? "";

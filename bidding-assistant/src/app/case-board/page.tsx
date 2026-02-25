@@ -20,6 +20,7 @@ import { F, BOARD_COLUMNS_ORDER } from "@/lib/dashboard/types";
 import { filterPages, loadCache, saveCache } from "@/lib/dashboard/helpers";
 import { applyBoardFilters } from "@/lib/case-board/helpers";
 import type { BoardViewMode, BoardFilters } from "@/lib/case-board/types";
+import { buildNotionFilter, DEFAULT_CASE_BOARD_FILTER } from "@/lib/settings/case-board-filter";
 import { ProjectDetailSheet } from "@/components/dashboard/ProjectDetailSheet";
 import { CaseKanbanView } from "@/components/case-board/CaseKanbanView";
 import { CaseListView } from "@/components/case-board/CaseListView";
@@ -128,7 +129,9 @@ export default function CaseBoardPage() {
       if (!hasCached) setLoading(true);
 
       try {
-        const notionFilter = { property: F.確定協作, checkbox: { equals: true } };
+        const notionFilter = buildNotionFilter(
+          settings.caseBoardFilter ?? DEFAULT_CASE_BOARD_FILTER,
+        );
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 120000);
 

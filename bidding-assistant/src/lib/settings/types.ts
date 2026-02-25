@@ -151,6 +151,8 @@ export interface AppSettings {
   scan?: ScanSettings;
   /** 預算規模級距設定（read-time 分類，不存 Notion） */
   budgetTiers?: BudgetTier[];
+  /** 案件看板篩選條件（傳給 Notion API 的 filter） */
+  caseBoardFilter?: CaseBoardFilterSettings;
 }
 
 export interface RecentExport {
@@ -183,6 +185,30 @@ export interface QualityGateSettings {
   overallPassThreshold: number;
   /** 總評「有風險」門檻分數 */
   overallRiskThreshold: number;
+}
+
+export type FilterPropertyType =
+  | 'checkbox' | 'status' | 'select' | 'multi_select'
+  | 'date' | 'number' | 'rich_text';
+
+export type FilterOperator =
+  | 'equals' | 'does_not_equal'
+  | 'contains' | 'does_not_contain'
+  | 'is_empty' | 'is_not_empty'
+  | 'before' | 'after' | 'on_or_before' | 'on_or_after'
+  | 'greater_than' | 'less_than'
+  | 'greater_than_or_equal_to' | 'less_than_or_equal_to';
+
+export interface FilterCondition {
+  id: string;
+  property: string;       // FieldMappingKey（如 "進程", "確定協作"）
+  operator: FilterOperator;
+  value?: string | boolean | number;
+}
+
+export interface CaseBoardFilterSettings {
+  logic: 'and' | 'or';
+  conditions: FilterCondition[];
 }
 
 export interface BudgetTier {

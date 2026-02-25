@@ -108,6 +108,12 @@ export const DEFAULT_SETTINGS: AppSettings = {
   scan: {
     searchKeywords: [...DEFAULT_SEARCH_KEYWORDS],
   },
+  caseBoardFilter: {
+    logic: 'and',
+    conditions: [
+      { id: 'default-1', property: '確定協作', operator: 'equals', value: true },
+    ],
+  },
   budgetTiers: [
     { name: '小型', maxAmount: 500_000 },
     { name: '中型', maxAmount: 2_000_000 },

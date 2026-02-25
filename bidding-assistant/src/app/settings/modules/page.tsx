@@ -39,7 +39,9 @@ import { KeywordManager } from "@/components/scan/KeywordManager";
 import type { FieldMappingKey } from "@/lib/constants/field-mapping";
 import { DEFAULT_SEARCH_KEYWORDS } from "@/lib/scan/constants";
 import { DEFAULT_BUDGET_TIERS } from "@/lib/settings/budget-tiers";
-import type { BudgetTier } from "@/lib/settings/types";
+import { DEFAULT_CASE_BOARD_FILTER } from "@/lib/settings/case-board-filter";
+import type { BudgetTier, CaseBoardFilterSettings } from "@/lib/settings/types";
+import { CaseBoardFilterEditor } from "@/components/settings/CaseBoardFilterEditor";
 
 export default function ModulesPage() {
   const { settings, hydrated, updateSection, updateSettings } = useSettings();
@@ -65,6 +67,11 @@ export default function ModulesPage() {
     settings.budgetTiers ?? DEFAULT_BUDGET_TIERS,
   );
 
+  // 案件看板篩選條件的 local state
+  const [caseFilter, setCaseFilter] = useState<CaseBoardFilterSettings>(
+    settings.caseBoardFilter ?? DEFAULT_CASE_BOARD_FILTER,
+  );
+
   // hydration 完成後，用 localStorage 的值更新 local state
   useEffect(() => {
     if (hydrated) {
@@ -73,6 +80,7 @@ export default function ModulesPage() {
       setFieldMapping(settings.fieldMapping ?? {});
       setScanKeywords(settings.scan?.searchKeywords ?? [...DEFAULT_SEARCH_KEYWORDS]);
       setBudgetTiers(settings.budgetTiers ?? DEFAULT_BUDGET_TIERS);
+      setCaseFilter(settings.caseBoardFilter ?? DEFAULT_CASE_BOARD_FILTER);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
@@ -125,6 +133,7 @@ export default function ModulesPage() {
           <TabsTrigger value="negotiation">協商參數</TabsTrigger>
           <TabsTrigger value="scan-keywords">巡標關鍵字</TabsTrigger>
           <TabsTrigger value="budget-tiers">預算規模</TabsTrigger>
+          <TabsTrigger value="case-filter">看板篩選</TabsTrigger>
         </TabsList>
 
         {/* ====== 功能開關 ====== */}
@@ -728,6 +737,38 @@ export default function ModulesPage() {
               onClick={() => {
                 updateSettings({ budgetTiers });
                 toast.success("預算規模設定已儲存");
+              }}
+            >
+              儲存設定
+            </Button>
+          </div>
+        </TabsContent>
+
+        {/* ====== 看板篩選 ====== */}
+        <TabsContent value="case-filter" className="mt-4 space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">案件看板篩選條件</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                系統根據這些條件從 Notion 撈案件，像 Notion 的篩選功能一樣可自由設定。
+              </p>
+            </CardHeader>
+            <CardContent>
+              <CaseBoardFilterEditor value={caseFilter} onChange={setCaseFilter} />
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setCaseFilter(settings.caseBoardFilter ?? DEFAULT_CASE_BOARD_FILTER)}
+            >
+              取消
+            </Button>
+            <Button
+              onClick={() => {
+                updateSettings({ caseBoardFilter: caseFilter });
+                toast.success("看板篩選條件已儲存");
               }}
             >
               儲存設定
