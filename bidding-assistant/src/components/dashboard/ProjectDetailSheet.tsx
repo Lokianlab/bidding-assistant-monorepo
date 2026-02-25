@@ -132,24 +132,42 @@ export function ProjectDetailSheet({ page, open, onClose }: ProjectDetailSheetPr
 
           <Separator />
 
-          {/* 案件工作頁連結 */}
-          <Link href={`/case-work?id=${page.id}`}>
-            <Button variant="default" size="sm" className="w-full">
-              前往案件工作頁
-            </Button>
-          </Link>
-
-          {/* Notion 連結 */}
-          {page.url && page.url !== "#" && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={() => window.open(page.url, "_blank")}
-            >
-              在 Notion 中開啟
-            </Button>
-          )}
+          {/* 快速行動列 */}
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">快速行動</p>
+            <div className="grid grid-cols-2 gap-2">
+              <Link href={`/case-work?id=${page.id}`} className="col-span-2">
+                <Button variant="default" size="sm" className="w-full">
+                  前往工作頁
+                </Button>
+              </Link>
+              <Link href={`/intelligence?search=${encodeURIComponent(p[F.名稱] || "")}&caseId=${page.id}`}>
+                <Button variant="outline" size="sm" className="w-full">
+                  查情報
+                </Button>
+              </Link>
+              <Link href={`/assembly?caseId=${page.id}&caseName=${encodeURIComponent(p[F.名稱] || "")}`}>
+                <Button variant="outline" size="sm" className="w-full">
+                  開始撰寫
+                </Button>
+              </Link>
+              <Link href={`/tools/quality-gate?caseId=${page.id}&caseName=${encodeURIComponent(p[F.名稱] || "")}`} className="col-span-2">
+                <Button variant="outline" size="sm" className="w-full">
+                  品質檢查
+                </Button>
+              </Link>
+            </div>
+            {page.url && page.url !== "#" && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full"
+                onClick={() => window.open(page.url, "_blank")}
+              >
+                在 Notion 開啟 ↗
+              </Button>
+            )}
+          </div>
         </div>
       </SheetContent>
     </Sheet>

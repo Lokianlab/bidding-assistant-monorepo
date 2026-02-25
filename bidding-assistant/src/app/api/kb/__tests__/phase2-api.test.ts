@@ -134,7 +134,7 @@ describe('M02 Phase 2: KB API Routes', () => {
     });
 
     test('應返回正確的建立回應格式', () => {
-      const mockResponse = {
+      const mockResponse: Record<string, unknown> = {
         id: 'uuid-123',
         entryId: 'M-001',
         category: '00A' as KBId,

@@ -119,7 +119,7 @@ describe('useKBForm', () => {
     it('空表單應該驗證失敗', () => {
       const { result } = renderHook(() => useKBForm());
 
-      let isValid: boolean;
+      let isValid: boolean | undefined;
       act(() => {
         isValid = result.current.validate();
       });
@@ -154,7 +154,7 @@ describe('useKBForm', () => {
         });
       });
 
-      let isValid: boolean;
+      let isValid: boolean | undefined;
       act(() => {
         isValid = result.current.validate();
       });
@@ -174,7 +174,7 @@ describe('useKBForm', () => {
         });
       });
 
-      let isValid: boolean;
+      let isValid: boolean | undefined;
       act(() => {
         isValid = result.current.validate();
       });
@@ -190,7 +190,7 @@ describe('useKBForm', () => {
         result.current.setForm({ title: '   ' });
       });
 
-      let isValid: boolean;
+      let isValid: boolean | undefined;
       act(() => {
         isValid = result.current.validate();
       });

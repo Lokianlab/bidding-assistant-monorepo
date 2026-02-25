@@ -244,12 +244,12 @@ describe('知識庫 API 整合測試', () => {
 
   describe('POST /api/kb/items', () => {
     it('[必填檢查] 缺少 category 應返回 400', () => {
-      const body = { title: '標題' };
+      const body: Record<string, unknown> = { title: '標題' };
       expect(body.category).toBeUndefined();
     });
 
     it('[必填檢查] 缺少 title 應返回 400', () => {
-      const body = { category: '00A' };
+      const body: Record<string, unknown> = { category: '00A' };
       expect(body.title).toBeUndefined();
     });
 
@@ -290,8 +290,8 @@ describe('知識庫 API 整合測試', () => {
     });
 
     it('[選填欄位] tags 預設為空陣列', () => {
-      const body = { category: '00A', title: '項目' };
-      const tags = body.tags || [];
+      const body: Record<string, unknown> = { category: '00A', title: '項目' };
+      const tags = (body.tags as string[] | undefined) || [];
       expect(Array.isArray(tags)).toBe(true);
     });
 

@@ -15,9 +15,10 @@ import {
 
 describe("SECTION_LABELS", () => {
   it("has labels for all section types", () => {
-    expect(SECTION_LABELS.core).toBe("核心功能");
-    expect(SECTION_LABELS.tools).toBe("工具箱");
-    expect(SECTION_LABELS.output).toBe("輸出");
+    expect(SECTION_LABELS.command).toBe("指揮部");
+    expect(SECTION_LABELS.intelligence).toBe("情報部");
+    expect(SECTION_LABELS.planning).toBe("企劃部");
+    expect(SECTION_LABELS.admin).toBe("行政部");
   });
 });
 
@@ -31,8 +32,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(FEATURE_REGISTRY.length).toBeGreaterThan(0);
   });
 
-  it("has 16 registered features", () => {
-    expect(FEATURE_REGISTRY).toHaveLength(16);
+  it("has 20 registered features", () => {
+    expect(FEATURE_REGISTRY).toHaveLength(20);
   });
 
   it("every feature has all required fields", () => {
@@ -51,7 +52,7 @@ describe("FEATURE_REGISTRY", () => {
 
       expect(Array.isArray(feature.routes)).toBe(true);
 
-      expect(["core", "tools", "output"]).toContain(feature.section);
+      expect(["command", "intelligence", "planning", "admin"]).toContain(feature.section);
 
       expect(typeof feature.defaultEnabled).toBe("boolean");
     }
@@ -162,10 +163,9 @@ describe("getDefaultToggles()", () => {
 // ---------------------------------------------------------------------------
 
 describe("getFeatureByRoute()", () => {
-  it("returns the dashboard feature for '/'", () => {
+  it("returns undefined for '/' (dashboard routes cleared)", () => {
     const feature = getFeatureByRoute("/");
-    expect(feature).toBeDefined();
-    expect(feature!.id).toBe("dashboard");
+    expect(feature).toBeUndefined();
   });
 
   it("returns the correct feature for exact route match", () => {
@@ -175,9 +175,9 @@ describe("getFeatureByRoute()", () => {
   });
 
   it("returns the correct feature via prefix match", () => {
-    const feature = getFeatureByRoute("/tools/pricing/detail");
+    const feature = getFeatureByRoute("/knowledge-base/sub");
     expect(feature).toBeDefined();
-    expect(feature!.id).toBe("pricing");
+    expect(feature!.id).toBe("knowledge-base");
   });
 
   it("returns the case-board feature for /case-board", () => {
@@ -186,10 +186,9 @@ describe("getFeatureByRoute()", () => {
     expect(feature!.id).toBe("case-board");
   });
 
-  it("returns the prompt-library feature for /prompt-library", () => {
+  it("returns undefined for /prompt-library (routes cleared)", () => {
     const feature = getFeatureByRoute("/prompt-library");
-    expect(feature).toBeDefined();
-    expect(feature!.id).toBe("prompt-library");
+    expect(feature).toBeUndefined();
   });
 
   it("returns the explore feature for /explore", () => {
@@ -209,18 +208,20 @@ describe("getFeatureByRoute()", () => {
 // ---------------------------------------------------------------------------
 
 describe("getEnabledFeatures()", () => {
-  it("returns all features when using default toggles", () => {
+  it("returns default-enabled features when using default toggles", () => {
     const toggles = getDefaultToggles();
     const enabled = getEnabledFeatures(toggles);
-    // All defaults are true in the current registry
-    expect(enabled).toHaveLength(FEATURE_REGISTRY.length);
+    // explore and knowledge-cards are defaultEnabled:false
+    const expectedCount = FEATURE_REGISTRY.filter((f) => f.defaultEnabled).length;
+    expect(enabled).toHaveLength(expectedCount);
   });
 
   it("excludes disabled features", () => {
     const toggles = { ...getDefaultToggles(), dashboard: false };
     const enabled = getEnabledFeatures(toggles);
     expect(enabled.find((f) => f.id === "dashboard")).toBeUndefined();
-    expect(enabled.length).toBe(FEATURE_REGISTRY.length - 1);
+    const expectedCount = FEATURE_REGISTRY.filter((f) => f.defaultEnabled).length - 1;
+    expect(enabled.length).toBe(expectedCount);
   });
 });
 

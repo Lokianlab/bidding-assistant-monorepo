@@ -100,8 +100,8 @@ describe('Auth API Security Tests', () => {
     });
 
     it('[防護] State 不匹配應返回 400', async () => {
-      const expectedState = 'state123';
-      const receivedState = 'invalid-state-456';
+      const expectedState: string = 'state123';
+      const receivedState: string = 'invalid-state-456';
 
       const statesMatch = expectedState === receivedState;
       expect(statesMatch).toBe(false); // 應該不匹配
@@ -174,7 +174,7 @@ describe('Auth API Security Tests', () => {
     });
 
     it('[驗證] Redirect 應該使用 HTTPS（生產環境）', async () => {
-      process.env.NODE_ENV = 'production';
+      vi.stubEnv('NODE_ENV', 'production');
       const redirectUrl = 'https://example.com/'; // 應該是 HTTPS
 
       expect(redirectUrl.startsWith('https://')).toBe(true);
@@ -301,7 +301,7 @@ describe('Auth API Security Tests', () => {
 
     it('[安全] 多次 logout 應是冪等的', async () => {
       // 第一次 logout
-      let sessionCookie = { value: 'token123', maxAge: undefined };
+      let sessionCookie: { value: string; maxAge: number | undefined } = { value: 'token123', maxAge: undefined };
       sessionCookie = { value: '', maxAge: 0 };
 
       // 第二次 logout（無效）
@@ -321,8 +321,8 @@ describe('Auth API Security Tests', () => {
     });
 
     it('[CSRF] 不同 origin 的請求應被拒絕', async () => {
-      const requestOrigin = 'https://evil.com';
-      const allowedOrigin = 'http://localhost:3000';
+      const requestOrigin: string = 'https://evil.com';
+      const allowedOrigin: string = 'http://localhost:3000';
 
       const isAllowed = requestOrigin === allowedOrigin;
       expect(isAllowed).toBe(false);

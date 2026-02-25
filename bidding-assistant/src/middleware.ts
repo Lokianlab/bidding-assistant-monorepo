@@ -64,6 +64,15 @@ function isPublicRoute(pathname: string): boolean {
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  // 開發模式：跳過認證，直接放行所有路由
+  const isDev = process.env.NODE_ENV === 'development' ||
+    process.env.NEXT_PUBLIC_APP_ENV === 'development';
+  if (isDev) {
+    const response = NextResponse.next();
+    response.headers.set('x-tenant-id', 'dev-local');
+    return response;
+  }
+
   // 公開路由：直接通過
   if (isPublicRoute(pathname)) {
     return NextResponse.next();

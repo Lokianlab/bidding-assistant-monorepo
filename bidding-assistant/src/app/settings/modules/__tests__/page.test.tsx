@@ -99,9 +99,9 @@ describe("ModulesPage — 渲染", () => {
     expect(screen.getByRole("tab", { name: "巡標關鍵字" })).toBeTruthy();
   });
 
-  it("渲染功能開關 section（核心功能）", () => {
+  it("渲染功能開關 section（指揮部）", () => {
     render(<ModulesPage />);
-    expect(screen.getByText("核心功能")).toBeTruthy();
+    expect(screen.getByText("指揮部")).toBeTruthy();
   });
 
   it("渲染 FieldMappingEditor", () => {

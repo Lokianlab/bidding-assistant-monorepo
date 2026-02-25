@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useNegotiation, useSensitivityAnalysis } from "../useNegotiation";
 import { useSettings } from "@/lib/context/settings-context";
-import type { CostBase } from "../types";
+import type { CostBase, NegotiationConfig } from "../types";
 
 // Mock useSettings
 vi.mock("@/lib/context/settings-context", () => ({
@@ -71,8 +71,8 @@ describe("useNegotiation Hook", () => {
 
     it("設定變更時重新計算", () => {
       const { result, rerender } = renderHook(
-        ({ config }) => useNegotiation(mockCostBase, config),
-        { initialProps: { config: undefined } }
+        ({ config }: { config: Partial<NegotiationConfig> | undefined }) => useNegotiation(mockCostBase, config),
+        { initialProps: { config: undefined as Partial<NegotiationConfig> | undefined } }
       );
 
       const firstProposed = result.current.analysis?.proposed.quoteAmount;
@@ -219,8 +219,8 @@ describe("useNegotiation Hook", () => {
 
     it("customConfig 改變時自動重新計算", () => {
       const { result, rerender } = renderHook(
-        ({ config }) => useNegotiation(mockCostBase, config),
-        { initialProps: { config: undefined } }
+        ({ config }: { config: Partial<NegotiationConfig> | undefined }) => useNegotiation(mockCostBase, config),
+        { initialProps: { config: undefined as Partial<NegotiationConfig> | undefined } }
       );
 
       const firstTotal = result.current.analysis?.proposed.quoteAmount;

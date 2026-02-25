@@ -24,7 +24,6 @@ vi.mock("@/lib/logger", () => ({
 
 // ── Mock dashboard helpers ───────────────────────────
 vi.mock("@/lib/dashboard/helpers", () => ({
-  filterPages: vi.fn((pages: unknown[]) => pages),
   loadCache: vi.fn(() => null),
   saveCache: vi.fn(),
 }));

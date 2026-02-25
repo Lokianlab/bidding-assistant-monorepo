@@ -16,7 +16,7 @@ vi.mock('../helpers', () => ({
   }),
   searchPartners: vi.fn((partners, params) => {
     if (!params.search) return partners;
-    return partners.filter((p) =>
+    return partners.filter((p: { name: string }) =>
       p.name.toLowerCase().includes(params.search.toLowerCase()),
     );
   }),

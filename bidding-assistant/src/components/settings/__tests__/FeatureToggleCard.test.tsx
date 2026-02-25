@@ -23,7 +23,7 @@ function makeFeature(overrides: Partial<FeatureDefinition> = {}): FeatureDefinit
     description: "這是測試模組的說明",
     icon: "🧪",
     routes: ["/test"],
-    section: "tools",
+    section: "intelligence",
     defaultEnabled: true,
     ...overrides,
   };

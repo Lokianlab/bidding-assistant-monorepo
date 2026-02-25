@@ -4,6 +4,20 @@ import React from "react";
 import { NegotiationPanel } from "../NegotiationPanel";
 import type { CostBase } from "@/lib/negotiation/types";
 
+// Mock useSettings
+vi.mock("@/lib/context/settings-context", () => ({
+  useSettings: () => ({
+    settings: {
+      modules: {
+        pricing: {
+          taxRate: 0.05,
+          managementFeeRate: 0.1,
+        },
+      },
+    },
+  }),
+}));
+
 // Mock the useNegotiation hook
 vi.mock("@/lib/negotiation/useNegotiation", () => ({
   useNegotiation: () => ({

@@ -235,7 +235,7 @@ function CompanySection({
   // 從 detail 的 key-value 裡解析公司
   const companies: { name: string; role: string }[] = [];
 
-  for (const [key, val] of Object.entries(detail.detail)) {
+  for (const [key, val] of Object.entries(detail.detail ?? {})) {
     if (typeof val === "string") continue;
     if (val && typeof val === "object") {
       // 格式：{ "廠商代碼": "xxx", "廠商名稱": "yyy", ... }
@@ -367,8 +367,8 @@ function AgencyIntelSection({
             我方在此機關的紀錄（{data.myHistory.filter((h) => h.won).length}/{data.myHistory.length} 得標）
           </p>
           <div className="space-y-1">
-            {data.myHistory.map((h) => (
-              <div key={`${h.date}-${h.title}`} className="flex items-center gap-2 text-xs">
+            {data.myHistory.map((h, i) => (
+              <div key={`${h.date}-${h.title}-${i}`} className="flex items-center gap-2 text-xs">
                 <Badge variant={h.won ? "default" : "destructive"} className="text-xs shrink-0">
                   {h.won ? "得標" : "未得標"}
                 </Badge>

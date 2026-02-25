@@ -8,6 +8,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Mock 依賴
 vi.mock('@/lib/kb/notion-sync');
@@ -81,7 +82,7 @@ describe('GET /api/cron/sync-notion', () => {
           }),
         }),
       };
-      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase);
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as unknown as SupabaseClient);
 
       const req = createMockRequest(
         'http://localhost:3000/api/cron/sync-notion',
@@ -108,7 +109,7 @@ describe('GET /api/cron/sync-notion', () => {
           }),
         }),
       };
-      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase);
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as unknown as SupabaseClient);
 
       const req = createMockRequest(
         'http://localhost:3000/api/cron/sync-notion',
@@ -141,7 +142,7 @@ describe('GET /api/cron/sync-notion', () => {
           }),
         }),
       };
-      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase);
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as unknown as SupabaseClient);
 
       const req = createMockRequest(
         'http://localhost:3000/api/cron/sync-notion',
@@ -171,7 +172,7 @@ describe('GET /api/cron/sync-notion', () => {
           }),
         }),
       };
-      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase);
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as unknown as SupabaseClient);
 
       const req = createMockRequest(
         'http://localhost:3000/api/cron/sync-notion',
@@ -201,7 +202,7 @@ describe('GET /api/cron/sync-notion', () => {
           }),
         }),
       };
-      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase);
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as unknown as SupabaseClient);
 
       const req = createMockRequest(
         'http://localhost:3000/api/cron/sync-notion',
@@ -232,7 +233,7 @@ describe('GET /api/cron/sync-notion', () => {
           }),
         }),
       };
-      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase);
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as unknown as SupabaseClient);
 
       const req = createMockRequest(
         'http://localhost:3000/api/cron/sync-notion',
@@ -277,7 +278,7 @@ describe('GET /api/cron/sync-notion', () => {
           }),
         }),
       };
-      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase);
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as unknown as SupabaseClient);
 
       const req = createMockRequest(
         'http://localhost:3000/api/cron/sync-notion?tenant_id=my-tenant',
@@ -306,7 +307,7 @@ describe('GET /api/cron/sync-notion', () => {
           }),
         }),
       };
-      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase);
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as unknown as SupabaseClient);
 
       const req = createMockRequest(
         'http://localhost:3000/api/cron/sync-notion',

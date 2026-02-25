@@ -31,8 +31,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   },
   connections: {
     notion: {
-      token: "",
-      databaseId: "",
+      token: process.env.NEXT_PUBLIC_NOTION_TOKEN ?? "",
+      databaseId: process.env.NEXT_PUBLIC_NOTION_DATABASE_ID ?? "",
     },
     googleDrive: {
       refreshToken: "",
@@ -108,6 +108,18 @@ export const DEFAULT_SETTINGS: AppSettings = {
   scan: {
     searchKeywords: [...DEFAULT_SEARCH_KEYWORDS],
   },
+  caseBoardFilter: {
+    logic: 'and',
+    conditions: [
+      { id: 'default-1', property: '確定協作', operator: 'equals', value: true },
+    ],
+  },
+  budgetTiers: [
+    { name: '小型', maxAmount: 500_000 },
+    { name: '中型', maxAmount: 2_000_000 },
+    { name: '大型', maxAmount: 5_000_000 },
+    { name: '旗艦', maxAmount: null },
+  ],
   dashboardLayout: DEFAULT_DASHBOARD_LAYOUT,
   workflow: {
     stages: STAGES.map((s) => ({

@@ -102,6 +102,7 @@ function makePartner(
   return {
     id: "P-EXT-001",
     tenant_id: "tenant-001",
+    category: [],
     contact_name: "聯絡人",
     phone: "02-1234-5678",
     email: "contact@partner.com",

@@ -36,8 +36,17 @@ function loadSettings(): AppSettings {
   if (typeof window === "undefined") return DEFAULT_SETTINGS;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_SETTINGS;
-    return deepMerge(DEFAULT_SETTINGS, JSON.parse(raw));
+    const merged = raw ? deepMerge(DEFAULT_SETTINGS, JSON.parse(raw)) : DEFAULT_SETTINGS;
+
+    // 開發模式：Notion 連線設定為空時，自動從環境變數補上
+    if (!merged.connections.notion.token && process.env.NEXT_PUBLIC_NOTION_TOKEN) {
+      merged.connections.notion.token = process.env.NEXT_PUBLIC_NOTION_TOKEN;
+    }
+    if (!merged.connections.notion.databaseId && process.env.NEXT_PUBLIC_NOTION_DATABASE_ID) {
+      merged.connections.notion.databaseId = process.env.NEXT_PUBLIC_NOTION_DATABASE_ID;
+    }
+
+    return merged;
   } catch {
     return DEFAULT_SETTINGS;
   }

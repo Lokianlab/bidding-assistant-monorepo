@@ -8,8 +8,10 @@ import { PCCSearchPanel } from "@/components/pcc/PCCSearchPanel";
 import { CompetitorAnalysis } from "@/components/pcc/CompetitorAnalysis";
 import { MarketTrend } from "@/components/pcc/MarketTrend";
 import { CommitteeNetwork } from "@/components/pcc/CommitteeNetwork";
+import { ExplorerPage } from "@/components/explore/ExplorerPage";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { PCCSearchMode } from "@/lib/pcc/types";
+import type { PCCSearchMode, PCCRecord } from "@/lib/pcc/types";
+import { PCCTenderSheet } from "@/components/pcc/PCCTenderSheet";
 
 export default function IntelligencePage() {
   const searchParams = useSearchParams();
@@ -17,12 +19,16 @@ export default function IntelligencePage() {
   const initialSearch = searchParams.get("search") ?? undefined;
   const initialMode = (searchParams.get("mode") as PCCSearchMode) || undefined;
   const caseId = searchParams.get("caseId") || "";
+  const initialTab = searchParams.get("tab") ?? "search";
 
-  const [tab, setTab] = useState("search");
+  const [tab, setTab] = useState(initialTab);
   const [targetCompany, setTargetCompany] = useState<string | null>(null);
   const [targetAgency, setTargetAgency] = useState<{ unitId: string; unitName: string } | null>(null);
+  const [lastTenderRecord, setLastTenderRecord] = useState<PCCRecord | null>(null);
+  const [showLastTender, setShowLastTender] = useState(false);
 
-  const handleViewCompany = useCallback((companyName: string) => {
+  const handleViewCompany = useCallback((companyName: string, fromRecord?: PCCRecord) => {
+    if (fromRecord) setLastTenderRecord(fromRecord);
     setTargetCompany(companyName);
     setTab("analysis");
   }, []);
@@ -66,6 +72,7 @@ export default function IntelligencePage() {
           <TabsTrigger value="analysis">競爭分析</TabsTrigger>
           <TabsTrigger value="market">市場趨勢</TabsTrigger>
           <TabsTrigger value="committee">評委分析</TabsTrigger>
+          <TabsTrigger value="explore">鑽探模式</TabsTrigger>
         </TabsList>
 
         <TabsContent value="search" className="mt-4">
@@ -78,11 +85,36 @@ export default function IntelligencePage() {
         </TabsContent>
 
         <TabsContent value="analysis" className="mt-4">
+          {lastTenderRecord && (
+            <div className="mb-3 flex items-center gap-2 text-sm bg-muted rounded-lg px-3 py-2">
+              <button
+                className="text-primary hover:underline flex-1 text-left truncate"
+                onClick={() => setShowLastTender(true)}
+              >
+                ← 回到標案：{lastTenderRecord.brief.title}
+              </button>
+              <button
+                className="text-muted-foreground hover:text-foreground text-xs"
+                onClick={() => setLastTenderRecord(null)}
+              >
+                ✕
+              </button>
+            </div>
+          )}
           <CompetitorAnalysis
             targetCompany={targetCompany}
             onTargetConsumed={() => setTargetCompany(null)}
             onViewCommittee={handleViewCommittee}
           />
+          {lastTenderRecord && (
+            <PCCTenderSheet
+              record={lastTenderRecord}
+              open={showLastTender}
+              onOpenChange={(open) => { if (!open) setShowLastTender(false); }}
+              onViewCompany={handleViewCompany}
+              onViewCommittee={handleViewCommittee}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value="market" className="mt-4">
@@ -94,6 +126,10 @@ export default function IntelligencePage() {
             targetAgency={targetAgency}
             onTargetConsumed={() => setTargetAgency(null)}
           />
+        </TabsContent>
+
+        <TabsContent value="explore" className="mt-4">
+          <ExplorerPage />
         </TabsContent>
       </Tabs>
     </div>

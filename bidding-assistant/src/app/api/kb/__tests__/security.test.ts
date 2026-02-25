@@ -11,6 +11,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NextRequest } from 'next/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Mock 認證中間件
 vi.mock('@/lib/api/kb-middleware', () => ({
@@ -234,7 +235,7 @@ describe('KB API 安全防護驗證', () => {
             },
           }),
         }),
-      });
+      } as unknown as SupabaseClient);
 
       // 應返回通用錯誤訊息，不暴露詳細 SQL 資訊
       expect(true).toBe(true); // 此測試為概念驗證

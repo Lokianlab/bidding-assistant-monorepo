@@ -36,6 +36,7 @@ import { useKnowledgeBase } from "@/lib/knowledge-base/useKnowledgeBase";
 import { useSettings } from "@/lib/context/settings-context";
 import { readCachedIntelligence } from "@/lib/strategy/intelligence-bridge";
 import type { SelfAnalysis, MarketTrend } from "@/lib/pcc/types";
+import { useMarketTrend } from "@/lib/pcc/useMarketTrend";
 import { FitScoreCard } from "@/components/strategy/FitScoreCard";
 import { NegotiationPanel } from "@/components/negotiation/NegotiationPanel";
 import type { CostBase } from "@/lib/negotiation/types";
@@ -123,15 +124,23 @@ export default function CaseWorkPage() {
     return { daysLeft, dateStr: fmtDateTime(p[F.截標]) };
   }, [p]);
 
-  // 情報（被動讀快取）
+  // 市場趨勢（可一鍵在頁面內直接執行）
+  const marketTrendHook = useMarketTrend();
+
+  // 情報（被動讀快取，或由 marketTrendHook.data 補充）
   const intelligence = useMemo(() => {
     if (!kbHydrated || !caseName)
       return { selfAnalysis: null, marketTrend: null, tenderSummary: null };
-    return readCachedIntelligence(
+    const cached = readCachedIntelligence(
       settings.company?.brand || "",
       caseName,
     );
-  }, [kbHydrated, caseName, settings.company?.brand]);
+    return {
+      ...cached,
+      // 優先用剛跑完的資料，其次用快取
+      marketTrend: marketTrendHook.data ?? cached.marketTrend,
+    };
+  }, [kbHydrated, caseName, settings.company?.brand, marketTrendHook.data]);
 
   // 戰略評分
   const { fitScore, kbMatch } = useFitScore(
@@ -391,7 +400,13 @@ export default function CaseWorkPage() {
           <CardContent className="space-y-3">
             <IntelSelfAnalysis data={intelligence.selfAnalysis} />
             <Separator />
-            <IntelMarketTrend data={intelligence.marketTrend} />
+            <IntelMarketTrend
+              data={intelligence.marketTrend}
+              caseName={caseName}
+              loading={marketTrendHook.loading}
+              progress={marketTrendHook.progress}
+              onRun={() => marketTrendHook.run(caseName)}
+            />
             <Separator />
             <Button
               variant="outline"
@@ -461,20 +476,6 @@ export default function CaseWorkPage() {
                 品質檢查
               </Button>
             )}
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => {
-                const params = new URLSearchParams();
-                if (caseName) params.set("caseName", caseName);
-                if (agency) params.set("agency", agency);
-                if (budget) params.set("budget", String(budget));
-                if (pageId) params.set("caseId", pageId);
-                router.push(`/strategy?${params.toString()}`);
-              }}
-            >
-              戰略分析
-            </Button>
           </div>
         </CardContent>
       </Card>
@@ -506,7 +507,7 @@ function IntelSelfAnalysis({ data }: { data: SelfAnalysis | null }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-medium">競爭分析</span>
+        <span className="text-xs font-medium">競爭分析 <span className="text-[9px] text-muted-foreground font-normal">（公司整體，非此案專屬）</span></span>
         <Badge
           variant="outline"
           className="text-green-600 border-green-300 text-[10px]"
@@ -516,7 +517,7 @@ function IntelSelfAnalysis({ data }: { data: SelfAnalysis | null }) {
       </div>
       <div className="space-y-1">
         <p className="text-[10px] text-muted-foreground">
-          投標勝率：
+          整體投標勝率：
           <span className="font-medium text-foreground">
             {Math.round(data.winRate * 100)}%
           </span>
@@ -524,7 +525,7 @@ function IntelSelfAnalysis({ data }: { data: SelfAnalysis | null }) {
         </p>
         {topCompetitors.length > 0 && (
           <p className="text-[10px] text-muted-foreground">
-            主要對手：
+            常遇對手：
             {topCompetitors
               .map((c) => `${c.name}(${c.encounters}次)`)
               .join("、")}
@@ -535,19 +536,45 @@ function IntelSelfAnalysis({ data }: { data: SelfAnalysis | null }) {
   );
 }
 
-function IntelMarketTrend({ data }: { data: MarketTrend | null }) {
+function IntelMarketTrend({
+  data,
+  caseName,
+  loading,
+  progress,
+  onRun,
+}: {
+  data: MarketTrend | null;
+  caseName: string;
+  loading: boolean;
+  progress: { loaded: number; total: number } | null;
+  onRun: () => void;
+}) {
   if (!data) {
     return (
       <div>
         <div className="flex items-center justify-between mb-1">
           <span className="text-xs font-medium">市場趨勢</span>
           <Badge variant="outline" className="text-gray-400 text-[10px]">
-            尚無
+            {loading ? "分析中..." : "尚無"}
           </Badge>
         </div>
-        <p className="text-[10px] text-muted-foreground">
-          尚未搜尋市場趨勢，前往情報搜尋取得資料
-        </p>
+        {loading ? (
+          <p className="text-[10px] text-muted-foreground animate-pulse">
+            {progress
+              ? `正在取得資料 ${progress.loaded}/${progress.total} 頁...`
+              : "搜尋中..."}
+          </p>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-[10px] h-6 mt-1"
+            onClick={onRun}
+            disabled={!caseName}
+          >
+            一鍵分析此案市場趨勢
+          </Button>
+        )}
       </div>
     );
   }

@@ -21,6 +21,8 @@ import { useAgencyIntel } from "@/lib/pcc/useAgencyIntel";
 import { formatPCCDate } from "@/lib/pcc/helpers";
 import { useSettings } from "@/lib/context/settings-context";
 import type { SelfAnalysis, CompetitorStats, AgencyStats } from "@/lib/pcc/types";
+import { pccApiFetch } from "@/lib/pcc/api";
+import type { PCCSearchResponse } from "@/lib/pcc/types";
 
 const FALLBACK_COMPANY = "大員洛川";
 
@@ -36,6 +38,8 @@ export function CompetitorAnalysis({ targetCompany, onTargetConsumed, onViewComm
   const [companyName, setCompanyName] = useState<string>(defaultCompany);
   const { data, loading, progress, error, run } = useCompetitorAnalysis();
   const consumedRef = useRef<string | null>(null);
+  const [disambigOptions, setDisambigOptions] = useState<{ name: string; id: string }[]>([]);
+  const [disambigLoading, setDisambigLoading] = useState(false);
 
   // 外部跳轉：自動帶入公司名並觸發分析
   useEffect(() => {
@@ -47,8 +51,40 @@ export function CompetitorAnalysis({ targetCompany, onTargetConsumed, onViewComm
     }
   }, [targetCompany, run, onTargetConsumed]);
 
-  const handleRun = () => {
-    if (companyName.trim()) run(companyName.trim());
+  const handleRun = async () => {
+    if (!companyName.trim()) return;
+    setDisambigLoading(true);
+    setDisambigOptions([]);
+    try {
+      const data = await pccApiFetch<PCCSearchResponse>("searchByCompany", {
+        query: companyName.trim(),
+        page: 1,
+      });
+      const seen = new Map<string, { name: string; id: string }>();
+      for (const r of data.records ?? []) {
+        const c = r.brief.companies;
+        if (!c) continue;
+        for (let i = 0; i < (c.names ?? []).length; i++) {
+          const name = c.names[i];
+          const id = c.ids?.[i] ?? "";
+          if (name?.includes(companyName.trim()) && id && !seen.has(id)) {
+            seen.set(id, { name, id });
+          }
+        }
+      }
+      const options = Array.from(seen.values());
+      if (options.length > 1) {
+        setDisambigOptions(options);
+      } else if (options.length === 1) {
+        run(options[0].name);
+      } else {
+        run(companyName.trim());
+      }
+    } catch {
+      run(companyName.trim());
+    } finally {
+      setDisambigLoading(false);
+    }
   };
 
   return (
@@ -62,11 +98,13 @@ export function CompetitorAnalysis({ targetCompany, onTargetConsumed, onViewComm
           onKeyDown={(e) => e.key === "Enter" && handleRun()}
           className="flex-1"
         />
-        <Button onClick={handleRun} disabled={loading || !companyName.trim()}>
+        <Button onClick={handleRun} disabled={loading || disambigLoading || !companyName.trim()}>
           {loading
             ? progress
               ? `載入中 ${progress.loaded}/${progress.total}`
               : "分析中..."
+            : disambigLoading
+            ? "搜尋廠商..."
             : "開始分析"}
         </Button>
       </div>
@@ -74,6 +112,24 @@ export function CompetitorAnalysis({ targetCompany, onTargetConsumed, onViewComm
       {error && (
         <div className="bg-destructive/10 text-destructive rounded-lg p-3 text-sm">
           {error}
+        </div>
+      )}
+
+      {disambigOptions.length > 0 && (
+        <div className="border rounded-lg divide-y">
+          <div className="px-3 py-2 text-xs text-muted-foreground bg-muted">
+            找到多家相符廠商，請選擇要分析的：
+          </div>
+          {disambigOptions.map((o) => (
+            <button
+              key={o.id}
+              className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors flex items-center justify-between gap-2"
+              onClick={() => { setDisambigOptions([]); run(o.name); }}
+            >
+              <span className="truncate">{o.name}</span>
+              <span className="text-xs text-muted-foreground shrink-0">{o.id}</span>
+            </button>
+          ))}
         </div>
       )}
 
@@ -194,6 +250,8 @@ function YearlyTrendChart({ stats }: { stats: SelfAnalysis["yearlyStats"] }) {
 }
 
 function YearlyTable({ stats }: { stats: SelfAnalysis["yearlyStats"] }) {
+  const [expandedYear, setExpandedYear] = useState<number | null>(null);
+
   return (
     <Card>
       <CardHeader className="py-3">
@@ -212,16 +270,43 @@ function YearlyTable({ stats }: { stats: SelfAnalysis["yearlyStats"] }) {
             </thead>
             <tbody>
               {stats.map((s) => (
-                <tr key={s.year} className="border-b last:border-0">
-                  <td className="py-2 pr-4 font-medium">{s.year}</td>
-                  <td className="py-2 pr-4">{s.total}</td>
-                  <td className="py-2 pr-4">{s.wins}</td>
-                  <td className="py-2">
-                    <Badge variant={s.total > 0 && s.wins / s.total >= 0.5 ? "default" : "secondary"}>
-                      {s.total > 0 ? `${((s.wins / s.total) * 100).toFixed(0)}%` : "—"}
-                    </Badge>
-                  </td>
-                </tr>
+                <>
+                  <tr
+                    key={s.year}
+                    className="border-b cursor-pointer hover:bg-accent/50 transition-colors"
+                    onClick={() => setExpandedYear(expandedYear === s.year ? null : s.year)}
+                  >
+                    <td className="py-2 pr-4 font-medium">
+                      <span className="text-xs text-muted-foreground mr-1">{expandedYear === s.year ? "▼" : "▶"}</span>
+                      {s.year}
+                    </td>
+                    <td className="py-2 pr-4">{s.total}</td>
+                    <td className="py-2 pr-4">{s.wins}</td>
+                    <td className="py-2">
+                      <Badge variant={s.total > 0 && s.wins / s.total >= 0.5 ? "default" : "secondary"}>
+                        {s.total > 0 ? `${((s.wins / s.total) * 100).toFixed(0)}%` : "—"}
+                      </Badge>
+                    </td>
+                  </tr>
+                  {expandedYear === s.year && (
+                    <tr key={`${s.year}-cases`}>
+                      <td colSpan={4} className="bg-muted/30 px-4 py-3">
+                        <div className="space-y-1 text-xs">
+                          {s.cases.map((c, i) => (
+                            <div key={`${c.date}-${c.jobNumber}-${i}`} className="flex items-center gap-2">
+                              <Badge variant={c.won ? "default" : "destructive"} className="text-xs shrink-0">
+                                {c.won ? "得標" : "未得標"}
+                              </Badge>
+                              <span className="truncate flex-1" title={c.title}>{c.title}</span>
+                              <span className="text-muted-foreground shrink-0">{c.unitName.length > 8 ? c.unitName.slice(0, 8) + "…" : c.unitName}</span>
+                              <span className="text-muted-foreground shrink-0">{formatPCCDate(c.date)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))}
             </tbody>
           </table>
@@ -235,6 +320,7 @@ function YearlyTable({ stats }: { stats: SelfAnalysis["yearlyStats"] }) {
 
 function CompetitorTable({ competitors }: { competitors: CompetitorStats[] }) {
   const [showAll, setShowAll] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const display = showAll ? competitors : competitors.slice(0, 10);
 
   return (
@@ -256,35 +342,62 @@ function CompetitorTable({ competitors }: { competitors: CompetitorStats[] }) {
             </thead>
             <tbody>
               {display.map((c) => (
-                <tr key={c.id} className="border-b last:border-0">
-                  <td className="py-2 pr-4">
-                    <div className="max-w-[200px] truncate" title={c.name}>
-                      {c.name.replace(/\s*\(.*\)\s*$/, "")}
-                    </div>
-                    <div className="text-xs text-muted-foreground">{c.id}</div>
-                  </td>
-                  <td className="py-2 pr-4 font-medium">{c.encounters}</td>
-                  <td className="py-2 pr-4">
-                    <Badge variant="destructive" className="text-xs">{c.theirWins}</Badge>
-                  </td>
-                  <td className="py-2 pr-4">
-                    <Badge variant="default" className="text-xs">{c.myWins}</Badge>
-                  </td>
-                  <td className="py-2">
-                    <div className="flex flex-wrap gap-1 max-w-[200px]">
-                      {c.agencies.slice(0, 3).map((a) => (
-                        <Badge key={a} variant="outline" className="text-xs">
-                          {a.length > 8 ? a.slice(0, 8) + "…" : a}
-                        </Badge>
-                      ))}
-                      {c.agencies.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{c.agencies.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-                  </td>
-                </tr>
+                <>
+                  <tr
+                    key={c.id}
+                    className="border-b cursor-pointer hover:bg-accent/50 transition-colors"
+                    onClick={() => setExpandedId(expandedId === c.id ? null : c.id)}
+                  >
+                    <td className="py-2 pr-4">
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-muted-foreground">{expandedId === c.id ? "▼" : "▶"}</span>
+                        <div>
+                          <div className="max-w-[180px] truncate" title={c.name}>
+                            {c.name.replace(/\s*\(.*\)\s*$/, "")}
+                          </div>
+                          <div className="text-xs text-muted-foreground">{c.id}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-2 pr-4 font-medium">{c.encounters}</td>
+                    <td className="py-2 pr-4">
+                      <Badge variant="destructive" className="text-xs">{c.theirWins}</Badge>
+                    </td>
+                    <td className="py-2 pr-4">
+                      <Badge variant="default" className="text-xs">{c.myWins}</Badge>
+                    </td>
+                    <td className="py-2">
+                      <div className="flex flex-wrap gap-1 max-w-[200px]">
+                        {c.agencies.slice(0, 3).map((a) => (
+                          <Badge key={a} variant="outline" className="text-xs">
+                            {a.length > 8 ? a.slice(0, 8) + "…" : a}
+                          </Badge>
+                        ))}
+                        {c.agencies.length > 3 && (
+                          <Badge variant="outline" className="text-xs">+{c.agencies.length - 3}</Badge>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                  {expandedId === c.id && (
+                    <tr key={`${c.id}-cases`}>
+                      <td colSpan={5} className="bg-muted/30 px-4 py-3">
+                        <div className="space-y-1 text-xs">
+                          {c.sharedCases.map((sc, i) => (
+                            <div key={`${sc.date}-${sc.jobNumber}-${i}`} className="flex items-center gap-2">
+                              <Badge variant={sc.won ? "default" : "destructive"} className="text-xs shrink-0">
+                                {sc.won ? "我勝" : "我敗"}
+                              </Badge>
+                              <span className="truncate flex-1" title={sc.title}>{sc.title}</span>
+                              <span className="text-muted-foreground shrink-0">{sc.unitName.length > 8 ? sc.unitName.slice(0, 8) + "…" : sc.unitName}</span>
+                              <span className="text-muted-foreground shrink-0">{formatPCCDate(sc.date)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))}
             </tbody>
           </table>

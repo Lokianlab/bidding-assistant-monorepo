@@ -28,7 +28,7 @@ function parseRolesFromKeys(keys: string[]): CompanyRole[] {
 /** 解析搜尋結果中的公司角色 */
 export function parseCompanyRoles(record: PCCRecord): CompanyRoleInfo[] {
   const companies = record.brief.companies;
-  if (!companies) return [];
+  if (!companies?.names) return [];
 
   const result: CompanyRoleInfo[] = [];
   for (const name of companies.names) {
@@ -37,7 +37,7 @@ export function parseCompanyRoles(record: PCCRecord): CompanyRoleInfo[] {
 
     // Find matching ID
     let matchedId: string | undefined;
-    for (const [id, idKeys] of Object.entries(companies.id_key)) {
+    for (const [id, idKeys] of Object.entries(companies.id_key ?? {})) {
       // Check if any key matches a key associated with this company name
       if (idKeys.some((k) => keys.some((nk) => nk.includes(k.split(":")[1] ?? "")))) {
         matchedId = id;
@@ -89,7 +89,7 @@ export function findDetailValue(
   detail: Record<string, TenderDetailValue | unknown>,
   suffix: string,
 ): string | null {
-  for (const [key, val] of Object.entries(detail)) {
+  for (const [key, val] of Object.entries(detail ?? {})) {
     if (key.endsWith(suffix) && typeof val === "string") {
       return val;
     }
@@ -99,7 +99,7 @@ export function findDetailValue(
 
 /** 解析標案詳情為結構化摘要 */
 export function parseTenderSummary(tender: PCCTenderDetail): TenderSummary {
-  const d = tender.detail;
+  const d = tender.detail ?? {};
   return {
     title: findDetailValue(d, ":標案名稱") ?? findDetailValue(d, ":案名") ?? "",
     agency: findDetailValue(d, ":機關名稱") ?? "",

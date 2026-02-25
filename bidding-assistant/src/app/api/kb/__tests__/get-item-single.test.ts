@@ -16,24 +16,26 @@ process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key';
 vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(() => {
     return {
-      from: vi.fn((tableName: string) => {
-        return {
-          select: vi.fn(function() { return this; }),
-          eq: vi.fn(function() { return this; }),
-          single: vi.fn(async function() {
-            // 返回模擬的單筆查詢結果
-            return {
-              data: {
-                id: 'uuid-1',
-                category: '00A',
-                entry_id: 'M-001',
-                data: { id: 'M-001', name: '黃偉誠', title: '計畫主持人' },
-                status: 'active',
-              },
-              error: null,
-            };
-          }),
+      from: vi.fn((_tableName: string) => {
+        const builder: Record<string, unknown> & {
+          select: ReturnType<typeof vi.fn>;
+          eq: ReturnType<typeof vi.fn>;
+          single: ReturnType<typeof vi.fn>;
+        } = {
+          select: vi.fn(() => builder),
+          eq: vi.fn(() => builder),
+          single: vi.fn(async () => ({
+            data: {
+              id: 'uuid-1',
+              category: '00A',
+              entry_id: 'M-001',
+              data: { id: 'M-001', name: '黃偉誠', title: '計畫主持人' },
+              status: 'active',
+            },
+            error: null,
+          })),
         };
+        return builder;
       }),
     };
   }),
@@ -74,7 +76,7 @@ describe('GET /api/kb/items/:id — 單筆查詢測試 (RED)', () => {
 
     // 這會失敗，因為還沒實裝 /api/kb/items/[id]/route.ts
     try {
-      const response = await GET_SINGLE(request, { params: { id: 'uuid-1' } });
+      const response = await GET_SINGLE(request, { params: Promise.resolve({ id: 'uuid-1' }) });
       const data = await response.json();
 
       // 驗證回應結構
@@ -97,7 +99,7 @@ describe('GET /api/kb/items/:id — 單筆查詢測試 (RED)', () => {
     const request = createMockRequest('http://localhost:3000/api/kb/items/nonexistent-id');
 
     try {
-      const response = await GET_SINGLE(request, { params: { id: 'nonexistent-id' } });
+      const response = await GET_SINGLE(request, { params: Promise.resolve({ id: 'nonexistent-id' }) });
       expect([200, 404]).toContain(response.status);
     } catch (error) {
       // 路由不存在時會拋出 error
@@ -112,7 +114,7 @@ describe('GET /api/kb/items/:id — 單筆查詢測試 (RED)', () => {
     });
 
     try {
-      const response = await GET_SINGLE(request, { params: { id: 'uuid-1' } });
+      const response = await GET_SINGLE(request, { params: Promise.resolve({ id: 'uuid-1' }) });
       expect(response.status).toBe(401);
     } catch (error) {
       throw error;
@@ -124,7 +126,7 @@ describe('GET /api/kb/items/:id — 單筆查詢測試 (RED)', () => {
     const request = createMockRequest('http://localhost:3000/api/kb/items/uuid-1');
 
     try {
-      const response = await GET_SINGLE(request, { params: { id: 'uuid-1' } });
+      const response = await GET_SINGLE(request, { params: Promise.resolve({ id: 'uuid-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -140,7 +142,7 @@ describe('GET /api/kb/items/:id — 單筆查詢測試 (RED)', () => {
     const request = createMockRequest('http://localhost:3000/api/kb/items/uuid-2');
 
     try {
-      const response = await GET_SINGLE(request, { params: { id: 'uuid-2' } });
+      const response = await GET_SINGLE(request, { params: Promise.resolve({ id: 'uuid-2' }) });
       const data = await response.json();
 
       expect([200, 404]).toContain(response.status);
