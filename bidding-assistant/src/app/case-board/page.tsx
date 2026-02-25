@@ -17,7 +17,7 @@ import { useSettings } from "@/lib/context/settings-context";
 import { FIELDS_DASHBOARD } from "@/lib/constants/notion-fields";
 import type { NotionPage } from "@/lib/dashboard/types";
 import { F, BOARD_COLUMNS_ORDER } from "@/lib/dashboard/types";
-import { filterPages, loadCache, saveCache } from "@/lib/dashboard/helpers";
+import { loadCache, saveCache } from "@/lib/dashboard/helpers";
 import { applyBoardFilters } from "@/lib/case-board/helpers";
 import type { BoardViewMode, BoardFilters } from "@/lib/case-board/types";
 import { buildNotionFilter, DEFAULT_CASE_BOARD_FILTER } from "@/lib/settings/case-board-filter";
@@ -116,7 +116,7 @@ export default function CaseBoardPage() {
       if (!isRefresh) {
         const cached = loadCache();
         if (cached && cached.pages.length > 0) {
-          setPages(filterPages(cached.pages));
+          setPages(cached.pages);
           setConnected(true);
           setLoading(false);
           if (cached.schema?.[F.進程]?.options) {
@@ -154,8 +154,7 @@ export default function CaseBoardPage() {
         }
 
         if (result.pages?.length) {
-          const filtered = filterPages(result.pages);
-          setPages(filtered);
+          setPages(result.pages);
           setConnected(true);
           if (result.schema) saveCache(result.schema, result.pages);
           logger.info(
