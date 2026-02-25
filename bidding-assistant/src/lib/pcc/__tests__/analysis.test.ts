@@ -184,8 +184,8 @@ describe("analyzeSelf", () => {
     const result = analyzeSelf(records, "大員洛川");
     const y2025 = result.yearlyStats.find((y) => y.year === 2025);
     const y2026 = result.yearlyStats.find((y) => y.year === 2026);
-    expect(y2025).toEqual({ year: 2025, total: 2, wins: 1 });
-    expect(y2026).toEqual({ year: 2026, total: 1, wins: 1 });
+    expect(y2025).toMatchObject({ year: 2025, total: 2, wins: 1 });
+    expect(y2026).toMatchObject({ year: 2026, total: 1, wins: 1 });
   });
 
   it("沒有紀錄時不崩潰", () => {

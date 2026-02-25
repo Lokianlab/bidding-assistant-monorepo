@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { createElement } from "react";
 
 // ── mock useCommitteeAnalysis ─────────────────────────────
@@ -15,6 +15,16 @@ let mockState = {
 
 vi.mock("@/lib/pcc/useCommitteeAnalysis", () => ({
   useCommitteeAnalysis: () => mockState,
+}));
+
+// ── mock pccApiFetch ───────────────────────────────────────
+
+vi.mock("@/lib/pcc/api", () => ({
+  pccApiFetch: vi.fn().mockResolvedValue({
+    records: [
+      { unit_id: "A10001", unit_name: "臺北市教育局" },
+    ],
+  }),
 }));
 
 // ── mock formatPCCDate ─────────────────────────────────────
@@ -44,57 +54,59 @@ async function getCommitteeNetwork() {
 // ── 基本渲染 ───────────────────────────────────────────────
 
 describe("CommitteeNetwork — 基本渲染", () => {
-  it("顯示兩個輸入框", async () => {
+  it("顯示一個搜尋輸入框", async () => {
     const CommitteeNetwork = await getCommitteeNetwork();
     const { container } = render(createElement(CommitteeNetwork, {}));
-    expect(container.querySelectorAll("input").length).toBe(2);
+    expect(container.querySelectorAll("input").length).toBe(1);
   });
 
-  it("顯示「分析評委」按鈕（初始 disabled）", async () => {
+  it("顯示「搜尋機關」按鈕（初始 disabled）", async () => {
     const CommitteeNetwork = await getCommitteeNetwork();
     render(createElement(CommitteeNetwork, {}));
-    const btn = screen.getByText("分析評委") as HTMLButtonElement;
+    const btn = screen.getByText("搜尋機關") as HTMLButtonElement;
     expect(btn).toBeTruthy();
     expect(btn.disabled).toBe(true);
   });
 
-  it("輸入機關代碼後按鈕可用", async () => {
+  it("輸入關鍵字後搜尋按鈕可用", async () => {
     const CommitteeNetwork = await getCommitteeNetwork();
     const { container } = render(createElement(CommitteeNetwork, {}));
-    const inputs = container.querySelectorAll("input");
-    fireEvent.change(inputs[0], { target: { value: "A10001" } });
-    const btn = screen.getByText("分析評委") as HTMLButtonElement;
+    const input = container.querySelector("input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "臺北市教育局" } });
+    const btn = screen.getByText("搜尋機關") as HTMLButtonElement;
     expect(btn.disabled).toBe(false);
   });
 
-  it("點擊按鈕呼叫 run(unitId, unitName)", async () => {
+  it("點擊搜尋後顯示機關選項並可選取觸發 run", async () => {
     const CommitteeNetwork = await getCommitteeNetwork();
     const { container } = render(createElement(CommitteeNetwork, {}));
-    const inputs = container.querySelectorAll("input");
-    fireEvent.change(inputs[0], { target: { value: "A10001" } });
-    fireEvent.change(inputs[1], { target: { value: "臺北市教育局" } });
-    fireEvent.click(screen.getByText("分析評委"));
-    expect(mockRun).toHaveBeenCalledWith("A10001", "臺北市教育局");
+    const input = container.querySelector("input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "教育局" } });
+    fireEvent.click(screen.getByText("搜尋機關"));
+    await waitFor(() => expect(screen.getByText("臺北市教育局")).toBeTruthy());
+    fireEvent.click(screen.getByText("臺北市教育局"));
+    await waitFor(() => expect(mockRun).toHaveBeenCalledWith("A10001", "臺北市教育局"));
   });
 
-  it("Enter 鍵呼叫 run", async () => {
+  it("Enter 鍵觸發搜尋並顯示結果", async () => {
     const CommitteeNetwork = await getCommitteeNetwork();
     const { container } = render(createElement(CommitteeNetwork, {}));
-    const inputs = container.querySelectorAll("input");
-    fireEvent.change(inputs[0], { target: { value: "A10001" } });
-    fireEvent.keyDown(inputs[0], { key: "Enter" });
-    expect(mockRun).toHaveBeenCalledWith("A10001", "A10001");
+    const input = container.querySelector("input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "教育局" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    await waitFor(() => expect(screen.getByText("臺北市教育局")).toBeTruthy());
   });
 });
 
 // ── 載入狀態 ───────────────────────────────────────────────
 
 describe("CommitteeNetwork — 載入狀態", () => {
-  it("loading=true 顯示「分析中...」", async () => {
+  it("loading=true 時輸入框 disabled", async () => {
     mockState = { ...mockState, loading: true };
     const CommitteeNetwork = await getCommitteeNetwork();
-    render(createElement(CommitteeNetwork, {}));
-    expect(screen.getByText("分析中...")).toBeTruthy();
+    const { container } = render(createElement(CommitteeNetwork, {}));
+    const input = container.querySelector("input") as HTMLInputElement;
+    expect(input.disabled).toBe(true);
   });
 
   it("loading=true 且有 progress 顯示進度條", async () => {

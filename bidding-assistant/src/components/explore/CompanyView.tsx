@@ -155,7 +155,7 @@ export function CompanyView({ payload, onNavigate }: CompanyViewProps) {
           <p className="text-xs text-muted-foreground">
             共 {results.total_records.toLocaleString()} 筆
           </p>
-          {results.records.map((record) => {
+          {(results.records ?? []).map((record) => {
             const companies = parseCompanyRoles(record);
             const myRoles = companies.find((c) => c.name.includes(payload.name));
             return (

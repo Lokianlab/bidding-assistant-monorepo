@@ -9,6 +9,8 @@ import { Progress } from "@/components/ui/progress";
 import { useCommitteeAnalysis } from "@/lib/pcc/useCommitteeAnalysis";
 import { formatPCCDate } from "@/lib/pcc/helpers";
 import type { CommitteeMemberProfile } from "@/lib/pcc/committee-analysis";
+import { pccApiFetch } from "@/lib/pcc/api";
+import type { PCCSearchResponse } from "@/lib/pcc/types";
 
 interface CommitteeNetworkProps {
   /** 從外部帶入的機關（自動觸發分析） */
@@ -22,42 +24,98 @@ export function CommitteeNetwork({ targetAgency, onTargetConsumed }: CommitteeNe
   const { data, loading, progress, error, run } = useCommitteeAnalysis();
   const consumedRef = useRef<string | null>(null);
 
+  const [agencyQuery, setAgencyQuery] = useState("");
+  const [agencyOptions, setAgencyOptions] = useState<{ unitId: string; unitName: string }[]>([]);
+  const [agencySearching, setAgencySearching] = useState(false);
+  const [selectedAgency, setSelectedAgency] = useState<{ unitId: string; unitName: string } | null>(null);
+
   // 外部跳轉：自動帶入機關並觸發分析
   useEffect(() => {
     if (targetAgency && targetAgency.unitId !== consumedRef.current) {
       consumedRef.current = targetAgency.unitId;
       setUnitId(targetAgency.unitId);
       setUnitName(targetAgency.unitName);
+      setSelectedAgency(targetAgency);
       run(targetAgency.unitId, targetAgency.unitName);
       onTargetConsumed?.();
     }
   }, [targetAgency, run, onTargetConsumed]);
 
-  const handleRun = () => {
-    if (unitId.trim()) run(unitId.trim(), unitName.trim() || unitId.trim());
+  const searchAgencies = async () => {
+    if (!agencyQuery.trim()) return;
+    setAgencySearching(true);
+    setAgencyOptions([]);
+    setSelectedAgency(null);
+    try {
+      const data = await pccApiFetch<PCCSearchResponse>("searchByTitle", {
+        query: agencyQuery.trim(),
+        page: 1,
+      });
+      const seen = new Set<string>();
+      const agencies: { unitId: string; unitName: string }[] = [];
+      for (const r of data.records ?? []) {
+        if (!seen.has(r.unit_id)) {
+          seen.add(r.unit_id);
+          agencies.push({ unitId: r.unit_id, unitName: r.unit_name });
+        }
+      }
+      setAgencyOptions(agencies);
+    } catch {
+      // silently ignore
+    } finally {
+      setAgencySearching(false);
+    }
+  };
+
+  const handleSelectAgency = (agency: { unitId: string; unitName: string }) => {
+    setSelectedAgency(agency);
+    setUnitId(agency.unitId);
+    setUnitName(agency.unitName);
+    run(agency.unitId, agency.unitName);
+    setAgencyOptions([]);
   };
 
   return (
     <div className="space-y-4">
-      {/* 輸入區 */}
-      <div className="flex gap-2">
-        <Input
-          placeholder="機關代碼（unit_id）"
-          value={unitId}
-          onChange={(e) => setUnitId(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleRun()}
-          className="w-40"
-        />
-        <Input
-          placeholder="機關名稱（顯示用）"
-          value={unitName}
-          onChange={(e) => setUnitName(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleRun()}
-          className="flex-1"
-        />
-        <Button onClick={handleRun} disabled={loading || !unitId.trim()}>
-          {loading ? "分析中..." : "分析評委"}
-        </Button>
+      {/* 機關搜尋 */}
+      <div className="space-y-3">
+        <div className="flex gap-2">
+          <Input
+            placeholder="輸入機關名稱關鍵字搜尋..."
+            value={agencyQuery}
+            onChange={(e) => setAgencyQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && searchAgencies()}
+            className="flex-1"
+            disabled={loading}
+          />
+          <Button onClick={searchAgencies} disabled={agencySearching || loading || !agencyQuery.trim()} variant="outline">
+            {agencySearching ? "搜尋中..." : "搜尋機關"}
+          </Button>
+        </div>
+
+        {/* 機關選單 */}
+        {agencyOptions.length > 0 && (
+          <div className="border rounded-lg divide-y max-h-48 overflow-y-auto">
+            {agencyOptions.map((a) => (
+              <button
+                key={a.unitId}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors flex items-center justify-between gap-2"
+                onClick={() => handleSelectAgency(a)}
+              >
+                <span className="truncate">{a.unitName}</span>
+                <span className="text-xs text-muted-foreground shrink-0">{a.unitId}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* 已選機關 */}
+        {selectedAgency && (
+          <div className="flex items-center gap-2 text-sm bg-muted rounded-lg px-3 py-2">
+            <span className="truncate flex-1">{selectedAgency.unitName}</span>
+            <span className="text-xs text-muted-foreground">{selectedAgency.unitId}</span>
+          </div>
+        )}
       </div>
 
       {/* 進度條 */}

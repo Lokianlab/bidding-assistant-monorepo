@@ -367,8 +367,8 @@ function AgencyIntelSection({
             我方在此機關的紀錄（{data.myHistory.filter((h) => h.won).length}/{data.myHistory.length} 得標）
           </p>
           <div className="space-y-1">
-            {data.myHistory.map((h) => (
-              <div key={`${h.date}-${h.title}`} className="flex items-center gap-2 text-xs">
+            {data.myHistory.map((h, i) => (
+              <div key={`${h.date}-${h.title}-${i}`} className="flex items-center gap-2 text-xs">
                 <Badge variant={h.won ? "default" : "destructive"} className="text-xs shrink-0">
                   {h.won ? "得標" : "未得標"}
                 </Badge>

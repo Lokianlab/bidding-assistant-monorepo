@@ -4,6 +4,7 @@ import type {
   CompetitorStats,
   AgencyStats,
   SelfAnalysis,
+  CaseRef,
 } from "./types";
 import { isWinner } from "./helpers";
 import { pccApiFetch, delay } from "./api";
@@ -81,7 +82,7 @@ export function analyzeSelf(records: PCCRecord[], companySearchName: string): Se
   // 機關統計
   const agencyMap = new Map<string, AgencyStats>();
   // 年度統計
-  const yearMap = new Map<number, { total: number; wins: number }>();
+  const yearMap = new Map<number, { total: number; wins: number; cases: CaseRef[] }>();
 
   for (const record of awardRecords) {
     const companies = record.brief.companies;
@@ -93,9 +94,17 @@ export function analyzeSelf(records: PCCRecord[], companySearchName: string): Se
 
     // 年度
     const year = Math.floor(record.date / 10000);
-    const yearStat = yearMap.get(year) ?? { total: 0, wins: 0 };
+    const yearStat = yearMap.get(year) ?? { total: 0, wins: 0, cases: [] };
     yearStat.total++;
     if (iWon) yearStat.wins++;
+    yearStat.cases.push({
+      title: record.brief.title,
+      date: record.date,
+      unitId: record.unit_id,
+      unitName: record.unit_name,
+      jobNumber: record.job_number,
+      won: iWon,
+    });
     yearMap.set(year, yearStat);
 
     // 機關
@@ -118,7 +127,7 @@ export function analyzeSelf(records: PCCRecord[], companySearchName: string): Se
     // 競爭對手：同案出現的其他公司
     for (let i = 0; i < companies.ids.length; i++) {
       const cId = companies.ids[i];
-      if (cId === myId) continue;
+      if (!cId || cId === myId) continue;
 
       const cName = companies.names[i] ?? cId;
       const existing = competitorMap.get(cId) ?? {
@@ -128,6 +137,7 @@ export function analyzeSelf(records: PCCRecord[], companySearchName: string): Se
         theirWins: 0,
         myWins: 0,
         agencies: [],
+        sharedCases: [],
       };
       existing.encounters++;
       if (iWon) existing.myWins++;
@@ -135,6 +145,14 @@ export function analyzeSelf(records: PCCRecord[], companySearchName: string): Se
       if (!existing.agencies.includes(record.unit_name)) {
         existing.agencies.push(record.unit_name);
       }
+      existing.sharedCases.push({
+        title: record.brief.title,
+        date: record.date,
+        unitId: record.unit_id,
+        unitName: record.unit_name,
+        jobNumber: record.job_number,
+        won: iWon,
+      });
       competitorMap.set(cId, existing);
     }
   }

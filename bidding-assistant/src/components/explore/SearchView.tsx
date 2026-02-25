@@ -158,9 +158,9 @@ function SearchResults({
       </div>
 
       <div className="space-y-2">
-        {results.records.map((record) => (
+        {results.records.map((record, index) => (
           <RecordCard
-            key={`${record.unit_id}-${record.job_number}`}
+            key={`${record.unit_id}-${record.job_number}-${index}`}
             record={record}
             mode={mode}
             companyQuery={query}
@@ -249,7 +249,7 @@ function RecordCard({
         {/* 公司角色（可點擊鑽進廠商） */}
         {isAward && companies.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {companies.map((c) => {
+            {companies.flatMap((c) => {
               const shortName = c.name.replace(/\s*\(.*\)\s*$/, "").trim();
               const isTarget = mode === "company" && c.name.includes(companyQuery);
               return c.roles.map((role) => (

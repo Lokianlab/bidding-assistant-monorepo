@@ -88,6 +88,16 @@ export type PCCAction =
 
 // ====== 競爭分析型別 ======
 
+/** 標案案件參照（用於統計鑽探） */
+export interface CaseRef {
+  title: string;
+  date: number;
+  unitId: string;
+  unitName: string;
+  jobNumber: string;
+  won: boolean;
+}
+
 /** 競爭對手統計 */
 export interface CompetitorStats {
   id: string;          // 統編
@@ -96,6 +106,7 @@ export interface CompetitorStats {
   theirWins: number;   // 對手得標次數
   myWins: number;      // 我方得標次數
   agencies: string[];  // 常碰的機關（去重）
+  sharedCases: CaseRef[];  // 共同撞案列表
 }
 
 /** 機關統計 */
@@ -117,7 +128,7 @@ export interface SelfAnalysis {
   winRate: number;
   competitors: CompetitorStats[];  // 按撞案次數排序
   agencies: AgencyStats[];         // 按案件數排序
-  yearlyStats: { year: number; total: number; wins: number }[];
+  yearlyStats: { year: number; total: number; wins: number; cases: CaseRef[] }[];
 }
 
 // ====== 市場趨勢型別 ======

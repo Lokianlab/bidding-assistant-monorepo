@@ -36,7 +36,7 @@ export function usePCCSearch(): UsePCCSearchReturn {
       const data = await pccApiFetch<PCCSearchResponse>(action, { query: query.trim(), page });
       // 去除 API 可能回傳的重複記錄
       const seen = new Set<string>();
-      data.records = data.records.filter((r) => {
+      data.records = (data.records ?? []).filter((r) => {
         const key = `${r.unit_id}-${r.job_number}`;
         if (seen.has(key)) return false;
         seen.add(key);

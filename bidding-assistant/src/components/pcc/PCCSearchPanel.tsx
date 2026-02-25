@@ -13,7 +13,7 @@ import type { PCCRecord, PCCSearchMode } from "@/lib/pcc/types";
 import { PCCTenderSheet } from "./PCCTenderSheet";
 
 interface PCCSearchPanelProps {
-  onViewCompany?: (name: string) => void;
+  onViewCompany?: (name: string, fromRecord?: PCCRecord) => void;
   onViewCommittee?: (unitId: string, unitName: string) => void;
   /** 初始搜尋關鍵字（從 URL 參數帶入時使用） */
   initialQuery?: string;
@@ -111,7 +111,11 @@ export function PCCSearchPanel({ onViewCompany, onViewCommittee, initialQuery, i
         record={selectedRecord}
         open={!!selectedRecord}
         onOpenChange={(open) => { if (!open) setSelectedRecord(null); }}
-        onViewCompany={onViewCompany ? (name) => { setSelectedRecord(null); onViewCompany(name); } : undefined}
+        onViewCompany={onViewCompany ? (name) => {
+          const rec = selectedRecord;
+          setSelectedRecord(null);
+          onViewCompany(name, rec ?? undefined);
+        } : undefined}
         onViewCommittee={onViewCommittee ? (unitId, unitName) => { setSelectedRecord(null); onViewCommittee(unitId, unitName); } : undefined}
       />
     </div>
@@ -152,9 +156,9 @@ function SearchResults({
 
       {/* 結果列表 */}
       <div className="space-y-2">
-        {results.records.map((record) => (
+        {results.records.map((record, index) => (
           <RecordCard
-            key={`${record.unit_id}-${record.job_number}`}
+            key={`${record.unit_id}-${record.job_number}-${index}`}
             record={record}
             mode={mode}
             companyQuery={query}

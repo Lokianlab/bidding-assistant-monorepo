@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { createElement } from "react";
 
 // ── recharts mock ─────────────────────────────────────────
@@ -46,6 +46,12 @@ vi.mock("@/lib/pcc/useCompetitorAnalysis", () => ({
 
 vi.mock("@/lib/pcc/useAgencyIntel", () => ({
   useAgencyIntel: () => ({ data: null, loading: false, error: null }),
+}));
+
+// ── mock pccApiFetch ───────────────────────────────────────
+
+vi.mock("@/lib/pcc/api", () => ({
+  pccApiFetch: vi.fn().mockResolvedValue({ records: [] }),
 }));
 
 // ── mock helpers ──────────────────────────────────────────
@@ -110,7 +116,7 @@ describe("CompetitorAnalysis — 基本渲染", () => {
     const input = container.querySelector("input") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "大員洛川" } });
     fireEvent.click(screen.getByText("開始分析"));
-    expect(mockRun).toHaveBeenCalledWith("大員洛川");
+    await waitFor(() => expect(mockRun).toHaveBeenCalledWith("大員洛川"));
   });
 
   it("Enter 鍵呼叫 run", async () => {
@@ -119,7 +125,7 @@ describe("CompetitorAnalysis — 基本渲染", () => {
     const input = container.querySelector("input") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "測試廠商" } });
     fireEvent.keyDown(input, { key: "Enter" });
-    expect(mockRun).toHaveBeenCalledWith("測試廠商");
+    await waitFor(() => expect(mockRun).toHaveBeenCalledWith("測試廠商"));
   });
 });
 
