@@ -12,8 +12,8 @@ import type { FieldMappingKey } from "../field-mapping";
 // ---------------------------------------------------------------------------
 
 describe("FIELD_KEYS", () => {
-  it("has 22 keys", () => {
-    expect(FIELD_KEYS).toHaveLength(22);
+  it("has 23 keys", () => {
+    expect(FIELD_KEYS).toHaveLength(23);
   });
 
   it("contains all expected keys", () => {

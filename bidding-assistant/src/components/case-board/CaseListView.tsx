@@ -81,6 +81,18 @@ export function CaseListView({ pages, onPageClick, onProgressChange }: CaseListV
                 >
                   <TableCell className="font-medium max-w-[200px]">
                     <span className="line-clamp-2 text-sm">{p[F.名稱] || "—"}</span>
+                    {Array.isArray(p[F.標籤]) && p[F.標籤].length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {(p[F.標籤] as { name: string }[]).map((tag) => (
+                          <span
+                            key={tag.name}
+                            className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full"
+                          >
+                            {tag.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell className="text-xs">{p[F.進程] ?? "—"}</TableCell>
                   <TableCell className="text-xs whitespace-nowrap">

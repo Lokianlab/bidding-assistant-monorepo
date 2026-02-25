@@ -8,7 +8,7 @@ export const FIELD_KEYS = [
   "企劃主筆", "投遞序位", "評審方式", "招標機關",
   "案號", "標案類型", "決標公告", "評選日期", "歸檔號",
   "押標金", "領標費", "檔案型態", "電子投標", "確定協作",
-  "唯一碼", "備標期限",
+  "唯一碼", "備標期限", "標籤",
 ] as const;
 
 export type FieldMappingKey = (typeof FIELD_KEYS)[number];
@@ -37,6 +37,7 @@ export const DEFAULT_FIELD_MAP: Record<FieldMappingKey, string> = {
   確定協作: "確定協作",
   唯一碼: "案件唯一碼",
   備標期限: "備標期限",
+  標籤: "標籤",
 };
 
 /** 每個 key 的中文說明（給設定頁面顯示用） */
@@ -63,6 +64,7 @@ export const FIELD_LABELS: Record<FieldMappingKey, string> = {
   確定協作: "確定協作",
   唯一碼: "案件唯一碼",
   備標期限: "備標期限",
+  標籤: "標籤",
 };
 
 /**

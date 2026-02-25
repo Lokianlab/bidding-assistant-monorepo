@@ -3,6 +3,8 @@ import {
   convertToROCDate,
   formatDriveFolderName,
   generateCaseUniqueId,
+  deriveBudgetScale,
+  deriveAutoTags,
 } from "../helpers";
 import type { DriveCreateFolderInput } from "../types";
 
@@ -213,5 +215,59 @@ describe("generateCaseUniqueId", () => {
     it("回傳值應為字串型別", () => {
       expect(typeof generateCaseUniqueId()).toBe("string");
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// deriveBudgetScale
+// ---------------------------------------------------------------------------
+describe("deriveBudgetScale", () => {
+  it("null 回傳「規模未定」", () => {
+    expect(deriveBudgetScale(null)).toBe("規模未定");
+  });
+  it("499999 → 小案", () => {
+    expect(deriveBudgetScale(499_999)).toBe("小案");
+  });
+  it("500000 → 中案（下邊界）", () => {
+    expect(deriveBudgetScale(500_000)).toBe("中案");
+  });
+  it("1999999 → 中案（上邊界）", () => {
+    expect(deriveBudgetScale(1_999_999)).toBe("中案");
+  });
+  it("2000000 → 大案（下邊界）", () => {
+    expect(deriveBudgetScale(2_000_000)).toBe("大案");
+  });
+  it("4999999 → 大案（上邊界）", () => {
+    expect(deriveBudgetScale(4_999_999)).toBe("大案");
+  });
+  it("5000000 → 旗艦案（下邊界）", () => {
+    expect(deriveBudgetScale(5_000_000)).toBe("旗艦案");
+  });
+  it("10000000 → 旗艦案", () => {
+    expect(deriveBudgetScale(10_000_000)).toBe("旗艦案");
+  });
+  it("0 → 小案", () => {
+    expect(deriveBudgetScale(0)).toBe("小案");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// deriveAutoTags
+// ---------------------------------------------------------------------------
+describe("deriveAutoTags", () => {
+  it("回傳兩個標籤", () => {
+    expect(deriveAutoTags("教育訓練計畫", 1_000_000)).toHaveLength(2);
+  });
+  it("第一個標籤為分類", () => {
+    expect(deriveAutoTags("展覽策劃案", 500_000)[0]).toBe("展覽策展");
+  });
+  it("第二個標籤為規模", () => {
+    expect(deriveAutoTags("展覽策劃案", 500_000)[1]).toBe("中案");
+  });
+  it("無分類關鍵字 → 其他", () => {
+    expect(deriveAutoTags("某某案件", 100_000)[0]).toBe("其他");
+  });
+  it("null 預算 → 規模未定", () => {
+    expect(deriveAutoTags("教育訓練", null)[1]).toBe("規模未定");
   });
 });

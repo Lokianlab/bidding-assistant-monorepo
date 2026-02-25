@@ -1,6 +1,7 @@
 /** M01 案件建立模組 — 純函式工具 */
 
 import type { DriveCreateFolderInput } from './types';
+import { deriveCategory } from '@/lib/intelligence/helpers';
 
 /**
  * 將西元 ISO 日期轉為民國日期格式
@@ -49,4 +50,31 @@ export function generateCaseUniqueId(): string {
   const timestamp = Date.now().toString(36).slice(-3).toUpperCase();
   const random = Math.random().toString(36).slice(2, 4).toUpperCase();
   return `BID-${timestamp}${random}`;
+}
+
+/**
+ * 從預算金額推導規模標籤。
+ *
+ * 閾值（文化/教育類標案慣用分級）：
+ * - 小案：< 50 萬
+ * - 中案：50 萬 - 200 萬
+ * - 大案：200 萬 - 500 萬
+ * - 旗艦案：> 500 萬
+ */
+export function deriveBudgetScale(budget: number | null): string {
+  if (budget === null) return '規模未定';
+  if (budget < 500_000)   return '小案';
+  if (budget < 2_000_000) return '中案';
+  if (budget < 5_000_000) return '大案';
+  return '旗艦案';
+}
+
+/**
+ * 從案名和預算自動產生標籤陣列。
+ *
+ * 回傳兩個標籤：[分類標籤, 規模標籤]
+ * 例：["教育訓練", "中案"]
+ */
+export function deriveAutoTags(title: string, budget: number | null): string[] {
+  return [deriveCategory(title), deriveBudgetScale(budget)];
 }

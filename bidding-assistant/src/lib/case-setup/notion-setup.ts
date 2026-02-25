@@ -50,6 +50,13 @@ export async function createNotionCase(input: CaseSetupInput): Promise<string> {
     properties['決標方式'] = { select: { name: input.award_method } };
   }
 
+  // 寫入自動標籤（需 Notion DB 有 multi_select 類型的「標籤」欄位）
+  if (input.tags && input.tags.length > 0) {
+    properties['標籤'] = {
+      multi_select: input.tags.map((name) => ({ name })),
+    };
+  }
+
   const response = await notion.pages.create({
     parent: { database_id: databaseId },
     properties,
