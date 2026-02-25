@@ -108,6 +108,12 @@ export const DEFAULT_SETTINGS: AppSettings = {
   scan: {
     searchKeywords: [...DEFAULT_SEARCH_KEYWORDS],
   },
+  budgetTiers: [
+    { name: '小型', maxAmount: 500_000 },
+    { name: '中型', maxAmount: 2_000_000 },
+    { name: '大型', maxAmount: 5_000_000 },
+    { name: '旗艦', maxAmount: null },
+  ],
   dashboardLayout: DEFAULT_DASHBOARD_LAYOUT,
   workflow: {
     stages: STAGES.map((s) => ({

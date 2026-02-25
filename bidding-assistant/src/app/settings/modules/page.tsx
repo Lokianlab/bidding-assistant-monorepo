@@ -38,6 +38,8 @@ import { FieldMappingEditor } from "@/components/settings/FieldMappingEditor";
 import { KeywordManager } from "@/components/scan/KeywordManager";
 import type { FieldMappingKey } from "@/lib/constants/field-mapping";
 import { DEFAULT_SEARCH_KEYWORDS } from "@/lib/scan/constants";
+import { DEFAULT_BUDGET_TIERS } from "@/lib/settings/budget-tiers";
+import type { BudgetTier } from "@/lib/settings/types";
 
 export default function ModulesPage() {
   const { settings, hydrated, updateSection, updateSettings } = useSettings();
@@ -58,6 +60,11 @@ export default function ModulesPage() {
     settings.scan?.searchKeywords ?? [...DEFAULT_SEARCH_KEYWORDS],
   );
 
+  // 預算規模級距的 local state
+  const [budgetTiers, setBudgetTiers] = useState<BudgetTier[]>(
+    settings.budgetTiers ?? DEFAULT_BUDGET_TIERS,
+  );
+
   // hydration 完成後，用 localStorage 的值更新 local state
   useEffect(() => {
     if (hydrated) {
@@ -65,6 +72,7 @@ export default function ModulesPage() {
       setToggles(settings.featureToggles ?? getDefaultToggles());
       setFieldMapping(settings.fieldMapping ?? {});
       setScanKeywords(settings.scan?.searchKeywords ?? [...DEFAULT_SEARCH_KEYWORDS]);
+      setBudgetTiers(settings.budgetTiers ?? DEFAULT_BUDGET_TIERS);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
@@ -116,6 +124,7 @@ export default function ModulesPage() {
           <TabsTrigger value="pricing">報價參數</TabsTrigger>
           <TabsTrigger value="negotiation">協商參數</TabsTrigger>
           <TabsTrigger value="scan-keywords">巡標關鍵字</TabsTrigger>
+          <TabsTrigger value="budget-tiers">預算規模</TabsTrigger>
         </TabsList>
 
         {/* ====== 功能開關 ====== */}
@@ -613,6 +622,116 @@ export default function ModulesPage() {
               取消
             </Button>
             <Button onClick={handleSaveModules}>儲存模組參數</Button>
+          </div>
+        </TabsContent>
+
+        {/* ====== 預算規模 ====== */}
+        <TabsContent value="budget-tiers" className="mt-4 space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">預算規模級距</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                系統依預算金額自動分類顯示，不儲存至 Notion。可自由增減級距數量與金額。
+              </p>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-32">級距名稱</TableHead>
+                    <TableHead>上限金額（萬元）</TableHead>
+                    <TableHead className="w-16"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {budgetTiers.map((tier, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <Input
+                          value={tier.name}
+                          onChange={(e) => {
+                            const next = [...budgetTiers];
+                            next[i] = { ...next[i], name: e.target.value };
+                            setBudgetTiers(next);
+                          }}
+                          className="h-7 text-sm"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {tier.maxAmount === null ? (
+                          <span className="text-sm text-muted-foreground">不設上限（最高級）</span>
+                        ) : (
+                          <Input
+                            type="number"
+                            value={Math.round(tier.maxAmount / 10_000)}
+                            min={0}
+                            onChange={(e) => {
+                              const next = [...budgetTiers];
+                              next[i] = { ...next[i], maxAmount: Number(e.target.value) * 10_000 };
+                              setBudgetTiers(next);
+                            }}
+                            className="h-7 text-sm w-32"
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {budgetTiers.length > 1 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const next = budgetTiers.filter((_, idx) => idx !== i);
+                              // 若刪除的是最後一個（null），讓新的最後一個變 null
+                              if (tier.maxAmount === null && next.length > 0) {
+                                next[next.length - 1] = { ...next[next.length - 1], maxAmount: null };
+                              }
+                              setBudgetTiers(next);
+                            }}
+                          >
+                            &times;
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3"
+                onClick={() => {
+                  // 插入在最後一個（null）之前
+                  const withoutLast = budgetTiers.slice(0, -1);
+                  const lastTier = budgetTiers[budgetTiers.length - 1];
+                  const prevMax = withoutLast[withoutLast.length - 1]?.maxAmount ?? 0;
+                  const newTier: BudgetTier = {
+                    name: '新級距',
+                    maxAmount: (prevMax ?? 0) + 500_000,
+                  };
+                  setBudgetTiers([...withoutLast, newTier, lastTier]);
+                }}
+              >
+                + 新增級距
+              </Button>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setBudgetTiers(settings.budgetTiers ?? DEFAULT_BUDGET_TIERS)}
+            >
+              取消
+            </Button>
+            <Button
+              onClick={() => {
+                updateSettings({ budgetTiers });
+                toast.success("預算規模設定已儲存");
+              }}
+            >
+              儲存設定
+            </Button>
           </div>
         </TabsContent>
 

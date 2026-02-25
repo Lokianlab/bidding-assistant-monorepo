@@ -149,6 +149,8 @@ export interface AppSettings {
   output?: OutputSettings;
   /** 巡標設定 */
   scan?: ScanSettings;
+  /** 預算規模級距設定（read-time 分類，不存 Notion） */
+  budgetTiers?: BudgetTier[];
 }
 
 export interface RecentExport {
@@ -181,6 +183,11 @@ export interface QualityGateSettings {
   overallPassThreshold: number;
   /** 總評「有風險」門檻分數 */
   overallRiskThreshold: number;
+}
+
+export interface BudgetTier {
+  name: string;
+  maxAmount: number | null; // null = 不設上限（最後一個級距）
 }
 
 export interface LogEntry {

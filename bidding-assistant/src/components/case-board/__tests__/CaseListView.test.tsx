@@ -38,6 +38,17 @@ vi.mock("../StageProgressBar", () => ({
   StageProgressBar: () => createElement("div", { "data-testid": "stage-progress-bar" }),
 }));
 
+// ── mock useSettings ────────────────────────────────────────
+
+vi.mock("@/lib/context/settings-context", () => ({
+  useSettings: () => ({
+    settings: { budgetTiers: undefined },
+    hydrated: true,
+    updateSettings: vi.fn(),
+    updateSection: vi.fn(),
+  }),
+}));
+
 // ── 固定時間 ───────────────────────────────────────────────
 
 beforeEach(() => {

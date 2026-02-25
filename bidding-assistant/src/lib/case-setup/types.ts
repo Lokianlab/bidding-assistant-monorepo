@@ -10,7 +10,6 @@ export interface CaseSetupInput {
   award_method: string | null;
   pcc_job_number: string;
   pcc_unit_id: string;
-  tags?: string[]; // 自動標籤（分類+規模），可選
 }
 
 /** 案件建立結果 */

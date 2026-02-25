@@ -28,10 +28,6 @@ export async function POST(request: NextRequest) {
       accessToken = '';
     }
 
-    // 自動產生標籤（若呼叫方未帶，由此處生成）
-    const { deriveAutoTags } = await import('@/lib/case-setup/helpers');
-    const tags: string[] = body.tags ?? deriveAutoTags(title, body.budget ?? null);
-
     const { setupCase } = await import('@/lib/case-setup/orchestrator');
     const result = await setupCase(
       {
@@ -43,7 +39,6 @@ export async function POST(request: NextRequest) {
         award_method: body.award_method ?? null,
         pcc_job_number,
         pcc_unit_id: pcc_unit_id ?? '',
-        tags,
       },
       accessToken,
     );
