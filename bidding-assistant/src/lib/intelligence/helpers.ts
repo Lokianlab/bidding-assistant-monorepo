@@ -169,3 +169,33 @@ export function daysUntilDeadline(deadline: string): number | null {
   const diffMs = deadlineDay.getTime() - today.getTime();
   return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 }
+
+// ====== 案件分類推導 ======
+
+/** 分類優先關鍵字表（順序即優先序，第一個匹配到的分類獲勝） */
+const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
+  { category: '展覽策展', keywords: ['展覽', '策展', '展示', '布展', '陳列', '特展'] },
+  { category: '影像製作', keywords: ['影像', '影片', '紀錄片', '短片', '拍攝', '錄製'] },
+  { category: '教育訓練', keywords: ['教育', '訓練', '培訓', '研習', '課程', '講座', '教案', '教材', '工作坊'] },
+  { category: '活動辦理', keywords: ['活動', '演出', '展演', '典禮', '競賽', '節慶', '論壇', '研討會'] },
+  { category: '文宣行銷', keywords: ['文宣', '行銷', '推廣', '宣傳', '廣告', '形象'] },
+  { category: '出版印刷', keywords: ['出版', '印刷', '印製', '書籍', '刊物', '圖錄'] },
+  { category: '資訊系統', keywords: ['資訊', '系統', '網站', '平台', '資料庫', '數位', 'App', '軟體'] },
+  { category: '研究調查', keywords: ['研究', '調查', '評估', '分析', '統計', '普查'] },
+  { category: '設計規劃', keywords: ['設計', '規劃', '建置', '改善', '改造'] },
+  { category: '顧問諮詢', keywords: ['顧問', '諮詢', '輔導', '審查', '評鑑'] },
+];
+
+/**
+ * 從案名推導案件分類。
+ * 依 CATEGORY_KEYWORDS 優先序，第一個匹配到的分類獲勝。
+ * 沒有匹配到回傳「其他」。
+ */
+export function deriveCategory(title: string): string {
+  for (const { category, keywords } of CATEGORY_KEYWORDS) {
+    if (keywords.some((kw) => title.includes(kw))) {
+      return category;
+    }
+  }
+  return '其他';
+}

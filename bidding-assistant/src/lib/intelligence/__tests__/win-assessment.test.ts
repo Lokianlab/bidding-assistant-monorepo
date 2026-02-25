@@ -22,6 +22,8 @@ function makeAgencyCase(overrides: Partial<{
   winner_name: string;
   winner_id: string;
   bidder_count: number;
+  category: string;
+  all_bidder_names: string[];
 }> = {}) {
   return {
     job_number: "JOB-001",
@@ -31,6 +33,8 @@ function makeAgencyCase(overrides: Partial<{
     winner_name: "甲廠商",
     winner_id: "A001",
     bidder_count: 3,
+    category: "其他",
+    all_bidder_names: [],
     ...overrides,
   };
 }

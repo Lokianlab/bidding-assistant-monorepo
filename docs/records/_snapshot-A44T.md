@@ -19,13 +19,9 @@
 
 ## 待完成（可自主）
 
-### [>] Perplexity 第三輪提示詞 — 最低標實務報價策略
+### [x] Perplexity 第四輪提示詞 — 底價推估與報價策略
 
-- 目標：在 `src/lib/intelligence/perplexity-prompts.ts` 補第三輪
-- 第一輪：競爭者與甲方關係
-- 第二輪：評審委員與市場背景
-- 第三輪（待補）：最低標報價策略 / 底價推估
-- 完成後更新 `src/app/cases/[id]/intelligence/page.tsx` 的 prompts 陣列
+- 4 輪提示詞全部完成，31 個測試全過，commit 8142f49 推送
 
 ---
 

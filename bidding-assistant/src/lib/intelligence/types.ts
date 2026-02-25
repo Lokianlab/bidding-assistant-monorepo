@@ -21,6 +21,8 @@ export interface AgencyCase {
   winner_name: string;
   winner_id: string;
   bidder_count: number;
+  category: string;            // 從案名關鍵字推導的分類
+  all_bidder_names: string[];  // 所有投標廠商名稱
 }
 
 /** 機關的常勝廠商 */
@@ -118,6 +120,43 @@ export interface WinAssessmentData {
   checks: WinCheck[];
   overall: TrafficLight;
   recommendation: string;
+}
+
+// ====== 分年標案分析 ======
+
+/** 按年份+分類+投標家數組別統計 */
+export interface YearlyCategoryStat {
+  year: number;
+  category: string;
+  count: number;
+  budget_total: number | null;
+  award_total: number | null;
+}
+
+/** 投標家數組別 */
+export type BidderGroup = 'single' | 'two' | 'multi' | 'total';
+
+/** 分年標案分析 */
+export interface YearlyAnalysis {
+  stats: YearlyCategoryStat[];
+  years: number[];
+  categories: string[];
+}
+
+// ====== 分類競爭對手 ======
+
+/** 某分類中的競爭對手 */
+export interface CategoryCompetitor {
+  name: string;
+  encounter_count: number;
+  win_count: number;
+}
+
+/** 按分類統計的競爭對手 */
+export interface CompetitorByCategory {
+  category: string;
+  total_cases: number;
+  top_competitors: CategoryCompetitor[];
 }
 
 // ====== 情報報告（完整匯總） ======

@@ -6,7 +6,7 @@ import type { PCCSearchResponse, PCCRecord } from "@/lib/pcc/types";
 import { isWinner, parseAmount, findDetailValue } from "@/lib/pcc/helpers";
 import { saveIntelCache, getIntelCache } from "@/lib/supabase/intel-client";
 import { INTEL_CACHE_TTL } from "./constants";
-import { analyzeTopWinners } from "./helpers";
+import { analyzeTopWinners, deriveCategory } from "./helpers";
 import type {
   AgencyHistoryData,
   AgencyCase,
@@ -163,6 +163,7 @@ function parseRecordToAgencyCase(record: PCCRecord): AgencyCase {
   let winnerName = "";
   let winnerId = "";
   let bidderCount = 0;
+  const allBidderNames: string[] = companies?.names ?? [];
 
   if (companies) {
     // 找出得標廠商
@@ -195,6 +196,8 @@ function parseRecordToAgencyCase(record: PCCRecord): AgencyCase {
     winner_name: winnerName,
     winner_id: winnerId,
     bidder_count: bidderCount,
+    category: deriveCategory(record.brief.title),
+    all_bidder_names: allBidderNames,
   };
 }
 

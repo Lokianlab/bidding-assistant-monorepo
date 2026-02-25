@@ -6,15 +6,10 @@ import { WinAssessmentPanel } from '@/components/intelligence/WinAssessmentPanel
 import { PerplexityPanel } from '@/components/intelligence/PerplexityPanel';
 import { DecisionPanel } from '@/components/intelligence/DecisionPanel';
 import { RFPUpload } from '@/components/intelligence/RFPUpload';
+import { YearlyAnalysisPanel } from '@/components/intelligence/YearlyAnalysisPanel';
+import { CompetitorByCategoryPanel } from '@/components/intelligence/CompetitorByCategoryPanel';
+import type { AgencyCase } from '@/lib/intelligence/types';
 
-interface AgencyCase {
-  job_number: string;
-  title: string;
-  award_date: string;
-  award_amount: number | null;
-  winner_name: string;
-  bidder_count: number;
-}
 
 interface TopWinner {
   name: string;
@@ -141,6 +136,17 @@ export default function IntelligencePage() {
             </div>
           )}
         </div>
+      )}
+
+
+      {/* 分年標案分析 */}
+      {agencyHistory?.cases && agencyHistory.cases.length > 0 && (
+        <YearlyAnalysisPanel cases={agencyHistory.cases} />
+      )}
+
+      {/* 分類競爭對手 */}
+      {agencyHistory?.cases && agencyHistory.cases.length > 0 && (
+        <CompetitorByCategoryPanel cases={agencyHistory.cases} />
       )}
 
       {/* 競爭者分析 */}

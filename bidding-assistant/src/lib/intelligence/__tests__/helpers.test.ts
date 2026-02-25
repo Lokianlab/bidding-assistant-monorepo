@@ -22,6 +22,8 @@ function makeCase(overrides: Partial<AgencyCase> = {}): AgencyCase {
     winner_name: "甲公司",
     winner_id: "A001",
     bidder_count: 3,
+    category: "其他",
+    all_bidder_names: [],
     ...overrides,
   };
 }
