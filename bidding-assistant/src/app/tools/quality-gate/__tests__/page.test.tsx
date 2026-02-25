@@ -28,10 +28,44 @@ vi.mock("@/lib/quality-gate/useQualityGate", () => ({
   useQualityGate: () => mockUseQualityGate(),
 }));
 
+// ── Mock useSettings ──────────────────────────────────────
+vi.mock("@/lib/context/settings-context", () => ({
+  useSettings: () => ({
+    settings: {
+      company: { name: "測試公司", brand: "TestBrand" },
+      modules: {
+        qualityRules: {
+          blacklist: [],
+          terminology: [],
+          ironLawEnabled: {},
+          customRules: [],
+        },
+      },
+    },
+  }),
+}));
+
+// ── Mock 品質規則 lib ─────────────────────────────────────
+vi.mock("@/lib/quality/rules", () => ({
+  runChecks: vi.fn(() => []),
+}));
+vi.mock("@/lib/quality/score", () => ({
+  calculateScore: vi.fn(() => ({ value: 100, label: "優秀" })),
+}));
+vi.mock("@/lib/quality/constants", () => ({
+  IRON_LAW_LABELS: {},
+}));
+
 // ── Mock 子元件 ────────────────────────────────────────────
 vi.mock("@/components/quality-gate/QualityGateDashboard", () => ({
   QualityGateDashboard: () => (
     <div data-testid="quality-gate-dashboard">品質閘門報告</div>
+  ),
+}));
+
+vi.mock("@/components/output/DocumentWorkbench", () => ({
+  DocumentWorkbench: () => (
+    <div data-testid="document-workbench">文件工作台</div>
   ),
 }));
 
@@ -53,17 +87,19 @@ beforeEach(() => {
 // ── Tests ─────────────────────────────────────────────────
 
 describe("QualityGatePage — 渲染", () => {
-  it("顯示頁面標題「品質閘門」", () => {
+  it("顯示頁面標題「品質與輸出」", () => {
     render(<QualityGatePage />);
-    expect(screen.getByRole("heading", { name: "品質閘門" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "品質與輸出" })).toBeTruthy();
   });
 
-  it("顯示頁面說明文字", () => {
+  it("顯示三個 tab：品質閘門、文字檢查、文件輸出", () => {
     render(<QualityGatePage />);
-    expect(screen.getByText(/四道檢查/)).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "品質閘門" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "文字檢查" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "文件輸出" })).toBeTruthy();
   });
 
-  it("顯示 textarea 輸入區", () => {
+  it("預設顯示品質閘門 tab（textarea 輸入區）", () => {
     render(<QualityGatePage />);
     expect(screen.getByRole("textbox")).toBeTruthy();
   });
@@ -157,7 +193,7 @@ describe("QualityGatePage — 報告顯示", () => {
     expect(mockClear).toHaveBeenCalledTimes(1);
   });
 
-  it("report 存在時顯示「匯出文件」連結按鈕", () => {
+  it("report 存在時顯示「前往文件輸出」按鈕", () => {
     mockUseQualityGate.mockReturnValue({
       report: { overall: "pass" },
       isAnalyzing: false,
@@ -165,9 +201,7 @@ describe("QualityGatePage — 報告顯示", () => {
       clear: mockClear,
     });
     render(<QualityGatePage />);
-    expect(
-      screen.getByRole("link", { name: "匯出文件（進入文件生成）" }),
-    ).toBeTruthy();
+    expect(screen.getByRole("button", { name: "前往文件輸出 →" })).toBeTruthy();
   });
 
   it("report 為 null 時不顯示 QualityGateDashboard", () => {
@@ -216,5 +250,15 @@ describe("QualityGatePage — caseId 上下文（GAP-3）", () => {
     render(<QualityGatePage />);
     const btns = screen.getAllByRole("button", { name: "← 回到案件" });
     expect(btns.length).toBe(2); // Header 和底部報告區各一個
+  });
+});
+
+describe("QualityGatePage — 文件輸出 tab", () => {
+  it("tab=output 時顯示 DocumentWorkbench", () => {
+    mockSearchGet.mockImplementation((key: string) =>
+      key === "tab" ? "output" : null,
+    );
+    render(<QualityGatePage />);
+    expect(screen.getByTestId("document-workbench")).toBeTruthy();
   });
 });
