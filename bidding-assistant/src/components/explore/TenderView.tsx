@@ -235,7 +235,7 @@ function CompanySection({
   // 從 detail 的 key-value 裡解析公司
   const companies: { name: string; role: string }[] = [];
 
-  for (const [key, val] of Object.entries(detail.detail)) {
+  for (const [key, val] of Object.entries(detail.detail ?? {})) {
     if (typeof val === "string") continue;
     if (val && typeof val === "object") {
       // 格式：{ "廠商代碼": "xxx", "廠商名稱": "yyy", ... }
