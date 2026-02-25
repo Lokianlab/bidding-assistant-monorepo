@@ -34,7 +34,7 @@ Dev server port: 3000
 - `id`：唯一識別碼
 - `name`：中文名稱
 - `routes[]`：對應的 URL 路徑
-- `section`：分類（core / tools / output）
+- `section`：分類（command / intelligence / planning / admin）
 - `dependencies[]`：依賴的其他功能
 - `defaultEnabled`：預設是否啟用
 

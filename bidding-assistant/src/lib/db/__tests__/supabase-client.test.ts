@@ -46,7 +46,8 @@ describe('Supabase Client Initialization', () => {
     const { getSupabaseClient } = await import('../supabase-client');
     getSupabaseClient();
 
-    const config = mockCreateClient.mock.calls[0][2];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const config = (mockCreateClient.mock.calls as any)[0][2];
     expect(config.auth.autoRefreshToken).toBe(true);
     expect(config.auth.persistSession).toBe(true);
   });
@@ -73,7 +74,9 @@ describe('Supabase Client Initialization', () => {
 
     getSupabaseServerClient();
 
-    const lastCall = mockCreateClient.mock.calls[mockCreateClient.mock.calls.length - 1];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const calls = mockCreateClient.mock.calls as any[];
+    const lastCall = calls[calls.length - 1];
     const config = lastCall[2];
     expect(config.auth.autoRefreshToken).toBe(false);
     expect(config.auth.persistSession).toBe(false);

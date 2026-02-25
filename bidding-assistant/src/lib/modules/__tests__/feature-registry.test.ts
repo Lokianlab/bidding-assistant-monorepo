@@ -15,9 +15,10 @@ import {
 
 describe("SECTION_LABELS", () => {
   it("has labels for all section types", () => {
-    expect(SECTION_LABELS.core).toBe("核心功能");
-    expect(SECTION_LABELS.tools).toBe("工具箱");
-    expect(SECTION_LABELS.output).toBe("輸出");
+    expect(SECTION_LABELS.command).toBe("指揮部");
+    expect(SECTION_LABELS.intelligence).toBe("情報部");
+    expect(SECTION_LABELS.planning).toBe("企劃部");
+    expect(SECTION_LABELS.admin).toBe("行政部");
   });
 });
 
@@ -51,7 +52,7 @@ describe("FEATURE_REGISTRY", () => {
 
       expect(Array.isArray(feature.routes)).toBe(true);
 
-      expect(["core", "tools", "output"]).toContain(feature.section);
+      expect(["command", "intelligence", "planning", "admin"]).toContain(feature.section);
 
       expect(typeof feature.defaultEnabled).toBe("boolean");
     }

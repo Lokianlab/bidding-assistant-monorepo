@@ -193,8 +193,8 @@ describe('Supabase RLS 多租戶隔離驗證', () => {
         mockData.tenant2.items.some((t) => t.id === item.id);
 
       // 租戶 1 使用者不應有權限
-      const userTenant = 'tenant-1';
-      const itemTenant = 'tenant-2';
+      const userTenant: string = 'tenant-1';
+      const itemTenant: string = 'tenant-2';
       expect(canUpdate).toBe(true);
       expect(userTenant === itemTenant).toBe(false);
     });
@@ -215,8 +215,8 @@ describe('Supabase RLS 多租戶隔離驗證', () => {
 
     it('[驗證] 租戶 A 無法刪除租戶 B 的項目', () => {
       const item = mockData.tenant2.items[0];
-      const userTenant = 'tenant-1';
-      const itemTenant = 'tenant-2';
+      const userTenant: string = 'tenant-1';
+      const itemTenant: string = 'tenant-2';
 
       expect(userTenant === itemTenant).toBe(false);
     });
@@ -232,8 +232,8 @@ describe('Supabase RLS 多租戶隔離驗證', () => {
     });
 
     it('[防護] 空字符串 tenant_id 應被視為不同的租戶', () => {
-      const tenant1 = 'tenant-1';
-      const emptyTenant = '';
+      const tenant1: string = 'tenant-1';
+      const emptyTenant: string = '';
       expect(tenant1 === emptyTenant).toBe(false);
     });
 

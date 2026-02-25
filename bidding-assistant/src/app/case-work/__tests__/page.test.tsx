@@ -7,7 +7,7 @@ import { loadCaseById } from "@/lib/case-work/helpers";
 
 // ── Hoisted mocks ─────────────────────────────────────────
 const { mockSearchGet, mockPush } = vi.hoisted(() => ({
-  mockSearchGet: vi.fn(() => null),
+  mockSearchGet: vi.fn((_key: string): string | null => null),
   mockPush: vi.fn(),
 }));
 

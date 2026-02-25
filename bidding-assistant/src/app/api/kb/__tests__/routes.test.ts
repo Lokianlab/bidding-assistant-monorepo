@@ -1,5 +1,6 @@
 import { describe, test, expect } from 'vitest';
-import type { KBId, KBEntry00A, KBEntry } from '@/lib/knowledge-base/types';
+import type { KBId, KBEntry00A } from '@/lib/knowledge-base/types';
+import type { KBEntry } from '@/lib/supabase/types';
 
 /**
  * TDD RED 階段：KB API Routes 型別與結構驗收測試
@@ -61,7 +62,7 @@ describe('M02 Phase 2a: KB API Routes - CRUD Type Definitions', () => {
     test('GET /api/kb/items?category=00A returns filtered entries', () => {
       // RED: 驗證 GET 支持 category 篩選
       // 此測試會失敗，因為當前實裝不支持查詢參數處理
-      const mockEntries: KBEntry[] = [
+      const mockEntries = [
         {
           id: 'uuid-1',
           category: '00A' as KBId,
@@ -81,7 +82,7 @@ describe('M02 Phase 2a: KB API Routes - CRUD Type Definitions', () => {
             updatedAt: new Date().toISOString(),
           } as KBEntry00A,
         },
-      ];
+      ] as unknown as KBEntry[];
 
       const expectedListResponse = {
         items: mockEntries,

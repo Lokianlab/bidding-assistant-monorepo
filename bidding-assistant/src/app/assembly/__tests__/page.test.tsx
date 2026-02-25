@@ -5,7 +5,7 @@ import AssemblyPage from "../page";
 // ── Hoisted mocks ─────────────────────────────────────
 const { mockPush, mockSearchGet } = vi.hoisted(() => ({
   mockPush: vi.fn(),
-  mockSearchGet: vi.fn(() => null),
+  mockSearchGet: vi.fn((_key: string): string | null => null),
 }));
 
 // ── Mock next/navigation ──────────────────────────────

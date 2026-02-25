@@ -187,7 +187,7 @@ export default function ModulesPage() {
   const kbKeys = Object.keys(KB_LABELS);
 
   // 按 section 分組
-  const sectionOrder: FeatureDefinition["section"][] = ["core", "tools", "output"];
+  const sectionOrder: FeatureDefinition["section"][] = ["command", "intelligence", "planning", "admin"];
 
   return (
     <div className="p-6 max-w-5xl">

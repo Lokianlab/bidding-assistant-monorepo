@@ -7,7 +7,7 @@ const { mockAnalyze, mockClear, mockPush, mockSearchGet } = vi.hoisted(() => ({
   mockAnalyze: vi.fn(),
   mockClear: vi.fn(),
   mockPush: vi.fn(),
-  mockSearchGet: vi.fn(() => null),
+  mockSearchGet: vi.fn((_key: string): string | null => null),
 }));
 
 // ── Mock next/navigation ──────────────────────────────────

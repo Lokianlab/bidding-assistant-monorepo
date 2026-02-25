@@ -23,6 +23,8 @@ function makeHistory(overrides: Partial<AgencyHistoryData> = {}): AgencyHistoryD
         winner_name: "甲公司",
         winner_id: "A001",
         bidder_count: 3,
+        category: "",
+        all_bidder_names: [],
       },
       {
         job_number: "JOB-002",
@@ -32,6 +34,8 @@ function makeHistory(overrides: Partial<AgencyHistoryData> = {}): AgencyHistoryD
         winner_name: "乙公司",
         winner_id: "B001",
         bidder_count: 2,
+        category: "",
+        all_bidder_names: [],
       },
     ],
     top_winners: [
@@ -311,7 +315,7 @@ describe("Round 4 — 底價推估與報價策略", () => {
     const p = getR4({
       history: {
         cases: [
-          { job_number: "J1", title: "無金額案", award_date: "2024/01/01", award_amount: null, winner_name: "甲", winner_id: "A", bidder_count: 2 },
+          { job_number: "J1", title: "無金額案", award_date: "2024/01/01", award_amount: null, winner_name: "甲", winner_id: "A", bidder_count: 2, category: "", all_bidder_names: [] },
         ],
       },
     });

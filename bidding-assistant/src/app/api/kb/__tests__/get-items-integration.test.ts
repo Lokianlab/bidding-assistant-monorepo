@@ -17,28 +17,30 @@ vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(() => {
     // 返回一個 Supabase 客戶端的模擬
     return {
-      from: vi.fn((tableName: string) => {
+      from: vi.fn((_tableName: string) => {
         // 返回查詢建構器
-        return {
-          select: vi.fn(function() { return this; }),
-          eq: vi.fn(function() { return this; }),
-          range: vi.fn(async function() {
-            // 返回模擬的查詢結果
-            return {
-              data: [
-                {
-                  id: 'uuid-1',
-                  category: '00A',
-                  entry_id: 'M-001',
-                  data: { id: 'M-001', name: '黃偉誠' },
-                  status: 'active',
-                },
-              ],
-              error: null,
-              count: 1,
-            };
-          }),
+        const qb: Record<string, unknown> & {
+          select: ReturnType<typeof vi.fn>;
+          eq: ReturnType<typeof vi.fn>;
+          range: ReturnType<typeof vi.fn>;
+        } = {
+          select: vi.fn(() => qb),
+          eq: vi.fn(() => qb),
+          range: vi.fn(async () => ({
+            data: [
+              {
+                id: 'uuid-1',
+                category: '00A',
+                entry_id: 'M-001',
+                data: { id: 'M-001', name: '黃偉誠' },
+                status: 'active',
+              },
+            ],
+            error: null,
+            count: 1,
+          })),
         };
+        return qb;
       }),
     };
   }),

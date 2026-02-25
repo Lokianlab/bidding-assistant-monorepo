@@ -109,7 +109,7 @@ describe('validatePartner', () => {
         phone,
       };
       const result = validatePartner(input);
-      expect(result.valid).toBe(true, `電話 ${phone} 應該有效`);
+      expect(result.valid, `電話 ${phone} 應該有效`).toBe(true);
     });
   });
 

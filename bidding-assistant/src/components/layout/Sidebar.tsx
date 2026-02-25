@@ -101,7 +101,7 @@ function useNavSections() {
   return useMemo(() => {
     const toggles = settings.featureToggles ?? {};
     // 按 section 分組
-    const sectionOrder: FeatureDefinition["section"][] = ["core", "tools", "output"];
+    const sectionOrder: FeatureDefinition["section"][] = ["command", "intelligence", "planning", "admin"];
     const sections: { section: string; items: NavItem[] }[] = [];
 
     for (const sec of sectionOrder) {
