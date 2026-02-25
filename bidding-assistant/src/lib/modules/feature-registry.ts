@@ -109,7 +109,7 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
     name: "案件工作頁",
     description: "單一案件全視角：案件資訊、戰略分析、情報摘要，一頁看完",
     icon: "📋",
-    routes: ["/case-work"],
+    routes: [],
     section: "core",
     defaultEnabled: true,
     dependencies: ["case-board", "strategy"],
