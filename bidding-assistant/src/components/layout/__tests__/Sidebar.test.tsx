@@ -52,8 +52,8 @@ describe("Sidebar — 基本渲染", () => {
 
   it("顯示「設定」區塊", async () => {
     await renderSidebar();
-    // SETTINGS_ITEMS 永遠顯示
-    expect(screen.getAllByText("操作指南").length).toBeGreaterThan(0);
+    // SETTINGS_ITEMS 永遠顯示（精簡後 3 項：外部連線、功能與設定、系統維護）
+    expect(screen.getAllByText("功能與設定").length).toBeGreaterThan(0);
     expect(screen.getAllByText("外部連線").length).toBeGreaterThan(0);
   });
 

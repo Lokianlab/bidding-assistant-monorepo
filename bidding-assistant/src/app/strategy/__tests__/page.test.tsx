@@ -1,19 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import StrategyPage from "../page";
 import { DEFAULT_SETTINGS } from "@/lib/settings/defaults";
 import { useSettings } from "@/lib/context/settings-context";
 
 // ── Hoisted mocks ─────────────────────────────────────────
-const { mockPush, mockGet } = vi.hoisted(() => ({
+const { mockPush, mockSearchGet } = vi.hoisted(() => ({
   mockPush: vi.fn(),
-  mockGet: vi.fn().mockReturnValue(null),
+  mockSearchGet: vi.fn().mockReturnValue(null),
 }));
 
 // ── Mock next/navigation ──────────────────────────────────
 vi.mock("next/navigation", () => ({
-  useSearchParams: () => ({ get: mockGet }),
+  useSearchParams: () => ({ get: mockSearchGet }),
   useRouter: () => ({ push: mockPush }),
+}));
+
+// ── Mock next/link ────────────────────────────────────────
+vi.mock("next/link", () => ({
+  default: ({ href, children }: { href: string; children: React.ReactNode }) => (
+    <a href={href}>{children}</a>
+  ),
 }));
 
 // ── Mock useSettings ──────────────────────────────────────
@@ -65,9 +72,19 @@ vi.mock("@/components/layout/Sidebar", () => ({
   MobileMenuButton: () => <button data-testid="mobile-menu-btn">選單</button>,
 }));
 
+// ── Mock loadCache（控制 cachedPages）─────────────────────
+vi.mock("@/lib/dashboard/helpers", () => ({
+  loadCache: vi.fn(() => null), // 預設空快取
+  fmt: vi.fn((n: number) => n.toLocaleString()),
+  fmtDateTime: vi.fn((s: string) => s ?? ""),
+}));
+
+import { loadCache } from "@/lib/dashboard/helpers";
+
 beforeEach(() => {
   vi.clearAllMocks();
-  mockGet.mockReturnValue(null); // 預設：所有 searchParams 回傳 null
+  mockSearchGet.mockReturnValue(null); // 預設：所有 searchParams 回傳 null
+  vi.mocked(loadCache).mockReturnValue(null); // 預設：無快取資料
   vi.mocked(useSettings).mockReturnValue({
     settings: DEFAULT_SETTINGS,
   } as unknown as ReturnType<typeof useSettings>);
@@ -81,100 +98,130 @@ describe("StrategyPage — 渲染", () => {
     expect(screen.getByRole("heading", { name: "戰略分析" })).toBeTruthy();
   });
 
-  it("顯示「案件資訊」輸入表單", () => {
+  it("無 URL params + 無快取資料時：顯示「選擇要分析的案件」", () => {
     render(<StrategyPage />);
-    expect(screen.getByText("案件資訊")).toBeTruthy();
+    expect(screen.getByText("選擇要分析的案件")).toBeTruthy();
   });
 
-  it("顯示三個輸入欄位", () => {
+  it("無 URL params + 無快取資料時：顯示「尚無 Notion 案件資料」提示", () => {
     render(<StrategyPage />);
-    expect(screen.getByLabelText("案件名稱 *")).toBeTruthy();
-    expect(screen.getByLabelText("機關名稱")).toBeTruthy();
-    expect(screen.getByLabelText("預算金額（元）")).toBeTruthy();
+    expect(screen.getByText(/尚無 Notion 案件資料/)).toBeTruthy();
   });
 
-  it("空 caseName 時「開始分析」按鈕 disabled", () => {
+  it("無 URL params 時：不顯示「開始分析」按鈕（canAnalyze=false）", () => {
     render(<StrategyPage />);
-    const btn = screen.getByRole("button", { name: "開始分析" }) as HTMLButtonElement;
-    expect(btn.disabled).toBe(true);
+    expect(screen.queryByRole("button", { name: "開始分析" })).toBeNull();
+  });
+});
+
+describe("StrategyPage — URL 參數模式", () => {
+  // 注意：頁面在 hydrated=true + hasUrlParams=true 時會自動呼叫 handleAnalyze()
+  // 所以初始渲染後 submitted 已為 true，FitScoreCard 已顯示，「開始分析」按鈕已隱藏
+
+  beforeEach(() => {
+    mockSearchGet.mockImplementation((key: string) => {
+      if (key === "caseName") return "食農教育推廣計畫";
+      return null;
+    });
+  });
+
+  it("有 caseName URL param 時：顯示「分析案件」區塊", () => {
+    render(<StrategyPage />);
+    expect(screen.getByText("分析案件")).toBeTruthy();
+  });
+
+  it("有 caseName URL param 時：頁面中有案件名稱", () => {
+    render(<StrategyPage />);
+    // 案件名稱出現在資訊區塊和分析結果標題（auto-analyze 後）
+    const elements = screen.getAllByText("食農教育推廣計畫");
+    expect(elements.length).toBeGreaterThan(0);
+  });
+
+  it("有 caseName URL param 時（auto-analyze 後）：顯示 FitScoreCard", () => {
+    render(<StrategyPage />);
+    // auto-analyze 在 useEffect 中執行，hydrated=true 故立即觸發
+    expect(screen.getByTestId("fit-score-card")).toBeTruthy();
+  });
+
+  it("有 caseName URL param 時：不顯示選擇器區塊", () => {
+    render(<StrategyPage />);
+    expect(screen.queryByText("選擇要分析的案件")).toBeNull();
   });
 });
 
 describe("StrategyPage — KB 警告", () => {
-  it("知識庫無資料時顯示警告（00A/00B 空陣列）", () => {
+  it("選擇器模式選案後 + 知識庫無資料時顯示警告（canAnalyze=true, !submitted）", () => {
+    // 提供快取資料讓使用者可以選案
+    vi.mocked(loadCache).mockReturnValue({
+      pages: [{ id: "p1", url: "", properties: { 標案名稱: "食農教育推廣計畫", 招標機關: "農委會", 預算: 500000 } }],
+      fetchedAt: "",
+    } as unknown as ReturnType<typeof loadCache>);
     render(<StrategyPage />);
+    // 點選案件（按下案件列表中的按鈕）
+    fireEvent.click(screen.getByText("食農教育推廣計畫"));
+    // selectedPage 設定後 canAnalyze=true, submitted=false, hydrated=true, !hasKBData → 顯示警告
     expect(screen.getByText(/知識庫尚無資料/)).toBeTruthy();
+  });
+
+  it("無 URL params 時（canAnalyze=false）：不顯示 KB 警告", () => {
+    render(<StrategyPage />);
+    expect(screen.queryByText(/知識庫尚無資料/)).toBeNull();
   });
 });
 
-describe("StrategyPage — 表單互動", () => {
-  it("填入案件名稱後「開始分析」按鈕 enabled", () => {
-    render(<StrategyPage />);
-    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
-      target: { value: "食農教育推廣計畫" },
+describe("StrategyPage — 分析結果", () => {
+  it("URL 參數模式：auto-analyze 後顯示 FitScoreCard", () => {
+    mockSearchGet.mockImplementation((key: string) => {
+      if (key === "caseName") return "食農教育推廣計畫";
+      return null;
     });
-    const btn = screen.getByRole("button", { name: "開始分析" }) as HTMLButtonElement;
-    expect(btn.disabled).toBe(false);
-  });
-
-  it("點「開始分析」後顯示 FitScoreCard", () => {
     render(<StrategyPage />);
-    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
-      target: { value: "食農教育推廣計畫" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
+    // hydrated=true + hasUrlParams=true → useEffect 自動呼叫 handleAnalyze
     expect(screen.getByTestId("fit-score-card")).toBeTruthy();
   });
 
-  it("點「開始分析」後顯示「開始撰寫」按鈕", () => {
-    render(<StrategyPage />);
-    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
-      target: { value: "食農教育推廣計畫" },
+  it("URL 參數模式：auto-analyze 後顯示「開始撰寫（進入提示詞組裝）」按鈕", () => {
+    mockSearchGet.mockImplementation((key: string) => {
+      if (key === "caseName") return "食農教育推廣計畫";
+      return null;
     });
-    fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
+    render(<StrategyPage />);
     expect(screen.getByRole("button", { name: "開始撰寫（進入提示詞組裝）" })).toBeTruthy();
   });
 
-  it("點「開始撰寫」呼叫 router.push 帶 stage=L1 與 caseName", () => {
+  it("選擇器模式：點「開始分析」後顯示 FitScoreCard", () => {
+    vi.mocked(loadCache).mockReturnValue({
+      pages: [{ id: "p1", url: "", properties: { 標案名稱: "食農教育推廣計畫", 招標機關: "農委會", 預算: 500000 } }],
+      fetchedAt: "",
+    } as unknown as ReturnType<typeof loadCache>);
     render(<StrategyPage />);
-    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
-      target: { value: "食農教育推廣計畫" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
-    fireEvent.click(screen.getByRole("button", { name: "開始撰寫（進入提示詞組裝）" }));
-    expect(mockPush).toHaveBeenCalledTimes(1);
-    expect(mockPush).toHaveBeenCalledWith(
-      expect.stringContaining("/assembly"),
-    );
-    expect(mockPush.mock.calls[0][0]).toContain("stage=L1");
-    expect(mockPush.mock.calls[0][0]).toContain("caseName=%E9%A3%9F%E8%BE%B2%E6%95%99%E8%82%B2%E6%8E%A8%E5%BB%A3%E8%A8%88%E7%95%AB");
-  });
-
-  it("修改案件名稱後 submitted 重置（FitScoreCard 消失）", () => {
-    render(<StrategyPage />);
-    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
-      target: { value: "食農教育推廣計畫" },
-    });
+    fireEvent.click(screen.getByText("食農教育推廣計畫"));
     fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
     expect(screen.getByTestId("fit-score-card")).toBeTruthy();
+  });
 
-    // 再修改 caseName → submitted 設為 false → FitScoreCard 消失
-    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
-      target: { value: "新案件名稱" },
+  it("點「開始撰寫」呼叫 router.push 帶 /assembly 和 stage=L1", () => {
+    mockSearchGet.mockImplementation((key: string) => {
+      if (key === "caseName") return "食農教育推廣計畫";
+      return null;
     });
-    expect(screen.queryByTestId("fit-score-card")).toBeNull();
+    render(<StrategyPage />);
+    fireEvent.click(screen.getByRole("button", { name: "開始撰寫（進入提示詞組裝）" }));
+    expect(mockPush).toHaveBeenCalledTimes(1);
+    expect(mockPush.mock.calls[0][0]).toContain("/assembly");
+    expect(mockPush.mock.calls[0][0]).toContain("stage=L1");
+    expect(mockPush.mock.calls[0][0]).toContain("caseName=");
   });
 });
 
 describe("StrategyPage — 回到案件導覽", () => {
   it("無 caseId 時不顯示「回到案件」按鈕", () => {
-    mockGet.mockReturnValue(null);
     render(<StrategyPage />);
     expect(screen.queryByRole("button", { name: "← 回到案件" })).toBeNull();
   });
 
   it("有 caseId 時顯示「← 回到案件」按鈕", () => {
-    mockGet.mockImplementation((key: string) =>
+    mockSearchGet.mockImplementation((key: string) =>
       key === "caseId" ? "page-abc" : null,
     );
     render(<StrategyPage />);
@@ -182,7 +229,7 @@ describe("StrategyPage — 回到案件導覽", () => {
   });
 
   it("點「← 回到案件」導向 /case-work?id={caseId}", () => {
-    mockGet.mockImplementation((key: string) =>
+    mockSearchGet.mockImplementation((key: string) =>
       key === "caseId" ? "page-abc" : null,
     );
     render(<StrategyPage />);
@@ -191,14 +238,13 @@ describe("StrategyPage — 回到案件導覽", () => {
   });
 
   it("點「開始撰寫」時帶 caseId 到 /assembly", () => {
-    mockGet.mockImplementation((key: string) =>
-      key === "caseId" ? "page-abc" : null,
-    );
-    render(<StrategyPage />);
-    fireEvent.change(screen.getByLabelText("案件名稱 *"), {
-      target: { value: "食農教育推廣計畫" },
+    mockSearchGet.mockImplementation((key: string) => {
+      if (key === "caseId") return "page-abc";
+      if (key === "caseName") return "食農教育推廣計畫";
+      return null;
     });
-    fireEvent.click(screen.getByRole("button", { name: "開始分析" }));
+    render(<StrategyPage />);
+    // URL 參數模式：auto-analyze 後直接顯示「開始撰寫」按鈕
     fireEvent.click(screen.getByRole("button", { name: "開始撰寫（進入提示詞組裝）" }));
     expect(mockPush.mock.calls[0][0]).toContain("/assembly");
     expect(mockPush.mock.calls[0][0]).toContain("caseId=page-abc");

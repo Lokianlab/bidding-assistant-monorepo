@@ -21,14 +21,9 @@ interface NavItem {
 
 /** 設定區塊（永遠顯示） */
 const SETTINGS_ITEMS: NavItem[] = [
-  { label: "操作指南", href: "/guide", icon: "📖" },
-  { label: "輸出文件設定", href: "/settings/document", icon: "🔤" },
   { label: "外部連線", href: "/settings/connections", icon: "🔗" },
-  { label: "公司資訊", href: "/settings/company", icon: "🏢" },
-  { label: "功能模組管理", href: "/settings/modules", icon: "📦" },
-  { label: "工作流程", href: "/settings/workflow", icon: "⚙️" },
+  { label: "功能與設定", href: "/settings/modules", icon: "📦" },
   { label: "系統維護", href: "/settings/maintenance", icon: "🛠️" },
-  { label: "提示詞編輯器", href: "/prompts", icon: "✏️" },
 ];
 
 // ====== Context：讓其他元件讀取側欄狀態 ======
@@ -150,9 +145,11 @@ export function Sidebar() {
       {/* Logo 區 */}
       <div className="p-4 border-b border-sidebar-border flex items-center justify-between">
         <div className={cn("overflow-hidden transition-all duration-200", collapsed ? "w-0 opacity-0" : "w-auto opacity-100")}>
-          <h1 className="text-lg font-bold text-sidebar-primary-foreground whitespace-nowrap">
-            全能標案助理
-          </h1>
+          <Link href="/" className="block hover:opacity-80 transition-opacity">
+            <h1 className="text-lg font-bold text-sidebar-primary-foreground whitespace-nowrap">
+              全能標案助理
+            </h1>
+          </Link>
           <p className="text-xs text-sidebar-foreground/60 mt-1 whitespace-nowrap">
             大員洛川顧問有限公司
           </p>

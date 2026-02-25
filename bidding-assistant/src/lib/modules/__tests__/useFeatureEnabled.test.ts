@@ -79,10 +79,11 @@ describe("useFeatureEnabled", () => {
 // ── useEnabledFeatures ───────────────────────────────────────
 
 describe("useEnabledFeatures", () => {
-  it("returns all features when no toggles are set (all default-enabled)", () => {
+  it("returns all default-enabled features when no toggles are set", () => {
     const { result } = renderHook(() => useEnabledFeatures(), { wrapper });
-    // All features in FEATURE_REGISTRY are defaultEnabled: true
-    expect(result.current.length).toBe(FEATURE_REGISTRY.length);
+    // explore and knowledge-cards are defaultEnabled: false
+    const defaultEnabledCount = FEATURE_REGISTRY.filter((f) => f.defaultEnabled).length;
+    expect(result.current.length).toBe(defaultEnabledCount);
   });
 
   it("excludes a disabled feature", () => {
@@ -93,7 +94,8 @@ describe("useEnabledFeatures", () => {
     const { result } = renderHook(() => useEnabledFeatures(), { wrapper });
     const ids = result.current.map((f) => f.id);
     expect(ids).not.toContain("pricing");
-    expect(result.current.length).toBe(FEATURE_REGISTRY.length - 1);
+    const defaultEnabledCount = FEATURE_REGISTRY.filter((f) => f.defaultEnabled).length;
+    expect(result.current.length).toBe(defaultEnabledCount - 1);
   });
 
   it("excludes multiple disabled features", () => {
@@ -108,7 +110,8 @@ describe("useEnabledFeatures", () => {
     expect(ids).not.toContain("pricing");
     expect(ids).not.toContain("quality");
     expect(ids).not.toContain("docgen");
-    expect(result.current.length).toBe(FEATURE_REGISTRY.length - 3);
+    const defaultEnabledCount = FEATURE_REGISTRY.filter((f) => f.defaultEnabled).length;
+    expect(result.current.length).toBe(defaultEnabledCount - 3);
   });
 
   it("returns FeatureDefinition objects with correct shape", () => {

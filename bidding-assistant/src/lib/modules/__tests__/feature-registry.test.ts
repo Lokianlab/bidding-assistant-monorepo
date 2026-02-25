@@ -162,10 +162,9 @@ describe("getDefaultToggles()", () => {
 // ---------------------------------------------------------------------------
 
 describe("getFeatureByRoute()", () => {
-  it("returns the dashboard feature for '/'", () => {
+  it("returns undefined for '/' (dashboard routes cleared)", () => {
     const feature = getFeatureByRoute("/");
-    expect(feature).toBeDefined();
-    expect(feature!.id).toBe("dashboard");
+    expect(feature).toBeUndefined();
   });
 
   it("returns the correct feature for exact route match", () => {
@@ -175,9 +174,9 @@ describe("getFeatureByRoute()", () => {
   });
 
   it("returns the correct feature via prefix match", () => {
-    const feature = getFeatureByRoute("/tools/pricing/detail");
+    const feature = getFeatureByRoute("/knowledge-base/sub");
     expect(feature).toBeDefined();
-    expect(feature!.id).toBe("pricing");
+    expect(feature!.id).toBe("knowledge-base");
   });
 
   it("returns the case-board feature for /case-board", () => {
@@ -186,10 +185,9 @@ describe("getFeatureByRoute()", () => {
     expect(feature!.id).toBe("case-board");
   });
 
-  it("returns the prompt-library feature for /prompt-library", () => {
+  it("returns undefined for /prompt-library (routes cleared)", () => {
     const feature = getFeatureByRoute("/prompt-library");
-    expect(feature).toBeDefined();
-    expect(feature!.id).toBe("prompt-library");
+    expect(feature).toBeUndefined();
   });
 
   it("returns the explore feature for /explore", () => {
@@ -209,18 +207,20 @@ describe("getFeatureByRoute()", () => {
 // ---------------------------------------------------------------------------
 
 describe("getEnabledFeatures()", () => {
-  it("returns all features when using default toggles", () => {
+  it("returns default-enabled features when using default toggles", () => {
     const toggles = getDefaultToggles();
     const enabled = getEnabledFeatures(toggles);
-    // All defaults are true in the current registry
-    expect(enabled).toHaveLength(FEATURE_REGISTRY.length);
+    // explore and knowledge-cards are defaultEnabled:false
+    const expectedCount = FEATURE_REGISTRY.filter((f) => f.defaultEnabled).length;
+    expect(enabled).toHaveLength(expectedCount);
   });
 
   it("excludes disabled features", () => {
     const toggles = { ...getDefaultToggles(), dashboard: false };
     const enabled = getEnabledFeatures(toggles);
     expect(enabled.find((f) => f.id === "dashboard")).toBeUndefined();
-    expect(enabled.length).toBe(FEATURE_REGISTRY.length - 1);
+    const expectedCount = FEATURE_REGISTRY.filter((f) => f.defaultEnabled).length - 1;
+    expect(enabled.length).toBe(expectedCount);
   });
 });
 

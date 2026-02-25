@@ -57,6 +57,10 @@ vi.mock("@/components/pcc/CommitteeNetwork", () => ({
   ),
 }));
 
+vi.mock("@/components/explore/ExplorerPage", () => ({
+  ExplorerPage: () => <div data-testid="explorer-page">鑽探模式面板</div>,
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
   mockSearchGet.mockReturnValue(null);
@@ -75,12 +79,13 @@ describe("IntelligencePage — 渲染", () => {
     expect(screen.getByText(/查詢政府標案公開資料/)).toBeTruthy();
   });
 
-  it("顯示四個 Tab", () => {
+  it("顯示五個 Tab（含鑽探模式）", () => {
     render(<IntelligencePage />);
     expect(screen.getByRole("tab", { name: "案件搜尋" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "競爭分析" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "市場趨勢" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "評委分析" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "鑽探模式" })).toBeTruthy();
   });
 
   it("渲染 PCCSearchPanel", () => {

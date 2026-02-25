@@ -8,6 +8,7 @@ import { PCCSearchPanel } from "@/components/pcc/PCCSearchPanel";
 import { CompetitorAnalysis } from "@/components/pcc/CompetitorAnalysis";
 import { MarketTrend } from "@/components/pcc/MarketTrend";
 import { CommitteeNetwork } from "@/components/pcc/CommitteeNetwork";
+import { ExplorerPage } from "@/components/explore/ExplorerPage";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { PCCSearchMode } from "@/lib/pcc/types";
 
@@ -17,8 +18,9 @@ export default function IntelligencePage() {
   const initialSearch = searchParams.get("search") ?? undefined;
   const initialMode = (searchParams.get("mode") as PCCSearchMode) || undefined;
   const caseId = searchParams.get("caseId") || "";
+  const initialTab = searchParams.get("tab") ?? "search";
 
-  const [tab, setTab] = useState("search");
+  const [tab, setTab] = useState(initialTab);
   const [targetCompany, setTargetCompany] = useState<string | null>(null);
   const [targetAgency, setTargetAgency] = useState<{ unitId: string; unitName: string } | null>(null);
 
@@ -66,6 +68,7 @@ export default function IntelligencePage() {
           <TabsTrigger value="analysis">競爭分析</TabsTrigger>
           <TabsTrigger value="market">市場趨勢</TabsTrigger>
           <TabsTrigger value="committee">評委分析</TabsTrigger>
+          <TabsTrigger value="explore">鑽探模式</TabsTrigger>
         </TabsList>
 
         <TabsContent value="search" className="mt-4">
@@ -94,6 +97,10 @@ export default function IntelligencePage() {
             targetAgency={targetAgency}
             onTargetConsumed={() => setTargetAgency(null)}
           />
+        </TabsContent>
+
+        <TabsContent value="explore" className="mt-4">
+          <ExplorerPage />
         </TabsContent>
       </Tabs>
     </div>

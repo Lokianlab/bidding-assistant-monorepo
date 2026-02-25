@@ -53,30 +53,30 @@ describe("FeatureGuard", () => {
   });
 
   it("shows disabled message when feature is explicitly disabled", () => {
-    renderWithProvider("/tools/pricing", { pricing: false });
+    renderWithProvider("/tools/quality-gate", { "quality-gate": false });
     expect(screen.queryByTestId("child")).toBeNull();
     expect(screen.getByText(/模組已關閉/)).toBeTruthy();
   });
 
   it("disabled message contains a link to settings", () => {
-    renderWithProvider("/tools/quality", { quality: false });
+    renderWithProvider("/tools/quality-gate", { "quality-gate": false });
     const link = screen.getByText(/前往功能模組管理/);
     expect(link.closest("a")?.getAttribute("href")).toBe("/settings/modules");
   });
 
   it("shows feature name in the disabled message", () => {
-    renderWithProvider("/tools/pricing", { pricing: false });
-    expect(screen.getByText(/報價驗算/)).toBeTruthy();
+    renderWithProvider("/tools/quality-gate", { "quality-gate": false });
+    expect(screen.getByText(/品質閘門/)).toBeTruthy();
   });
 
   it("renders children for a deep sub-route of enabled feature", () => {
-    // /tools/pricing/something should match pricing feature (prefix match)
-    renderWithProvider("/tools/pricing/details");
+    // /tools/quality-gate/something should match quality-gate feature (prefix match)
+    renderWithProvider("/tools/quality-gate/details");
     expect(screen.getByTestId("child")).toBeTruthy();
   });
 
   it("blocks a deep sub-route of disabled feature", () => {
-    renderWithProvider("/tools/pricing/details", { pricing: false });
+    renderWithProvider("/tools/quality-gate/details", { "quality-gate": false });
     expect(screen.queryByTestId("child")).toBeNull();
     expect(screen.getByText(/模組已關閉/)).toBeTruthy();
   });
