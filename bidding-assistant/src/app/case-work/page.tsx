@@ -461,20 +461,6 @@ export default function CaseWorkPage() {
                 品質檢查
               </Button>
             )}
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => {
-                const params = new URLSearchParams();
-                if (caseName) params.set("caseName", caseName);
-                if (agency) params.set("agency", agency);
-                if (budget) params.set("budget", String(budget));
-                if (pageId) params.set("caseId", pageId);
-                router.push(`/strategy?${params.toString()}`);
-              }}
-            >
-              戰略分析
-            </Button>
           </div>
         </CardContent>
       </Card>
