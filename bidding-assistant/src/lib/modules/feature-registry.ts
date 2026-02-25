@@ -178,7 +178,7 @@ export const FEATURE_REGISTRY: FeatureDefinition[] = [
     name: "情報分析",
     description: "案件情報自動拉取：機關歷史、競爭者、RFP 解析、勝算評估",
     icon: "📊",
-    routes: ["/cases"],
+    routes: [],
     section: "core",
     defaultEnabled: true,
     dependencies: ["intelligence"],
